@@ -1,18 +1,15 @@
 package org.orangeplayer.audio;
 
 import org.aucom.sound.Speaker;
-import org.orangeplayer.audio.org.orangeplayer.audio.interfaces.TrackSetup;
-
 import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
 
-public abstract class Track implements Runnable, TrackSetup {
+public abstract class Track implements Runnable {
     protected File ftrack;
     protected Speaker trackLine;
-
     protected AudioInputStream speakerAis;
-
     protected byte state;
 
     // states
@@ -55,6 +52,89 @@ public abstract class Track implements Runnable, TrackSetup {
             return "Seeked";
         else
             return "Unknown";
+    }
+
+    protected abstract void getAudioStream() throws Exception;
+    protected void resetStream() throws Exception {
+        speakerAis.close();
+        getAudioStream();
+    };
+
+    @Override
+    public boolean isPlaying() {
+        return state == PLAYING;
+    }
+
+    @Override
+    public boolean isPaused() {
+        return state == PAUSED;
+    }
+
+    @Override
+    public boolean isStoped() {
+        return state == STOPED;
+    }
+
+    @Override
+    public boolean isFinished() {
+        return state == FINISHED;
+    }
+
+    @Override
+    public void play() {
+        state = PLAYING;
+    }
+
+    @Override
+    public void pause() {
+        state = PAUSED;
+    }
+
+    @Override
+    public void resume() {
+        play();
+    }
+
+
+    @Override
+    public void stop() {
+        state = STOPED;
+    }
+
+    @Override
+    public void finish() {
+        state = FINISHED;
+    }
+
+    public abstract void seek(int seconds) throws Exception;
+
+    @Override
+    public void run() {
+        try {
+            byte[] audioBuffer = new byte[BUFFSIZE];
+            int read;
+            play();
+
+            while (!isFinished()) {
+                while (isPlaying()) {
+                    read = speakerAis.read(audioBuffer);
+                    trackLine.playAudio(audioBuffer);
+                    if (read == -1)
+                        finish();
+                }
+                if (isStoped()) {
+                    resetStream();
+                    while (isStoped()) {
+                    }
+                }
+
+                System.out.print("");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (UnsupportedAudioFileException e) {
+            e.printStackTrace();
+        }
     }
 
 }

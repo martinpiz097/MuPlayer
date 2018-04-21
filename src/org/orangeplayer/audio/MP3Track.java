@@ -15,7 +15,8 @@ public class MP3Track extends Track {
         trackLine.open();
     }
 
-    private void getAudioStream() throws IOException, UnsupportedAudioFileException {
+    @Override
+    protected void getAudioStream() throws IOException, UnsupportedAudioFileException {
         AudioInputStream soundAis = AudioSystem.getAudioInputStream(ftrack);
         AudioFormat baseFormat = soundAis.getFormat();
         System.out.println(baseFormat.getSampleRate());
@@ -31,89 +32,9 @@ public class MP3Track extends Track {
         speakerAis = AudioSystem.getAudioInputStream(decodedFormat, soundAis);
     }
 
-    private void resetStream() throws IOException, UnsupportedAudioFileException {
-        speakerAis.close();
-        getAudioStream();
-    }
-
-    @Override
-    public boolean isPlaying() {
-        return state == PLAYING;
-    }
-
-    @Override
-    public boolean isPaused() {
-        return state == PAUSED;
-    }
-
-    @Override
-    public boolean isStoped() {
-        return state == STOPED;
-    }
-
-    @Override
-    public boolean isFinished() {
-        return state == FINISHED;
-    }
-
-    @Override
-    public void play() {
-        state = PLAYING;
-    }
-
-    @Override
-    public void pause() {
-        state = PAUSED;
-    }
-
-    @Override
-    public void resume() {
-        play();
-    }
-
-
-    @Override
-    public void stop() {
-        state = STOPED;
-    }
-
-    @Override
-    public void finish() {
-        state = FINISHED;
-    }
-
     @Override
     public void seek(int seconds) {
         // Pendiente
-    }
-
-    @Override
-    public void run() {
-        try {
-            byte[] audioBuffer = new byte[BUFFSIZE];
-            int read;
-            play();
-
-            while (!isFinished()) {
-                while (isPlaying()) {
-                    read = speakerAis.read(audioBuffer);
-                    trackLine.playAudio(audioBuffer);
-                    if (read == -1)
-                        finish();
-                }
-                if (isStoped()) {
-                    resetStream();
-                    while (isStoped()) {
-                    }
-                }
-
-                System.out.print("");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (UnsupportedAudioFileException e) {
-            e.printStackTrace();
-        }
     }
 
     public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException, InterruptedException {

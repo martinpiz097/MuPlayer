@@ -13,9 +13,13 @@ public class Player extends Thread {
         this.rootFolder = rootFolder;
     }
 
+    private Track getTrack() {
+
+    }
+
     @Override
     public void run() {
-        
+
     }
 
 }
