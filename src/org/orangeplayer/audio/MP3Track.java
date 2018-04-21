@@ -1,18 +1,14 @@
 package org.orangeplayer.audio;
 
-import org.aucom.sound.Speaker;
-
 import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
 
 public class MP3Track extends Track {
 
-    public MP3Track(File ftrack) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
+    public MP3Track(File ftrack) throws IOException,
+            UnsupportedAudioFileException, LineUnavailableException {
         super(ftrack);
-        getAudioStream();
-        trackLine = new Speaker(speakerAis.getFormat());
-        trackLine.open();
     }
 
     @Override

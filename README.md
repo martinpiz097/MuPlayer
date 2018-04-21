@@ -8,3 +8,6 @@ Music player library.
 	- Falta añadir soporte para ogg y aac
 0.1.1 Beta
 	- Reestructuración de clase Track afectando a clases hijas
+0.2 Beta
+	- Añadido soporte para OGG
+	- Revisar errores de memoria

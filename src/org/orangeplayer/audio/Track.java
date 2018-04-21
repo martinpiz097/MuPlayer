@@ -2,6 +2,7 @@ package org.orangeplayer.audio;
 
 import org.aucom.sound.Speaker;
 import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
@@ -24,9 +25,13 @@ public abstract class Track implements Runnable {
     public static Track getTrack(){return null;}
 
 
-    public Track(File ftrack) {
+    public Track(File ftrack) throws IOException,
+            UnsupportedAudioFileException, LineUnavailableException {
         this.ftrack = ftrack;
         state = STOPED;
+        getAudioStream();
+        trackLine = new Speaker(speakerAis.getFormat());
+        trackLine.open();
     }
 
     public boolean isTrackFinished() throws IOException {
@@ -54,54 +59,45 @@ public abstract class Track implements Runnable {
             return "Unknown";
     }
 
-    protected abstract void getAudioStream() throws Exception;
+    protected abstract void getAudioStream() throws IOException,
+            UnsupportedAudioFileException, LineUnavailableException;
     protected void resetStream() throws Exception {
         speakerAis.close();
         getAudioStream();
     };
 
-    @Override
     public boolean isPlaying() {
         return state == PLAYING;
     }
 
-    @Override
     public boolean isPaused() {
         return state == PAUSED;
     }
 
-    @Override
     public boolean isStoped() {
         return state == STOPED;
     }
 
-    @Override
     public boolean isFinished() {
         return state == FINISHED;
     }
 
-    @Override
     public void play() {
         state = PLAYING;
     }
 
-    @Override
     public void pause() {
         state = PAUSED;
     }
 
-    @Override
     public void resume() {
         play();
     }
 
-
-    @Override
     public void stop() {
         state = STOPED;
     }
 
-    @Override
     public void finish() {
         state = FINISHED;
     }
@@ -133,6 +129,8 @@ public abstract class Track implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (UnsupportedAudioFileException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

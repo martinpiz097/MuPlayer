@@ -14,7 +14,7 @@ public class Player extends Thread {
     }
 
     private Track getTrack() {
-
+        return null;
     }
 
     @Override
