@@ -25,23 +25,51 @@ public abstract class Track implements Runnable {
 
     protected static int BUFFSIZE = 4096;
 
+
+    private static final String MPEG = ".mp3";
+    private static final String OGG = ".ogg";
+    private static final String AAC = ".aac";
+    private static final String FLAC = ".flac";
+    //private static final String M4A = ".m4a";
+
     public static Track getTrack(File fSound){
-        Track result;
+        Track result = null;
+        final String trackName = fSound.getName();
+
         try {
-            VorbisFile vorbisTest = new VorbisFile(fSound.getCanonicalPath());
-            result = new OGGTrack(fSound);
-        } catch (JOrbisException e) {
-            try {
+            if (trackName.endsWith(MPEG))
                 result = new MP3Track(fSound);
-            } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e1) {
-                //System.out.println(e.getMessage());
-                result = null;
+            else if (trackName.endsWith(OGG))
+                result = new OGGTrack(fSound);
+            else if (trackName.endsWith(FLAC))
+                result = new FlacTrack(fSound);
+            // Por si no tiene formato en el nombre
+            else {
+                try {
+                    VorbisFile vorbisTest = new VorbisFile(fSound.getCanonicalPath());
+                    result = new OGGTrack(fSound);
+                } catch (JOrbisException e) {
+                    try {
+                        result = new MP3Track(fSound);
+                    } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e1) {
+                        //System.out.println(e.getMessage());
+                        result = new FlacTrack(fSound);
+                        if (result.getSpeakerAis() == null)
+                            result = null;
+                    }
+                } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
+                    //System.out.println(e.getMessage());
+                    result = null;
+                }
             }
-        } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
-            //System.out.println(e.getMessage());
-            result = null;
+        } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
+            e.printStackTrace();
         }
         return result;
+    }
+
+    public static Track getTrack(String trackPath) {
+        return getTrack(new File(trackPath));
     }
 
     public static boolean isValidTrack(File fTrack) {
@@ -51,7 +79,7 @@ public abstract class Track implements Runnable {
 
     protected Track(File ftrack) throws IOException,
             UnsupportedAudioFileException, LineUnavailableException {
-        System.out.println("Track: "+ftrack.getPath());
+        System.out.println("File: "+ftrack.getPath());
         this.ftrack = ftrack;
         state = STOPED;
         getAudioStream();
@@ -68,6 +96,10 @@ public abstract class Track implements Runnable {
 
     public boolean isTrackFinished() throws IOException {
         return speakerAis.read() == -1;
+    }
+
+    protected AudioInputStream getSpeakerAis() {
+        return speakerAis;
     }
 
     public File getTrackFile() {
@@ -136,6 +168,10 @@ public abstract class Track implements Runnable {
 
     public abstract void seek(int seconds) throws Exception;
 
+    public void setGain(float volume) {
+        trackLine.setGain(volume);
+    }
+
     @Override
     public void run() {
         try {
@@ -146,9 +182,12 @@ public abstract class Track implements Runnable {
             while (!isFinished()) {
                 while (isPlaying()) {
                     read = speakerAis.read(audioBuffer);
-                    trackLine.playAudio(audioBuffer);
-                    if (read == -1)
+                    if (read == -1) {
                         finish();
+                        System.out.println("Track finished");
+                        break;
+                    }
+                    trackLine.playAudio(audioBuffer);
                 }
                 if (isStoped()) {
                     resetStream();

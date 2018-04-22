@@ -1,7 +1,7 @@
 package org.orangeplayer.audio;
 
 import com.jcraft.jorbis.JOrbisException;
-import com.jcraft.jorbis.VorbisFile;
+import org.tritonus.sampled.file.jorbis.JorbisAudioFileReader;
 
 import javax.sound.sampled.*;
 import java.io.File;
@@ -20,22 +20,29 @@ public class OGGTrack extends Track {
 
     @Override
     protected void getAudioStream() throws IOException, UnsupportedAudioFileException {
-        AudioInputStream soundAis = AudioSystem.getAudioInputStream(ftrack);
+        JorbisAudioFileReader reader = new JorbisAudioFileReader();
+        AudioInputStream soundAis = reader.getAudioInputStream(ftrack);
         speakerAis = AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, soundAis);
     }
 
     @Override
     public void seek(int seconds) throws Exception {
-
+        // Testing skip bytes
+        try {
+            speakerAis.skip(seconds);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
 
     public static void main(String[] args) throws
             InterruptedException, UnsupportedAudioFileException,
             IOException, LineUnavailableException, JOrbisException {
-        File mp3 = new File("/home/martin/AudioTesting/audio/au.mp3");
-        File ogg = new File("/home/martin/AudioTesting/audio/sound.ogg");
-        VorbisFile file1 = new VorbisFile(mp3.getCanonicalPath());
-        VorbisFile file2 = new VorbisFile(ogg.getCanonicalPath());
+        File sound = new File("/home/martin/AudioTesting/audio/sound.ogg");
+        Track track = new OGGTrack(sound);
+        Thread tTrack = new Thread(track);
+        tTrack.start();
     }
 
 

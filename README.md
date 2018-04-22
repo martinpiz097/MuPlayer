@@ -16,3 +16,9 @@ Music player library.
 	- Errores de memoria revisados
 	- Reproduccion eficiente y rapida
 	- Validacion de tipo de archivo al leer
+
+0.3 Beta
+	- Añadido soporte flac
+	- Se debe verificar que sucede cuando leo un archivo con x formato que termina en y formato en su nombre
+	- Falta corregir soporte AAC
+	

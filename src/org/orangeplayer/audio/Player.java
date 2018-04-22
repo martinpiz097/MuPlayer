@@ -21,6 +21,7 @@ public class Player extends Thread implements MusicControls {
         trackIndex = 0;
         System.out.println("Loading Tracks.....");
         loadTracks(rootFolder);
+        sortTracks();
         System.out.println("Tracks Loaded!");
     }
 
@@ -48,6 +49,13 @@ public class Player extends Thread implements MusicControls {
         }
     }
 
+    // Agregar opcion para ordenar
+
+    private void sortTracks() {
+        //listSoundFiles.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
+        listSoundFiles.sort((o1, o2) -> o2.getName().compareTo(o1.getName()));
+    }
+
     private Track getTrack(int index) {
         Track next = null;
         if (index == listSoundFiles.size())
@@ -66,7 +74,7 @@ public class Player extends Thread implements MusicControls {
 
     private Track getTrackPrev(int index) {
         Track next = null;
-        index--;
+        index-=2;
 
         if (index == -1)
             index = listSoundFiles.size()-1;
@@ -163,11 +171,32 @@ public class Player extends Thread implements MusicControls {
     }
 
     @Override
+    public void setGain(float volume) {
+        if (current != null)
+            current.setGain(volume);
+    }
+
+    @Override
+    public void seek(int bytes) {
+        if (current != null) {
+            try {
+                current.seek(bytes);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
     public void run() {
         while (true) {
             playNext();
-            while (!current.isFinished()){}
+            System.out.println(current.isFinished());
+            while (!current.isFinished());
+            System.out.println(current.isFinished());
+            System.out.println("------------------");
         }
+
     }
 
     public static void main(String[] args) throws IOException {
@@ -176,25 +205,35 @@ public class Player extends Thread implements MusicControls {
         Scanner scan = new Scanner(System.in);
 
         char c;
+        String line;
 
         while (true) {
-            c = scan.nextLine().charAt(0);
-            switch (c) {
-                case 'n':
-                    player.playNext();
-                    break;
-                case 'p':
-                    player.playPrevious();
-                    break;
-                case 's':
-                    player.stopTrack();
-                    break;
-                case 'r':
-                    player.resumeTrack();
-                    break;
-                case 'm':
-                    player.pause();
-                    break;
+            try {
+                line = scan.nextLine();
+                c = line.charAt(0);
+                switch (c) {
+                    case 'n':
+                        player.playNext();
+                        break;
+                    case 'p':
+                        player.playPrevious();
+                        break;
+                    case 's':
+                        player.stopTrack();
+                        break;
+                    case 'r':
+                        player.resumeTrack();
+                        break;
+                    case 'm':
+                        player.pause();
+                        break;
+                    case 'v':
+                        player.setGain(Float.parseFloat(line.split(" ")[1]));
+                    case 'k':
+                        player.seek(Integer.parseInt(line.split(" ")[1]));
+                }
+            }catch(Exception e) {
+
             }
         }
 
