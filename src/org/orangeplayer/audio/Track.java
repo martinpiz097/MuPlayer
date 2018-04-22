@@ -1,6 +1,9 @@
 package org.orangeplayer.audio;
 
+import com.jcraft.jorbis.JOrbisException;
+import com.jcraft.jorbis.VorbisFile;
 import org.aucom.sound.Speaker;
+
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -22,17 +25,46 @@ public abstract class Track implements Runnable {
 
     protected static int BUFFSIZE = 4096;
 
-    public static Track getTrack(){return null;}
+    public static Track getTrack(File fSound){
+        Track result;
+        try {
+            VorbisFile vorbisTest = new VorbisFile(fSound.getCanonicalPath());
+            result = new OGGTrack(fSound);
+        } catch (JOrbisException e) {
+            try {
+                result = new MP3Track(fSound);
+            } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e1) {
+                //System.out.println(e.getMessage());
+                result = null;
+            }
+        } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
+            //System.out.println(e.getMessage());
+            result = null;
+        }
+        return result;
+    }
+
+    public static boolean isValidTrack(File fTrack) {
+        return getTrack(fTrack) != null;
+    }
 
 
-    public Track(File ftrack) throws IOException,
+    protected Track(File ftrack) throws IOException,
             UnsupportedAudioFileException, LineUnavailableException {
+        System.out.println("Track: "+ftrack.getPath());
         this.ftrack = ftrack;
         state = STOPED;
         getAudioStream();
         trackLine = new Speaker(speakerAis.getFormat());
         trackLine.open();
+
     }
+
+    protected Track(String trackPath)
+            throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        this(new File(trackPath));
+    }
+
 
     public boolean isTrackFinished() throws IOException {
         return speakerAis.read() == -1;

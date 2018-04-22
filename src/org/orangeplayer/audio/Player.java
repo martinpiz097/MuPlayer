@@ -1,24 +1,202 @@
 package org.orangeplayer.audio;
 
-import java.io.File;
+import org.orangeplayer.audio.org.orangeplayer.audio.interfaces.MusicControls;
 
-public class Player extends Thread {
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class Player extends Thread implements MusicControls {
     private File rootFolder;
-    //private LinkedList<Track> listTracks;
+    private Track current;
+    private ArrayList<File> listSoundFiles;
+
+    private int trackIndex;
 
     // No se usara lista para ahorrar ram
-
-
     public Player(File rootFolder) {
         this.rootFolder = rootFolder;
+        listSoundFiles = new ArrayList<>();
+        trackIndex = 0;
+        System.out.println("Loading Tracks.....");
+        loadTracks(rootFolder);
+        System.out.println("Tracks Loaded!");
     }
 
-    private Track getTrack() {
-        return null;
+    public Player(String folderPath) {
+        this(new File(folderPath));
+    }
+
+    // Ver la opcion mas adelante de guardar solo
+    // las rutas para ahorrar ram
+
+    // no se revisaran si los archivos son sonidos por
+    // ahora porque se piensa en reducir tiempos de carga
+    // haciendo de la revision en tiempo de ejecucion
+
+    private void loadTracks(File folder) {
+        File[] fldFiles = folder.listFiles();
+        File f;
+        if (fldFiles != null)
+            for (int i = 0; i < fldFiles.length; i++) {
+                f = fldFiles[i];
+                if (f.isDirectory())
+                    loadTracks(f);
+                else
+                    listSoundFiles.add(f);
+        }
+    }
+
+    private Track getTrack(int index) {
+        Track next = null;
+        if (index == listSoundFiles.size())
+            index = 0;
+        for (int i = index; i < listSoundFiles.size(); i++) {
+            next = Track.getTrack(listSoundFiles.get(i));
+            if (next != null) {
+                // El proximo indice a revisar sera el siguiente
+                // para no devolverse tanto
+                trackIndex = i+1;
+                break;
+            }
+        }
+        return next;
+    }
+
+    private Track getTrackPrev(int index) {
+        Track next = null;
+        index--;
+
+        if (index == -1)
+            index = listSoundFiles.size()-1;
+        // Revisar for para despues unir en el otro metodo
+        for (int i = index; i >= 0; i--) {
+            next = Track.getTrack(listSoundFiles.get(i));
+            if (next != null) {
+                // El proximo indice a revisar sera el siguiente
+                // para no devolverse tanto
+                trackIndex = i+1;
+                break;
+            }
+        }
+        return next;
+    }
+
+
+    private Track getNextTrack() {
+        return getTrack(trackIndex);
+    }
+
+    private Track getPreviousTrack() {
+        return getTrackPrev(trackIndex);
+    }
+
+    public void playNext() {
+        if (current != null && !current.isFinished())
+            current.finish();
+        current = getNextTrack();
+        new Thread(current).start();
+        current.play();
+    }
+
+    public void playPrevious() {
+        if (current != null && !current.isFinished())
+            current.finish();
+        current = getPreviousTrack();
+        new Thread(current).start();
+        current.play();
+    }
+
+    public Track getCurrent() {
+        return current;
+    }
+
+    @Override
+    public boolean isPlaying() {
+        return current == null ? false : current.isPlaying();
+    }
+
+
+    @Override
+    public boolean isPaused() {
+        return current == null ? false : current.isPaused();
+    }
+
+    @Override
+    public boolean isStoped() {
+        return current == null ? false : current.isStoped();
+    }
+
+    @Override
+    public boolean isFinished() {
+        return current == null ? false : current.isFinished();
+    }
+
+    public void play() {
+        if (current != null)
+            current.play();
+    }
+
+    @Override
+    public void pause() {
+        if (current != null)
+            current.pause();
+    }
+
+    @Override
+    public void resumeTrack() {
+        if (current != null)
+            current.resume();
+    }
+
+    @Override
+    public void stopTrack() {
+        if (current != null)
+            current.stop();
+    }
+
+    @Override
+    public void finish() {
+        if (current != null)
+            current.finish();
     }
 
     @Override
     public void run() {
+        while (true) {
+            playNext();
+            while (!current.isFinished()){}
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        Player player = new Player("/home/martin/AudioTesting/music/");
+        player.start();
+        Scanner scan = new Scanner(System.in);
+
+        char c;
+
+        while (true) {
+            c = scan.nextLine().charAt(0);
+            switch (c) {
+                case 'n':
+                    player.playNext();
+                    break;
+                case 'p':
+                    player.playPrevious();
+                    break;
+                case 's':
+                    player.stopTrack();
+                    break;
+                case 'r':
+                    player.resumeTrack();
+                    break;
+                case 'm':
+                    player.pause();
+                    break;
+            }
+        }
 
     }
 

@@ -11,6 +11,11 @@ public class MP3Track extends Track {
         super(ftrack);
     }
 
+    public MP3Track(String trackPath)
+            throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        super(trackPath);
+    }
+
     @Override
     protected void getAudioStream() throws IOException, UnsupportedAudioFileException {
         AudioInputStream soundAis = AudioSystem.getAudioInputStream(ftrack);
@@ -38,10 +43,10 @@ public class MP3Track extends Track {
         MP3Track track = new MP3Track(sound);
         Thread tTrack = new Thread(track);
         tTrack.start();
-        Thread.sleep(3000);
-        track.pause();
-        Thread.sleep(3000);
-        track.resume();
+        //Thread.sleep(3000);
+        //track.pause();
+        //Thread.sleep(3000);
+        //track.resume();
     }
 
 

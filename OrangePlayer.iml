@@ -10,7 +10,13 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../NetBeansProjects/AuCom/dist/AuCom.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../javaLibs/Music/tritonus-share-0.3.7-2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../javaLibs/Music/jorbis-0.0.15.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../javaLibs/Music/jogg-0.0.7.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../javaLibs/Music/commons-logging-api.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../javaLibs/tritonus_jorbis-0.3.6.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../javaLibs/Music/jl1.0.1.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../javaLibs/Music/mp3spi1.9.5.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -19,13 +25,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../javaLibs/Music/tritonus-share-0.3.7-2.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../../javaLibs/Music/jorbis-0.0.15.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../../javaLibs/Music/jogg-0.0.7.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../../javaLibs/Music/commons-logging-api.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../../javaLibs/tritonus_jorbis-0.3.6.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../../javaLibs/Music/jl1.0.1.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../../javaLibs/Music/mp3spi1.9.5.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../NetBeansProjects/AuCom/dist/AuCom.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

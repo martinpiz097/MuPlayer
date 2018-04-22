@@ -11,3 +11,8 @@ Music player library.
 0.2 Beta
 	- Añadido soporte para OGG
 	- Revisar errores de memoria
+0.2.1 Beta
+	- Construida la clase Player
+	- Errores de memoria revisados
+	- Reproduccion eficiente y rapida
+	- Validacion de tipo de archivo al leer
