@@ -56,6 +56,7 @@ public abstract class Track implements Runnable {
                         result = new FlacTrack(fSound);
                         if (result.getSpeakerAis() == null)
                             result = null;
+                        System.out.println("SpeakerAis: "+result.getSpeakerAis());
                     }
                 } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
                     //System.out.println(e.getMessage());
@@ -83,8 +84,10 @@ public abstract class Track implements Runnable {
         this.ftrack = ftrack;
         state = STOPED;
         getAudioStream();
-        trackLine = new Speaker(speakerAis.getFormat());
-        trackLine.open();
+        if (speakerAis != null) {
+            trackLine = new Speaker(speakerAis.getFormat());
+            trackLine.open();
+        }
 
     }
 
@@ -125,24 +128,25 @@ public abstract class Track implements Runnable {
 
     protected abstract void getAudioStream() throws IOException,
             UnsupportedAudioFileException, LineUnavailableException;
-    protected void resetStream() throws Exception {
+    protected void resetStream()
+            throws IOException, LineUnavailableException, UnsupportedAudioFileException {
         speakerAis.close();
         getAudioStream();
     };
 
-    public boolean isPlaying() {
+    public synchronized boolean isPlaying() {
         return state == PLAYING;
     }
 
-    public boolean isPaused() {
+    public synchronized boolean isPaused() {
         return state == PAUSED;
     }
 
-    public boolean isStoped() {
+    public synchronized boolean isStoped() {
         return state == STOPED;
     }
 
-    public boolean isFinished() {
+    public synchronized boolean isFinished() {
         return state == FINISHED;
     }
 
@@ -164,13 +168,19 @@ public abstract class Track implements Runnable {
 
     public void finish() {
         state = FINISHED;
+        trackLine.stop();
+        trackLine.close();
+        trackLine = null;
     }
 
     public abstract void seek(int seconds) throws Exception;
 
+    // -80 to 6
     public void setGain(float volume) {
-        trackLine.setGain(volume);
+        float vol = (float) (-80.0+(0.86*volume));
+        trackLine.setGain(vol);
     }
+
 
     @Override
     public void run() {
@@ -178,6 +188,9 @@ public abstract class Track implements Runnable {
             byte[] audioBuffer = new byte[BUFFSIZE];
             int read;
             play();
+
+            // For testing
+            //speakerAis.skip(8000000);
 
             while (!isFinished()) {
                 while (isPlaying()) {
@@ -197,11 +210,8 @@ public abstract class Track implements Runnable {
 
                 System.out.print("");
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (UnsupportedAudioFileException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
+            System.out.println("Track completed!");
+        } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
             e.printStackTrace();
         }
     }

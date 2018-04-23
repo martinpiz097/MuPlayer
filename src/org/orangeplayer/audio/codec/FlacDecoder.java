@@ -47,12 +47,14 @@ public class FlacDecoder implements PCMProcessor {
             flacInfo = decoder.getStreamInfo();
 
         }catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
 
         AudioFormat outFormat = new AudioFormat(flacInfo.getSampleRate(), flacInfo.getBitsPerSample(),
                 flacInfo.getChannels(), true, false);
 
+        // La otra opcion para no tener que usar tanta ram
+        // seria escribir los datos en un archivo y despues ir leyendolo para al final borrarlo
         decodedAis = new AudioInputStream(bais, outFormat, dataLen);
     }
 

@@ -10,14 +10,14 @@ import java.util.Scanner;
 public class Player extends Thread implements MusicControls {
     private File rootFolder;
     private Track current;
-    private ArrayList<File> listSoundFiles;
+    private Thread currentThread;
+    private ArrayList<String> listSoundPaths;
 
     private int trackIndex;
 
-    // No se usara lista para ahorrar ram
     public Player(File rootFolder) {
         this.rootFolder = rootFolder;
-        listSoundFiles = new ArrayList<>();
+        listSoundPaths = new ArrayList<>();
         trackIndex = 0;
         System.out.println("Loading Tracks.....");
         loadTracks(rootFolder);
@@ -28,9 +28,6 @@ public class Player extends Thread implements MusicControls {
     public Player(String folderPath) {
         this(new File(folderPath));
     }
-
-    // Ver la opcion mas adelante de guardar solo
-    // las rutas para ahorrar ram
 
     // no se revisaran si los archivos son sonidos por
     // ahora porque se piensa en reducir tiempos de carga
@@ -45,23 +42,23 @@ public class Player extends Thread implements MusicControls {
                 if (f.isDirectory())
                     loadTracks(f);
                 else
-                    listSoundFiles.add(f);
+                    listSoundPaths.add(f.getPath());
         }
     }
 
     // Agregar opcion para ordenar
 
     private void sortTracks() {
-        //listSoundFiles.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
-        listSoundFiles.sort((o1, o2) -> o2.getName().compareTo(o1.getName()));
+        //listSoundPaths.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
+        listSoundPaths.sort((o1, o2) -> o2.compareTo(o1));
     }
 
     private Track getTrack(int index) {
         Track next = null;
-        if (index == listSoundFiles.size())
+        if (index == listSoundPaths.size())
             index = 0;
-        for (int i = index; i < listSoundFiles.size(); i++) {
-            next = Track.getTrack(listSoundFiles.get(i));
+        for (int i = index; i < listSoundPaths.size(); i++) {
+            next = Track.getTrack(listSoundPaths.get(i));
             if (next != null) {
                 // El proximo indice a revisar sera el siguiente
                 // para no devolverse tanto
@@ -77,10 +74,10 @@ public class Player extends Thread implements MusicControls {
         index-=2;
 
         if (index == -1)
-            index = listSoundFiles.size()-1;
+            index = listSoundPaths.size()-1;
         // Revisar for para despues unir en el otro metodo
         for (int i = index; i >= 0; i--) {
-            next = Track.getTrack(listSoundFiles.get(i));
+            next = Track.getTrack(listSoundPaths.get(i));
             if (next != null) {
                 // El proximo indice a revisar sera el siguiente
                 // para no devolverse tanto
@@ -101,16 +98,22 @@ public class Player extends Thread implements MusicControls {
     }
 
     public void playNext() {
-        if (current != null && !current.isFinished())
+        if (current != null) {
             current.finish();
+            if (currentThread != null) {
+                currentThread.stop();
+                currentThread = null;
+            }
+        }
         current = getNextTrack();
-        new Thread(current).start();
-        current.play();
+        currentThread = new Thread(current);
+        currentThread.start();
     }
 
     public void playPrevious() {
-        if (current != null && !current.isFinished())
+        if (current != null && !current.isFinished()) {
             current.finish();
+        }
         current = getPreviousTrack();
         new Thread(current).start();
         current.play();
@@ -141,6 +144,7 @@ public class Player extends Thread implements MusicControls {
         return current == null ? false : current.isFinished();
     }
 
+    @Override
     public void play() {
         if (current != null)
             current.play();
@@ -192,7 +196,7 @@ public class Player extends Thread implements MusicControls {
         while (true) {
             playNext();
             System.out.println(current.isFinished());
-            while (!current.isFinished());
+            while (!current.isFinished()){}
             System.out.println(current.isFinished());
             System.out.println("------------------");
         }

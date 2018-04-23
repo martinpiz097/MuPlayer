@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class FlacTrack extends Track {
+    
     protected FlacTrack(File ftrack)
             throws IOException, UnsupportedAudioFileException, LineUnavailableException {
         super(ftrack);
@@ -24,6 +25,7 @@ public class FlacTrack extends Track {
         decoder.decode(ftrack);
         speakerAis = decoder.getDecodedStream();
         decoder = null;
+        System.out.println("FlacAis: "+speakerAis);
     }
 
     @Override
