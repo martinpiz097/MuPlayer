@@ -89,6 +89,7 @@ public class Player extends Thread implements MusicControls {
     }
 
 
+
     private Track getNextTrack() {
         return getTrack(trackIndex);
     }
@@ -97,26 +98,36 @@ public class Player extends Thread implements MusicControls {
         return getTrackPrev(trackIndex);
     }
 
-    public void playNext() {
+    private void finishCurrent(Track current) {
         if (current != null) {
-            current.finish();
-            if (currentThread != null) {
-                currentThread.stop();
+            if (!current.isFinished())
+                current.finish();
+            /*if (currentThread != null) {
+                currentThread.interrupt();
                 currentThread = null;
-            }
+            }*/
         }
-        current = getNextTrack();
+    }
+
+    private void startNewThread() {
         currentThread = new Thread(current);
+        currentThread.setName("ThreadTrack: "+current.getTrackFile().getName().substring(0, 10));
         currentThread.start();
     }
 
+
+    public void playNext() {
+        Track cur = current;
+        current = getNextTrack();
+        finishCurrent(cur);
+        startNewThread();
+    }
+
     public void playPrevious() {
-        if (current != null && !current.isFinished()) {
-            current.finish();
-        }
+        Track cur = current;
         current = getPreviousTrack();
-        new Thread(current).start();
-        current.play();
+        finishCurrent(cur);
+        startNewThread();
     }
 
     public Track getCurrent() {
@@ -193,12 +204,14 @@ public class Player extends Thread implements MusicControls {
 
     @Override
     public void run() {
+        playNext();
         while (true) {
-            playNext();
-            System.out.println(current.isFinished());
-            while (!current.isFinished()){}
-            System.out.println(current.isFinished());
-            System.out.println("------------------");
+            if (current.isFinished()) {
+                playNext();
+                System.out.println("PlayNext");
+            }
+            //System.out.println(current.isFinished());
+            //System.out.println("------------------");
         }
 
     }

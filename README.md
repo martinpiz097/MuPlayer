@@ -25,3 +25,5 @@ Music player library.
 # 0.3.1 Beta
 	## Lista de archivos sustituida por lista de rutas para optimizacion de memoria.
 	## Añadido soporte para cambiar volumen de 0 a 100	
+# 0.3.2 Beta
+	## Error en playNext() y playPrevious() corregido

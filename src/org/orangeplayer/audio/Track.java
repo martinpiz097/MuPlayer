@@ -11,19 +11,19 @@ import java.io.File;
 import java.io.IOException;
 
 public abstract class Track implements Runnable {
-    protected File ftrack;
+    protected final File ftrack;
     protected Speaker trackLine;
     protected AudioInputStream speakerAis;
     protected byte state;
 
     // states
-    public static byte PLAYING = 1;
-    public static byte PAUSED = 2;
-    public static byte STOPED = 3;
-    public static byte SEEKED = 4;
-    public static byte FINISHED = 5;
+    public static final byte PLAYING = 1;
+    public static final byte PAUSED = 2;
+    public static final byte STOPED = 3;
+    public static final byte SEEKED = 4;
+    public static final byte FINISHED = 5;
 
-    protected static int BUFFSIZE = 4096;
+    protected static final int BUFFSIZE = 4096;
 
 
     private static final String MPEG = ".mp3";
@@ -134,6 +134,12 @@ public abstract class Track implements Runnable {
         getAudioStream();
     };
 
+    protected void closeLine() {
+        trackLine.stop();
+        trackLine.close();
+        trackLine = null;
+    }
+
     public synchronized boolean isPlaying() {
         return state == PLAYING;
     }
@@ -168,9 +174,7 @@ public abstract class Track implements Runnable {
 
     public void finish() {
         state = FINISHED;
-        trackLine.stop();
-        trackLine.close();
-        trackLine = null;
+        closeLine();
     }
 
     public abstract void seek(int seconds) throws Exception;
@@ -194,13 +198,19 @@ public abstract class Track implements Runnable {
 
             while (!isFinished()) {
                 while (isPlaying()) {
-                    read = speakerAis.read(audioBuffer);
-                    if (read == -1) {
+                    try {
+                        read = speakerAis.read(audioBuffer);
+                        if (read == -1) {
+                            finish();
+                            System.out.println("Track finished");
+                            break;
+                        }
+                        trackLine.playAudio(audioBuffer);
+                    }catch (IndexOutOfBoundsException e1) {
                         finish();
                         System.out.println("Track finished");
                         break;
                     }
-                    trackLine.playAudio(audioBuffer);
                 }
                 if (isStoped()) {
                     resetStream();
@@ -211,6 +221,7 @@ public abstract class Track implements Runnable {
                 System.out.print("");
             }
             System.out.println("Track completed!");
+
         } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
             e.printStackTrace();
         }
