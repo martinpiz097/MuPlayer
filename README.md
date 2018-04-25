@@ -27,3 +27,10 @@ Music player library.
 	## Añadido soporte para cambiar volumen de 0 a 100	
 # 0.3.2 Beta
 	## Error en playNext() y playPrevious() corregido
+# 0.3.3 Beta
+	## Ahora se puede apagar el reproductor mediante un metodo propio de la clase
+	## Habilitada la opcion para obtener informacion de la cancion
+# 0.3.3-1 Beta
+    ## Se mantiene el mismo volumen en la cancion siguiente una vez este haya sido modificado externamente
+    
+	

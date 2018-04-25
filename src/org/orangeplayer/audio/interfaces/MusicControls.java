@@ -1,4 +1,4 @@
-package org.orangeplayer.audio.org.orangeplayer.audio.interfaces;
+package org.orangeplayer.audio.interfaces;
 
 public interface MusicControls {
     public boolean isPlaying() throws Exception;

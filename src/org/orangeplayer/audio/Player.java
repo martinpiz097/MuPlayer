@@ -1,6 +1,6 @@
 package org.orangeplayer.audio;
 
-import org.orangeplayer.audio.org.orangeplayer.audio.interfaces.MusicControls;
+import org.orangeplayer.audio.interfaces.MusicControls;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +14,9 @@ public class Player extends Thread implements MusicControls {
     private ArrayList<String> listSoundPaths;
 
     private int trackIndex;
+    private boolean on;
+
+    private float currentVolume;
 
     public Player(File rootFolder) {
         this.rootFolder = rootFolder;
@@ -23,11 +26,14 @@ public class Player extends Thread implements MusicControls {
         loadTracks(rootFolder);
         sortTracks();
         System.out.println("Tracks Loaded!");
+        on = false;
     }
 
     public Player(String folderPath) {
         this(new File(folderPath));
     }
+
+    // Problema con ogg al leer info archivo
 
     // no se revisaran si los archivos son sonidos por
     // ahora porque se piensa en reducir tiempos de carga
@@ -49,8 +55,8 @@ public class Player extends Thread implements MusicControls {
     // Agregar opcion para ordenar
 
     private void sortTracks() {
-        //listSoundPaths.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
-        listSoundPaths.sort((o1, o2) -> o2.compareTo(o1));
+        listSoundPaths.sort((o1, o2) -> o1.compareTo(o2));
+        //listSoundPaths.sort((o1, o2) -> o2.compareTo(o1));
     }
 
     private Track getTrack(int index) {
@@ -112,15 +118,16 @@ public class Player extends Thread implements MusicControls {
     private void startNewThread() {
         currentThread = new Thread(current);
         currentThread.setName("ThreadTrack: "+current.getTrackFile().getName().substring(0, 10));
+        current.setGain(currentVolume);
         currentThread.start();
     }
-
 
     public void playNext() {
         Track cur = current;
         current = getNextTrack();
         finishCurrent(cur);
         startNewThread();
+        System.out.println(current.getInfoSong());
     }
 
     public void playPrevious() {
@@ -128,6 +135,7 @@ public class Player extends Thread implements MusicControls {
         current = getPreviousTrack();
         finishCurrent(cur);
         startNewThread();
+        System.out.println(current.getInfoSong());
     }
 
     public Track getCurrent() {
@@ -170,13 +178,13 @@ public class Player extends Thread implements MusicControls {
     @Override
     public void resumeTrack() {
         if (current != null)
-            current.resume();
+            current.resumeTrack();
     }
 
     @Override
     public void stopTrack() {
         if (current != null)
-            current.stop();
+            current.stopTrack();
     }
 
     @Override
@@ -185,10 +193,13 @@ public class Player extends Thread implements MusicControls {
             current.finish();
     }
 
+    // 0-100
     @Override
     public void setGain(float volume) {
-        if (current != null)
+        if (current != null) {
             current.setGain(volume);
+            currentVolume = volume;
+        }
     }
 
     @Override
@@ -204,16 +215,23 @@ public class Player extends Thread implements MusicControls {
 
     @Override
     public void run() {
+        on = true;
         playNext();
-        while (true) {
+        while (on) {
             if (current.isFinished()) {
                 playNext();
-                System.out.println("PlayNext");
+                //System.out.println("PlayNext");
             }
             //System.out.println(current.isFinished());
             //System.out.println("------------------");
         }
+        System.out.print("");
+    }
 
+    public void shutdown() {
+        on = false;
+        if (current != null)
+            current.finish();
     }
 
     public static void main(String[] args) throws IOException {
@@ -224,7 +242,9 @@ public class Player extends Thread implements MusicControls {
         char c;
         String line;
 
-        while (true) {
+        boolean on = true;
+
+        while (on) {
             try {
                 line = scan.nextLine();
                 c = line.charAt(0);
@@ -246,8 +266,14 @@ public class Player extends Thread implements MusicControls {
                         break;
                     case 'v':
                         player.setGain(Float.parseFloat(line.split(" ")[1]));
+                        break;
                     case 'k':
                         player.seek(Integer.parseInt(line.split(" ")[1]));
+                        break;
+                    case 'e':
+                        on = false;
+                        player.shutdown();
+                        break;
                 }
             }catch(Exception e) {
 

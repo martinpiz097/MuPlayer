@@ -1,6 +1,6 @@
-package org.orangeplayer.audio;
+package org.orangeplayer.audio.trackstypes;
 
-import com.jcraft.jorbis.JOrbisException;
+import org.orangeplayer.audio.Track;
 import org.tritonus.sampled.file.jorbis.JorbisAudioFileReader;
 
 import javax.sound.sampled.*;
@@ -20,8 +20,8 @@ public class OGGTrack extends Track {
 
     @Override
     protected void getAudioStream() throws IOException, UnsupportedAudioFileException {
-        JorbisAudioFileReader reader = new JorbisAudioFileReader();
-        AudioInputStream soundAis = reader.getAudioInputStream(ftrack);
+        audioReader = new JorbisAudioFileReader();
+        AudioInputStream soundAis = audioReader.getAudioInputStream(ftrack);
         speakerAis = AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, soundAis);
     }
 
@@ -35,10 +35,7 @@ public class OGGTrack extends Track {
         }
     }
 
-
-    public static void main(String[] args) throws
-            InterruptedException, UnsupportedAudioFileException,
-            IOException, LineUnavailableException, JOrbisException {
+    public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         File sound = new File("/home/martin/AudioTesting/audio/sound.ogg");
         Track track = new OGGTrack(sound);
         Thread tTrack = new Thread(track);

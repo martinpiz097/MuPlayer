@@ -1,6 +1,7 @@
-package org.orangeplayer.audio;
+package org.orangeplayer.audio.trackstypes;
 
 import javazoom.spi.mpeg.sampled.file.MpegAudioFileReader;
+import org.orangeplayer.audio.Track;
 
 import javax.sound.sampled.*;
 import java.io.File;
@@ -20,8 +21,8 @@ public class MP3Track extends Track {
 
     @Override
     protected void getAudioStream() throws IOException, UnsupportedAudioFileException {
-        MpegAudioFileReader reader = new MpegAudioFileReader();
-        AudioInputStream soundAis = reader.getAudioInputStream(ftrack);
+        audioReader = new MpegAudioFileReader();
+        AudioInputStream soundAis = audioReader.getAudioInputStream(ftrack);
         AudioFormat baseFormat = soundAis.getFormat();
         System.out.println(baseFormat.getSampleRate());
         System.out.println(baseFormat.getFrameRate());
@@ -47,7 +48,7 @@ public class MP3Track extends Track {
     }
 
     // Libreria AAC genera problemas con archivos mp3 y ogg
-    public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException, InterruptedException {
+    public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         File sound = new File("/home/martin/AudioTesting/audio/au.mp3");
         //System.out.println(new MpegAudioFileReader().getAudioFileFormat(sound).getType().toString());
         //System.out.println(new JorbisAudioFileReader().getAudioFileFormat(sound).getType().toString());

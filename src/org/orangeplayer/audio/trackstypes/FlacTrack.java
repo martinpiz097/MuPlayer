@@ -1,5 +1,7 @@
-package org.orangeplayer.audio;
+package org.orangeplayer.audio.trackstypes;
 
+import org.kc7bfi.jflac.sound.spi.FlacAudioFileReader;
+import org.orangeplayer.audio.Track;
 import org.orangeplayer.audio.codec.FlacDecoder;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -9,18 +11,19 @@ import java.io.IOException;
 
 public class FlacTrack extends Track {
     
-    protected FlacTrack(File ftrack)
+    public FlacTrack(File ftrack)
             throws IOException, UnsupportedAudioFileException, LineUnavailableException {
         super(ftrack);
     }
 
-    protected FlacTrack(String trackPath)
+    public FlacTrack(String trackPath)
             throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         super(trackPath);
     }
 
     @Override
     protected void getAudioStream() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
+        audioReader = new FlacAudioFileReader();
         FlacDecoder decoder = new FlacDecoder();
         decoder.decode(ftrack);
         speakerAis = decoder.getDecodedStream();
@@ -38,7 +41,7 @@ public class FlacTrack extends Track {
         }
     }
 
-    public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    public static void main(String[] args) {
         FlacTrack track = (FlacTrack) Track.getTrack(
                 "/home/martin/AudioTesting/audio/flac.flac");
         new Thread(track).start();

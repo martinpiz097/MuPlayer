@@ -3,34 +3,28 @@ package org.orangeplayer.audio;
 import com.jcraft.jorbis.JOrbisException;
 import com.jcraft.jorbis.VorbisFile;
 import org.aucom.sound.Speaker;
+import org.orangeplayer.audio.interfaces.MusicControls;
+import org.orangeplayer.audio.trackstypes.FlacTrack;
+import org.orangeplayer.audio.trackstypes.MP3Track;
+import org.orangeplayer.audio.trackstypes.OGGTrack;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.*;
+import javax.sound.sampled.spi.AudioFileReader;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
-public abstract class Track implements Runnable {
+import static org.orangeplayer.audio.TrackFormat.*;
+import static org.orangeplayer.audio.TrackState.*;
+
+public abstract class Track implements Runnable, MusicControls {
     protected final File ftrack;
     protected Speaker trackLine;
     protected AudioInputStream speakerAis;
+    protected AudioFileReader audioReader;
     protected byte state;
 
-    // states
-    public static final byte PLAYING = 1;
-    public static final byte PAUSED = 2;
-    public static final byte STOPED = 3;
-    public static final byte SEEKED = 4;
-    public static final byte FINISHED = 5;
-
     protected static final int BUFFSIZE = 4096;
-
-
-    private static final String MPEG = ".mp3";
-    private static final String OGG = ".ogg";
-    private static final String AAC = ".aac";
-    private static final String FLAC = ".flac";
-    //private static final String M4A = ".m4a";
 
     public static Track getTrack(File fSound){
         Track result = null;
@@ -48,6 +42,8 @@ public abstract class Track implements Runnable {
                 try {
                     VorbisFile vorbisTest = new VorbisFile(fSound.getCanonicalPath());
                     result = new OGGTrack(fSound);
+                    System.out.println("OGGAis: "+result.getSpeakerAis());
+                    System.out.println("OGGFileFormat: "+result.getFileFormat());
                 } catch (JOrbisException e) {
                     try {
                         result = new MP3Track(fSound);
@@ -140,38 +136,63 @@ public abstract class Track implements Runnable {
         trackLine = null;
     }
 
+    protected String getProperty(String key) {
+        Map<String, Object> formatProper = null;
+        try {
+            formatProper = getFileFormat().properties();
+            if (formatProper != null) {
+                Object get = formatProper.get(key);
+                return get == null ? null : get.toString();
+            }
+            else
+                return null;
+        } catch (IOException | UnsupportedAudioFileException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public synchronized boolean isPlaying() {
         return state == PLAYING;
     }
 
+    @Override
     public synchronized boolean isPaused() {
         return state == PAUSED;
     }
 
+    @Override
     public synchronized boolean isStoped() {
         return state == STOPED;
     }
 
+    @Override
     public synchronized boolean isFinished() {
         return state == FINISHED;
     }
 
+    @Override
     public void play() {
         state = PLAYING;
     }
 
+    @Override
     public void pause() {
         state = PAUSED;
     }
 
-    public void resume() {
+    @Override
+    public void resumeTrack() {
         play();
     }
 
-    public void stop() {
+    @Override
+    public void stopTrack() {
         state = STOPED;
     }
 
+    @Override
     public void finish() {
         state = FINISHED;
         closeLine();
@@ -180,11 +201,56 @@ public abstract class Track implements Runnable {
     public abstract void seek(int seconds) throws Exception;
 
     // -80 to 6
+    @Override
     public void setGain(float volume) {
         float vol = (float) (-80.0+(0.86*volume));
         trackLine.setGain(vol);
     }
 
+    public AudioFileFormat getFileFormat() throws IOException, UnsupportedAudioFileException {
+        return audioReader.getAudioFileFormat(ftrack);
+    }
+
+    public String getTitle() {
+        return getProperty("title");
+    }
+
+    public String getAlbum() {
+        return getProperty("album");
+    }
+
+    public String getAuthor() {
+        return getProperty("author");
+    }
+
+    public String getDate() {
+        return getProperty("date");
+    }
+
+    public long getDuration() {
+        String strDuration = getProperty("duration");
+        return strDuration == null ? 0 : Long.parseLong(strDuration);
+    }
+
+    public String getDurationAsString() {
+        long sec = getDuration() / 1000/1000;
+        long min = sec / 60;
+        sec = sec-(min*60);
+        return new StringBuilder().append(min)
+                .append(':').append(sec < 10 ? '0'+sec:sec).toString();
+    }
+
+    // Testing
+    public String getInfoSong() {
+        StringBuilder sbInfo = new StringBuilder();
+        sbInfo.append(getTitle()).append('\n');
+        sbInfo.append(getAlbum()).append('\n');
+        sbInfo.append(getAuthor()).append('\n');
+        sbInfo.append(getDate()).append('\n');
+        sbInfo.append(getDurationAsString()).append('\n');
+        sbInfo.append("--------------------");
+        return sbInfo.toString();
+    }
 
     @Override
     public void run() {
@@ -225,6 +291,10 @@ public abstract class Track implements Runnable {
         } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        File img = new File("/home/martin/AudioTesting/audio/flac.flac");
     }
 
 }
