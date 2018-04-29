@@ -19,43 +19,45 @@ import java.io.*;
 public class FlacDecoder implements PCMProcessor {
     private WavWriter wav;
     private AudioInputStream decodedAis;
+    private FileInputStream inputFile;
+    private ByteArrayOutputStream outStream;
+    private ByteArrayInputStream audioIn;
+    private StreamInfo flacInfo;
+
+    public FlacDecoder(File inFile) throws FileNotFoundException {
+        inputFile = new FileInputStream(inFile);
+        outStream = new ByteArrayOutputStream();
+        wav = new WavWriter(outStream);
+    }
+
+    public boolean isFlac() {
+        try {
+            FLACDecoder decoder = new FLACDecoder(inputFile);
+            decoder.addPCMProcessor(this);
+            decoder.decode();
+
+            audioIn = new ByteArrayInputStream(outStream.toByteArray());
+            flacInfo = decoder.getStreamInfo();
+            return flacInfo != null;
+        } catch (IOException e) {
+            //e.printStackTrace();
+            return false;
+        }
+    }
 
     public AudioInputStream getDecodedStream() {
         return decodedAis;
     }
 
-    public void decode(File inFile) {
-        //System.out.println("Decode [" + inFileName + "][" + outFileName + "]");
-        ByteArrayInputStream bais = null;
-        StreamInfo flacInfo = null;
-        int dataLen = 0;
+    public void decode() {
+        if (flacInfo != null) {
+            AudioFormat outFormat = new AudioFormat(flacInfo.getSampleRate(),
+                    flacInfo.getBitsPerSample(), flacInfo.getChannels(), true, false);
 
-        try {
-            FileInputStream fileIn = new FileInputStream(inFile);
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            wav = new WavWriter(os);
-
-            FLACDecoder decoder = new FLACDecoder(fileIn);
-            decoder.addPCMProcessor(this);
-            decoder.decode();
-
-            byte[] audioData = os.toByteArray();
-            bais = new ByteArrayInputStream(audioData);
-            dataLen = audioData.length;
-            audioData = null;
-
-            flacInfo = decoder.getStreamInfo();
-
-        }catch (IOException e) {
-            //e.printStackTrace();
+            // La otra opcion para no tener que usar tanta ram
+            // seria escribir los datos en un archivo y despues ir leyendolo para al final borrarlo
+            decodedAis = new AudioInputStream(audioIn, outFormat, audioIn.available());
         }
-
-        AudioFormat outFormat = new AudioFormat(flacInfo.getSampleRate(), flacInfo.getBitsPerSample(),
-                flacInfo.getChannels(), true, false);
-
-        // La otra opcion para no tener que usar tanta ram
-        // seria escribir los datos en un archivo y despues ir leyendolo para al final borrarlo
-        decodedAis = new AudioInputStream(bais, outFormat, dataLen);
     }
 
     public void processStreamInfo(StreamInfo info) {

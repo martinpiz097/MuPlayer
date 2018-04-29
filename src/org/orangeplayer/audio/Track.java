@@ -1,12 +1,13 @@
 package org.orangeplayer.audio;
 
 import com.jcraft.jorbis.JOrbisException;
-import com.jcraft.jorbis.VorbisFile;
 import org.aucom.sound.Speaker;
+import org.orangeplayer.audio.codec.DecodeManager;
 import org.orangeplayer.audio.interfaces.MusicControls;
-import org.orangeplayer.audio.trackstypes.FlacTrack;
-import org.orangeplayer.audio.trackstypes.MP3Track;
-import org.orangeplayer.audio.trackstypes.OGGTrack;
+import org.orangeplayer.audio.tracksFormats.FlacTrack;
+import org.orangeplayer.audio.tracksFormats.MP3Track;
+import org.orangeplayer.audio.tracksFormats.OGGTrack;
+import org.orangeplayer.audio.tracksFormats.PCMTrack;
 
 import javax.sound.sampled.*;
 import javax.sound.sampled.spi.AudioFileReader;
@@ -26,10 +27,14 @@ public abstract class Track implements Runnable, MusicControls {
 
     protected static final int BUFFSIZE = 4096;
 
-    public static Track getTrack(File fSound){
-        Track result = null;
-        final String trackName = fSound.getName();
+    // La idea es dejar elalgoritmo antiguo para
+    // comparar velocidades
 
+    public static Track getTrack(File fSound){
+        if (!fSound.exists())
+            return null;
+        Track result = null;
+        String trackName = fSound.getName();
         try {
             if (trackName.endsWith(MPEG))
                 result = new MP3Track(fSound);
@@ -37,31 +42,42 @@ public abstract class Track implements Runnable, MusicControls {
                 result = new OGGTrack(fSound);
             else if (trackName.endsWith(FLAC))
                 result = new FlacTrack(fSound);
+            else if (trackName.endsWith(WAVE))
+                result = new PCMTrack(fSound);
             // Por si no tiene formato en el nombre
             else {
-                try {
-                    VorbisFile vorbisTest = new VorbisFile(fSound.getCanonicalPath());
-                    result = new OGGTrack(fSound);
-                    System.out.println("OGGAis: "+result.getSpeakerAis());
-                    System.out.println("OGGFileFormat: "+result.getFileFormat());
-                } catch (JOrbisException e) {
-                    try {
-                        result = new MP3Track(fSound);
-                    } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e1) {
-                        //System.out.println(e.getMessage());
-                        result = new FlacTrack(fSound);
-                        if (result.getSpeakerAis() == null)
-                            result = null;
-                        System.out.println("SpeakerAis: "+result.getSpeakerAis());
-                    }
-                } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
-                    //System.out.println(e.getMessage());
-                    result = null;
-                }
+                AudioFileFormat fileFormat = AudioSystem.getAudioFileFormat(fSound);
+                // Es ogg, aac o mp3
+                if (AudioSystem.isConversionSupported(
+                        AudioFormat.Encoding.PCM_SIGNED, fileFormat.getFormat())) {
+                    // no es mp3
+                    if (DecodeManager.isVorbis(fSound))
+                        result = new OGGTrack(fSound);
+                    else
+                        result = new PCMTrack(fSound);
+                } else
+                    result = new MP3Track(fSound);
+
+                // Ver si es mp3
+                // Podria ser que por reflection revise entre todas las subclases
+                // si una es compatible con el archivo en cuestion
             }
-        } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
+        } catch (UnsupportedAudioFileException e) {
+            // Es flac
+            if (DecodeManager.isFlac(fSound)) {
+                try {
+                    result = new FlacTrack(fSound);
+                    if (!result.isValidTrack())
+                        result = null;
+                } catch (LineUnavailableException | UnsupportedAudioFileException | IOException e1) {
+                    e1.printStackTrace();
+                }
+
+            }
+        } catch (IOException | LineUnavailableException e) {
             e.printStackTrace();
         }
+
         return result;
     }
 
@@ -69,35 +85,26 @@ public abstract class Track implements Runnable, MusicControls {
         return getTrack(new File(trackPath));
     }
 
-    public static boolean isValidTrack(File fTrack) {
-        return getTrack(fTrack) != null;
-    }
-
-
-    protected Track(File ftrack) throws IOException,
-            UnsupportedAudioFileException, LineUnavailableException {
+    protected Track(File ftrack) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         System.out.println("File: "+ftrack.getPath());
         this.ftrack = ftrack;
         state = STOPED;
-        getAudioStream();
-        if (speakerAis != null) {
-            trackLine = new Speaker(speakerAis.getFormat());
-            trackLine.open();
-        }
-
+        initLine();
     }
 
-    protected Track(String trackPath)
-            throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    protected Track(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this(new File(trackPath));
     }
 
+    public boolean isValidTrack() {
+        return speakerAis != null;
+    }
 
     public boolean isTrackFinished() throws IOException {
         return speakerAis.read() == -1;
     }
 
-    protected AudioInputStream getSpeakerAis() {
+    public AudioInputStream getSpeakerAis() {
         return speakerAis;
     }
 
@@ -122,13 +129,23 @@ public abstract class Track implements Runnable, MusicControls {
             return "Unknown";
     }
 
-    protected abstract void getAudioStream() throws IOException,
-            UnsupportedAudioFileException, LineUnavailableException;
-    protected void resetStream()
-            throws IOException, LineUnavailableException, UnsupportedAudioFileException {
-        speakerAis.close();
+    protected abstract void getAudioStream() throws IOException, UnsupportedAudioFileException;
+
+    protected void resetStream() throws IOException, LineUnavailableException, UnsupportedAudioFileException {
+        if (speakerAis != null)
+            speakerAis.close();
+        initLine();
+    }
+
+    protected void initLine() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         getAudioStream();
-    };
+        if (speakerAis != null) {
+            if (trackLine != null)
+                trackLine.close();
+            trackLine = new Speaker(speakerAis.getFormat());
+            trackLine.open();
+        }
+    }
 
     protected void closeLine() {
         trackLine.stop();
@@ -139,13 +156,16 @@ public abstract class Track implements Runnable, MusicControls {
     protected String getProperty(String key) {
         Map<String, Object> formatProper = null;
         try {
-            formatProper = getFileFormat().properties();
-            if (formatProper != null) {
-                Object get = formatProper.get(key);
-                return get == null ? null : get.toString();
+            AudioFileFormat fileFormat = getFileFormat();
+            if (fileFormat != null) {
+                formatProper = getFileFormat().properties();
+                if (formatProper != null) {
+                    Object get = formatProper.get(key);
+                    return get == null ? null : get.toString();
+                }
+                else
+                    return null;
             }
-            else
-                return null;
         } catch (IOException | UnsupportedAudioFileException e) {
             e.printStackTrace();
         }
@@ -208,19 +228,21 @@ public abstract class Track implements Runnable, MusicControls {
     }
 
     public AudioFileFormat getFileFormat() throws IOException, UnsupportedAudioFileException {
-        return audioReader.getAudioFileFormat(ftrack);
+        return audioReader == null ? null : audioReader.getAudioFileFormat(ftrack);
     }
 
     public String getTitle() {
-        return getProperty("title");
+        String proper = getProperty("title");
+        return proper == null ? ftrack.getName() : proper;
     }
 
     public String getAlbum() {
         return getProperty("album");
     }
 
-    public String getAuthor() {
-        return getProperty("author");
+    public String getArtist() {
+        String author = getProperty("author");
+        return author == null ? getProperty("artist") : author;
     }
 
     public String getDate() {
@@ -245,10 +267,10 @@ public abstract class Track implements Runnable, MusicControls {
         StringBuilder sbInfo = new StringBuilder();
         sbInfo.append(getTitle()).append('\n');
         sbInfo.append(getAlbum()).append('\n');
-        sbInfo.append(getAuthor()).append('\n');
+        sbInfo.append(getArtist()).append('\n');
         sbInfo.append(getDate()).append('\n');
         sbInfo.append(getDurationAsString()).append('\n');
-        sbInfo.append("--------------------");
+        sbInfo.append("------------------------");
         return sbInfo.toString();
     }
 
@@ -288,13 +310,22 @@ public abstract class Track implements Runnable, MusicControls {
             }
             System.out.println("Track completed!");
 
-        } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
+        } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
             e.printStackTrace();
         }
     }
 
-    public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-        File img = new File("/home/martin/AudioTesting/audio/flac.flac");
+    public static void main(String[] args) throws IOException, LineUnavailableException, JOrbisException, UnsupportedAudioFileException {
+        //File img = new File("/home/martin/AudioTesting/audio/flac.flac");
+        File sound = new File("/home/martin/AudioTesting/audio/au.mp3");
+        File img = new File("/home/martin/AudioTesting/audio/folder.jpg");
+
+        /*TAudioFileFormat fileFormat = (TAudioFileFormat) AudioSystem.getAudioFileFormat(sound);
+        System.out.println(fileFormat.getType());
+        System.out.println(fileFormat.getFormat().getEncoding().toString());
+*/
+
+        //AudioInputStream speakerAis = AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, soundAis);
     }
 
 }

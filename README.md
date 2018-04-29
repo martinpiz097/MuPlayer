@@ -32,5 +32,10 @@ Music player library.
 	## Habilitada la opcion para obtener informacion de la cancion
 # 0.3.3-1 Beta
     ## Se mantiene el mismo volumen en la cancion siguiente una vez este haya sido modificado externamente
-    
-	
+# 0.3.4 Beta
+	## Se lanza una excepcion FileNotFoundException cuando la carpeta de Música escogida no existe.
+# 0.4 Beta
+	## Soporte añadido para rescatar informacion a audios OGG (metodo diferente a los otro formatos)
+	## Soporte añadido para reproducir archivos wav, aiff, aifc, snd y au (dependiendo del S.O)
+	## Apertura de archivos de audio optimizada.
+	## Mejora en soporte Flac (tiempos de carga disminuidos)

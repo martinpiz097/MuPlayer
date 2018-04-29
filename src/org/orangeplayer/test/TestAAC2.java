@@ -26,7 +26,7 @@ public class TestAAC2 {
 
         /* We cascade different methods here since every one is usable for another type of aac file. */
         try {
-            result = new AACAudioFileReader().getAudioInputStream(sound);
+            result = new AACAudioFileReader().getAudioInputStream(sound.toURL());
         }
         catch (Exception e) {
             System.out.println("No sirve AACAudioFileReader");
@@ -48,6 +48,8 @@ public class TestAAC2 {
         AudioFormat format = null;
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
+        outputStream.write(adts.getDecoderSpecificInfo());
+
         while(true) {
             try {
                 b = adts.readNextFrame();
@@ -60,17 +62,18 @@ public class TestAAC2 {
                 wav = new WaveFileWriter(
                         new File(out), buf.getSampleRate(), buf.getChannels(), buf.getBitsPerSample());
             }
-            b = buf.getData();
+            //b = buf.getData();
             outputStream.write(b);
         }
         format = new AudioFormat(buf.getSampleRate(),
                 buf.getBitsPerSample(), buf.getChannels(), true, buf.isBigEndian());
 
         byte[] outBuff = outputStream.toByteArray();
+
         ByteArrayInputStream inputStream = new ByteArrayInputStream(outBuff);
         AudioInputStream ais = new AudioInputStream(inputStream, format, outBuff.length);
 
-        Speaker speaker = new Speaker(format);
+        Speaker speaker = new Speaker(ais.getFormat());
         speaker.open();
 
         byte[] buffer = new byte[128];

@@ -1,7 +1,8 @@
-package org.orangeplayer.audio.trackstypes;
+package org.orangeplayer.audio.tracksFormats;
 
 import javazoom.spi.mpeg.sampled.file.MpegAudioFileReader;
 import org.orangeplayer.audio.Track;
+import org.orangeplayer.audio.codec.DecodeManager;
 
 import javax.sound.sampled.*;
 import java.io.File;
@@ -19,22 +20,17 @@ public class MP3Track extends Track {
         super(trackPath);
     }
 
+    public boolean isValidTrack() {
+        return speakerAis != null;
+    }
+
     @Override
     protected void getAudioStream() throws IOException, UnsupportedAudioFileException {
+        // Ver si se escucha mejor en ogg utilizando la logica de mp3
         audioReader = new MpegAudioFileReader();
         AudioInputStream soundAis = audioReader.getAudioInputStream(ftrack);
         AudioFormat baseFormat = soundAis.getFormat();
-        System.out.println(baseFormat.getSampleRate());
-        System.out.println(baseFormat.getFrameRate());
-        AudioFormat decodedFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
-                baseFormat.getSampleRate(),
-                16,
-                baseFormat.getChannels(),
-                baseFormat.getChannels() * 2,
-                baseFormat.getSampleRate(),
-                false);
-
-        speakerAis = AudioSystem.getAudioInputStream(decodedFormat, soundAis);
+        speakerAis = DecodeManager.decodeMpegToPcm(baseFormat, soundAis);
     }
 
     @Override
@@ -54,9 +50,14 @@ public class MP3Track extends Track {
         //System.out.println(new JorbisAudioFileReader().getAudioFileFormat(sound).getType().toString());
         //System.out.println(AudioSystem.getAudioFileFormat(sound).getType().toString());
 
+        System.out.println(AudioSystem.getAudioFileFormat(sound).toString());
+
         Track track = new MP3Track(sound);
         Thread tTrack = new Thread(track);
-        tTrack.start();
+        //tTrack.start();
+        AudioFileFormat fileFormat = AudioSystem.getAudioFileFormat(sound);
+        System.out.println(AudioSystem.isConversionSupported(
+                AudioFormat.Encoding.PCM_SIGNED, fileFormat.getFormat()));
         //Thread.sleep(3000);
         //track.pause();
         //Thread.sleep(3000);

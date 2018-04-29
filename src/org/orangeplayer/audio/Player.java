@@ -1,13 +1,15 @@
 package org.orangeplayer.audio;
 
 import org.orangeplayer.audio.interfaces.MusicControls;
+import org.orangeplayer.audio.interfaces.PlayerControls;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Player extends Thread implements MusicControls {
+public class Player extends Thread implements PlayerControls {
     private File rootFolder;
     private Track current;
     private Thread currentThread;
@@ -17,19 +19,21 @@ public class Player extends Thread implements MusicControls {
     private boolean on;
 
     private float currentVolume;
-
-    public Player(File rootFolder) {
+    public Player(File rootFolder) throws FileNotFoundException {
         this.rootFolder = rootFolder;
         listSoundPaths = new ArrayList<>();
         trackIndex = 0;
-        System.out.println("Loading Tracks.....");
-        loadTracks(rootFolder);
-        sortTracks();
-        System.out.println("Tracks Loaded!");
         on = false;
+        currentVolume = 80;
+        if (!rootFolder.exists())
+            throw new FileNotFoundException();
+        else {
+            loadTracks(rootFolder);
+            sortTracks();
+        }
     }
 
-    public Player(String folderPath) {
+    public Player(String folderPath) throws FileNotFoundException {
         this(new File(folderPath));
     }
 
@@ -122,20 +126,11 @@ public class Player extends Thread implements MusicControls {
         currentThread.start();
     }
 
-    public void playNext() {
-        Track cur = current;
-        current = getNextTrack();
-        finishCurrent(cur);
-        startNewThread();
-        System.out.println(current.getInfoSong());
-    }
-
-    public void playPrevious() {
-        Track cur = current;
-        current = getPreviousTrack();
-        finishCurrent(cur);
-        startNewThread();
-        System.out.println(current.getInfoSong());
+    // Waiting for testing
+    public void reloadTracks() {
+        listSoundPaths.clear();
+        loadTracks(rootFolder);
+        sortTracks();
     }
 
     public Track getCurrent() {
@@ -214,12 +209,38 @@ public class Player extends Thread implements MusicControls {
     }
 
     @Override
+    public void playNext() {
+        Track cur = current;
+        current = getNextTrack();
+        finishCurrent(cur);
+        startNewThread();
+        System.out.println(current.getInfoSong());
+    }
+
+    @Override
+    public void playPrevious() {
+        Track cur = current;
+        current = getPreviousTrack();
+        finishCurrent(cur);
+        startNewThread();
+        System.out.println(current.getInfoSong());
+    }
+
+    @Override
+    public void shutdown() {
+        on = false;
+        if (current != null)
+            current.finish();
+    }
+
+    @Override
     public void run() {
         on = true;
         playNext();
         while (on) {
             if (current.isFinished()) {
                 playNext();
+                System.out.println("IF Play Next");
                 //System.out.println("PlayNext");
             }
             //System.out.println(current.isFinished());
@@ -228,16 +249,18 @@ public class Player extends Thread implements MusicControls {
         System.out.print("");
     }
 
-    public void shutdown() {
-        on = false;
-        if (current != null)
-            current.finish();
-    }
+
 
     public static void main(String[] args) throws IOException {
-        Player player = new Player("/home/martin/AudioTesting/music/");
+        boolean hasArgs = args != null && args.length > 0;
+        String fPath = hasArgs ? args[0] : "/home/martin/AudioTesting/music/";
+
+        Player player = new Player(fPath);
+        MusicControls controls = player;
         player.start();
         Scanner scan = new Scanner(System.in);
+        // /home/martin/AudioTesting/music/Alejandro Silva/1 - 1999/AlbumArtSmall.jpg
+        // /home/martin/AudioTesting/music/NSYNC/NSYNC - No Strings Attached (2000)/ReadMe.txt
 
         char c;
         String line;
@@ -274,11 +297,15 @@ public class Player extends Thread implements MusicControls {
                         on = false;
                         player.shutdown();
                         break;
+                    case 'u':
+                        player.reloadTracks();
+                        break;
                 }
             }catch(Exception e) {
 
             }
         }
+
 
     }
 
