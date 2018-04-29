@@ -39,3 +39,4 @@ Music player library.
 	## Soporte añadido para reproducir archivos wav, aiff, aifc, snd y au (dependiendo del S.O)
 	## Apertura de archivos de audio optimizada.
 	## Mejora en soporte Flac (tiempos de carga disminuidos)
+	## Soporte especial de lectura de etiquetas para ogg añadido
