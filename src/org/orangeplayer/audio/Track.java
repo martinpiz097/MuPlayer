@@ -4,10 +4,7 @@ import com.jcraft.jorbis.JOrbisException;
 import org.aucom.sound.Speaker;
 import org.orangeplayer.audio.codec.DecodeManager;
 import org.orangeplayer.audio.interfaces.MusicControls;
-import org.orangeplayer.audio.tracksFormats.FlacTrack;
-import org.orangeplayer.audio.tracksFormats.MP3Track;
-import org.orangeplayer.audio.tracksFormats.OGGTrack;
-import org.orangeplayer.audio.tracksFormats.PCMTrack;
+import org.orangeplayer.audio.tracksFormats.*;
 
 import javax.sound.sampled.*;
 import javax.sound.sampled.spi.AudioFileReader;
@@ -44,6 +41,8 @@ public abstract class Track implements Runnable, MusicControls {
                 result = new FlacTrack(fSound);
             else if (trackName.endsWith(WAVE))
                 result = new PCMTrack(fSound);
+            else if (trackName.endsWith(M4A))
+                result = new MP4Track(fSound);
             // Por si no tiene formato en el nombre
             else {
                 AudioFileFormat fileFormat = AudioSystem.getAudioFileFormat(fSound);
@@ -54,6 +53,7 @@ public abstract class Track implements Runnable, MusicControls {
                     if (DecodeManager.isVorbis(fSound))
                         result = new OGGTrack(fSound);
                     else
+                        // Tambien sirve para los mp4
                         result = new PCMTrack(fSound);
                 } else
                     result = new MP3Track(fSound);

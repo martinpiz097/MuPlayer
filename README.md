@@ -40,3 +40,5 @@ Music player library.
 	## Apertura de archivos de audio optimizada.
 	## Mejora en soporte Flac (tiempos de carga disminuidos)
 	## Soporte especial de lectura de etiquetas para ogg añadido
+# 0.5 Beta
+	## Soporte para archivos m4a añadido

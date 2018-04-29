@@ -7,26 +7,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="52b5c670-5c9d-450c-9e66-4610ab941ce4" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/artifacts/OrangePlayer_jar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/OrangePlayer_jar.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/OrangePlayer.iml" beforeDir="false" afterPath="$PROJECT_DIR$/OrangePlayer.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hs_err_pid4844.log" beforeDir="false" afterPath="$PROJECT_DIR$/hs_err_pid4844.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/Player.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/Track.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/codec/FlacDecoder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/trackstypes/FlacTrack.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/trackstypes/MP3Track.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/trackstypes/OGGTrack.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/test/TestAAC2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/test/TestAAC2.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/orangeplayer/audio/Player.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/Track.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/orangeplayer/audio/Track.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/TrackFormat.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/orangeplayer/audio/TrackFormat.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/codec/FlacDecoder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/orangeplayer/audio/codec/FlacDecoder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/interfaces/MusicControls.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/orangeplayer/audio/interfaces/MusicControls.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/trackstypes/FlacTrack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/orangeplayer/audio/tracksFormats/FlacTrack.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/trackstypes/MP3Track.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/orangeplayer/audio/tracksFormats/MP3Track.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/trackstypes/OGGTrack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/orangeplayer/audio/tracksFormats/OGGTrack.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/tracksFormats/OGGTrack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/orangeplayer/audio/tracksFormats/OGGTrack.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/test/TestAAC2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/orangeplayer/test/TestAAC2.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -45,8 +30,8 @@
       <file leaf-file-name="Track.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/Track.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="219">
-              <caret line="80" column="10" selection-start-line="80" selection-start-column="10" selection-end-line="80" selection-end-column="10" />
+            <state relative-caret-position="241">
+              <caret line="55" column="53" selection-start-line="55" selection-start-column="53" selection-end-line="55" selection-end-column="53" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#3137#3138#0" expanded="true" />
@@ -84,6 +69,51 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="PCMTrack.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/tracksFormats/PCMTrack.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="22">
+              <caret line="12" column="11" selection-start-line="12" selection-start-column="11" selection-end-line="12" selection-end-column="11" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TestAAC2.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/test/TestAAC2.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="239">
+              <caret line="38" column="13" lean-forward="true" selection-start-line="38" selection-start-column="13" selection-end-line="38" selection-end-column="13" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MP4Track.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/tracksFormats/MP4Track.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="239">
+              <caret line="22" lean-forward="true" selection-start-line="22" selection-end-line="22" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ReflectionTest.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/test/ReflectionTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="308">
+              <caret line="14" selection-start-line="14" selection-end-line="14" />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="GetTrackTest.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/test/GetTrackTest.java">
           <provider selected="true" editor-type-id="text-editor">
@@ -99,22 +129,8 @@
       <file leaf-file-name="TrackFormat.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/TrackFormat.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="154">
-              <caret line="7" column="35" selection-start-line="7" selection-start-column="35" selection-end-line="7" selection-end-column="35" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="FlacTrack.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/tracksFormats/FlacTrack.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="283">
-              <caret line="19" column="21" lean-forward="true" selection-start-line="19" selection-start-column="21" selection-end-line="19" selection-end-column="21" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#758#759#0" expanded="true" />
-                <element signature="e#785#786#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="176">
+              <caret line="8" column="4" selection-start-line="8" selection-start-column="4" selection-end-line="8" selection-end-column="4" />
             </state>
           </provider>
         </entry>
@@ -122,29 +138,8 @@
       <file leaf-file-name="Player.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/Player.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2214">
-              <caret line="296" column="35" lean-forward="true" selection-start-line="296" selection-start-column="35" selection-end-line="296" selection-end-column="35" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MusicControls.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/interfaces/MusicControls.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="15" column="1" lean-forward="true" selection-start-line="15" selection-start-column="1" selection-end-line="15" selection-end-column="1" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MP3Track.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/tracksFormats/MP3Track.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="236">
-              <caret line="46" column="23" selection-start-line="46" selection-start-column="23" selection-end-line="46" selection-end-column="23" />
+            <state relative-caret-position="212">
+              <caret line="132" column="21" lean-forward="true" selection-start-line="132" selection-start-column="21" selection-end-line="132" selection-end-column="21" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -155,8 +150,8 @@
       <file leaf-file-name="DecodeManager.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/codec/DecodeManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="263">
-              <caret line="19" column="25" lean-forward="true" selection-start-line="19" selection-start-column="25" selection-end-line="19" selection-end-column="25" />
+            <state relative-caret-position="152">
+              <caret line="52" column="35" selection-start-line="52" selection-start-column="35" selection-end-line="52" selection-end-column="35" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -167,8 +162,8 @@
       <file leaf-file-name="OGGTrack.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/tracksFormats/OGGTrack.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="217">
-              <caret line="65" column="68" selection-start-line="65" selection-start-column="68" selection-end-line="65" selection-end-column="68" />
+            <state relative-caret-position="305">
+              <caret line="43" column="5" lean-forward="true" selection-start-line="43" selection-start-column="5" selection-end-line="43" selection-end-column="5" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -212,7 +207,7 @@
       <find>reloa</find>
       <find>finis</find>
       <find>finish()</find>
-      <find />
+      <find>protected T</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -247,7 +242,6 @@
         <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/codec/DecodedFormats.java" />
         <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/codec/DecodedAudioFormats.java" />
         <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/codec/DecodingAudioFormats.java" />
-        <option value="$PROJECT_DIR$/src/org/orangeplayer/test/TestAAC2.java" />
         <option value="$PROJECT_DIR$/src/org/orangeplayer/test/FfmpegTest.java" />
         <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/tracksFormats/MP3Track.java" />
         <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/interfaces/MusicControls.java" />
@@ -256,10 +250,12 @@
         <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/codec/FlacDecoder.java" />
         <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/tracksFormats/FlacTrack.java" />
         <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/tracksFormats/PCMTrack.java" />
-        <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/tracksFormats/OGGTrack.java" />
         <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/codec/DecodeManager.java" />
-        <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/TrackFormat.java" />
         <option value="$PROJECT_DIR$/src/org/orangeplayer/test/GetTrackTest.java" />
+        <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/tracksFormats/OGGTrack.java" />
+        <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/TrackFormat.java" />
+        <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/tracksFormats/MP4Track.java" />
+        <option value="$PROJECT_DIR$/src/org/orangeplayer/test/TestAAC2.java" />
         <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/Track.java" />
       </list>
     </option>
@@ -378,7 +374,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.Player">
+  <component name="RunManager" selected="Application.TestAAC2">
     <configuration name="FlacTrack" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="org.orangeplayer.audio.tracksFormats.FlacTrack" />
       <module name="OrangePlayer" />
@@ -401,8 +397,8 @@
         </pattern>
       </extension>
     </configuration>
-    <configuration name="MP3Track" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="org.orangeplayer.audio.tracksFormats.MP3Track" />
+    <configuration name="MP4Track" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.orangeplayer.audio.tracksFormats.MP4Track" />
       <module name="OrangePlayer" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <extension name="coverage">
@@ -423,13 +419,13 @@
         </pattern>
       </extension>
     </configuration>
-    <configuration name="Track" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="org.orangeplayer.audio.Track" />
+    <configuration name="TestAAC2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.orangeplayer.test.TestAAC2" />
       <module name="OrangePlayer" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="org.orangeplayer.audio.*" />
+          <option name="PATTERN" value="org.orangeplayer.test.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -477,18 +473,18 @@
     </configuration>
     <list>
       <item itemvalue="Application.Player" />
-      <item itemvalue="Application.MP3Track" />
-      <item itemvalue="Application.Track" />
       <item itemvalue="Application.FlacTrack" />
       <item itemvalue="Application.GetTrackTest" />
+      <item itemvalue="Application.TestAAC2" />
+      <item itemvalue="Application.MP4Track" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.TestAAC2" />
+        <item itemvalue="Application.MP4Track" />
         <item itemvalue="Application.Player" />
         <item itemvalue="Application.GetTrackTest" />
         <item itemvalue="Application.FlacTrack" />
-        <item itemvalue="Application.Track" />
-        <item itemvalue="Application.MP3Track" />
       </list>
     </recent_temporary>
   </component>
@@ -578,13 +574,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/OrangePlayer.iml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="522">
-          <caret line="18" column="14" selection-start-line="18" selection-start-column="14" selection-end-line="18" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$PROJECT_DIR$/../../NetBeansProjects/AuCom/dist/AuCom.jar!/org/aucom/sound/AudioInterface.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="132">
@@ -722,13 +711,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/test/ReflectionTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="308">
-          <caret line="14" selection-start-line="14" selection-end-line="14" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/TrackReflectInvoker.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="308">
@@ -816,16 +798,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/test/TestAAC2.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="350">
-          <caret line="84" selection-start-line="84" selection-end-line="84" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="jar:///usr/lib/jvm/default-runtime/src.zip!/java/lang/Thread.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="490">
@@ -904,30 +876,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/tracksFormats/PCMTrack.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="13" column="21" lean-forward="true" selection-start-line="13" selection-start-column="21" selection-end-line="13" selection-end-column="21" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/interfaces/MusicControls.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="330">
           <caret line="15" column="1" lean-forward="true" selection-start-line="15" selection-start-column="1" selection-end-line="15" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/tracksFormats/OGGTrack.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="217">
-          <caret line="65" column="68" selection-start-line="65" selection-start-column="68" selection-end-line="65" selection-end-column="68" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -941,30 +893,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/Player.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2214">
-          <caret line="296" column="35" lean-forward="true" selection-start-line="296" selection-start-column="35" selection-end-line="296" selection-end-column="35" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$PROJECT_DIR$/../../../javaLibs/Music/jorbis-0.0.15.jar!/com/jcraft/jorbis/VorbisFile.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="51">
           <caret line="56" column="11" selection-start-line="56" selection-start-column="11" selection-end-line="56" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/codec/DecodeManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="263">
-          <caret line="19" column="25" lean-forward="true" selection-start-line="19" selection-start-column="25" selection-end-line="19" selection-end-column="25" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -978,17 +910,84 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/Player.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="212">
+          <caret line="132" column="21" lean-forward="true" selection-start-line="132" selection-start-column="21" selection-end-line="132" selection-end-column="21" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/test/ReflectionTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="308">
+          <caret line="14" selection-start-line="14" selection-end-line="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/tracksFormats/OGGTrack.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="305">
+          <caret line="43" column="5" lean-forward="true" selection-start-line="43" selection-start-column="5" selection-end-line="43" selection-end-column="5" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/TrackFormat.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="154">
-          <caret line="7" column="35" selection-start-line="7" selection-start-column="35" selection-end-line="7" selection-end-column="35" />
+        <state relative-caret-position="176">
+          <caret line="8" column="4" selection-start-line="8" selection-start-column="4" selection-end-line="8" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/tracksFormats/PCMTrack.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="22">
+          <caret line="12" column="11" selection-start-line="12" selection-start-column="11" selection-end-line="12" selection-end-column="11" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/codec/DecodeManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="152">
+          <caret line="52" column="35" selection-start-line="52" selection-start-column="35" selection-end-line="52" selection-end-column="35" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/tracksFormats/MP4Track.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="239">
+          <caret line="22" lean-forward="true" selection-start-line="22" selection-end-line="22" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/test/TestAAC2.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="239">
+          <caret line="38" column="13" lean-forward="true" selection-start-line="38" selection-start-column="13" selection-end-line="38" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/Track.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="219">
-          <caret line="80" column="10" selection-start-line="80" selection-start-column="10" selection-end-line="80" selection-end-column="10" />
+        <state relative-caret-position="241">
+          <caret line="55" column="53" selection-start-line="55" selection-start-column="53" selection-end-line="55" selection-end-column="53" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#3137#3138#0" expanded="true" />
@@ -1044,7 +1043,7 @@
       </state>
       <state key="FacetStructureConfigurable.UI">
         <settings>
-          <last-edited />
+          <last-edited>No facets are configured</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>

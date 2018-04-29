@@ -6,5 +6,5 @@ public class TrackFormat {
     public static final String AAC = ".aac";
     public static final String FLAC = ".flac";
     public static final String WAVE = ".wav";
-    //public static final String M4A = ".m4a";
+    public static final String M4A = ".m4a";
 }

@@ -23,7 +23,6 @@ public class OGGTrack extends Track {
         try {
             infoFile = new VorbisFile(ftrack.getCanonicalPath());
             soundComments = infoFile.getComment(0);
-            loadComments();
         } catch (JOrbisException e) {
             e.printStackTrace();
         }
@@ -31,9 +30,6 @@ public class OGGTrack extends Track {
 
     public OGGTrack(String trackPath) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
         this(new File(trackPath));
-    }
-
-    private void loadComments() {
     }
 
     public boolean isValidTrack() {
