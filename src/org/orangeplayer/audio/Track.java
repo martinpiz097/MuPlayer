@@ -12,7 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-import static org.orangeplayer.audio.TrackFormat.*;
+import static org.orangeplayer.audio.AudioExtensions.*;
 import static org.orangeplayer.audio.TrackState.*;
 
 public abstract class Track implements Runnable, MusicControls {
@@ -39,10 +39,14 @@ public abstract class Track implements Runnable, MusicControls {
                 result = new OGGTrack(fSound);
             else if (trackName.endsWith(FLAC))
                 result = new FlacTrack(fSound);
-            else if (trackName.endsWith(WAVE))
+            else if (trackName.endsWith(WAVE) || trackName.endsWith(AU)
+                    || trackName.endsWith(AU) || trackName.endsWith(SND)
+                    || trackName.endsWith(AIFF) || trackName.endsWith(AIFC))
                 result = new PCMTrack(fSound);
-            else if (trackName.endsWith(M4A))
+            else if (trackName.endsWith(M4A)){
+                System.out.println("Es mp4");
                 result = new MP4Track(fSound);
+            }
             // Por si no tiene formato en el nombre
             else {
                 AudioFileFormat fileFormat = AudioSystem.getAudioFileFormat(fSound);

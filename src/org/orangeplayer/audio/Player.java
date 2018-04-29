@@ -1,6 +1,5 @@
 package org.orangeplayer.audio;
 
-import org.orangeplayer.audio.interfaces.MusicControls;
 import org.orangeplayer.audio.interfaces.PlayerControls;
 
 import java.io.File;
@@ -63,60 +62,52 @@ public class Player extends Thread implements PlayerControls {
         //listSoundPaths.sort((o1, o2) -> o2.compareTo(o1));
     }
 
-    private Track getTrack(int index) {
+    private Track getTrack(int index, boolean isNext) {
         Track next = null;
-        if (index == listSoundPaths.size())
-            index = 0;
-        for (int i = index; i < listSoundPaths.size(); i++) {
-            next = Track.getTrack(listSoundPaths.get(i));
-            if (next != null) {
-                // El proximo indice a revisar sera el siguiente
-                // para no devolverse tanto
-                trackIndex = i+1;
-                break;
+        if (isNext) {
+            if (index == listSoundPaths.size())
+                index = 0;
+            for (int i = index; i < listSoundPaths.size(); i++) {
+                next = Track.getTrack(listSoundPaths.get(i));
+                if (next != null) {
+                    // El proximo indice a revisar sera el siguiente
+                    // para no devolverse tanto
+                    trackIndex = i+1;
+                    break;
+                }
             }
+            return next;
         }
-        return next;
-    }
+        else {
+            index-=2;
 
-    private Track getTrackPrev(int index) {
-        Track next = null;
-        index-=2;
+            if (index == -1)
+                index = listSoundPaths.size()-1;
 
-        if (index == -1)
-            index = listSoundPaths.size()-1;
-        // Revisar for para despues unir en el otro metodo
-        for (int i = index; i >= 0; i--) {
-            next = Track.getTrack(listSoundPaths.get(i));
-            if (next != null) {
-                // El proximo indice a revisar sera el siguiente
-                // para no devolverse tanto
-                trackIndex = i+1;
-                break;
+            for (int i = index; i >= 0; i--) {
+                next = Track.getTrack(listSoundPaths.get(i));
+                if (next != null) {
+                    // El proximo indice a revisar sera el siguiente
+                    // para no devolverse tanto
+                    trackIndex = i+1;
+                    break;
+                }
             }
+            return next;
         }
-        return next;
     }
-
-
 
     private Track getNextTrack() {
-        return getTrack(trackIndex);
+        return getTrack(trackIndex, true);
     }
 
     private Track getPreviousTrack() {
-        return getTrackPrev(trackIndex);
+        return getTrack(trackIndex, false);
     }
 
     private void finishCurrent(Track current) {
-        if (current != null) {
-            if (!current.isFinished())
-                current.finish();
-            /*if (currentThread != null) {
-                currentThread.interrupt();
-                currentThread = null;
-            }*/
-        }
+        if (current != null && !current.isFinished())
+            current.finish();
     }
 
     private void startNewThread() {
@@ -183,9 +174,8 @@ public class Player extends Thread implements PlayerControls {
     }
 
     @Override
-    public void finish() {
-        if (current != null)
-            current.finish();
+    public  void finish() {
+        shutdown();
     }
 
     // 0-100
@@ -253,10 +243,9 @@ public class Player extends Thread implements PlayerControls {
 
     public static void main(String[] args) throws IOException {
         boolean hasArgs = args != null && args.length > 0;
-        String fPath = hasArgs ? args[0] : "/home/martin/AudioTesting/music/";
+        String fPath = hasArgs ? args[0] : "/home/martin/AudioTesting/musictest/";
 
         Player player = new Player(fPath);
-        MusicControls controls = player;
         player.start();
         Scanner scan = new Scanner(System.in);
         // /home/martin/AudioTesting/music/Alejandro Silva/1 - 1999/AlbumArtSmall.jpg

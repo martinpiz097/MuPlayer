@@ -42,3 +42,5 @@ Music player library.
 	## Soporte especial de lectura de etiquetas para ogg añadido
 # 0.5 Beta
 	## Soporte para archivos m4a añadido
+# 0.5.1 Beta
+	## Problema con reconocimiento de formato M4A en jar corregido

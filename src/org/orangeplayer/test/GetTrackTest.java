@@ -13,7 +13,7 @@ import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
 
-import static org.orangeplayer.audio.TrackFormat.*;
+import static org.orangeplayer.audio.AudioExtensions.*;
 
 public class GetTrackTest {
     static long ti;

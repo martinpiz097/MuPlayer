@@ -1,8 +1,8 @@
 package org.orangeplayer.audio.tracksFormats;
 
+import net.sourceforge.jaad.spi.javasound.AACAudioFileReader;
 import org.orangeplayer.audio.Track;
 
-import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
@@ -19,11 +19,19 @@ public class MP4Track extends Track {
 
     @Override
     protected void getAudioStream() throws IOException, UnsupportedAudioFileException {
-        speakerAis = AudioSystem.getAudioInputStream(ftrack);
+        audioReader = new AACAudioFileReader();
+        speakerAis = audioReader.getAudioInputStream(ftrack);
+        // Probar despues transformando a PCM
     }
 
     @Override
     public void seek(int seconds) throws Exception {
 
     }
+
+    public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        Track track = Track.getTrack("/home/martin/AudioTesting/audio/m4a3.m4a");
+        new Thread(track).start();
+    }
+
 }

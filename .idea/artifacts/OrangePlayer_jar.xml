@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact name="OrangePlayer:jar">
+  <artifact build-on-make="true" name="OrangePlayer:jar">
     <output-path>$PROJECT_DIR$/bin</output-path>
     <root id="root">
       <element id="archive" name="OrangePlayer.jar">
