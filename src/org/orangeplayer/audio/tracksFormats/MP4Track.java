@@ -26,7 +26,7 @@ public class MP4Track extends Track {
 
     @Override
     public void seek(int seconds) throws Exception {
-
+        speakerAis.skip(seconds);
     }
 
     public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {

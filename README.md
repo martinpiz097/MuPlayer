@@ -1,5 +1,5 @@
 # MuPlayer
-Music player library.
+Music player library in pure Java.
 
 # 0.1 Beta
 	## Creacion de clases Player y Track.
@@ -44,3 +44,6 @@ Music player library.
 	## Soporte para archivos m4a añadido
 # 0.5.1 Beta
 	## Problema con reconocimiento de formato M4A en jar corregido
+# 0.5.2 Beta
+	## Se añaden listeners a clase Player	
+	## Se optimiza el uso del procesador al momento de utilizar la clase Player, bajando de un 25% a un 1.4% aprox.

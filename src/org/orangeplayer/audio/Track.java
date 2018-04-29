@@ -1,10 +1,10 @@
 package org.orangeplayer.audio;
 
-import com.jcraft.jorbis.JOrbisException;
 import org.aucom.sound.Speaker;
 import org.orangeplayer.audio.codec.DecodeManager;
 import org.orangeplayer.audio.interfaces.MusicControls;
 import org.orangeplayer.audio.tracksFormats.*;
+import org.orangeplayer.thread.PlayerHandler;
 
 import javax.sound.sampled.*;
 import javax.sound.sampled.spi.AudioFileReader;
@@ -287,7 +287,6 @@ public abstract class Track implements Runnable, MusicControls {
 
             // For testing
             //speakerAis.skip(8000000);
-
             while (!isFinished()) {
                 while (isPlaying()) {
                     try {
@@ -313,23 +312,11 @@ public abstract class Track implements Runnable, MusicControls {
                 System.out.print("");
             }
             System.out.println("Track completed!");
-
+            if (PlayerHandler.hasInstance())
+                PlayerHandler.getInstance().interruptPlayerThread();
         } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
             e.printStackTrace();
         }
-    }
-
-    public static void main(String[] args) throws IOException, LineUnavailableException, JOrbisException, UnsupportedAudioFileException {
-        //File img = new File("/home/martin/AudioTesting/audio/flac.flac");
-        File sound = new File("/home/martin/AudioTesting/audio/au.mp3");
-        File img = new File("/home/martin/AudioTesting/audio/folder.jpg");
-
-        /*TAudioFileFormat fileFormat = (TAudioFileFormat) AudioSystem.getAudioFileFormat(sound);
-        System.out.println(fileFormat.getType());
-        System.out.println(fileFormat.getFormat().getEncoding().toString());
-*/
-
-        //AudioInputStream speakerAis = AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, soundAis);
     }
 
 }
