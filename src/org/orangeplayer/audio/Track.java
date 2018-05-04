@@ -13,16 +13,18 @@ import java.io.IOException;
 import java.util.Map;
 
 import static org.orangeplayer.audio.AudioExtensions.*;
-import static org.orangeplayer.audio.TrackState.*;
+import static org.orangeplayer.audio.TrackStates.*;
 
 public abstract class Track implements Runnable, MusicControls {
     protected final File ftrack;
     protected Speaker trackLine;
     protected AudioInputStream speakerAis;
     protected AudioFileReader audioReader;
-    protected byte state;
 
-    protected static final int BUFFSIZE = 4096;
+    protected byte state;
+    //protected TrackState state;
+
+    public static final int BUFFSIZE = 4096;
 
     // La idea es dejar elalgoritmo antiguo para
     // comparar velocidades
@@ -92,6 +94,7 @@ public abstract class Track implements Runnable, MusicControls {
     protected Track(File ftrack) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         System.out.println("File: "+ftrack.getPath());
         this.ftrack = ftrack;
+        //stateCode = STOPED;
         state = STOPED;
         initLine();
     }
@@ -108,32 +111,43 @@ public abstract class Track implements Runnable, MusicControls {
         return speakerAis.read() == -1;
     }
 
-    public AudioInputStream getSpeakerAis() {
+    public AudioInputStream getTrackStream() {
         return speakerAis;
     }
+
+    public Speaker getTrackLine() {
+        return trackLine;
+    }
+
 
     public File getTrackFile() {
         return ftrack;
     }
 
-    public byte getState() {
-        return state;
-    }
+    /*public TrackStates getState() {
+        return stateCode;
+    }*/
 
     public String getStateToString() {
-        if (state == PLAYING)
-            return "Playing";
-        else if (state == PAUSED)
-            return "Paused";
-        else if (state == STOPED)
-            return "Stoped";
-        else if (state == SEEKED)
-            return "Seeked";
-        else
-            return "Unknown";
+        switch (state) {
+            case PLAYING:
+                return "Playing";
+            case PAUSED:
+                return "Paused";
+            case STOPED:
+                return "Stoped";
+            case FINISHED:
+                return "Finished";
+            case KILLED:
+                return "Killed";
+                default:
+                    return "Unknown";
+        }
+        // else if (state instanceof S)
+        //    return "Seeked";
     }
 
-    protected abstract void getAudioStream() throws IOException, UnsupportedAudioFileException;
+    protected abstract void loadAudioStream() throws IOException, UnsupportedAudioFileException;
 
     protected void resetStream() throws IOException, LineUnavailableException, UnsupportedAudioFileException {
         if (speakerAis != null)
@@ -142,7 +156,9 @@ public abstract class Track implements Runnable, MusicControls {
     }
 
     protected void initLine() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        getAudioStream();
+        loadAudioStream();
+        // Se deja el if porque puede que no se pueda leer el archivo
+        // por n razones
         if (speakerAis != null) {
             if (trackLine != null)
                 trackLine.close();
@@ -152,9 +168,11 @@ public abstract class Track implements Runnable, MusicControls {
     }
 
     protected void closeLine() {
-        trackLine.stop();
-        trackLine.close();
-        trackLine = null;
+        if (trackLine != null) {
+            trackLine.stop();
+            trackLine.close();
+            trackLine = null;
+        }
     }
 
     protected String getProperty(String key) {
@@ -174,6 +192,16 @@ public abstract class Track implements Runnable, MusicControls {
             e.printStackTrace();
         }
         return null;
+    }
+
+    protected void closeAll() {
+        closeLine();
+        // Libero al archivo de audio del bloqueo
+        try {
+            speakerAis.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -196,14 +224,26 @@ public abstract class Track implements Runnable, MusicControls {
         return state == FINISHED;
     }
 
+    public boolean isKilled() {
+        return state == KILLED;
+    }
+
+    public void kill() {
+        state = KILLED;
+        closeAll();
+    }
+
     @Override
     public void play() {
+        //if (stateCode == PAUSED)
+        //    ThreadManager.unfreezeThread(Thread.currentThread());
         state = PLAYING;
     }
 
     @Override
     public void pause() {
         state = PAUSED;
+        //ThreadManager.freezeThread(Thread.currentThread());
     }
 
     @Override
@@ -212,28 +252,29 @@ public abstract class Track implements Runnable, MusicControls {
     }
 
     @Override
-    public void stopTrack() {
+    public synchronized void stopTrack() {
         state = STOPED;
     }
 
     @Override
     public void finish() {
         state = FINISHED;
-        closeLine();
+        closeAll();
     }
 
     public abstract void seek(int seconds) throws Exception;
-
-    // -80 to 6
+    // -80 to 5.5
     @Override
     public void setGain(float volume) {
-        float vol = (float) (-80.0+(0.86*volume));
+        float vol = (float) (-80.0+(0.855*volume));
         trackLine.setGain(vol);
     }
 
     public AudioFileFormat getFileFormat() throws IOException, UnsupportedAudioFileException {
         return audioReader == null ? null : audioReader.getAudioFileFormat(ftrack);
     }
+
+    // Info
 
     public String getTitle() {
         String proper = getProperty("title");
@@ -287,34 +328,27 @@ public abstract class Track implements Runnable, MusicControls {
 
             // For testing
             //speakerAis.skip(8000000);
-            while (!isFinished()) {
+            while (!isFinished() && !isKilled()) {
                 while (isPlaying()) {
                     try {
                         read = speakerAis.read(audioBuffer);
                         if (read == -1) {
                             finish();
-                            System.out.println("Track finished");
                             break;
                         }
                         trackLine.playAudio(audioBuffer);
-                    }catch (IndexOutOfBoundsException e1) {
+                    } catch (IndexOutOfBoundsException e) {
                         finish();
-                        System.out.println("Track finished");
-                        break;
                     }
                 }
-                if (isStoped()) {
+                if (isStoped())
                     resetStream();
-                    while (isStoped()) {
-                    }
-                }
-
-                System.out.print("");
             }
             System.out.println("Track completed!");
-            if (PlayerHandler.hasInstance())
-                PlayerHandler.getInstance().interruptPlayerThread();
-        } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
+            if (isFinished() && PlayerHandler.hasInstance()) {
+                PlayerHandler.getInstance().playNext();
+            }
+        } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
             e.printStackTrace();
         }
     }

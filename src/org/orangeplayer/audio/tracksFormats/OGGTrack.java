@@ -37,7 +37,7 @@ public class OGGTrack extends Track {
     }
 
     @Override
-    protected void getAudioStream() throws IOException, UnsupportedAudioFileException {
+    protected void loadAudioStream() throws IOException, UnsupportedAudioFileException {
         audioReader = new JorbisAudioFileReader();
         AudioInputStream soundAis = audioReader.getAudioInputStream(ftrack);
         speakerAis = DecodeManager.decodeToPcm(soundAis);

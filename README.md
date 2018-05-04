@@ -47,3 +47,6 @@ Music player library in pure Java.
 # 0.5.2 Beta
 	## Se añaden listeners a clase Player	
 	## Se optimiza el uso del procesador al momento de utilizar la clase Player, bajando de un 25% a un 1.4% aprox.
+# 0.5.3 Beta
+	## Se elimina ciclo principal en la clase Player, ahora todo se hace con wait y notify
+	## Se corrige problema con stop en la clase Track

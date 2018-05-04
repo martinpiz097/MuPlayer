@@ -27,7 +27,7 @@ public class PCMTrack extends Track {
     }
 
     @Override
-    protected void getAudioStream() throws IOException, UnsupportedAudioFileException {
+    protected void loadAudioStream() throws IOException, UnsupportedAudioFileException {
         final AudioFileFormat fileFormat = AudioSystem.getAudioFileFormat(ftrack);
         final String extension = fileFormat.getType().getExtension();
         switch (extension) {

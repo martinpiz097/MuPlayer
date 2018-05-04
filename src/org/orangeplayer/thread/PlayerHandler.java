@@ -11,7 +11,7 @@ public class PlayerHandler {
         return handler != null;
     }
 
-    public static void newInstance(Player player) {
+    public static void setInstance(Player player) {
         handler = new PlayerHandler(player);
     }
 
@@ -23,9 +23,14 @@ public class PlayerHandler {
         this.player = player;
     }
 
-    public void interruptPlayerThread() {
+    public void unfreezePlayerThread() {
         if (player != null)
             player.interrupt();
+    }
+
+    public void playNext() {
+        if (player != null)
+            player.playNext();
     }
 
 }

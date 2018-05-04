@@ -26,7 +26,7 @@ public class FlacTrack extends Track {
     }
 
     @Override
-    protected void getAudioStream() {
+    protected void loadAudioStream() {
         try {
         audioReader = new FlacAudioFileReader();
         FlacDecoder decoder = new FlacDecoder(ftrack);

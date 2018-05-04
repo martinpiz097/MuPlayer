@@ -18,7 +18,7 @@ public class MP4Track extends Track {
     }
 
     @Override
-    protected void getAudioStream() throws IOException, UnsupportedAudioFileException {
+    protected void loadAudioStream() throws IOException, UnsupportedAudioFileException {
         audioReader = new AACAudioFileReader();
         speakerAis = audioReader.getAudioInputStream(ftrack);
         // Probar despues transformando a PCM

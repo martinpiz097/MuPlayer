@@ -25,7 +25,7 @@ public class MP3Track extends Track {
     }
 
     @Override
-    protected void getAudioStream() throws IOException, UnsupportedAudioFileException {
+    protected void loadAudioStream() throws IOException, UnsupportedAudioFileException {
         // Ver si se escucha mejor en ogg utilizando la logica de mp3
         audioReader = new MpegAudioFileReader();
         AudioInputStream soundAis = audioReader.getAudioInputStream(ftrack);

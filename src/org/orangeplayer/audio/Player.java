@@ -3,24 +3,25 @@ package org.orangeplayer.audio;
 import org.orangeplayer.audio.interfaces.PlayerControls;
 import org.orangeplayer.audio.interfaces.PlayerListener;
 import org.orangeplayer.thread.PlayerHandler;
+import org.orangeplayer.thread.ThreadManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class Player extends Thread implements PlayerControls {
     private File rootFolder;
     private Track current;
     private Thread currentThread;
+
     private ArrayList<String> listSoundPaths;
     private ArrayList<PlayerListener> listListeners;
 
     private int trackIndex;
-    private boolean on;
-    private long sleepTime;
     private float currentVolume;
+    private boolean on;
+
+    public static float DEFAULT_VOLUME = 80.0f;
 
     /*private static Player player;
 
@@ -45,14 +46,14 @@ public class Player extends Thread implements PlayerControls {
         listSoundPaths = new ArrayList<>();
         listListeners = new ArrayList<>();
         trackIndex = 0;
-        on = false;
-        currentVolume = 80;
+        currentVolume = DEFAULT_VOLUME;
         if (!rootFolder.exists())
             throw new FileNotFoundException();
         else {
             loadTracks(rootFolder);
             sortTracks();
         }
+        on = false;
         setName("ThreadPlayer "+getId());
     }
 
@@ -129,12 +130,12 @@ public class Player extends Thread implements PlayerControls {
         return getTrack(trackIndex, false);
     }
 
-    private void finishCurrent(Track current) {
+    private void finishTrack(Track current) {
         if (current != null && !current.isFinished())
             current.finish();
     }
 
-    private void startNewThread() {
+    private void startNewTrackThread() {
         currentThread = new Thread(current);
         currentThread.setName("ThreadTrack: "+current.getTrackFile().getName().substring(0, 10));
         current.setGain(currentVolume);
@@ -293,111 +294,58 @@ public class Player extends Thread implements PlayerControls {
     public synchronized void playNext() {
         Track cur = current;
         current = getNextTrack();
-        finishCurrent(cur);
-        startNewThread();
+        finishTrack(cur);
+        startNewTrackThread();
         loadListenerMethod("onSongChange", current);
         System.out.println(current.getInfoSong());
     }
 
+    public void next() {
+        current.finish();
+    }
+
     @Override
-    public void playPrevious() {
-        Track cur = current;
+    public synchronized void playPrevious() {
+        trackIndex-=2;
+        if (trackIndex < 0)
+            trackIndex = listSoundPaths.size()-1;
+        /*Track cur = current;
         current = getPreviousTrack();
-        finishCurrent(cur);
-        startNewThread();
+        finishTrack(cur);
+        startNewTrackThread();
         System.out.println(current.getInfoSong());
-        loadListenerMethod("onSongChange", current);
+        loadListenerMethod("onSongChange", current);*/
+        current.finish();
     }
 
     @Override
     public void shutdown() {
         on = false;
+        // Se usa kill porque con finish se cambia la cancion
         if (current != null)
-            current.finish();
+            current.kill();
+        // Por sea caso
+        System.out.println(currentThread.isAlive());
+        ThreadManager.unfreezeThread(this);
         loadListenerMethod("onShutdown", null);
     }
 
     private synchronized void waitSong() {
-        try {
-            System.out.println("Wait!");
-            this.wait();
-        } catch (InterruptedException e) {}
+        System.out.println("Antes de frezeear");
+        //ThreadManager.freezeThread(this);
+        ThreadManager.freezeThread(this);
+        System.out.println("Frezeeado");
     }
 
     @Override
     public void run() {
-        PlayerHandler.newInstance(this);
+        PlayerHandler.setInstance(this);
         on = true;
         loadListenerMethod("onStarted", null);
-        play();
-        while (on) {
-            playNext();
-            waitSong();
-            // La otra opcion es con sleep
-        }
-    }
-
-    public static void main(String[] args) throws IOException {
-        boolean hasArgs = args != null && args.length > 0;
-        String fPath = hasArgs ? args[0] : "/home/martin/AudioTesting/music/";
-
-        //Player.newInstance(fPath);
-        //Player player = Player.getPlayer();
-        Player player = new Player(fPath);
-        player.start();
-        Scanner scan = new Scanner(System.in);
-        // /home/martin/AudioTesting/music/Alejandro Silva/1 - 1999/AlbumArtSmall.jpg
-        // /home/martin/AudioTesting/music/NSYNC/NSYNC - No Strings Attached (2000)/ReadMe.txt
-
-        char c;
-        String line;
-
-        boolean on = true;
-
-        while (on) {
-            try {
-                line = scan.nextLine();
-                c = line.charAt(0);
-                switch (c) {
-                    case 'n':
-                        if (line.length() > 1)
-                            player.trackIndex+= Integer.parseInt(line.substring(2));
-                        player.playNext();
-                        break;
-                    case 'p':
-                        if (line.length() > 1)
-                            player.trackIndex-= Integer.parseInt(line.substring(2));
-                        player.playPrevious();
-                        break;
-                    case 's':
-                        player.stopTrack();
-                        break;
-                    case 'r':
-                        player.resumeTrack();
-                        break;
-                    case 'm':
-                        player.pause();
-                        break;
-                    case 'v':
-                        player.setGain(Float.parseFloat(line.split(" ")[1]));
-                        break;
-                    case 'k':
-                        player.seek(Integer.parseInt(line.split(" ")[1]));
-                        break;
-                    case 'e':
-                        on = false;
-                        player.shutdown();
-                        break;
-                    case 'u':
-                        player.reloadTracks();
-                        break;
-                }
-            }catch(Exception e) {
-
-            }
-        }
-
-
+        playNext();
+        waitSong();
+        //System.out.println("Despues de waitSong");
+        //System.out.println("Se termino on");
     }
 
 }
