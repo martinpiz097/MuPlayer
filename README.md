@@ -50,3 +50,7 @@ Music player library in pure Java.
 # 0.5.3 Beta
 	## Se elimina ciclo principal en la clase Player, ahora todo se hace con wait y notify
 	## Se corrige problema con stop en la clase Track
+# 0.5.4 Beta
+	## Optimizacion de memoria al leer archivos FLAC
+	## Falta corregir lectura de etiquetas FLAC
+	## Falta corregir lectura de archivos AAC (de otra forma retirar codec)

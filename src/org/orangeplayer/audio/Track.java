@@ -3,7 +3,7 @@ package org.orangeplayer.audio;
 import org.aucom.sound.Speaker;
 import org.orangeplayer.audio.codec.DecodeManager;
 import org.orangeplayer.audio.interfaces.MusicControls;
-import org.orangeplayer.audio.tracksFormats.*;
+import org.orangeplayer.audio.formats.*;
 import org.orangeplayer.thread.PlayerHandler;
 
 import javax.sound.sampled.*;

@@ -5,9 +5,11 @@ import org.orangeplayer.audio.interfaces.PlayerListener;
 import org.orangeplayer.thread.PlayerHandler;
 import org.orangeplayer.thread.ThreadManager;
 
+import javax.sound.sampled.SourceDataLine;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Player extends Thread implements PlayerControls {
     private File rootFolder;
@@ -80,6 +82,17 @@ public class Player extends Thread implements PlayerControls {
         }
     }
 
+    private void loadTracks(List<File> listFiles) {
+        listSoundPaths.clear();
+        trackIndex = 0;
+
+        // Se supone que todos son archivos
+        listFiles.stream().forEach((f)->{
+            if (!f.isDirectory())
+                listSoundPaths.add(f.getPath());
+        });
+    }
+
     // Agregar opcion para ordenar
 
     private void sortTracks() {
@@ -137,7 +150,9 @@ public class Player extends Thread implements PlayerControls {
 
     private void startNewTrackThread() {
         currentThread = new Thread(current);
-        currentThread.setName("ThreadTrack: "+current.getTrackFile().getName().substring(0, 10));
+        String trackName = current.getTrackFile().getName();
+        int strLimit = trackName.length() < 10 ? trackName.length() : 10;
+        currentThread.setName("ThreadTrack: "+current.getTrackFile().getName().substring(0, strLimit));
         current.setGain(currentVolume);
         currentThread.start();
     }
@@ -182,8 +197,29 @@ public class Player extends Thread implements PlayerControls {
         }
     }
 
+    private void changeSong() {
+        this.interrupt();
+    }
+
+    // Test
+    public void setTrackIndex(int aumento) {
+        if (aumento > 0)
+            trackIndex+=(--aumento);
+        else {
+            trackIndex-=aumento;
+        }
+        if (trackIndex >= listSoundPaths.size())
+            trackIndex = 0;
+        else if (trackIndex < 0)
+            trackIndex = listSoundPaths.size()-1;
+    }
+
     public void addPlayerListener(PlayerListener listener) {
         listListeners.add(listener);
+    }
+
+    public ArrayList<PlayerListener> getListeners() {
+        return listListeners;
     }
 
     public void removePlayerListener(PlayerListener reference) {
@@ -207,6 +243,12 @@ public class Player extends Thread implements PlayerControls {
         return current;
     }
 
+    public SourceDataLine getTrackLine() {
+        if (current == null)
+            System.out.println("Current is null");
+        return current == null ? null : current.getTrackLine().getDriver();
+    }
+
     @Override
     public boolean isPlaying() {
         return current == null ? false : current.isPlaying();
@@ -228,9 +270,24 @@ public class Player extends Thread implements PlayerControls {
         return current == null ? false : current.isFinished();
     }
 
+    public void open(File sound) {
+    }
+    public void open(List<File> listSounds) {
+        loadTracks(listSounds);
+        // Ver si el thread no es nulo
+        if (current != null && currentThread.isAlive()) {
+            current.kill();
+            current = getTrack(trackIndex, true);
+            currentThread = new Thread(current);
+            currentThread.start();
+        }
+    }
+
     @Override
     public void play() {
-        if (current != null) {
+        if (!isAlive())
+            start();
+        else if (current != null) {
             current.play();
             loadListenerMethod("onPlayed", current);
         }
@@ -286,10 +343,6 @@ public class Player extends Thread implements PlayerControls {
         }
     }
 
-    private void changeSong() {
-        this.interrupt();
-    }
-
     @Override
     public synchronized void playNext() {
         Track cur = current;
@@ -297,6 +350,7 @@ public class Player extends Thread implements PlayerControls {
         finishTrack(cur);
         startNewTrackThread();
         loadListenerMethod("onSongChange", current);
+        System.out.println("Song: "+trackIndex);
         System.out.println(current.getInfoSong());
     }
 

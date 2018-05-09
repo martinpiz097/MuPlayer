@@ -1,20 +1,15 @@
-package org.orangeplayer.audio.tracksFormats;
+package org.orangeplayer.audio.formats;
 
 import com.sun.media.sound.AiffFileReader;
 import com.sun.media.sound.AuFileReader;
 import com.sun.media.sound.WaveFileReader;
 import org.orangeplayer.audio.Track;
 
-import javax.sound.sampled.AudioFileFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
 
-import static org.orangeplayer.audio.AudioExtensions.AIFC;
-import static org.orangeplayer.audio.AudioExtensions.AIFF;
-import static org.orangeplayer.audio.AudioExtensions.WAVE;
+import static org.orangeplayer.audio.AudioExtensions.*;
 
 public class PCMTrack extends Track {
 
@@ -55,6 +50,12 @@ public class PCMTrack extends Track {
     public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         Track track = new PCMTrack("/home/martin/AudioTesting/audio/wav.wav");
         new Thread(track).start();
+
+        /*AudioInputStream ais = AudioSystem.getAudioInputStream(
+                new File("/home/martin/AudioTesting/audio/sound.ogg"));
+        Clip clip = AudioSystem.getClip();
+        clip.open(ais);
+        clip.start();*/
     }
 
 }

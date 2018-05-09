@@ -2,6 +2,9 @@ package org.orangeplayer.main;
 
 import org.orangeplayer.audio.Player;
 
+import javax.sound.sampled.Control;
+import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.SourceDataLine;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -18,6 +21,8 @@ public class TestPlayer {
         // /home/martin/AudioTesting/music/Alejandro Silva/1 - 1999/AlbumArtSmall.jpg
         // /home/martin/AudioTesting/music/NSYNC/NSYNC - No Strings Attached (2000)/ReadMe.txt
 
+        SourceDataLine trackLine = player.getTrackLine();
+
         char c;
         String line;
 
@@ -29,9 +34,22 @@ public class TestPlayer {
                 c = line.charAt(0);
                 switch (c) {
                     case 'n':
+                        if (line.length() >= 3)
+                            player.setTrackIndex(Integer.parseInt(line.substring(2)));
                         player.next();
-                        break;
+                        trackLine = player.getTrackLine();
+
+                        Control sample = trackLine.getControl(FloatControl.Type.SAMPLE_RATE);
+                        Control volume = trackLine.getControl(FloatControl.Type.VOLUME);
+                        Control pan = trackLine.getControl(FloatControl.Type.PAN);
+
+                        System.out.println("PAN: " + pan);
+                        System.out.println("Sample Rate: " + sample);
+                        System.out.println("Volume: " + volume);
+
                     case 'p':
+                        if (line.length() >= 3)
+                            player.setTrackIndex((Integer.parseInt(line.substring(2))) * -1);
                         player.playPrevious();
                         break;
                     case 's':
@@ -57,8 +75,10 @@ public class TestPlayer {
                         player.reloadTracks();
                         break;
                 }
-            }catch(Exception e) {
-
+            } catch (IllegalArgumentException e1) {
+                System.err.println("Control no soportado");
+            } catch(Exception e2) {
+                System.err.println("Exception: "+e2.getMessage());
             }
         }
     }

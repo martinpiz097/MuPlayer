@@ -1,4 +1,4 @@
-package org.orangeplayer.audio.tracksFormats;
+package org.orangeplayer.audio.formats;
 
 import com.jcraft.jorbis.Comment;
 import com.jcraft.jorbis.JOrbisException;
@@ -18,13 +18,16 @@ public class OGGTrack extends Track {
     private VorbisFile infoFile;
     private Comment soundComments;
 
-    public OGGTrack(File ftrack) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
+    public OGGTrack(File ftrack)
+            throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         super(ftrack);
         try {
             infoFile = new VorbisFile(ftrack.getCanonicalPath());
             soundComments = infoFile.getComment(0);
         } catch (JOrbisException e) {
-            e.printStackTrace();
+            System.out.println("Excepcion vorbis");
+        } catch (IOException e) {
+            System.out.println("Excepcion IO");
         }
     }
 
@@ -55,7 +58,7 @@ public class OGGTrack extends Track {
 
     @Override
     protected String getProperty(String key) {
-        return soundComments.query(key);
+        return soundComments == null ? null : soundComments.query(key);
     }
 
     public static void main(String[] args) throws

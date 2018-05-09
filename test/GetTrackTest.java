@@ -4,10 +4,10 @@ import com.jcraft.jorbis.JOrbisException;
 import com.jcraft.jorbis.VorbisFile;
 import org.orangeplayer.audio.Track;
 import org.orangeplayer.audio.codec.DecodeManager;
-import org.orangeplayer.audio.tracksFormats.FlacTrack;
-import org.orangeplayer.audio.tracksFormats.MP3Track;
-import org.orangeplayer.audio.tracksFormats.OGGTrack;
-import org.orangeplayer.audio.tracksFormats.PCMTrack;
+import org.orangeplayer.audio.formats.FlacTrack;
+import org.orangeplayer.audio.formats.MP3Track;
+import org.orangeplayer.audio.formats.OGGTrack;
+import org.orangeplayer.audio.formats.PCMTrack;
 
 import javax.sound.sampled.*;
 import java.io.File;

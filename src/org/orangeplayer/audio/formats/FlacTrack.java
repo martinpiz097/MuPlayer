@@ -1,13 +1,14 @@
-package org.orangeplayer.audio.tracksFormats;
+package org.orangeplayer.audio.formats;
 
 import org.kc7bfi.jflac.sound.spi.FlacAudioFileReader;
+import org.kc7bfi.jflac.sound.spi.FlacFormatConversionProvider;
 import org.orangeplayer.audio.Track;
-import org.orangeplayer.audio.codec.FlacDecoder;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class FlacTrack extends Track {
@@ -27,7 +28,7 @@ public class FlacTrack extends Track {
 
     @Override
     protected void loadAudioStream() {
-        try {
+        /*try {
         audioReader = new FlacAudioFileReader();
         FlacDecoder decoder = new FlacDecoder(ftrack);
         if (decoder.isFlac()) {
@@ -38,6 +39,20 @@ public class FlacTrack extends Track {
         }
 
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }*/
+        try {
+            audioReader = new FlacAudioFileReader();
+            AudioInputStream flacAis = audioReader.getAudioInputStream(ftrack);
+
+            AudioFormat format = flacAis.getFormat();
+            AudioFormat decodedFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
+                    format.getSampleRate(), format.getSampleSizeInBits(), format.getChannels(), format.getChannels() * 2,
+                    format.getSampleRate(), format.isBigEndian());
+
+            speakerAis = new FlacFormatConversionProvider().
+                    getAudioInputStream(decodedFormat, flacAis);
+        } catch (UnsupportedAudioFileException | IOException e) {
             e.printStackTrace();
         }
     }

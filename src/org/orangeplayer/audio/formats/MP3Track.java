@@ -1,4 +1,4 @@
-package org.orangeplayer.audio.tracksFormats;
+package org.orangeplayer.audio.formats;
 
 import javazoom.spi.mpeg.sampled.file.MpegAudioFileReader;
 import org.orangeplayer.audio.Track;
