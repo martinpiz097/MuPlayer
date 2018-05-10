@@ -59,9 +59,12 @@ public class FlacTrack extends Track {
 
     @Override
     public void seek(int seconds) {
-        // Testing skip bytes
+        long secs = getDuration() / 1000 / 1000;
+        long fLen = ftrack.length();
+        long seekLen = (seconds * fLen) / secs;
+
         try {
-            speakerAis.skip(seconds);
+            speakerAis.skip(seekLen);
         } catch (IOException e) {
             e.printStackTrace();
         }

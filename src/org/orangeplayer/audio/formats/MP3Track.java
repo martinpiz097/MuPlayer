@@ -33,11 +33,16 @@ public class MP3Track extends Track {
         speakerAis = DecodeManager.decodeMpegToPcm(baseFormat, soundAis);
     }
 
+    // Una vez obtenidas todas las duraciones por formato
+    // el metodo seek sera universal
     @Override
     public void seek(int seconds) {
-        // Testing skip bytes
+        long secs = getDuration() / 1000 / 1000;
+        long fLen = ftrack.length();
+        long seekLen = (seconds * fLen) / secs;
+
         try {
-            speakerAis.skip(seconds);
+            speakerAis.skip(seekLen);
         } catch (IOException e) {
             e.printStackTrace();
         }

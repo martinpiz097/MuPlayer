@@ -54,3 +54,7 @@ Music player library in pure Java.
 	## Optimizacion de memoria al leer archivos FLAC
 	## Falta corregir lectura de etiquetas FLAC
 	## Falta corregir lectura de archivos AAC (de otra forma retirar codec)
+# 0.5.5 Beta
+	## Se optimiza la memoria para la ejecucion de la libreria
+	## Se logra obtener duracion de archivos flac y ogg
+	## Se permite realizar un seek en archivos mp3, ogg y flac por segundos de audio

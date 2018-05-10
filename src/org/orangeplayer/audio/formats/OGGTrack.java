@@ -48,12 +48,33 @@ public class OGGTrack extends Track {
 
     @Override
     public void seek(int seconds) {
-        // Testing skip bytes
+        long secs = getDuration();
+        long fLen = ftrack.length();
+        long seekLen = (seconds * fLen) / secs;
+
         try {
-            speakerAis.skip(seconds);
+            speakerAis.skip(seekLen);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public long getDuration() {
+        try {
+            return (long) new VorbisFile(ftrack.getCanonicalPath()).time_total(0);
+        } catch (JOrbisException | IOException e) {
+            return -1;
+        }
+    }
+
+    @Override
+    public String getDurationAsString() {
+        long sec = getDuration();
+        long min = sec / 60;
+        sec = sec-(min*60);
+        return new StringBuilder().append(min)
+                .append(':').append(sec < 10 ? '0'+sec:sec).toString();
     }
 
     @Override
@@ -66,9 +87,16 @@ public class OGGTrack extends Track {
         File sound = new File("/home/martin/AudioTesting/audio/sound.ogg");
         Track track = new OGGTrack(sound);
         Thread tTrack = new Thread(track);
-        //tTrack.start();
+        tTrack.start();
         System.out.println(track.getInfoSong());
-        Comment comment = new VorbisFile(sound.getCanonicalPath()).getComment(0);
+        /*VorbisFile vorbisFile = new VorbisFile(sound.getCanonicalPath());
+        Comment comment = vorbisFile.getComment(0);
+        System.out.println("Bitrate: "+vorbisFile.bitrate(0));
+        System.out.println("TimeTotal: "+vorbisFile.time_total(0));
+        System.out.println("PCMTotal: "+vorbisFile.pcm_total(0));
+        System.out.println("RawTotal: "+vorbisFile.raw_total(0));
+        System.out.println("Size: "+sound.length());
+        System.out.println(vorbisFile.time_total(0)%60);*/
     }
 
 
