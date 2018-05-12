@@ -1,8 +1,0 @@
-Manifest-Version: 1.0
-Class-Path: lib/AuCom.jar lib/jaad-0.8.4.jar lib/jffmpeg-1.1.0.jar lib
- /tritonus-share-0.3.7-2.jar lib/jorbis-0.0.15.jar lib/jogg-0.0.7.jar 
- lib/commons-logging-api.jarlib/tritonus_jorbis-0.3.6.jar lib/jl1.0.1.
- jar lib/mp3spi1.9.5.jar lib/jflac-1.3.jar
-Main-Class: org.orangeplayer.main.TestPlayer
-
-

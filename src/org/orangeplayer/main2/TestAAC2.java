@@ -1,4 +1,4 @@
-package org.orangeplayer.main;
+package org.orangeplayer.main2;
 
 import net.sourceforge.jaad.aac.AACException;
 import net.sourceforge.jaad.aac.Decoder;
@@ -8,9 +8,12 @@ import net.sourceforge.jaad.mp4.MP4Container;
 import net.sourceforge.jaad.mp4.api.AudioTrack;
 import net.sourceforge.jaad.mp4.api.Frame;
 import net.sourceforge.jaad.mp4.api.Movie;
-import net.sourceforge.jaad.mp4.api.Track;
+import org.aucom.sound.Speaker;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
 import java.util.List;
 
@@ -19,11 +22,10 @@ public class TestAAC2 {
         //URL url = new URL("https://cdn.online-convert.com/example-file/audio/aac/example.aac");
         //InputStream is = url.openStream();
 
-        //String strTrack = "/home/martin/AudioTesting/music/John Petrucci/" +
-        //        "When_The_Keyboard_Breaks_Live_In_Chicago/Universal_Mind.m4a";
-        String strTrack = "/home/martin/AudioTesting/audio/record.aac";
+        String strTrack =
+            "/home/martin/AudioTesting/music/John Petrucci/When_The_Keyboard_Breaks_Live_In_Chicago/Universal_Mind.m4a";
+        //    "/home/martin/AudioTesting/audio/record.aac";
         //Toolkit toolkit = Toolkit.getPCMConvertedAudioInputStream();
-
         File inputFile = new File(strTrack);
         //sound.createNewFile();
 
@@ -34,10 +36,20 @@ public class TestAAC2 {
         //Files.write(sound.toPath(),
         //        buff.toArray(), StandardOpenOption.TRUNCATE_EXISTING);
 
-        AudioInputStream ais = decodeAAC(inputFile);
-        File outFile = new File("/home/martin/AudioTesting/audio/waveout.wav");
-        outFile.createNewFile();
-        AudioSystem.write(ais, AudioFileFormat.Type.WAVE, outFile);
+        AudioInputStream ais = decodeMP4(inputFile);
+        System.out.println("Decoded");
+        Speaker speaker = new Speaker(ais.getFormat());
+        speaker.open();
+
+        System.out.println(ais.getFrameLength());
+        byte[] buff = new byte[1024];
+
+        while (ais.read(buff) != -1)
+            speaker.playAudio(buff);
+
+        //File outFile = new File("/home/martin/AudioTesting/audio/waveout.wav");
+        //outFile.createNewFile();
+        //AudioSystem.write(ais, AudioFileFormat.Type.WAVE, outFile);
     }
 
     private static AudioInputStream decodeAAC(File inputFile) throws AACException {
@@ -78,12 +90,13 @@ public class TestAAC2 {
     private static AudioInputStream decodeMP4(File inputFile) throws UnsupportedAudioFileException, IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         AudioFormat audioFormat = null;
+        RandomAccessFile randomAccessFile = null;
 
         try {
-            RandomAccessFile randomAccessFile = new RandomAccessFile(inputFile, "r");
+            randomAccessFile = new RandomAccessFile(inputFile, "r");
             final MP4Container cont = new MP4Container(randomAccessFile);
             final Movie movie = cont.getMovie();
-            final List<Track> tracks = movie.getTracks(AudioTrack.AudioCodec.AAC);
+            final List<net.sourceforge.jaad.mp4.api.Track> tracks = movie.getTracks(AudioTrack.AudioCodec.AAC);
             if (tracks.isEmpty())
                 throw new UnsupportedAudioFileException("Movie does not contain any AAC track");
 
@@ -100,7 +113,7 @@ public class TestAAC2 {
 
             audioFormat = new AudioFormat(track.getSampleRate(), track.getSampleSize(), track.getChannelCount(), true, true);
         } finally {
-            // nop
+            randomAccessFile.close();
         }
 
         byte[] outputStreamByteArray = outputStream.toByteArray();

@@ -5,6 +5,7 @@ import org.orangeplayer.audio.codec.DecodeManager;
 import org.orangeplayer.audio.formats.*;
 import org.orangeplayer.audio.interfaces.MusicControls;
 import org.orangeplayer.thread.PlayerHandler;
+import org.orangeplayer.thread.ThreadManager;
 
 import javax.sound.sampled.*;
 import javax.sound.sampled.spi.AudioFileReader;
@@ -22,6 +23,8 @@ public abstract class Track implements Runnable, MusicControls {
     protected AudioFileReader audioReader;
 
     protected byte state;
+    protected int currentSeconds;
+    protected float volume;
     //protected TrackState state;
 
     public static final int BUFFSIZE = 4096;
@@ -97,6 +100,7 @@ public abstract class Track implements Runnable, MusicControls {
         //stateCode = STOPED;
         state = STOPED;
         initLine();
+        currentSeconds = 0;
     }
 
     protected Track(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
@@ -153,6 +157,7 @@ public abstract class Track implements Runnable, MusicControls {
     protected void resetStream() throws IOException, LineUnavailableException, UnsupportedAudioFileException {
         if (speakerAis != null)
             speakerAis.close();
+        currentSeconds = 0;
         initLine();
     }
 
@@ -197,6 +202,7 @@ public abstract class Track implements Runnable, MusicControls {
 
     protected void closeAll() {
         closeLine();
+        currentSeconds = 0;
         // Libero al archivo de audio del bloqueo
         try {
             speakerAis.close();
@@ -204,6 +210,8 @@ public abstract class Track implements Runnable, MusicControls {
             e.printStackTrace();
         }
     }
+
+    protected abstract short getSecondsByBytes(int readedBytes);
 
     @Override
     public synchronized boolean isPlaying() {
@@ -271,6 +279,20 @@ public abstract class Track implements Runnable, MusicControls {
         trackLine.setGain(vol);
     }
 
+    // Ir a un segundo especifico de la cancion
+    public void gotoSecond(int second) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
+        long bytes = (second*ftrack.length()) / getDuration();
+        float currentVolume = trackLine.getControl(
+                FloatControl.Type.MASTER_GAIN).getValue();
+
+        pause();
+        resetStream();
+        speakerAis.skip(bytes);
+        trackLine.setGain(currentVolume);
+        currentSeconds = second;
+        play();
+    }
+
     public AudioFileFormat getFileFormat() throws IOException, UnsupportedAudioFileException {
         return audioReader == null ? null : audioReader.getAudioFileFormat(ftrack);
     }
@@ -295,18 +317,13 @@ public abstract class Track implements Runnable, MusicControls {
         return getProperty("date");
     }
 
-    public long getDuration() {
-        String strDuration = getProperty("duration");
-        return strDuration == null ? 0 : Long.parseLong(strDuration);
+    public synchronized int getProgress() {
+        return currentSeconds;
     }
 
-    public String getDurationAsString() {
-        long sec = getDuration() / 1000/1000;
-        long min = sec / 60;
-        sec = sec-(min*60);
-        return new StringBuilder().append(min)
-                .append(':').append(sec < 10 ? '0'+sec:sec).toString();
-    }
+    public abstract long getDuration();
+
+    public abstract String getDurationAsString();
 
     // Testing
     public String getInfoSong() {
@@ -320,19 +337,39 @@ public abstract class Track implements Runnable, MusicControls {
         return sbInfo.toString();
     }
 
+    // Posible motivo de error para mas adelante
+    public int getBuffLen() {
+        long frameLen = speakerAis.getFrameLength();
+        return frameLen > 0 ? (int) (frameLen / 1024) : BUFFSIZE;
+    }
+
     @Override
     public void run() {
         try {
-            byte[] audioBuffer = new byte[BUFFSIZE];
+            //System.out.println("FrameSize: "+speakerAis.getFrameLength());
+            //System.out.println("FrameSize/1024: "+speakerAis.getFrameLength()/1024);
+            byte[] audioBuffer = new byte[getBuffLen()];
             int read;
             play();
 
-            // For testing
-            //speakerAis.skip(8000000);
+            long ti = System.currentTimeMillis();
+            int readedBytes = 0;
+
+            System.out.println("TotalLen: "+ftrack.length());
+            System.out.println("TotalDuration: "+getDuration());
+
             while (!isFinished() && !isKilled()) {
                 while (isPlaying()) {
                     try {
                         read = speakerAis.read(audioBuffer);
+                        readedBytes+=read;
+                        // Por mientras el progreso de hace de manera artesanal
+                        // ya que no ha resultado con la formula
+                        if (ThreadManager.hasOneSecond(ti)) {
+                            //currentSeconds=(getSecondsByBytes(readedBytes));
+                            currentSeconds++;
+                            ti = System.currentTimeMillis();
+                        }
                         if (read == -1) {
                             finish();
                             break;
@@ -347,9 +384,8 @@ public abstract class Track implements Runnable, MusicControls {
                 }
             }
             System.out.println("Track completed!");
-            if (isFinished() && PlayerHandler.hasInstance()) {
-                PlayerHandler.getInstance().playNext();
-            }
+            if (isFinished() && PlayerHandler.hasInstance())
+                PlayerHandler.getPlayer().loadNextTrack();
         } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
             e.printStackTrace();
         }

@@ -35,8 +35,15 @@ public class OGGTrack extends Track {
         this(new File(trackPath));
     }
 
-    public boolean isValidTrack() {
+    /*public boolean isValidTrack() {
         return speakerAis != null;
+    }*/
+
+    @Override
+    protected short getSecondsByBytes(int readedBytes) {
+        long secs = getDuration();
+        long fLen = ftrack.length();
+        return (short) ((readedBytes * secs) / fLen);
     }
 
     @Override
@@ -51,8 +58,9 @@ public class OGGTrack extends Track {
         long secs = getDuration();
         long fLen = ftrack.length();
         long seekLen = (seconds * fLen) / secs;
-
         try {
+            if (seekLen > speakerAis.available())
+                seekLen = speakerAis.available();
             speakerAis.skip(seekLen);
         } catch (IOException e) {
             e.printStackTrace();

@@ -58,3 +58,11 @@ Music player library in pure Java.
 	## Se optimiza la memoria para la ejecucion de la libreria
 	## Se logra obtener duracion de archivos flac y ogg
 	## Se permite realizar un seek en archivos mp3, ogg y flac por segundos de audio
+# 0.6 Beta
+	## Se lee duracion de archivos PCM correctamente.
+	## Error en metodo shutdown del Player corregido.
+	## Compatibilidad mejorada en formato M4A
+	## Se obtiene la duracion de la cancion a traves de la sobreescritura de un metodo 
+		abstracto de la clase padre Track
+	## Se añade opcion de ver tiempo actual de la cancion
+	## Se añade opcion de dirigirse a un segundo especifico de la cancion (No disponible correctamente en archivos FLAC y M4A)

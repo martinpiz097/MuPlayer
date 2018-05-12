@@ -33,15 +33,39 @@ public class MP3Track extends Track {
         speakerAis = DecodeManager.decodeMpegToPcm(baseFormat, soundAis);
     }
 
+    @Override
+    protected short getSecondsByBytes(int readedBytes) {
+        long secs = getDuration();
+        long fLen = ftrack.length();
+        return (short) ((readedBytes * secs) / fLen);
+    }
+
+    @Override
+    public long getDuration() {
+        String strDuration = getProperty("duration");
+        return strDuration == null ? 0 :
+                Long.parseLong(strDuration) / 1000 / 1000;
+    }
+
+    @Override
+    public String getDurationAsString() {
+        long sec = getDuration();
+        long min = sec / 60;
+        sec = sec-(min*60);
+        return new StringBuilder().append(min)
+                .append(':').append(sec < 10 ? '0'+sec:sec).toString();
+    }
+
     // Una vez obtenidas todas las duraciones por formato
     // el metodo seek sera universal
     @Override
     public void seek(int seconds) {
-        long secs = getDuration() / 1000 / 1000;
+        long secs = getDuration();
         long fLen = ftrack.length();
         long seekLen = (seconds * fLen) / secs;
-
         try {
+            if (seekLen > speakerAis.available())
+                seekLen = speakerAis.available();
             speakerAis.skip(seekLen);
         } catch (IOException e) {
             e.printStackTrace();
@@ -49,7 +73,7 @@ public class MP3Track extends Track {
     }
 
     // Libreria AAC genera problemas con archivos mp3 y ogg
-    public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException, InterruptedException {
         File sound = new File("/home/martin/AudioTesting/audio/au.mp3");
         //System.out.println(new MpegAudioFileReader().getAudioFileFormat(sound).getType().toString());
         //System.out.println(new JorbisAudioFileReader().getAudioFileFormat(sound).getType().toString());
@@ -59,7 +83,10 @@ public class MP3Track extends Track {
 
         Track track = new MP3Track(sound);
         Thread tTrack = new Thread(track);
-        //tTrack.start();
+        tTrack.start();
+
+        Thread.sleep(300000);
+
         AudioFileFormat fileFormat = AudioSystem.getAudioFileFormat(sound);
         System.out.println(AudioSystem.isConversionSupported(
                 AudioFormat.Encoding.PCM_SIGNED, fileFormat.getFormat()));

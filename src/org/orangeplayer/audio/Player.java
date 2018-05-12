@@ -197,16 +197,40 @@ public class Player extends Thread implements PlayerControls {
         }
     }
 
-    private void changeSong() {
-        this.interrupt();
+    private synchronized void waitSong() {
+        ThreadManager.freezeThread(this);
+        System.out.println("Frezeeado");
     }
 
+    private void shutdownPlaying() {
+        if (current != null && (!current.isKilled() && !current.isKilled()))
+            // Cambiar por shutdown el metodo de current o algo parecido
+            current.kill();
+    }
+
+    private void changeTrack() {
+        if (current != null)
+            current.finish();
+    }
+
+    void loadNextTrack() {
+        Track cur = current;
+        current = getNextTrack();
+        finishTrack(cur);
+        startNewTrackThread();
+        loadListenerMethod("onSongChange", current);
+        System.out.println("Song: "+trackIndex);
+        System.out.println(current.getInfoSong());
+    }
+
+
+
     // Test
-    public void setTrackIndex(int aumento) {
-        if (aumento > 0)
-            trackIndex+=(--aumento);
+    public void jumpTrack(int jumps) {
+        if (jumps > 0)
+            trackIndex+=(--jumps);
         else {
-            trackIndex-=aumento;
+            trackIndex-=jumps;
         }
         if (trackIndex >= listSoundPaths.size())
             trackIndex = 0;
@@ -246,6 +270,9 @@ public class Player extends Thread implements PlayerControls {
     public SourceDataLine getTrackLine() {
         if (current == null)
             System.out.println("Current is null");
+        else {
+            System.out.println("CurrentLine: "+current.getTrackLine());
+        }
         return current == null ? null : current.getTrackLine().getDriver();
     }
 
@@ -271,7 +298,9 @@ public class Player extends Thread implements PlayerControls {
     }
 
     public void open(File sound) {
+
     }
+
     public void open(List<File> listSounds) {
         loadTracks(listSounds);
         // Ver si el thread no es nulo
@@ -281,6 +310,10 @@ public class Player extends Thread implements PlayerControls {
             currentThread = new Thread(current);
             currentThread.start();
         }
+    }
+
+    public int getCurrentProgress() {
+        return current.getProgress();
     }
 
     @Override
@@ -345,17 +378,7 @@ public class Player extends Thread implements PlayerControls {
 
     @Override
     public synchronized void playNext() {
-        Track cur = current;
-        current = getNextTrack();
-        finishTrack(cur);
-        startNewTrackThread();
-        loadListenerMethod("onSongChange", current);
-        System.out.println("Song: "+trackIndex);
-        System.out.println(current.getInfoSong());
-    }
-
-    public void next() {
-        current.finish();
+        changeTrack();
     }
 
     @Override
@@ -363,13 +386,13 @@ public class Player extends Thread implements PlayerControls {
         trackIndex-=2;
         if (trackIndex < 0)
             trackIndex = listSoundPaths.size()-1;
+        changeTrack();
         /*Track cur = current;
         current = getPreviousTrack();
         finishTrack(cur);
         startNewTrackThread();
         System.out.println(current.getInfoSong());
         loadListenerMethod("onSongChange", current);*/
-        current.finish();
     }
 
     @Override
@@ -380,23 +403,22 @@ public class Player extends Thread implements PlayerControls {
             current.kill();
         // Por sea caso
         System.out.println(currentThread.isAlive());
-        ThreadManager.unfreezeThread(this);
+        System.out.println("Antes de apagar current");
+        shutdownPlaying();
+        System.out.println("Antes de descongelar player");
+        this.interrupt();
+        System.out.println("Player descongelado");
         loadListenerMethod("onShutdown", null);
     }
 
-    private synchronized void waitSong() {
-        System.out.println("Antes de frezeear");
-        //ThreadManager.freezeThread(this);
-        ThreadManager.freezeThread(this);
-        System.out.println("Frezeeado");
-    }
+
 
     @Override
     public void run() {
         PlayerHandler.setInstance(this);
         on = true;
         loadListenerMethod("onStarted", null);
-        playNext();
+        loadNextTrack();
         waitSong();
         //System.out.println("Despues de waitSong");
         //System.out.println("Se termino on");

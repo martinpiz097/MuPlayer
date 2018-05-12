@@ -19,6 +19,10 @@ public class PlayerHandler {
         return handler;
     }
 
+    public static Player getPlayer() {
+        return handler.player;
+    }
+
     private PlayerHandler(Player player) {
         this.player = player;
     }
@@ -26,11 +30,6 @@ public class PlayerHandler {
     public void unfreezePlayerThread() {
         if (player != null)
             player.interrupt();
-    }
-
-    public void playNext() {
-        if (player != null)
-            player.playNext();
     }
 
 }

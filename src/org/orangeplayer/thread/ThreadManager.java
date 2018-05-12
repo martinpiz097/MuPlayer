@@ -1,6 +1,12 @@
 package org.orangeplayer.thread;
 
 public class ThreadManager {
+
+    // paso un segundo ?
+    public static boolean hasOneSecond(long ti) {
+        return System.currentTimeMillis() - ti >= 1000;
+    }
+
     public static synchronized void freezeThread(Thread t) {
         try {
             t.wait();

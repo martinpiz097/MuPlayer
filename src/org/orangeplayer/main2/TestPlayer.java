@@ -1,4 +1,4 @@
-package org.orangeplayer.main;
+package org.orangeplayer.main2;
 
 import org.orangeplayer.audio.Player;
 
@@ -6,6 +6,7 @@ import javax.sound.sampled.Control;
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.SourceDataLine;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class TestPlayer {
@@ -35,21 +36,21 @@ public class TestPlayer {
                 switch (c) {
                     case 'n':
                         if (line.length() >= 3)
-                            player.setTrackIndex(Integer.parseInt(line.substring(2)));
-                        player.next();
+                            player.jumpTrack(Integer.parseInt(line.substring(2)));
+                        player.playNext();
+                        System.err.println("Antes de trackLine");
                         trackLine = player.getTrackLine();
-
-                        Control sample = trackLine.getControl(FloatControl.Type.SAMPLE_RATE);
-                        Control volume = trackLine.getControl(FloatControl.Type.VOLUME);
+                        System.err.println("Antes de controls");
+                        System.out.println("Controls: "+Arrays.toString(trackLine.getControls()));
                         Control pan = trackLine.getControl(FloatControl.Type.PAN);
+                        System.out.println("PAN: "+pan);
 
-                        System.out.println("PAN: " + pan);
-                        System.out.println("Sample Rate: " + sample);
-                        System.out.println("Volume: " + volume);
+                        //System.out.println("Sample Rate: " + sample);
+                        //System.out.println("Volume: " + volume);
 
                     case 'p':
                         if (line.length() >= 3)
-                            player.setTrackIndex((Integer.parseInt(line.substring(2))) * -1);
+                            player.jumpTrack((Integer.parseInt(line.substring(2))) * -1);
                         player.playPrevious();
                         break;
                     case 's':
@@ -74,11 +75,20 @@ public class TestPlayer {
                     case 'u':
                         player.reloadTracks();
                         break;
+                    case 'w':
+                        System.out.println(player.getCurrentProgress());
+                        break;
+                    case 'g':
+                        player.getCurrent().gotoSecond(
+                                Integer.parseInt(line.substring(2).trim()));
+                        break;
                 }
             } catch (IllegalArgumentException e1) {
                 System.err.println("Control no soportado");
             } catch(Exception e2) {
                 System.err.println("Exception: "+e2.getMessage());
+                System.err.println("Cause: "+e2.toString());
+                e2.printStackTrace();
             }
         }
     }
