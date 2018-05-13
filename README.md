@@ -69,6 +69,8 @@ Music player library in pure Java.
 # 0.6.1 Beta
 	## Se añade funcion para agregar más musica al reproductor
 
-## 0.7
+## 0.7 Release
 	## Se logra obtener duracion de archivos de audio para todos los formatos disponibles
 	## Se añade opcion para obtener la caratula de un archivo de audio cualquiera
+## 0.7.1 Release
+	## Se corrige el error que se produce al momento de dirigirse a una carpeta sin canciones

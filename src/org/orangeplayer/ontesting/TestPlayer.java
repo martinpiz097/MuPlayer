@@ -13,7 +13,11 @@ import java.util.Scanner;
 public class TestPlayer {
     public static void main(String[] args) throws IOException {
         boolean hasArgs = args != null && args.length > 0;
-        String fPath = hasArgs ? args[0] : "/home/martin/AudioTesting/music/";
+        String fPath = hasArgs ? args[0] : "/home/martin/AudioTesting/audio/nosound";
+
+        // Ver validacion de archivos de audio y que hacer cuando
+        // la carpeta esta vacia al cargar la carpeta para evitar
+        // un buble infinito cuando se lee una carpeta sin archivos de audio
 
         //Player.newInstance(fPath);
         //Player player = Player.getPlayer();
@@ -23,9 +27,6 @@ public class TestPlayer {
         System.out.println("Sounds total: "+player.getSongsCount());
 
         Scanner scan = new Scanner(System.in);
-        // /home/martin/AudioTesting/music/Alejandro Silva/1 - 1999/AlbumArtSmall.jpg
-        // /home/martin/AudioTesting/music/NSYNC/NSYNC - No Strings Attached (2000)/ReadMe.txt
-
         SourceDataLine trackLine = player.getTrackLine();
 
         char c;
@@ -43,7 +44,7 @@ public class TestPlayer {
                             player.jumpTrack(Integer.parseInt(line.substring(2)));
                         player.playNext();
                         System.err.println("Antes de trackLine");
-                        trackLine = player.getCurrent().getTrackLine().getDriver();
+                        trackLine = player.getTrackLine();
                         System.err.println("Antes de controls");
                         System.out.println("Controls: "+Arrays.toString(trackLine.getControls()));
                         Control pan = trackLine.getControl(FloatControl.Type.PAN);

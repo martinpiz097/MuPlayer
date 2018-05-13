@@ -23,6 +23,7 @@ public class Player extends Thread implements PlayerControls {
     private int trackIndex;
     private float currentVolume;
     private boolean on;
+    private boolean hasSounds;
 
     public static float DEFAULT_VOLUME = 80.0f;
 
@@ -51,6 +52,7 @@ public class Player extends Thread implements PlayerControls {
         trackIndex = 0;
         currentVolume = DEFAULT_VOLUME;
         on = false;
+        hasSounds = false;
         setName("ThreadPlayer "+getId());
     }
     public Player(File rootFolder) throws FileNotFoundException {
@@ -59,13 +61,14 @@ public class Player extends Thread implements PlayerControls {
         listListeners = new ArrayList<>();
         trackIndex = 0;
         currentVolume = DEFAULT_VOLUME;
+        on = false;
+        hasSounds = false;
         if (!rootFolder.exists())
             throw new FileNotFoundException();
         else {
             loadTracks(rootFolder);
             sortTracks();
         }
-        on = false;
         setName("ThreadPlayer "+getId());
     }
 
@@ -227,14 +230,20 @@ public class Player extends Thread implements PlayerControls {
     }
 
     void loadNextTrack() {
+        // Se debe verificar que no es un archivo de audio porque
+        // cuando solo hay archivos que no son audio se lanza un
+        // nullpointerexception
+
         waitForSongs();
         Track cur = current;
         current = getNextTrack();
         finishTrack(cur);
-        startNewTrackThread();
+        if (current != null) {
+            startNewTrackThread();
+            System.out.println("Song: "+trackIndex);
+            System.out.println(current.getInfoSong());
+        }
         loadListenerMethod("onSongChange", current);
-        System.out.println("Song: "+trackIndex);
-        System.out.println(current.getInfoSong());
     }
 
     // Test
@@ -278,7 +287,7 @@ public class Player extends Thread implements PlayerControls {
         return current;
     }
 
-    public SourceDataLine getTrackLine() {
+    public synchronized SourceDataLine getTrackLine() {
         if (current == null)
             System.out.println("Current is null");
         else {
