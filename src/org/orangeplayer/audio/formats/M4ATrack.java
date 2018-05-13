@@ -3,11 +3,9 @@ package org.orangeplayer.audio.formats;
 import net.sourceforge.jaad.aac.Decoder;
 import net.sourceforge.jaad.aac.SampleBuffer;
 import net.sourceforge.jaad.mp4.MP4Container;
-import net.sourceforge.jaad.mp4.MP4InputStream;
 import net.sourceforge.jaad.mp4.api.AudioTrack;
 import net.sourceforge.jaad.mp4.api.Frame;
 import net.sourceforge.jaad.mp4.api.Movie;
-import net.sourceforge.jaad.mp4.boxes.impl.meta.ID3TagBox;
 import net.sourceforge.jaad.spi.javasound.AACAudioFileReader;
 import org.orangeplayer.audio.Track;
 
@@ -16,17 +14,15 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 import java.util.List;
 
-public class MP4Track extends Track {
-    public MP4Track(File ftrack) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+public class M4ATrack extends Track {
+    public M4ATrack(File ftrack) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         super(ftrack);
     }
 
-    public MP4Track(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+    public M4ATrack(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         super(trackPath);
     }
 
@@ -40,7 +36,7 @@ public class MP4Track extends Track {
             System.out.println("No soportadp");
             e.printStackTrace();
         } catch (IOException e) {
-            System.out.println("IOExxception");
+            System.out.println("LoadAudioStreamIOException: "+e.getMessage());
             speakerAis = decodeRandomAccessMP4(ftrack);
             //e.printStackTrace();
         }
@@ -93,7 +89,7 @@ public class MP4Track extends Track {
     }
 
     // Ver si duracion mostrada es real antes de entregar valor en segundos
-    @Override
+    /*@Override
     public long getDuration() {
         String strDuration = getProperty("duration");
         return strDuration == null ? 0 : Long.parseLong(strDuration);
@@ -106,7 +102,7 @@ public class MP4Track extends Track {
         sec = sec-(min*60);
         return new StringBuilder().append(min)
                 .append(':').append(sec < 10 ? '0'+sec:sec).toString();
-    }
+    }*/
 
     @Override
     public void seek(int seconds) throws Exception {
@@ -116,20 +112,35 @@ public class MP4Track extends Track {
     public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         String strTrack = "/home/martin/AudioTesting/music/John Petrucci/" +
                 "When_The_Keyboard_Breaks_Live_In_Chicago/Universal_Mind.m4a";
-        Track track = new MP4Track(strTrack);
+        Track track = new M4ATrack(strTrack);
         //String strTrack = "/home/martin/AudioTesting/music/John Petrucci/" +
           //      "When_The_Keyboard_Breaks_Live_In_Chicago/Universal_Mind.m4a";
         //Track track = Track.getTrack(strTrack);
         //Track track = new PCMTrack(strTrack);
         new Thread(track).start();
-        track.pause();
         //System.out.println(track.getInfoSong());
+        /*
         ID3TagBox idTag = new ID3TagBox();
         Constructor<? extends MP4InputStream> constructor =
                 MP4InputStream.class.getConstructor(RandomAccessFile.class);
         constructor.setAccessible(true);
         idTag.decode(constructor.newInstance(new RandomAccessFile(strTrack, "r")));
-        System.out.println(Arrays.toString(idTag.getID3Data()));
+        System.out.println(Arrays.toString(idTag.getID3Data()));*/
+
+
+        /*File file = new File(strTrack);
+        AudioFileFormat baseFileFormat = new MpegAudioFileReader().getAudioFileFormat(file);
+        Map properties = baseFileFormat.properties();
+        long duration = Long.parseLong(properties.get("duration").toString());
+        System.out.println(duration);*/
+        /*File m4aFile = new File(strTrack);
+
+        try (InputStream input = new FileInputStream(m4aFile)) {
+            AudioInfo audioInfo = new M4AInfo(input);
+        } catch (Exception e) {
+            System.out.println("No sirve");
+        }*/
+
     }
 
 }

@@ -40,7 +40,7 @@ public class MP3Track extends Track {
         return (short) ((readedBytes * secs) / fLen);
     }
 
-    @Override
+    /*@Override
     public long getDuration() {
         String strDuration = getProperty("duration");
         return strDuration == null ? 0 :
@@ -54,7 +54,7 @@ public class MP3Track extends Track {
         sec = sec-(min*60);
         return new StringBuilder().append(min)
                 .append(':').append(sec < 10 ? '0'+sec:sec).toString();
-    }
+    }*/
 
     // Una vez obtenidas todas las duraciones por formato
     // el metodo seek sera universal

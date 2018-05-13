@@ -28,7 +28,7 @@ public class PCMTrack extends Track {
         return (short) ((readedBytes * secs) / fLen);
     }
 
-    @Override
+    /*@Override
     public long getDuration() {
         AudioFormat format = speakerAis.getFormat();
         // Bits por sample, channels y sampleRate
@@ -48,7 +48,7 @@ public class PCMTrack extends Track {
         sec = sec-(min*60);
         return new StringBuilder().append(min)
                 .append(':').append(sec < 10 ? '0'+sec:sec).toString();
-    }
+    }*/
 
 
     @Override

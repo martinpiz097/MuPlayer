@@ -52,6 +52,7 @@ public class FlacTrack extends Track {
 
             speakerAis = new FlacFormatConversionProvider().
                     getAudioInputStream(decodedFormat, flacAis);
+
         } catch (UnsupportedAudioFileException | IOException e) {
             e.printStackTrace();
         }
@@ -64,22 +65,11 @@ public class FlacTrack extends Track {
         return (short) ((readedBytes * secs) / fLen);
     }
 
-    @Override
+    /*@Override
     public long getDuration() {
-        AudioFormat format = speakerAis.getFormat();
-        // Bits por sample, channels y sampleRate
-        System.out.println(format.getSampleSizeInBits());
-        double bcm = format.getSampleSizeInBits()
-                *format.getChannels()*format.getSampleRate();
-        long fLen = ftrack.length();
-
-        System.out.println(format.getSampleRate());
-        System.out.println(format.getFrameRate());
-        System.out.println(format.getFrameSize());
-        System.out.println(format.getSampleSizeInBits());
-        System.out.println("BCM: "+bcm);
-        System.out.println("FLen: "+fLen);
-        return (long) (fLen / bcm);
+        long frames = speakerAis.getFrameLength();
+        return (long) ((float)frames /
+                speakerAis.getFormat().getFrameRate());
     }
 
     @Override
@@ -89,7 +79,7 @@ public class FlacTrack extends Track {
         sec = sec-(min*60);
         return new StringBuilder().append(min)
                 .append(':').append(sec < 10 ? '0'+sec:sec).toString();
-    }
+    }*/
 
     @Override
     public void seek(int seconds) {
@@ -107,9 +97,9 @@ public class FlacTrack extends Track {
 
     public static void main(String[] args) {
         FlacTrack track = (FlacTrack) Track.getTrack(
-                "/home/martin/AudioTesting/audio/flac2.flac");
+                "/home/martin/AudioTesting/audio/flac.flac");
         new Thread(track).start();
-        track.setGain(80);
+        track.setGain(0);
         System.out.println(track.getInfoSong());
     }
 

@@ -1,10 +1,11 @@
-package org.orangeplayer.main2;
+package org.orangeplayer.ontesting;
 
 import org.orangeplayer.audio.Player;
 
 import javax.sound.sampled.Control;
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.SourceDataLine;
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -16,8 +17,11 @@ public class TestPlayer {
 
         //Player.newInstance(fPath);
         //Player player = Player.getPlayer();
-        Player player = new Player(fPath);
+        Player player = new Player();
         player.start();
+        player.addMusic(new File(fPath));
+        System.out.println("Sounds total: "+player.getSongsCount());
+
         Scanner scan = new Scanner(System.in);
         // /home/martin/AudioTesting/music/Alejandro Silva/1 - 1999/AlbumArtSmall.jpg
         // /home/martin/AudioTesting/music/NSYNC/NSYNC - No Strings Attached (2000)/ReadMe.txt
@@ -39,14 +43,11 @@ public class TestPlayer {
                             player.jumpTrack(Integer.parseInt(line.substring(2)));
                         player.playNext();
                         System.err.println("Antes de trackLine");
-                        trackLine = player.getTrackLine();
+                        trackLine = player.getCurrent().getTrackLine().getDriver();
                         System.err.println("Antes de controls");
                         System.out.println("Controls: "+Arrays.toString(trackLine.getControls()));
                         Control pan = trackLine.getControl(FloatControl.Type.PAN);
                         System.out.println("PAN: "+pan);
-
-                        //System.out.println("Sample Rate: " + sample);
-                        //System.out.println("Volume: " + volume);
 
                     case 'p':
                         if (line.length() >= 3)
@@ -76,11 +77,14 @@ public class TestPlayer {
                         player.reloadTracks();
                         break;
                     case 'w':
-                        System.out.println(player.getCurrentProgress());
+                        System.out.println(player.getTrackProgress());
                         break;
                     case 'g':
                         player.getCurrent().gotoSecond(
                                 Integer.parseInt(line.substring(2).trim()));
+                        break;
+                    case 'c':
+                        System.out.println(player.getSongsCount());
                         break;
                 }
             } catch (IllegalArgumentException e1) {

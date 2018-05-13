@@ -1,4 +1,4 @@
-package org.orangeplayer.main2;
+package org.orangeplayer.ontesting;
 
 import net.sourceforge.jaad.aac.AACException;
 import net.sourceforge.jaad.aac.Decoder;
@@ -8,12 +8,8 @@ import net.sourceforge.jaad.mp4.MP4Container;
 import net.sourceforge.jaad.mp4.api.AudioTrack;
 import net.sourceforge.jaad.mp4.api.Frame;
 import net.sourceforge.jaad.mp4.api.Movie;
-import org.aucom.sound.Speaker;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.*;
 import java.io.*;
 import java.util.List;
 
@@ -23,8 +19,8 @@ public class TestAAC2 {
         //InputStream is = url.openStream();
 
         String strTrack =
-            "/home/martin/AudioTesting/music/John Petrucci/When_The_Keyboard_Breaks_Live_In_Chicago/Universal_Mind.m4a";
-        //    "/home/martin/AudioTesting/audio/record.aac";
+            //"/home/martin/AudioTesting/music/John Petrucci/When_The_Keyboard_Breaks_Live_In_Chicago/Universal_Mind.m4a";
+            "/home/martin/AudioTesting/audio/aac3.aac";
         //Toolkit toolkit = Toolkit.getPCMConvertedAudioInputStream();
         File inputFile = new File(strTrack);
         //sound.createNewFile();
@@ -36,9 +32,9 @@ public class TestAAC2 {
         //Files.write(sound.toPath(),
         //        buff.toArray(), StandardOpenOption.TRUNCATE_EXISTING);
 
-        AudioInputStream ais = decodeMP4(inputFile);
+        AudioInputStream ais = decodeAAC(inputFile);
         System.out.println("Decoded");
-        Speaker speaker = new Speaker(ais.getFormat());
+        /*Speaker speaker = new Speaker(ais.getFormat());
         speaker.open();
 
         System.out.println(ais.getFrameLength());
@@ -46,10 +42,10 @@ public class TestAAC2 {
 
         while (ais.read(buff) != -1)
             speaker.playAudio(buff);
-
-        //File outFile = new File("/home/martin/AudioTesting/audio/waveout.wav");
-        //outFile.createNewFile();
-        //AudioSystem.write(ais, AudioFileFormat.Type.WAVE, outFile);
+*/
+        File outFile = new File("/home/martin/AudioTesting/audio/waveout.wav");
+        outFile.createNewFile();
+        AudioSystem.write(ais, AudioFileFormat.Type.WAVE, outFile);
     }
 
     private static AudioInputStream decodeAAC(File inputFile) throws AACException {

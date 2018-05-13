@@ -67,7 +67,7 @@ public class OGGTrack extends Track {
         }
     }
 
-    @Override
+    /*@Override
     public long getDuration() {
         try {
             return (long) new VorbisFile(ftrack.getCanonicalPath()).time_total(0);
@@ -83,7 +83,7 @@ public class OGGTrack extends Track {
         sec = sec-(min*60);
         return new StringBuilder().append(min)
                 .append(':').append(sec < 10 ? '0'+sec:sec).toString();
-    }
+    }*/
 
     @Override
     protected String getProperty(String key) {

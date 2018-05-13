@@ -66,3 +66,9 @@ Music player library in pure Java.
 		abstracto de la clase padre Track
 	## Se añade opcion de ver tiempo actual de la cancion
 	## Se añade opcion de dirigirse a un segundo especifico de la cancion (No disponible correctamente en archivos FLAC y M4A)
+# 0.6.1 Beta
+	## Se añade funcion para agregar más musica al reproductor
+
+## 0.7
+	## Se logra obtener duracion de archivos de audio para todos los formatos disponibles
+	## Se añade opcion para obtener la caratula de un archivo de audio cualquiera

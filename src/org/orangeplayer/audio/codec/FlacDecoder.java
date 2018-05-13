@@ -16,6 +16,7 @@ import java.io.*;
  * Decode FLAC file to WAV file application.
  * @author kc7bfi
  */
+@Deprecated
 public class FlacDecoder implements PCMProcessor {
     private WavWriter wav;
     private AudioInputStream decodedAis;

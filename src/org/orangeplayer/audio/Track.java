@@ -1,6 +1,11 @@
 package org.orangeplayer.audio;
 
 import org.aucom.sound.Speaker;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.TagException;
 import org.orangeplayer.audio.codec.DecodeManager;
 import org.orangeplayer.audio.formats.*;
 import org.orangeplayer.audio.interfaces.MusicControls;
@@ -11,7 +16,6 @@ import javax.sound.sampled.*;
 import javax.sound.sampled.spi.AudioFileReader;
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 
 import static org.orangeplayer.audio.AudioExtensions.*;
 import static org.orangeplayer.audio.TrackStates.*;
@@ -21,6 +25,7 @@ public abstract class Track implements Runnable, MusicControls {
     protected Speaker trackLine;
     protected AudioInputStream speakerAis;
     protected AudioFileReader audioReader;
+    protected AudioInfo info;
 
     protected byte state;
     protected int currentSeconds;
@@ -50,7 +55,7 @@ public abstract class Track implements Runnable, MusicControls {
                 result = new PCMTrack(fSound);
             else if (trackName.endsWith(M4A)){
                 System.out.println("Es mp4");
-                result = new MP4Track(fSound);
+                result = new M4ATrack(fSound);
             }
             // Por si no tiene formato en el nombre
             else {
@@ -94,13 +99,20 @@ public abstract class Track implements Runnable, MusicControls {
         return getTrack(new File(trackPath));
     }
 
-    protected Track(File ftrack) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+    protected Track(File ftrack)
+            throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         System.out.println("File: "+ftrack.getPath());
         this.ftrack = ftrack;
         //stateCode = STOPED;
         state = STOPED;
         initLine();
         currentSeconds = 0;
+        try {
+            info = new AudioInfo(ftrack);
+        } catch (TagException | ReadOnlyFileException | InvalidAudioFrameException | CannotReadException e) {
+            // For testing se imprime
+            e.printStackTrace();
+        }
     }
 
     protected Track(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
@@ -122,7 +134,6 @@ public abstract class Track implements Runnable, MusicControls {
     public Speaker getTrackLine() {
         return trackLine;
     }
-
 
     public File getTrackFile() {
         return ftrack;
@@ -179,25 +190,6 @@ public abstract class Track implements Runnable, MusicControls {
             trackLine.close();
             trackLine = null;
         }
-    }
-
-    protected String getProperty(String key) {
-        Map<String, Object> formatProper = null;
-        try {
-            AudioFileFormat fileFormat = getFileFormat();
-            if (fileFormat != null) {
-                formatProper = getFileFormat().properties();
-                if (formatProper != null) {
-                    Object get = formatProper.get(key);
-                    return get == null ? null : get.toString();
-                }
-                else
-                    return null;
-            }
-        } catch (IOException | UnsupportedAudioFileException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     protected void closeAll() {
@@ -297,33 +289,68 @@ public abstract class Track implements Runnable, MusicControls {
         return audioReader == null ? null : audioReader.getAudioFileFormat(ftrack);
     }
 
-    // Info
+    protected String getProperty(String key) {
+        /*Map<String, Object> formatProper = null;
+        try {
+            AudioFileFormat fileFormat = getFileFormat();
+            if (fileFormat != null) {
+                formatProper = getFileFormat().properties();
+                if (formatProper != null) {
+                    Object get = formatProper.get(key);
+                    return get == null ? null : get.toString();
+                }
+                else
+                    return null;
+            }
+        } catch (IOException | UnsupportedAudioFileException e) {
+            e.printStackTrace();
+        }*/
+        return info == null ? null : info.getTag(key);
+    }
+
+    protected String getProperty(FieldKey key) {
+        if (info == null)
+            return null;
+        String tag = info.getTag(key).trim();
+        return tag.isEmpty() ? null : tag;
+    }
 
     public String getTitle() {
-        String proper = getProperty("title");
-        return proper == null ? ftrack.getName() : proper;
+        return getProperty(FieldKey.TITLE);
     }
 
     public String getAlbum() {
-        return getProperty("album");
+        return getProperty(FieldKey.ALBUM);
     }
 
     public String getArtist() {
-        String author = getProperty("author");
-        return author == null ? getProperty("artist") : author;
+        //return author == null ? getProperty("artist") : author;
+        return getProperty(FieldKey.ARTIST);
     }
 
     public String getDate() {
-        return getProperty("date");
+        return getProperty(FieldKey.YEAR);
+    }
+
+    public boolean hasCover() {
+        return info.getCover() != null;
+    }
+
+    public byte[] getCoverData() {
+        return info.getCover().getBinaryData();
     }
 
     public synchronized int getProgress() {
         return currentSeconds;
     }
 
-    public abstract long getDuration();
+    public long getDuration() {
+        return info.getDuration();
+    }
 
-    public abstract String getDurationAsString();
+    public String getDurationAsString() {
+        return String.valueOf(getDuration());
+    }
 
     // Testing
     public String getInfoSong() {
