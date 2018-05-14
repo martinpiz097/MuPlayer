@@ -17,6 +17,7 @@
         <element id="file-copy" path="$PROJECT_DIR$/../../../javaLibs/Music/jorbis-0.0.15.jar" />
         <element id="file-copy" path="$PROJECT_DIR$/../../../javaLibs/tritonus_jorbis-0.3.6.jar" />
         <element id="file-copy" path="$PROJECT_DIR$/../../NetBeansProjects/AuCom/dist/AuCom.jar" />
+        <element id="file-copy" path="$PROJECT_DIR$/../../../javaLibs/Music/jaudiotagger-2.0.4.jar" />
       </element>
     </root>
   </artifact>

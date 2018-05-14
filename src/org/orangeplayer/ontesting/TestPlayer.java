@@ -13,7 +13,7 @@ import java.util.Scanner;
 public class TestPlayer {
     public static void main(String[] args) throws IOException {
         boolean hasArgs = args != null && args.length > 0;
-        String fPath = hasArgs ? args[0] : "/home/martin/AudioTesting/audio/nosound";
+        String fPath = hasArgs ? args[0] : "/home/martin/AudioTesting/music/";
 
         // Ver validacion de archivos de audio y que hacer cuando
         // la carpeta esta vacia al cargar la carpeta para evitar

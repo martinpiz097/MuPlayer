@@ -61,15 +61,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../ithaka-audioinfo/out/artifacts/ithaka_audioinfo_jar/ithaka-audioinfo.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://$MODULE_DIR$/../../../javaLibs/Music/jaudiotagger-2.0.4.jar!/" />
         </CLASSES>
         <JAVADOC />
