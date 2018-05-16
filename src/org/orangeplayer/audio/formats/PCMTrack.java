@@ -21,13 +21,6 @@ public class PCMTrack extends Track {
         super(trackPath);
     }
 
-    @Override
-    protected short getSecondsByBytes(int readedBytes) {
-        long secs = getDuration();
-        long fLen = ftrack.length();
-        return (short) ((readedBytes * secs) / fLen);
-    }
-
     /*@Override
     public long getDuration() {
         AudioFormat format = speakerAis.getFormat();
@@ -72,29 +65,16 @@ public class PCMTrack extends Track {
         speakerAis = audioReader.getAudioInputStream(ftrack);
     }
 
-    @Override
-    public void seek(int seconds) {
-        long secs = getDuration();
-        long fLen = ftrack.length();
-        long seekLen = (seconds * fLen) / secs;
-        try {
-            if (seekLen > speakerAis.available())
-                seekLen = speakerAis.available();
-            speakerAis.skip(seekLen);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    /*public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         Track track = new PCMTrack("/home/martin/AudioTesting/audio/wav2.wav");
         new Thread(track).start();
         System.out.println(track.getInfoSong());
-        /*AudioInputStream ais = AudioSystem.getAudioInputStream(
+        AudioInputStream ais = AudioSystem.getAudioInputStream(
                 new File("/home/martin/AudioTesting/audio/sound.ogg"));
         Clip clip = AudioSystem.getClip();
         clip.open(ais);
-        clip.start();*/
+        clip.start();
     }
+    */
 
 }

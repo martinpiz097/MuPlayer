@@ -4,10 +4,7 @@ import org.kc7bfi.jflac.sound.spi.FlacAudioFileReader;
 import org.kc7bfi.jflac.sound.spi.FlacFormatConversionProvider;
 import org.orangeplayer.audio.Track;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
 
@@ -46,12 +43,15 @@ public class FlacTrack extends Track {
             AudioInputStream flacAis = audioReader.getAudioInputStream(ftrack);
 
             AudioFormat format = flacAis.getFormat();
-            AudioFormat decodedFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
-                    format.getSampleRate(), format.getSampleSizeInBits(), format.getChannels(), format.getChannels() * 2,
-                    format.getSampleRate(), format.isBigEndian());
+            AudioFormat decodedFormat = new AudioFormat(
+                    AudioFormat.Encoding.PCM_SIGNED, format.getSampleRate(),
+                    format.getSampleSizeInBits(), format.getChannels(),
+                    format.getChannels() * 2, format.getSampleRate(),
+                    format.isBigEndian());
 
             speakerAis = new FlacFormatConversionProvider().
                     getAudioInputStream(decodedFormat, flacAis);
+
 
         } catch (UnsupportedAudioFileException | IOException e) {
             e.printStackTrace();
@@ -59,49 +59,40 @@ public class FlacTrack extends Track {
     }
 
     @Override
-    protected short getSecondsByBytes(int readedBytes) {
-        long secs = getDuration();
-        long fLen = ftrack.length();
-        return (short) ((readedBytes * secs) / fLen);
-    }
-
-    /*@Override
-    public long getDuration() {
-        long frames = speakerAis.getFrameLength();
-        return (long) ((float)frames /
-                speakerAis.getFormat().getFrameRate());
+    public void seek(int seconds)
+            throws IOException {
+        long seek = transformSecondsInBytes(seconds);
+        pause();
+        speakerAis.read(new byte[(int) seek]);
+        play();
+        currentSeconds+=seconds;
     }
 
     @Override
-    public String getDurationAsString() {
-        long sec = getDuration();
-        long min = sec / 60;
-        sec = sec-(min*60);
-        return new StringBuilder().append(min)
-                .append(':').append(sec < 10 ? '0'+sec:sec).toString();
-    }*/
+    public void gotoSecond(int second) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
+        long bytes = transformSecondsInBytes(second);
+        float currentVolume = trackLine.getControl(
+                FloatControl.Type.MASTER_GAIN).getValue();
+        if (bytes > ftrack.length())
+            bytes = ftrack.length();
 
-    @Override
-    public void seek(int seconds) {
-        long secs = getDuration() / 1000 / 1000;
-        long fLen = ftrack.length();
-        long seekLen = (seconds * fLen) / secs;
-        try {
-            if (seekLen > speakerAis.available())
-                seekLen = speakerAis.available();
-            speakerAis.skip(seekLen);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        pause();
+        resetStream();
+        trackLine.setGain(currentVolume);
+        speakerAis.read(new byte[(int)bytes]);
+        play();
+        currentSeconds = second;
     }
 
-    public static void main(String[] args) {
+
+
+    /*public static void main(String[] args) {
         FlacTrack track = (FlacTrack) Track.getTrack(
                 "/home/martin/AudioTesting/audio/flac.flac");
         new Thread(track).start();
         track.setGain(0);
         System.out.println(track.getInfoSong());
-    }
+    }*/
 
 
 }

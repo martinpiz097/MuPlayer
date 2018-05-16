@@ -17,13 +17,13 @@ public class Player extends Thread implements PlayerControls {
     private Track current;
     private Thread currentThread;
 
-    private ArrayList<String> listSoundPaths;
-    private ArrayList<PlayerListener> listListeners;
+    private final ArrayList<String> listSoundPaths;
+    private final ArrayList<PlayerListener> listListeners;
 
     private int trackIndex;
     private float currentVolume;
     private boolean on;
-    private boolean hasSounds;
+    //private boolean hasSounds;
 
     public static float DEFAULT_VOLUME = 80.0f;
 
@@ -52,7 +52,7 @@ public class Player extends Thread implements PlayerControls {
         trackIndex = 0;
         currentVolume = DEFAULT_VOLUME;
         on = false;
-        hasSounds = false;
+        //hasSounds = false;
         setName("ThreadPlayer "+getId());
     }
     public Player(File rootFolder) throws FileNotFoundException {
@@ -62,7 +62,7 @@ public class Player extends Thread implements PlayerControls {
         trackIndex = 0;
         currentVolume = DEFAULT_VOLUME;
         on = false;
-        hasSounds = false;
+        //hasSounds = false;
         if (!rootFolder.exists())
             throw new FileNotFoundException();
         else {
@@ -76,7 +76,7 @@ public class Player extends Thread implements PlayerControls {
         this(new File(folderPath));
     }
 
-    // Problema con ogg al leer info archivo
+    // Problema con ogg al leer tagInfo archivo
 
     // no se revisaran si los archivos son sonidos por
     // ahora porque se piensa en reducir tiempos de carga
@@ -246,6 +246,19 @@ public class Player extends Thread implements PlayerControls {
         loadListenerMethod("onSongChange", current);
     }
 
+    public void analyzeFiles() {
+        int tracksSize = listSoundPaths.size();
+        List<String> listAnalyzed = (
+                listSoundPaths.getClass().isInstance(LinkedList.class)?
+                    new LinkedList<>() : new ArrayList<>());
+        listSoundPaths.stream().forEach((fsound)->{
+            if (Track.isValidTrack(fsound))
+                listAnalyzed.add(fsound);
+        });
+        listSoundPaths.clear();
+        listSoundPaths.addAll(listAnalyzed);
+    }
+
     // Test
     public void jumpTrack(int jumps) {
         if (jumps > 0)
@@ -293,7 +306,9 @@ public class Player extends Thread implements PlayerControls {
         else {
             System.out.println("CurrentLine: "+current.getTrackLine());
         }
-        return current == null ? null : current.getTrackLine().getDriver();
+        return current == null ? null :
+                (current.getTrackLine() == null ?
+                        null : current.getTrackLine().getDriver());
     }
 
     @Override
@@ -382,6 +397,7 @@ public class Player extends Thread implements PlayerControls {
     public int getSongsCount() {
         return listSoundPaths.size();
     }
+
     @Override
     public void play() {
         if (!isAlive())
@@ -392,11 +408,36 @@ public class Player extends Thread implements PlayerControls {
         }
     }
 
+    // Reproduce archivo de audio en la lista
+    public void play(File track) {
+        int indexOf = listSoundPaths.indexOf(track.getPath());
+        if (indexOf != -1) {
+            trackIndex = indexOf == 0 ? getSongsCount() :  indexOf-1;
+            playNext();
+        }
+    }
+
+    public void play(String trackName) {
+        int indexOf = -1;
+        for (int i = 0; i < listSoundPaths.size(); i++) {
+            if (new File(listSoundPaths.get(i))
+                    .getName().equals(trackName)) {
+                indexOf = i;
+                break;
+            }
+        }
+
+        if (indexOf != -1) {
+            trackIndex = indexOf == 0 ? getSongsCount() :  indexOf-1;
+            playNext();
+        }
+    }
+
     @Override
     public void pause() {
         if (current != null) {
             current.pause();
-            loadListenerMethod("onPaused", current);
+            //loadListenerMethod("onPaused", current);
         }
     }
 
@@ -431,10 +472,10 @@ public class Player extends Thread implements PlayerControls {
     }
 
     @Override
-    public void seek(int bytes) {
+    public void seek(int seconds) {
         if (current != null) {
             try {
-                current.seek(bytes);
+                current.seek(seconds);
                 loadListenerMethod("onSeeked", current);
             } catch (Exception e) {
                 e.printStackTrace();

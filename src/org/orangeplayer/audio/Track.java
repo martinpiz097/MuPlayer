@@ -25,7 +25,7 @@ public abstract class Track implements Runnable, MusicControls {
     protected Speaker trackLine;
     protected AudioInputStream speakerAis;
     protected AudioFileReader audioReader;
-    protected AudioInfo info;
+    protected AudioTag tagInfo;
 
     protected byte state;
     protected int currentSeconds;
@@ -33,9 +33,6 @@ public abstract class Track implements Runnable, MusicControls {
     //protected TrackState state;
 
     public static final int BUFFSIZE = 4096;
-
-    // La idea es dejar elalgoritmo antiguo para
-    // comparar velocidades
 
     public static Track getTrack(File fSound){
         if (!fSound.exists())
@@ -99,6 +96,10 @@ public abstract class Track implements Runnable, MusicControls {
         return getTrack(new File(trackPath));
     }
 
+    public static boolean isValidTrack(String trackPath) {
+        return getTrack(trackPath) != null;
+    }
+
     protected Track(File ftrack)
             throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         System.out.println("File: "+ftrack.getPath());
@@ -108,7 +109,7 @@ public abstract class Track implements Runnable, MusicControls {
         initLine();
         currentSeconds = 0;
         try {
-            info = new AudioInfo(ftrack);
+            tagInfo = new AudioTag(ftrack);
         } catch (TagException | ReadOnlyFileException | InvalidAudioFrameException | CannotReadException e) {
             // For testing se imprime
             e.printStackTrace();
@@ -131,7 +132,7 @@ public abstract class Track implements Runnable, MusicControls {
         return speakerAis;
     }
 
-    public Speaker getTrackLine() {
+    public synchronized Speaker getTrackLine() {
         return trackLine;
     }
 
@@ -158,8 +159,7 @@ public abstract class Track implements Runnable, MusicControls {
                 default:
                     return "Unknown";
         }
-        // else if (state instanceof S)
-        //    return "Seeked";
+
     }
 
     // Ver opcion de usar archivo temporal y leer desde ahi
@@ -203,7 +203,11 @@ public abstract class Track implements Runnable, MusicControls {
         }
     }
 
-    protected abstract short getSecondsByBytes(int readedBytes);
+    protected short getSecondsByBytes(int readedBytes) {
+        long secs = getDuration();
+        long fLen = ftrack.length();
+        return (short) ((readedBytes * secs) / fLen);
+    }
 
     @Override
     public synchronized boolean isPlaying() {
@@ -263,7 +267,13 @@ public abstract class Track implements Runnable, MusicControls {
         closeAll();
     }
 
-    public abstract void seek(int seconds) throws Exception;
+    public void seek(int seconds)
+            throws UnsupportedAudioFileException, IOException,
+            LineUnavailableException {
+        gotoSecond(seconds+getProgress());
+        //speakerAis.skip(transformSecondsInBytes(seconds));
+    }
+
     // -80 to 5.5
     @Override
     public void setGain(float volume) {
@@ -271,23 +281,30 @@ public abstract class Track implements Runnable, MusicControls {
         trackLine.setGain(vol);
     }
 
+    protected long transformSecondsInBytes(int seconds) {
+        return (seconds*ftrack.length()) / getDuration();
+    }
+
     // Ir a un segundo especifico de la cancion
     public void gotoSecond(int second) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
-        long bytes = (second*ftrack.length()) / getDuration();
+        long bytes = transformSecondsInBytes(second);
         float currentVolume = trackLine.getControl(
                 FloatControl.Type.MASTER_GAIN).getValue();
+        if (bytes > ftrack.length())
+            bytes = ftrack.length();
 
         pause();
         resetStream();
-        speakerAis.skip(bytes);
         trackLine.setGain(currentVolume);
-        currentSeconds = second;
         play();
+        speakerAis.skip(bytes);
+        currentSeconds = second;
     }
 
     public AudioFileFormat getFileFormat() throws IOException, UnsupportedAudioFileException {
         return audioReader == null ? null : audioReader.getAudioFileFormat(ftrack);
     }
+
 
     protected String getProperty(String key) {
         /*Map<String, Object> formatProper = null;
@@ -305,13 +322,13 @@ public abstract class Track implements Runnable, MusicControls {
         } catch (IOException | UnsupportedAudioFileException e) {
             e.printStackTrace();
         }*/
-        return info == null ? null : info.getTag(key);
+        return tagInfo == null ? null : tagInfo.getTag(key);
     }
 
     protected String getProperty(FieldKey key) {
-        if (info == null)
+        if (tagInfo == null)
             return null;
-        String tag = info.getTag(key).trim();
+        String tag = tagInfo.getTag(key).trim();
         return tag.isEmpty() ? null : tag;
     }
 
@@ -333,11 +350,11 @@ public abstract class Track implements Runnable, MusicControls {
     }
 
     public boolean hasCover() {
-        return info.getCover() != null;
+        return tagInfo.getCover() != null;
     }
 
     public byte[] getCoverData() {
-        return info.getCover().getBinaryData();
+        return hasCover() ? tagInfo.getCover().getBinaryData() : null;
     }
 
     public synchronized int getProgress() {
@@ -345,7 +362,7 @@ public abstract class Track implements Runnable, MusicControls {
     }
 
     public long getDuration() {
-        return info.getDuration();
+        return tagInfo.getDuration();
     }
 
     public String getDurationAsString() {
@@ -390,8 +407,6 @@ public abstract class Track implements Runnable, MusicControls {
                     try {
                         read = speakerAis.read(audioBuffer);
                         readedBytes+=read;
-                        // Por mientras el progreso de hace de manera artesanal
-                        // ya que no ha resultado con la formula
                         if (ThreadManager.hasOneSecond(ti)) {
                             //currentSeconds=(getSecondsByBytes(readedBytes));
                             currentSeconds++;

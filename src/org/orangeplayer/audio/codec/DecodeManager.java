@@ -37,9 +37,9 @@ public class DecodeManager {
                 baseFormat.getChannels(),
                 baseFormat.getChannels() * 2,
                 baseFormat.getSampleRate(),
-                false);
+                baseFormat.isBigEndian());
     }
-    public static AudioInputStream decodeMpegToPcm(
+    public static AudioInputStream decodeToPcm(
             AudioFormat baseFormat, AudioInputStream encodedAis) {
         AudioFormat decodedFormat = getPcmFormatByMpeg(baseFormat);
         // Es preferible realizar la comprobacion aca y en java interno
@@ -51,7 +51,8 @@ public class DecodeManager {
     }
 
     public static AudioInputStream decodeToPcm(AudioInputStream sourceAis) {
-        return AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, sourceAis);
+        return AudioSystem.getAudioInputStream(AudioFormat
+                .Encoding.PCM_SIGNED, sourceAis);
     }
 
 }

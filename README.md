@@ -74,3 +74,6 @@ Music player library in pure Java.
 	## Se añade opcion para obtener la caratula de un archivo de audio cualquiera
 ## 0.7.1 Release
 	## Se corrige el error que se produce al momento de dirigirse a una carpeta sin canciones
+## 0.7.2 Beta
+	## Se corrige error al hacer un seek con el formato FLAC
+	## Metodos seek y getDuration globales con algunas sobreescrituras especificas segun sea el caso

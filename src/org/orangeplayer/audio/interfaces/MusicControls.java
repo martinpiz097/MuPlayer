@@ -12,5 +12,5 @@ public interface MusicControls {
     public void stopTrack() throws Exception;
     public void finish() throws Exception;
     public void setGain(float volume) throws Exception;
-    public void seek(int bytes) throws Exception;
+    public void seek(int seconds) throws Exception;
 }

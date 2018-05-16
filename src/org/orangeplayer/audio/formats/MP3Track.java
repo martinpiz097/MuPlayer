@@ -30,14 +30,7 @@ public class MP3Track extends Track {
         audioReader = new MpegAudioFileReader();
         AudioInputStream soundAis = audioReader.getAudioInputStream(ftrack);
         AudioFormat baseFormat = soundAis.getFormat();
-        speakerAis = DecodeManager.decodeMpegToPcm(baseFormat, soundAis);
-    }
-
-    @Override
-    protected short getSecondsByBytes(int readedBytes) {
-        long secs = getDuration();
-        long fLen = ftrack.length();
-        return (short) ((readedBytes * secs) / fLen);
+        speakerAis = DecodeManager.decodeToPcm(baseFormat, soundAis);
     }
 
     /*@Override
@@ -58,22 +51,9 @@ public class MP3Track extends Track {
 
     // Una vez obtenidas todas las duraciones por formato
     // el metodo seek sera universal
-    @Override
-    public void seek(int seconds) {
-        long secs = getDuration();
-        long fLen = ftrack.length();
-        long seekLen = (seconds * fLen) / secs;
-        try {
-            if (seekLen > speakerAis.available())
-                seekLen = speakerAis.available();
-            speakerAis.skip(seekLen);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     // Libreria AAC genera problemas con archivos mp3 y ogg
-    public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException, InterruptedException {
+    /*public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException, InterruptedException {
         File sound = new File("/home/martin/AudioTesting/audio/au.mp3");
         //System.out.println(new MpegAudioFileReader().getAudioFileFormat(sound).getType().toString());
         //System.out.println(new JorbisAudioFileReader().getAudioFileFormat(sound).getType().toString());
@@ -95,6 +75,6 @@ public class MP3Track extends Track {
         //Thread.sleep(3000);
         //track.resume();
     }
-
+    */
 
 }

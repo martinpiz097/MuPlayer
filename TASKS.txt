@@ -1,0 +1,1 @@
+Ver si seek y goto funcionan en todos los formatos y ver si entregan calculos o valores reales

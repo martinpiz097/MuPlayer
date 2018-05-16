@@ -13,7 +13,7 @@ import java.util.Scanner;
 public class TestPlayer {
     public static void main(String[] args) throws IOException {
         boolean hasArgs = args != null && args.length > 0;
-        String fPath = hasArgs ? args[0] : "/home/martin/AudioTesting/music/";
+        String fPath = hasArgs ? args[0] : "/home/martin/AudioTesting/audio";
 
         // Ver validacion de archivos de audio y que hacer cuando
         // la carpeta esta vacia al cargar la carpeta para evitar
@@ -24,6 +24,8 @@ public class TestPlayer {
         Player player = new Player();
         player.start();
         player.addMusic(new File(fPath));
+        //player.analyzeFiles();
+
         System.out.println("Sounds total: "+player.getSongsCount());
 
         Scanner scan = new Scanner(System.in);
@@ -45,10 +47,14 @@ public class TestPlayer {
                         player.playNext();
                         System.err.println("Antes de trackLine");
                         trackLine = player.getTrackLine();
-                        System.err.println("Antes de controls");
-                        System.out.println("Controls: "+Arrays.toString(trackLine.getControls()));
-                        Control pan = trackLine.getControl(FloatControl.Type.PAN);
-                        System.out.println("PAN: "+pan);
+                        System.out.println("TrackLine: "+trackLine);
+                        if (trackLine != null) {
+                            System.err.println("Antes de controls");
+                            System.out.println("Controls: "+Arrays.toString(trackLine.getControls()));
+                            Control pan = trackLine.getControl(FloatControl.Type.PAN);
+                            System.out.println("PAN: "+pan);
+                        }
+                        break;
 
                     case 'p':
                         if (line.length() >= 3)
@@ -65,10 +71,10 @@ public class TestPlayer {
                         player.pause();
                         break;
                     case 'v':
-                        player.setGain(Float.parseFloat(line.split(" ")[1]));
+                        player.setGain(Float.parseFloat(line.substring(2).trim()));
                         break;
                     case 'k':
-                        player.seek(Integer.parseInt(line.split(" ")[1]));
+                        player.seek(Integer.parseInt(line.substring(2).trim()));
                         break;
                     case 'e':
                         on = false;

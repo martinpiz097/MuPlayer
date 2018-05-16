@@ -36,7 +36,7 @@ public class M4ATrack extends Track {
             System.out.println("No soportadp");
             e.printStackTrace();
         } catch (IOException e) {
-            System.out.println("LoadAudioStreamIOException: "+e.getMessage());
+            //System.out.println("LoadAudioStreamIOException: "+e.getMessage());
             speakerAis = decodeRandomAccessMP4(ftrack);
             //e.printStackTrace();
         }
@@ -51,6 +51,8 @@ public class M4ATrack extends Track {
         ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
         AudioFormat decFormat = null;
         RandomAccessFile randomAccess = null;
+        byte[] audioData = null;
+
 
         try {
             randomAccess = new RandomAccessFile(inputFile, "r");
@@ -71,21 +73,20 @@ public class M4ATrack extends Track {
                 byteOut.write(buf.getData());
             }
 
-            decFormat = new AudioFormat(track.getSampleRate(), track.getSampleSize(), track.getChannelCount(), true, true);
+            decFormat = new AudioFormat(track.getSampleRate(),
+                    track.getSampleSize(), track.getChannelCount(),
+                    true, true);
         } finally {
-            // nop
+            audioData = byteOut.toByteArray();
+            byteOut.close();
+            randomAccess.close();
         }
 
-        byte[] audioData = byteOut.toByteArray();
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(audioData);
-        return new AudioInputStream(inputStream, decFormat, audioData.length);
-    }
-
-    @Override
-    protected short getSecondsByBytes(int readedBytes) {
-        long secs = getDuration() / 1000 / 1000;
-        long fLen = ftrack.length();
-        return (short) ((readedBytes * secs) / fLen);
+       if (audioData != null) {
+           ByteArrayInputStream inputStream = new ByteArrayInputStream(audioData);
+           return new AudioInputStream(inputStream, decFormat, audioData.length);
+       }
+       return null;
     }
 
     // Ver si duracion mostrada es real antes de entregar valor en segundos
@@ -104,12 +105,7 @@ public class M4ATrack extends Track {
                 .append(':').append(sec < 10 ? '0'+sec:sec).toString();
     }*/
 
-    @Override
-    public void seek(int seconds) throws Exception {
-        speakerAis.skip(seconds);
-    }
-
-    public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    /*public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         String strTrack = "/home/martin/AudioTesting/music/John Petrucci/" +
                 "When_The_Keyboard_Breaks_Live_In_Chicago/Universal_Mind.m4a";
         Track track = new M4ATrack(strTrack);
@@ -136,11 +132,12 @@ public class M4ATrack extends Track {
         /*File m4aFile = new File(strTrack);
 
         try (InputStream input = new FileInputStream(m4aFile)) {
-            AudioInfo audioInfo = new M4AInfo(input);
+            AudioTag audioInfo = new M4AInfo(input);
         } catch (Exception e) {
             System.out.println("No sirve");
-        }*/
+        }
 
     }
+    */
 
 }

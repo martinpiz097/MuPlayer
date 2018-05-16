@@ -3,6 +3,7 @@ package org.orangeplayer.audio.formats;
 import com.jcraft.jorbis.Comment;
 import com.jcraft.jorbis.JOrbisException;
 import com.jcraft.jorbis.VorbisFile;
+import net.sourceforge.jffmpeg.codecs.audio.vorbis.VorbisDecoder;
 import org.orangeplayer.audio.Track;
 import org.orangeplayer.audio.codec.DecodeManager;
 import org.tritonus.sampled.file.jorbis.JorbisAudioFileReader;
@@ -40,31 +41,10 @@ public class OGGTrack extends Track {
     }*/
 
     @Override
-    protected short getSecondsByBytes(int readedBytes) {
-        long secs = getDuration();
-        long fLen = ftrack.length();
-        return (short) ((readedBytes * secs) / fLen);
-    }
-
-    @Override
     protected void loadAudioStream() throws IOException, UnsupportedAudioFileException {
         audioReader = new JorbisAudioFileReader();
         AudioInputStream soundAis = audioReader.getAudioInputStream(ftrack);
         speakerAis = DecodeManager.decodeToPcm(soundAis);
-    }
-
-    @Override
-    public void seek(int seconds) {
-        long secs = getDuration();
-        long fLen = ftrack.length();
-        long seekLen = (seconds * fLen) / secs;
-        try {
-            if (seekLen > speakerAis.available())
-                seekLen = speakerAis.available();
-            speakerAis.skip(seekLen);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     /*@Override
@@ -90,7 +70,7 @@ public class OGGTrack extends Track {
         return soundComments == null ? null : soundComments.query(key);
     }
 
-    public static void main(String[] args) throws
+    /*public static void main(String[] args) throws
             IOException, LineUnavailableException, JOrbisException, UnsupportedAudioFileException {
         File sound = new File("/home/martin/AudioTesting/audio/sound.ogg");
         Track track = new OGGTrack(sound);
@@ -104,8 +84,8 @@ public class OGGTrack extends Track {
         System.out.println("PCMTotal: "+vorbisFile.pcm_total(0));
         System.out.println("RawTotal: "+vorbisFile.raw_total(0));
         System.out.println("Size: "+sound.length());
-        System.out.println(vorbisFile.time_total(0)%60);*/
+        System.out.println(vorbisFile.time_total(0)%60);
     }
-
+    */
 
 }
