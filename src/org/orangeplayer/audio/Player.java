@@ -333,6 +333,11 @@ public class Player extends Thread implements PlayerControls {
     }
 
     @Override
+    public boolean isMute() {
+        return current == null ? true : current.isMute();
+    }
+
+    @Override
     public void open(File sound) {
         listSoundPaths.clear();
         listSoundPaths.add(sound.getPath());
@@ -388,6 +393,10 @@ public class Player extends Thread implements PlayerControls {
     public void addMusic(File musicFolder) {
         loadTracks(musicFolder);
         sortTracks();
+    }
+
+    public void sortTracks(String param) {
+
     }
 
     public int getTrackProgress() {
@@ -462,15 +471,6 @@ public class Player extends Thread implements PlayerControls {
         shutdown();
     }
 
-    // 0-100
-    @Override
-    public void setGain(float volume) {
-        if (current != null) {
-            current.setGain(volume);
-            currentVolume = volume;
-        }
-    }
-
     @Override
     public void seek(int seconds) {
         if (current != null) {
@@ -481,6 +481,32 @@ public class Player extends Thread implements PlayerControls {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public float getGain() {
+        return current == null ? -1 : current.getGain();
+    }
+
+    // 0-100
+    @Override
+    public void setGain(float volume) {
+        if (current != null) {
+            current.setGain(volume);
+            currentVolume = volume;
+        }
+    }
+
+    @Override
+    public void mute() {
+        if (current != null)
+            current.mute();
+    }
+
+    @Override
+    public void unmute() {
+        if (current != null)
+            current.unmute();
     }
 
     @Override

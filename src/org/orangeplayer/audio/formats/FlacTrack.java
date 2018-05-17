@@ -59,12 +59,9 @@ public class FlacTrack extends Track {
     }
 
     @Override
-    public void seek(int seconds)
-            throws IOException {
+    public void seek(int seconds) throws IOException {
         long seek = transformSecondsInBytes(seconds);
-        pause();
         speakerAis.read(new byte[(int) seek]);
-        play();
         currentSeconds+=seconds;
     }
 

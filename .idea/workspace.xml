@@ -8,15 +8,27 @@
   <component name="ChangeListManager">
     <list default="true" id="52b5c670-5c9d-450c-9e66-4610ab941ce4" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/META-INF/MANIFEST.MF" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/tracksFormats/FlacTrack.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/tracksFormats/MP3Track.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/tracksFormats/MP4Track.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/tracksFormats/OGGTrack.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/tracksFormats/PCMTrack.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/main/TestPlayer.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/ontesting/TestPlayer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/ontesting/TestPlayer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/ontesting/TestPlayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/orangeplayer/ontesting/TestPlayer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/OrangePlayer.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/lib/AuCom.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/lib/commons-logging-api.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/lib/jaad-0.8.4.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/lib/jaudiotagger-2.0.4.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/lib/jffmpeg-1.1.0.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/lib/jflac-1.3.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/lib/jl1.0.1.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/lib/jogg-0.0.7.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/lib/jorbis-0.0.15.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/lib/mp3spi1.9.5.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/lib/tritonus-share-0.3.7-2.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/lib/tritonus_jorbis-0.3.6.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/orangeplayer/audio/Player.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/Track.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/orangeplayer/audio/Track.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/formats/FlacTrack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/orangeplayer/audio/formats/FlacTrack.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/formats/M4ATrack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/orangeplayer/audio/formats/M4ATrack.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/formats/OGGTrack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/orangeplayer/audio/formats/OGGTrack.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/interfaces/MusicControls.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/orangeplayer/audio/interfaces/MusicControls.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/ontesting/FormatsTesting.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/orangeplayer/ontesting/FormatsTesting.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -34,11 +46,24 @@
       <file leaf-file-name="Player.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/Player.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4026">
-              <caret line="197" column="33" selection-start-line="197" selection-start-column="33" selection-end-line="197" selection-end-column="33" />
+            <state relative-caret-position="99">
+              <caret line="340" column="34" lean-forward="true" selection-start-line="340" selection-start-column="34" selection-end-line="340" selection-end-column="34" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="e#10202#10203#0" expanded="true" />
+                <element signature="e#10266#10267#0" expanded="true" />
+                <element signature="e#13903#13904#0" expanded="true" />
+                <element signature="e#13950#13951#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FormatsTesting.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/ontesting/FormatsTesting.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="264">
+              <caret line="21" column="26" selection-start-line="21" selection-start-column="26" selection-end-line="21" selection-end-column="26" />
             </state>
           </provider>
         </entry>
@@ -46,27 +71,37 @@
       <file leaf-file-name="Track.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/Track.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="7436">
-              <caret line="338" column="18" selection-start-line="338" selection-start-column="18" selection-end-line="338" selection-end-column="18" />
+            <state relative-caret-position="123">
+              <caret line="290" column="16" selection-start-line="290" selection-start-column="16" selection-end-line="290" selection-end-column="16" />
+              <folding>
+                <element signature="e#7453#7454#0" expanded="true" />
+                <element signature="e#7474#7475#0" expanded="true" />
+                <element signature="e#8300#8301#0" expanded="true" />
+                <element signature="e#8329#8330#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AudioInfo.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/AudioInfo.java">
+      <file leaf-file-name="Speaker.class" pinned="false" current-in-tab="false">
+        <entry file="jar://$PROJECT_DIR$/../../NetBeansProjects/AuCom/dist/AuCom.jar!/org/aucom/sound/Speaker.class">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="506">
-              <caret line="41" column="19" selection-start-line="41" selection-start-column="19" selection-end-line="41" selection-end-column="19" />
+            <state relative-caret-position="131">
+              <caret line="37" column="28" selection-start-line="37" selection-start-column="28" selection-end-line="37" selection-end-column="28" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AudioUtil.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/AudioUtil.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="198">
+              <caret line="9" column="5" selection-start-line="9" selection-start-column="5" selection-end-line="9" selection-end-column="5" />
               <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#1022#1023#0" expanded="true" />
-                <element signature="e#1066#1067#0" expanded="true" />
-                <element signature="e#1110#1111#0" expanded="true" />
-                <element signature="e#1180#1181#0" expanded="true" />
-                <element signature="e#1212#1213#0" expanded="true" />
-                <element signature="e#1258#1259#0" expanded="true" />
-                <element signature="e#1291#1292#0" expanded="true" />
-                <element signature="e#1339#1340#0" expanded="true" />
+                <element signature="e#123#124#0" expanded="true" />
+                <element signature="e#168#169#0" expanded="true" />
+                <element signature="e#244#245#0" expanded="true" />
+                <element signature="e#281#282#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -75,8 +110,8 @@
       <file leaf-file-name="FlacTrack.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/formats/FlacTrack.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2046">
-              <caret line="104" selection-start-line="104" selection-end-line="104" />
+            <state relative-caret-position="374">
+              <caret line="64" column="15" selection-start-line="64" selection-start-column="15" selection-end-line="64" selection-end-column="15" />
             </state>
           </provider>
         </entry>
@@ -84,20 +119,8 @@
       <file leaf-file-name="M4ATrack.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/formats/M4ATrack.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2244">
-              <caret line="117" column="31" selection-start-line="117" selection-end-line="118" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TestPlayer.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/ontesting/TestPlayer.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="88">
-              <caret line="30" selection-start-line="30" selection-end-line="30" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state relative-caret-position="566">
+              <caret line="106" column="28" lean-forward="true" selection-start-line="106" selection-start-column="28" selection-end-line="106" selection-end-column="28" />
             </state>
           </provider>
         </entry>
@@ -105,8 +128,8 @@
       <file leaf-file-name="MP3Track.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/formats/MP3Track.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="880">
-              <caret line="48" selection-start-line="48" selection-end-line="48" />
+            <state relative-caret-position="316">
+              <caret line="43" column="34" selection-start-line="43" selection-start-column="34" selection-end-line="43" selection-end-column="34" />
             </state>
           </provider>
         </entry>
@@ -114,21 +137,8 @@
       <file leaf-file-name="OGGTrack.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/formats/OGGTrack.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1452">
-              <caret line="77" selection-start-line="77" selection-end-line="77" />
-              <folding>
-                <element signature="e#2804#2805#0" expanded="true" />
-                <element signature="e#2882#2883#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="PCMTrack.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/formats/PCMTrack.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="814">
-              <caret line="46" column="28" selection-start-line="46" selection-start-column="28" selection-end-line="46" selection-end-column="28" />
+            <state relative-caret-position="210">
+              <caret line="66" column="6" selection-start-line="66" selection-start-column="6" selection-end-line="66" selection-end-column="6" />
             </state>
           </provider>
         </entry>
@@ -144,13 +154,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>pause(</find>
-      <find>seek(</find>
-      <find>getDUra</find>
-      <find>play(</find>
-      <find>getT</find>
-      <find>open(</find>
-      <find>playN</find>
       <find>shutdown(</find>
       <find>shutdown()</find>
       <find>private</find>
@@ -169,10 +172,18 @@
       <find>goto</find>
       <find>stopT</find>
       <find>gettrackL</find>
-      <find>open</find>
       <find>total</find>
       <find>addM</find>
       <find>for</find>
+      <find>open</find>
+      <find>getPRO</find>
+      <find>getPro</find>
+      <find>setGa</find>
+      <find>setG</find>
+      <find>seek(</find>
+      <find>isPlay</find>
+      <find>mute</find>
+      <find>isPl</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -181,9 +192,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/org/orangeplayer/test/GetTrackTest.java" />
-        <option value="$PROJECT_DIR$/src/org/orangeplayer/test/TestAAC2.java" />
-        <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/interfaces/MusicControls.java" />
         <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/TrackFormat.java" />
         <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/AudioExtensions.java" />
         <option value="$PROJECT_DIR$/src/org/orangeplayer/thread/ThreadManagwr.java" />
@@ -223,15 +231,18 @@
         <option value="$PROJECT_DIR$/src/org/orangeplayer/ontesting/TestAAC2.java" />
         <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/AudioTag.java" />
         <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/formats/MP3Track.java" />
-        <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/formats/OGGTrack.java" />
         <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/formats/PCMTrack.java" />
         <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/AudioInfo.java" />
         <option value="$PROJECT_DIR$/src/org/orangeplayer/ontesting/AudioTaggerTest.java" />
+        <option value="$PROJECT_DIR$/src/org/orangeplayer/ontesting/TestPlayer.java" />
         <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/formats/FlacTrack.java" />
         <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/formats/M4ATrack.java" />
+        <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/interfaces/MusicControls.java" />
         <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/Track.java" />
         <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/Player.java" />
-        <option value="$PROJECT_DIR$/src/org/orangeplayer/ontesting/TestPlayer.java" />
+        <option value="$PROJECT_DIR$/src/org/orangeplayer/ontesting/FormatsTesting.java" />
+        <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/formats/OGGTrack.java" />
+        <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/AudioUtil.java" />
       </list>
     </option>
   </component>
@@ -251,7 +262,7 @@
     <packageJsonPaths />
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-1" />
+    <option name="x" value="1279" />
     <option name="y" value="23" />
     <option name="width" value="1368" />
     <option name="height" value="746" />
@@ -264,51 +275,56 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="AndroidView" />
-      <pane id="PackagesPane" />
       <pane id="Scope" />
+      <pane id="PackagesPane" />
+      <pane id="AndroidView" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
-              <item name="OrangePlayer" type="b2602c69:ProjectViewProjectNode" />
-              <item name="OrangePlayer" type="462c0819:PsiDirectoryNode" />
+              <item name="MuPlayer" type="b2602c69:ProjectViewProjectNode" />
+              <item name="MuPlayer" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="OrangePlayer" type="b2602c69:ProjectViewProjectNode" />
-              <item name="OrangePlayer" type="462c0819:PsiDirectoryNode" />
+              <item name="MuPlayer" type="b2602c69:ProjectViewProjectNode" />
+              <item name="MuPlayer" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="OrangePlayer" type="b2602c69:ProjectViewProjectNode" />
-              <item name="OrangePlayer" type="462c0819:PsiDirectoryNode" />
+              <item name="MuPlayer" type="b2602c69:ProjectViewProjectNode" />
+              <item name="MuPlayer" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="orangeplayer" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="OrangePlayer" type="b2602c69:ProjectViewProjectNode" />
-              <item name="OrangePlayer" type="462c0819:PsiDirectoryNode" />
+              <item name="MuPlayer" type="b2602c69:ProjectViewProjectNode" />
+              <item name="MuPlayer" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="orangeplayer" type="462c0819:PsiDirectoryNode" />
               <item name="audio" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="OrangePlayer" type="b2602c69:ProjectViewProjectNode" />
-              <item name="OrangePlayer" type="462c0819:PsiDirectoryNode" />
+              <item name="MuPlayer" type="b2602c69:ProjectViewProjectNode" />
+              <item name="MuPlayer" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="orangeplayer" type="462c0819:PsiDirectoryNode" />
+              <item name="audio" type="462c0819:PsiDirectoryNode" />
+              <item name="formats" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="MuPlayer" type="b2602c69:ProjectViewProjectNode" />
+              <item name="MuPlayer" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="orangeplayer" type="462c0819:PsiDirectoryNode" />
+              <item name="audio" type="462c0819:PsiDirectoryNode" />
+              <item name="interfaces" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="MuPlayer" type="b2602c69:ProjectViewProjectNode" />
+              <item name="MuPlayer" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="orangeplayer" type="462c0819:PsiDirectoryNode" />
               <item name="ontesting" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="OrangePlayer" type="b2602c69:ProjectViewProjectNode" />
-              <item name="OrangePlayer" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="orangeplayer" type="462c0819:PsiDirectoryNode" />
-              <item name="thread" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="OrangePlayer" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
             </path>
           </expand>
           <select />
@@ -359,25 +375,25 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.TestPlayer">
-    <configuration name="M4ATrack" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="org.orangeplayer.audio.formats.M4ATrack" />
+  <component name="RunManager" selected="Application.AudioUtil">
+    <configuration name="AudioUtil" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.orangeplayer.audio.AudioUtil" />
       <module name="OrangePlayer" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="org.orangeplayer.audio.formats.*" />
+          <option name="PATTERN" value="org.orangeplayer.audio.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
     </configuration>
-    <configuration name="MP3Track" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="org.orangeplayer.audio.formats.MP3Track" />
+    <configuration name="FormatsTesting" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.orangeplayer.ontesting.FormatsTesting" />
       <module name="OrangePlayer" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="org.orangeplayer.audio.formats.*" />
+          <option name="PATTERN" value="org.orangeplayer.ontesting.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -457,19 +473,19 @@
       <listeners />
     </configuration>
     <list>
-      <item itemvalue="Application.M4ATrack" />
-      <item itemvalue="Application.MP3Track" />
       <item itemvalue="Application.OGGTrack" />
       <item itemvalue="Application.PCMTrack" />
       <item itemvalue="Application.TestPlayer" />
+      <item itemvalue="Application.FormatsTesting" />
+      <item itemvalue="Application.AudioUtil" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.AudioUtil" />
+        <item itemvalue="Application.FormatsTesting" />
         <item itemvalue="Application.TestPlayer" />
         <item itemvalue="Application.PCMTrack" />
         <item itemvalue="Application.OGGTrack" />
-        <item itemvalue="Application.MP3Track" />
-        <item itemvalue="Application.M4ATrack" />
       </list>
     </recent_temporary>
   </component>
@@ -485,39 +501,43 @@
       <updated>1524232543190</updated>
       <workItem from="1526261081212" duration="1763000" />
       <workItem from="1526328684358" duration="69000" />
+      <workItem from="1526477271613" duration="179000" />
+      <workItem from="1526500347255" duration="2375000" />
+      <workItem from="1526513632428" duration="2771000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1832000" />
+    <option name="totallyTimeSpent" value="7157000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1" y="23" width="1368" height="746" extended-state="6" />
+    <frame x="1279" y="23" width="1368" height="746" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
       <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Messages" order="10" weight="0.3369906" />
       <window_info anchor="right" id="Palette&#9;" order="7" />
       <window_info id="Image Layers" order="3" />
       <window_info anchor="right" id="Capture Analysis" order="4" />
-      <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" weight="0.32913166" />
+      <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" weight="0.3275862" />
       <window_info anchor="right" id="Maven Projects" order="6" weight="0.32954547" />
       <window_info anchor="bottom" id="Database Changes" order="11" show_stripe_button="false" />
-      <window_info anchor="bottom" auto_hide="true" x="1451" y="24" width="1024" height="743" id="Run" internal_type="SLIDING" order="2" type="SLIDING" weight="0.24294671" />
       <window_info anchor="bottom" id="Version Control" order="9" weight="0.3276923" />
+      <window_info active="true" anchor="bottom" auto_hide="true" x="1451" y="24" width="1024" height="743" id="Run" internal_type="SLIDING" order="2" visible="true" weight="0.24294671" />
       <window_info anchor="bottom" auto_hide="true" x="1451" y="50" width="1024" height="717" id="Terminal" order="7" weight="0.32615384" />
       <window_info id="Capture Tool" order="4" />
       <window_info id="Designer" order="6" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.8082192" visible="true" weight="0.20131771" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.8082192" visible="true" weight="0.20131771" />
       <window_info anchor="right" id="Database" order="8" />
       <window_info id="Structure" order="1" sideWeight="0.19178082" side_tool="true" weight="0.17424242" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info id="UI Designer" order="2" />
       <window_info anchor="right" id="Theme Preview" order="5" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info id="Favorites" order="5" side_tool="true" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="Messages" order="10" weight="0.3369906" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="ASM" order="8" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -569,23 +589,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/orangeplayer.properties" />
-    <entry file="file://$PROJECT_DIR$/orangeplayer.xml" />
-    <entry file="file://$PROJECT_DIR$/src/META-INF/MANIFEST.MF" />
-    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/interfaces/MusicControls.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="308">
-          <caret line="14" column="24" selection-start-line="14" selection-start-column="21" selection-end-line="14" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///usr/lib/jvm/default-runtime/src.zip!/javax/sound/sampled/Line.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="186" column="19" selection-start-line="186" selection-start-column="19" selection-end-line="186" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar:///usr/lib/jvm/default-runtime/src.zip!/java/lang/Thread.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="322">
@@ -647,10 +650,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="88">
           <caret line="4" column="24" selection-start-line="4" selection-start-column="24" selection-end-line="4" selection-end-column="24" />
-          <folding>
-            <element signature="e#112#113#0" expanded="true" />
-            <element signature="e#174#175#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -814,9 +813,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="286">
           <caret line="22" column="42" selection-start-line="22" selection-start-column="42" selection-end-line="22" selection-end-column="42" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -824,38 +820,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="270">
           <caret line="633" column="19" selection-start-line="633" selection-start-column="19" selection-end-line="633" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/formats/FlacTrack.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2046">
-          <caret line="104" selection-start-line="104" selection-end-line="104" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/formats/M4ATrack.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2244">
-          <caret line="117" column="31" selection-start-line="117" selection-end-line="118" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/formats/MP3Track.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="880">
-          <caret line="48" selection-start-line="48" selection-end-line="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/formats/OGGTrack.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1452">
-          <caret line="77" selection-start-line="77" selection-end-line="77" />
-          <folding>
-            <element signature="e#2804#2805#0" expanded="true" />
-            <element signature="e#2882#2883#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -877,17 +841,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/Track.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="7436">
-          <caret line="338" column="18" selection-start-line="338" selection-start-column="18" selection-end-line="338" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/formats/PCMTrack.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="814">
-          <caret line="46" column="28" selection-start-line="46" selection-start-column="28" selection-end-line="46" selection-end-column="28" />
+          <caret line="46" column="13" selection-start-line="46" selection-start-column="13" selection-end-line="46" selection-end-column="13" />
         </state>
       </provider>
     </entry>
@@ -898,22 +855,108 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/Player.java">
+    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/ontesting/TestPlayer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4026">
-          <caret line="197" column="33" selection-start-line="197" selection-start-column="33" selection-end-line="197" selection-end-column="33" />
+        <state relative-caret-position="924">
+          <caret line="50" column="45" selection-start-line="50" selection-start-column="45" selection-end-line="50" selection-end-column="45" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/ontesting/TestPlayer.java">
+    <entry file="jar:///usr/lib/jvm/java-8-jdk/src.zip!/javax/sound/sampled/AudioInputStream.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="88">
-          <caret line="30" selection-start-line="30" selection-end-line="30" />
+        <state relative-caret-position="203">
+          <caret line="197" column="15" selection-start-line="197" selection-start-column="15" selection-end-line="197" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/formats/FlacTrack.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="64" column="15" selection-start-line="64" selection-start-column="15" selection-end-line="64" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/formats/MP3Track.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="316">
+          <caret line="43" column="34" selection-start-line="43" selection-start-column="34" selection-end-line="43" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/formats/M4ATrack.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="566">
+          <caret line="106" column="28" lean-forward="true" selection-start-line="106" selection-start-column="28" selection-end-line="106" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/../../NetBeansProjects/AuCom/dist/AuCom.jar!/org/aucom/sound/Speaker.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="131">
+          <caret line="37" column="28" selection-start-line="37" selection-start-column="28" selection-end-line="37" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/Track.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="123">
+          <caret line="290" column="16" selection-start-line="290" selection-start-column="16" selection-end-line="290" selection-end-column="16" />
+          <folding>
+            <element signature="e#7453#7454#0" expanded="true" />
+            <element signature="e#7474#7475#0" expanded="true" />
+            <element signature="e#8300#8301#0" expanded="true" />
+            <element signature="e#8329#8330#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/interfaces/MusicControls.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="7" column="28" selection-start-line="7" selection-start-column="28" selection-end-line="7" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/Player.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="99">
+          <caret line="340" column="34" lean-forward="true" selection-start-line="340" selection-start-column="34" selection-end-line="340" selection-end-column="34" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="e#10202#10203#0" expanded="true" />
+            <element signature="e#10266#10267#0" expanded="true" />
+            <element signature="e#13903#13904#0" expanded="true" />
+            <element signature="e#13950#13951#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/formats/OGGTrack.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="66" column="6" selection-start-line="66" selection-start-column="6" selection-end-line="66" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/ontesting/FormatsTesting.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="264">
+          <caret line="21" column="26" selection-start-line="21" selection-start-column="26" selection-end-line="21" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/orangeplayer/audio/AudioUtil.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="9" column="5" selection-start-line="9" selection-start-column="5" selection-end-line="9" selection-end-column="5" />
+          <folding>
+            <element signature="e#123#124#0" expanded="true" />
+            <element signature="e#168#169#0" expanded="true" />
+            <element signature="e#244#245#0" expanded="true" />
+            <element signature="e#281#282#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -925,8 +968,8 @@
         <settings>
           <artifact-editor>
             <show-content>
-              <type id="library" />
               <type id="artifact" />
+              <type id="library" />
             </show-content>
           </artifact-editor>
           <last-edited>OrangePlayer:jar</last-edited>
@@ -942,7 +985,7 @@
       </state>
       <state key="FacetStructureConfigurable.UI">
         <settings>
-          <last-edited />
+          <last-edited>No facets are configured</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
@@ -954,6 +997,7 @@
       </state>
       <state key="GlobalLibrariesConfigurable.UI">
         <settings>
+          <last-edited>Java EE 6-Java EE 6</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>

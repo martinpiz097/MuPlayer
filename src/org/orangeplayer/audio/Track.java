@@ -30,6 +30,7 @@ public abstract class Track implements Runnable, MusicControls {
     protected byte state;
     protected int currentSeconds;
     protected float volume;
+    protected boolean isMute;
     //protected TrackState state;
 
     public static final int BUFFSIZE = 4096;
@@ -233,6 +234,11 @@ public abstract class Track implements Runnable, MusicControls {
         return state == KILLED;
     }
 
+    @Override
+    public boolean isMute() {
+        return isMute;
+    }
+
     public void kill() {
         state = KILLED;
         closeAll();
@@ -267,6 +273,7 @@ public abstract class Track implements Runnable, MusicControls {
         closeAll();
     }
 
+    @Override
     public void seek(int seconds)
             throws UnsupportedAudioFileException, IOException,
             LineUnavailableException {
@@ -274,11 +281,32 @@ public abstract class Track implements Runnable, MusicControls {
         //speakerAis.skip(transformSecondsInBytes(seconds));
     }
 
+    @Override
+    public float getGain() {
+        return volume;
+    }
+
     // -80 to 5.5
     @Override
     public void setGain(float volume) {
-        float vol = (float) (-80.0+(0.855*volume));
-        trackLine.setGain(vol);
+        this.volume = volume;
+        trackLine.setGain(AudioUtil.convertVolRangeToLineRange(volume));
+    }
+
+    @Override
+    public void mute() {
+        if (!isMute) {
+            isMute = true;
+            volume = AudioUtil.convertLineRangeToVolRange(
+                    trackLine.getControl(FloatControl.Type.MASTER_GAIN).getValue());
+            setGain(0);
+        }
+    }
+
+    @Override
+    public void unmute() {
+        if (isMute)
+            setGain(volume);
     }
 
     protected long transformSecondsInBytes(int seconds) {

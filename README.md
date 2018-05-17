@@ -77,3 +77,7 @@ Music player library in pure Java.
 ## 0.7.2 Beta
 	## Se corrige error al hacer un seek con el formato FLAC
 	## Metodos seek y getDuration globales con algunas sobreescrituras especificas segun sea el caso
+## 0.8 Beta
+	## Se corrige error al hacer seek en M4A
+	## Se mejora seek en FLAC y M4A
+	## Funcion mute y unmute en Player añadida

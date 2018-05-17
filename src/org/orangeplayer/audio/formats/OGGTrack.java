@@ -3,7 +3,6 @@ package org.orangeplayer.audio.formats;
 import com.jcraft.jorbis.Comment;
 import com.jcraft.jorbis.JOrbisException;
 import com.jcraft.jorbis.VorbisFile;
-import net.sourceforge.jffmpeg.codecs.audio.vorbis.VorbisDecoder;
 import org.orangeplayer.audio.Track;
 import org.orangeplayer.audio.codec.DecodeManager;
 import org.tritonus.sampled.file.jorbis.JorbisAudioFileReader;
@@ -65,10 +64,10 @@ public class OGGTrack extends Track {
                 .append(':').append(sec < 10 ? '0'+sec:sec).toString();
     }*/
 
-    @Override
+    /*@Override
     protected String getProperty(String key) {
         return soundComments == null ? null : soundComments.query(key);
-    }
+    }*/
 
     /*public static void main(String[] args) throws
             IOException, LineUnavailableException, JOrbisException, UnsupportedAudioFileException {

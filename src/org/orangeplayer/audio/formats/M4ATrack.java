@@ -14,7 +14,6 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public class M4ATrack extends Track {
@@ -53,7 +52,6 @@ public class M4ATrack extends Track {
         RandomAccessFile randomAccess = null;
         byte[] audioData = null;
 
-
         try {
             randomAccess = new RandomAccessFile(inputFile, "r");
             final MP4Container cont = new MP4Container(randomAccess);
@@ -87,6 +85,13 @@ public class M4ATrack extends Track {
            return new AudioInputStream(inputStream, decFormat, audioData.length);
        }
        return null;
+    }
+
+    @Override
+    public void seek(int seconds) throws IOException {
+        long seek = transformSecondsInBytes(seconds);
+        speakerAis.read(new byte[(int) seek]);
+        currentSeconds+=seconds;
     }
 
     // Ver si duracion mostrada es real antes de entregar valor en segundos
