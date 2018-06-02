@@ -1,0 +1,5 @@
+- Revisar error cuando intenta leer un png en donde no deberia pasar a la subclase
+- Eror seek muchos mp3
+- Revisar que cuando hayan errores en una cancion este se muestre y despues saltar cancion automaticamente
+- Problema Nullpointer exception en cancion Pussycat dolls cuando se intenta leer titulo
+- Arreglar seek en ogg, el falling in love again suena feo
