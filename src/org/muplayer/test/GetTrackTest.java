@@ -24,7 +24,6 @@ public class GetTrackTest {
 
     public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         long oldSound, newSound, oldImg, newImg;
-
         oldGetTrack(fSound);
         oldSound = tf;
         newGetTrack(fSound);

@@ -9,10 +9,11 @@ import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
-import org.jaudiotagger.tag.images.Artwork;
+import org.jaudiotagger.tag.datatype.Artwork;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class AudioInfo {
     private AudioFile audioFile;
@@ -41,6 +42,10 @@ public class AudioInfo {
 
     public Artwork getCover() {
         return fileTag.getFirstArtwork();
+    }
+
+    public List<Artwork> getCovers() {
+        return fileTag.getArtworkList();
     }
 
 }

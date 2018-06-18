@@ -9,6 +9,7 @@ import org.jaudiotagger.tag.TagException;
 import org.muplayer.audio.codec.DecodeManager;
 import org.muplayer.audio.formats.*;
 import org.muplayer.audio.interfaces.MusicControls;
+import org.muplayer.system.AudioUtil;
 import org.muplayer.thread.PlayerHandler;
 import org.muplayer.thread.ThreadManager;
 
@@ -16,11 +17,13 @@ import javax.sound.sampled.*;
 import javax.sound.sampled.spi.AudioFileReader;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 import static org.muplayer.audio.AudioExtensions.*;
-import static org.muplayer.audio.TrackStates.*;
+import static org.muplayer.system.TrackStates.*;
 
-public abstract class Track implements Runnable, MusicControls {
+public abstract class Track implements Runnable, MusicControls, TrackInfo {
     protected final File dataSource;
     protected Speaker trackLine;
     protected AudioInputStream trackStream;
@@ -28,9 +31,9 @@ public abstract class Track implements Runnable, MusicControls {
     protected AudioTag tagInfo;
 
     protected byte state;
+    protected int available;
     protected int currentSeconds;
     protected float volume;
-    protected long soundSize;
     protected boolean isMute;
     protected boolean isPlayerLinked;
     //protected TrackState state;
@@ -41,7 +44,7 @@ public abstract class Track implements Runnable, MusicControls {
         if (!fSound.exists())
             return null;
         Track result = null;
-        String trackName = fSound.getName();
+        final String trackName = fSound.getName();
         try {
             if (trackName.endsWith(MPEG))
                 result = new MP3Track(fSound);
@@ -53,12 +56,12 @@ public abstract class Track implements Runnable, MusicControls {
                     || trackName.endsWith(AU) || trackName.endsWith(SND)
                     || trackName.endsWith(AIFF) || trackName.endsWith(AIFC))
                 result = new PCMTrack(fSound);
-            else if (trackName.endsWith(M4A)){
+            else if (trackName.endsWith(M4A) || trackName.endsWith(AAC)){
                 System.out.println("Es mp4");
                 result = new M4ATrack(fSound);
             }
             // Por si no tiene formato en el nombre
-            else {
+            /*else {
                 AudioFileFormat fileFormat = AudioSystem.getAudioFileFormat(fSound);
                 // Es ogg, aac o mp3
                 if (AudioSystem.isConversionSupported(
@@ -75,7 +78,7 @@ public abstract class Track implements Runnable, MusicControls {
                 // Ver si es mp3
                 // Podria ser que por reflection revise entre todas las subclases
                 // si una es compatible con el archivo en cuestion
-            }
+            }*/
         } catch (UnsupportedAudioFileException e) {
             // Es flac
             if (DecodeManager.isFlac(fSound)) {
@@ -86,7 +89,6 @@ public abstract class Track implements Runnable, MusicControls {
                 } catch (LineUnavailableException | UnsupportedAudioFileException | IOException e1) {
                     e1.printStackTrace();
                 }
-
             }
         } catch (IOException | LineUnavailableException e) {
             e.printStackTrace();
@@ -100,7 +102,8 @@ public abstract class Track implements Runnable, MusicControls {
     }
 
     public static boolean isValidTrack(String trackPath) {
-        return getTrack(trackPath) != null;
+        Track track = getTrack(trackPath);
+        return track != null && track.hasValidTrackLine();
     }
 
     protected Track(File dataSource)
@@ -108,61 +111,34 @@ public abstract class Track implements Runnable, MusicControls {
         System.out.println("Parent: "+dataSource.getParentFile().getName());
         System.out.println("File: "+ dataSource.getName());
         this.dataSource = dataSource;
-        //stateCode = STOPED;
-        state = STOPED;
-        initLine();
+        //stateCode = STOPPED;
+        state = STOPPED;
         currentSeconds = 0;
+        initLine();
+        isPlayerLinked = PlayerHandler.hasInstance();
         try {
-            tagInfo = new AudioTag(dataSource);
-            soundSize = trackStream.available();
-            isPlayerLinked = PlayerHandler.hasInstance();
+           if (isValidTrack()) {
+               byte[] buffer = new byte[(int) dataSource.length()];
+               int read = trackStream.read(buffer);
+               buffer = null;
+               System.out.println("StreamRead: "+read);
+               System.out.println("DataSourceLenght: "+dataSource.length());
+               initLine();
+
+               System.err.println("TrackAvailable: "+available);
+               available = trackStream.available();
+               setGain(Player.DEFAULT_VOLUME);
+               tagInfo = new AudioTag(dataSource);
+           }
+           else
+               available = -1;
         } catch (TagException | ReadOnlyFileException | InvalidAudioFrameException | CannotReadException e) {
-            // For testing se imprime
             System.err.println("Problema con caratula en archivo: "+ dataSource.getName());
-            //e.printStackTrace();
         }
     }
 
     protected Track(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this(new File(trackPath));
-    }
-
-    public boolean isValidTrack() {
-        return trackStream != null;
-    }
-
-    public boolean isTrackFinished() throws IOException {
-        return trackStream.read() == -1;
-    }
-
-    public AudioInputStream getTrackStream() {
-        return trackStream;
-    }
-
-    public synchronized Speaker getTrackLine() {
-        return trackLine;
-    }
-
-    /*public TrackStates getState() {
-        return stateCode;
-    }*/
-
-    public String getStateToString() {
-        switch (state) {
-            case PLAYING:
-                return "Playing";
-            case PAUSED:
-                return "Paused";
-            case STOPED:
-                return "Stoped";
-            case FINISHED:
-                return "Finished";
-            case KILLED:
-                return "Killed";
-                default:
-                    return "Unknown";
-        }
-
     }
 
     // Ver opcion de usar archivo temporal y leer desde ahi
@@ -182,8 +158,15 @@ public abstract class Track implements Runnable, MusicControls {
         if (trackStream != null) {
             if (trackLine != null)
                 trackLine.close();
-            trackLine = new Speaker(trackStream.getFormat());
-            trackLine.open();
+            try {
+                trackLine = new Speaker(trackStream.getFormat());
+                trackLine.open();
+            } catch (IllegalArgumentException e1) {
+                System.err.println("Error: "+e1.getMessage());
+            }
+        }
+        else {
+            System.out.println("TrackStream null por tanto line is null");
         }
     }
 
@@ -212,6 +195,10 @@ public abstract class Track implements Runnable, MusicControls {
         return (short) ((readedBytes * secs) / fLen);
     }
 
+    protected long transformSecondsInBytes(int seconds) {
+        return Math.round((((double)seconds* dataSource.length()) / getDuration()));
+    }
+
     void linkPlayer() {
         isPlayerLinked = true;
     }
@@ -220,12 +207,86 @@ public abstract class Track implements Runnable, MusicControls {
         isPlayerLinked = false;
     }
 
+    public boolean isValidTrack() {
+        return trackStream != null && trackLine != null;
+    }
+
+    public boolean isTrackFinished() throws IOException {
+        return trackStream.read() == -1;
+    }
+
+    public AudioInputStream getTrackStream() {
+        return trackStream;
+    }
+
+    public synchronized boolean hasValidTrackLine() {
+        return trackLine != null;
+    }
+
+    public synchronized Speaker getTrackLine() {
+        return trackLine;
+    }
+
+    /*public TrackStates getState() {
+        return stateCode;
+    }*/
+
+    public String getStateToString() {
+        switch (state) {
+            case PLAYING:
+                return "Playing";
+            case PAUSED:
+                return "Paused";
+            case STOPPED:
+                return "Stopped";
+            case FINISHED:
+                return "Finished";
+            case KILLED:
+                return "Killed";
+            default:
+                return "Unknown";
+        }
+
+    }
+
     public File getDataSource() {
         return dataSource;
     }
 
     public AudioTag getTagInfo() {
         return tagInfo;
+    }
+
+    public synchronized int getProgress() {
+        return currentSeconds;
+    }
+
+    // Ir a un segundo especifico de la cancion
+    public void gotoSecond(int second) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
+        long gtBytes = transformSecondsInBytes(second);
+        System.out.println("GoToBytes: "+gtBytes);
+        System.out.println("SoundBytes: "+transformSecondsInBytes((int) getDuration()));
+        float currentVolume = trackLine.getControl(
+                FloatControl.Type.MASTER_GAIN).getValue();
+        if (gtBytes > dataSource.length())
+            gtBytes = dataSource.length();
+
+        pause();
+        resetStream();
+        trackLine.setGain(currentVolume);
+        play();
+        trackStream.skip(gtBytes);
+        currentSeconds = second;
+    }
+
+    public AudioFileFormat getFileFormat() throws IOException, UnsupportedAudioFileException {
+        return audioReader == null ? null : audioReader.getAudioFileFormat(dataSource);
+    }
+
+    // Posible motivo de error para mas adelante
+    public int getBuffLen() {
+        long frameLen = trackStream.getFrameLength();
+        return frameLen > 0 ? (int) (frameLen / 1024) : BUFFSIZE;
     }
 
     @Override
@@ -240,7 +301,7 @@ public abstract class Track implements Runnable, MusicControls {
 
     @Override
     public synchronized boolean isStoped() {
-        return state == STOPED;
+        return state == STOPPED;
     }
 
     @Override
@@ -273,7 +334,7 @@ public abstract class Track implements Runnable, MusicControls {
 
     @Override
     public synchronized void stopTrack() {
-        state = STOPED;
+        state = STOPPED;
     }
 
     @Override
@@ -318,79 +379,53 @@ public abstract class Track implements Runnable, MusicControls {
             setGain(volume);
     }
 
-    protected long transformSecondsInBytes(int seconds) {
-        return Math.round((((double)seconds* dataSource.length()) / getDuration()));
+    @Override
+    public boolean hasCover() {
+        return tagInfo.getCover() != null;
     }
 
-    // Ir a un segundo especifico de la cancion
-    public void gotoSecond(int second) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
-        long gtBytes = transformSecondsInBytes(second);
-        System.out.println("GoToBytes: "+gtBytes);
-        System.out.println("SoundBytes: "+transformSecondsInBytes((int) getDuration()));
-        float currentVolume = trackLine.getControl(
-                FloatControl.Type.MASTER_GAIN).getValue();
-        if (gtBytes > dataSource.length())
-            gtBytes = dataSource.length();
-
-        pause();
-        resetStream();
-        trackLine.setGain(currentVolume);
-        play();
-        trackStream.skip(gtBytes);
-        currentSeconds = second;
-    }
-
-    public AudioFileFormat getFileFormat() throws IOException, UnsupportedAudioFileException {
-        return audioReader == null ? null : audioReader.getAudioFileFormat(dataSource);
-    }
-
-
-    protected String getProperty(String key) {
+    @Override
+    public String getProperty(String key) {
         return tagInfo == null ? null : tagInfo.getTag(key);
     }
 
-    protected String getProperty(FieldKey key) {
+    @Override
+    public String getProperty(FieldKey key) {
         if (tagInfo == null)
             return null;
         String tag = tagInfo.getTag(key).trim();
         return tag.isEmpty() ? null : tag;
     }
 
+    @Override
     public String getTitle() {
         return getProperty(FieldKey.TITLE);
     }
 
+    @Override
     public String getAlbum() {
         return getProperty(FieldKey.ALBUM);
     }
 
+    @Override
     public String getArtist() {
         //return author == null ? getProperty("artist") : author;
         return getProperty(FieldKey.ARTIST);
     }
 
+    @Override
     public String getDate() {
         return getProperty(FieldKey.YEAR);
     }
 
-    public boolean hasCover() {
-        return tagInfo.getCover() != null;
-    }
-
+    @Override
     public byte[] getCoverData() {
         return hasCover() ? tagInfo.getCover().getBinaryData() : null;
     }
 
-    public synchronized int getProgress() {
-        return currentSeconds;
-    }
-
+    @Override
     public long getDuration() {
         return tagInfo.getDuration();
-    }
-
-    public String getDurationAsString() {
-        return String.valueOf(getDuration());
     }
 
     // Testing
@@ -402,13 +437,21 @@ public abstract class Track implements Runnable, MusicControls {
         sbInfo.append(getDate()).append('\n');
         sbInfo.append(getDurationAsString()).append('\n');
         sbInfo.append("------------------------");
-        return sbInfo.toString();
-    }
+        File fileCover = new File("/home/martin/AudioTesting/test/cover.jpg");
+        try {
+            if (fileCover.exists())
+                fileCover.delete();
+            byte[] coverData = getCoverData();
+            if (coverData != null) {
+                fileCover.createNewFile();
+                Files.write(fileCover.toPath(), coverData, StandardOpenOption.WRITE);
+            }
 
-    // Posible motivo de error para mas adelante
-    public int getBuffLen() {
-        long frameLen = trackStream.getFrameLength();
-        return frameLen > 0 ? (int) (frameLen / 1024) : BUFFSIZE;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return sbInfo.toString();
     }
 
     @Override

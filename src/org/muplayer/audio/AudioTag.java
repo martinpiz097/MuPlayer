@@ -9,12 +9,13 @@ import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
-import org.jaudiotagger.tag.images.Artwork;
+import org.jaudiotagger.tag.datatype.Artwork;
 
 import java.io.File;
 import java.io.IOException;
 
 public class AudioTag {
+    private File fileSource;
     private AudioFile audioFile;
     private Tag fileTag;
     private AudioHeader header;
@@ -22,9 +23,24 @@ public class AudioTag {
     public AudioTag(File sound)
             throws TagException, ReadOnlyFileException,
             CannotReadException, InvalidAudioFrameException, IOException {
+        this.fileSource = sound;
         this.audioFile = AudioFileIO.read(sound);
         fileTag = audioFile.getTag();
         header = audioFile.getAudioHeader();
+    }
+
+    public AudioTag(String soundPath) throws
+            ReadOnlyFileException, IOException, TagException,
+            InvalidAudioFrameException, CannotReadException {
+        this(new File(soundPath));
+    }
+
+    public boolean isValidFile() {
+        return fileTag != null;
+    }
+
+    public File getFileSource() {
+        return fileSource;
     }
 
     public String getTag(FieldKey tag) {

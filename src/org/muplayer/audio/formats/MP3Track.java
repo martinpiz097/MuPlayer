@@ -30,6 +30,8 @@ public class MP3Track extends Track {
         audioReader = new MpegAudioFileReader();
         AudioInputStream soundAis = audioReader.getAudioInputStream(dataSource);
         AudioFormat baseFormat = soundAis.getFormat();
+        if (trackStream != null)
+            trackStream.close();
         trackStream = DecodeManager.decodeToPcm(baseFormat, soundAis);
     }
 

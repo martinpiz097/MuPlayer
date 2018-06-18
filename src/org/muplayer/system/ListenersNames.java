@@ -1,4 +1,4 @@
-package org.muplayer.audio;
+package org.muplayer.system;
 
 public class ListenersNames {
     public static final String ONSTARTED = "onStarted";

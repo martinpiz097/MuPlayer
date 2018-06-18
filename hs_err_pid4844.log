@@ -1,6 +1,6 @@
 #
 # There is insufficient memory for the Java Runtime Environment to continue.
-# Native memory allocation (mmap) failed to map 119537664 bytes for committing reserved memory.
+# Native memory allocation (mmap) failed to map 119537664 data for committing reserved memory.
 # Possible reasons:
 #   The system is out of physical RAM or swap space
 #   In 32 bit mode, the process size limit was hit
@@ -96,16 +96,16 @@ CodeCache: size=245760Kb used=1708Kb max_used=1718Kb free=244051Kb
  compilation: enabled
 
 Compilation events (10 events):
-Event: 4,024 Thread 0x00007f30cc301000  187       4       java.util.HashMap$HashIterator::hasNext (13 bytes)
+Event: 4,024 Thread 0x00007f30cc301000  187       4       java.util.HashMap$HashIterator::hasNext (13 data)
 Event: 4,025 Thread 0x00007f30cc301000 nmethod 187 0x00007f30bd18dcd0 code [0x00007f30bd18de20, 0x00007f30bd18de98]
-Event: 4,073 Thread 0x00007f30cc2ff800  188       4       java.util.HashMap$HashIterator::nextNode (100 bytes)
+Event: 4,073 Thread 0x00007f30cc2ff800  188       4       java.util.HashMap$HashIterator::nextNode (100 data)
 Event: 4,082 Thread 0x00007f30cc2ff800 nmethod 188 0x00007f30bd1a2f50 code [0x00007f30bd1a30a0, 0x00007f30bd1a3318]
-Event: 4,123 Thread 0x00007f30cc301000  189       4       org.kc7bfi.jflac.io.BitInputStream::peekRawUInt (24 bytes)
+Event: 4,123 Thread 0x00007f30cc301000  189       4       org.kc7bfi.jflac.io.BitInputStream::peekRawUInt (24 data)
 Event: 4,127 Thread 0x00007f30cc301000 nmethod 189 0x00007f30bd19bc90 code [0x00007f30bd19bde0, 0x00007f30bd19bf68]
-Event: 4,388 Thread 0x00007f30cc2ff800  190 %     4       org.kc7bfi.jflac.LPCPredictor::restoreSignal @ 15 (75 bytes)
-Event: 4,389 Thread 0x00007f30cc304000  191       3       org.kc7bfi.jflac.frame.ChannelConstant::<init> (47 bytes)
+Event: 4,388 Thread 0x00007f30cc2ff800  190 %     4       org.kc7bfi.jflac.LPCPredictor::restoreSignal @ 15 (75 data)
+Event: 4,389 Thread 0x00007f30cc304000  191       3       org.kc7bfi.jflac.frame.ChannelConstant::<init> (47 data)
 Event: 4,390 Thread 0x00007f30cc304000 nmethod 191 0x00007f30bd1a2790 code [0x00007f30bd1a2920, 0x00007f30bd1a2ca8]
-Event: 4,391 Thread 0x00007f30cc301000  192 %     4       org.kc7bfi.jflac.frame.ChannelConstant::<init> @ 20 (47 bytes)
+Event: 4,391 Thread 0x00007f30cc301000  192 %     4       org.kc7bfi.jflac.frame.ChannelConstant::<init> @ 20 (47 data)
 
 GC Heap History (10 events):
 Event: 2,310 GC heap after

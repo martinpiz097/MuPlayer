@@ -14,6 +14,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
+import java.lang.reflect.Field;
 import java.util.List;
 
 public class M4ATrack extends Track {
@@ -32,7 +33,7 @@ public class M4ATrack extends Track {
             audioReader = new AACAudioFileReader();
             trackStream = audioReader.getAudioInputStream(dataSource);
         } catch (UnsupportedAudioFileException e) {
-            System.out.println("No soportadp");
+            System.out.println("No soportado");
             e.printStackTrace();
         } catch (IOException e) {
             //System.out.println("LoadAudioStreamIOException: "+e.getMessage());
@@ -54,6 +55,10 @@ public class M4ATrack extends Track {
 
         try {
             randomAccess = new RandomAccessFile(inputFile, "r");
+            Field fd = FileDescriptor.class
+                    .getDeclaredField("fd");
+            fd.setAccessible(true);
+            System.out.println("Decriptor: "+fd.getInt(randomAccess.getFD()));
             final MP4Container cont = new MP4Container(randomAccess);
             final Movie movie = cont.getMovie();
             final List<net.sourceforge.jaad.mp4.api.Track> tracks = movie.getTracks(AudioTrack.AudioCodec.AAC);
@@ -74,6 +79,10 @@ public class M4ATrack extends Track {
             decFormat = new AudioFormat(track.getSampleRate(),
                     track.getSampleSize(), track.getChannelCount(),
                     true, true);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         } finally {
             audioData = byteOut.toByteArray();
             byteOut.close();
@@ -110,16 +119,15 @@ public class M4ATrack extends Track {
                 .append(':').append(sec < 10 ? '0'+sec:sec).toString();
     }*/
 
-    /*public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        String strTrack = "/home/martin/AudioTesting/music/John Petrucci/" +
-                "When_The_Keyboard_Breaks_Live_In_Chicago/Universal_Mind.m4a";
+    public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        String strTrack = "/home/martin/AudioTesting/music/random.m4a";
         Track track = new M4ATrack(strTrack);
         //String strTrack = "/home/martin/AudioTesting/music/John Petrucci/" +
-          //      "When_The_Keyboard_Breaks_Live_In_Chicago/Universal_Mind.m4a";
+        //      "When_The_Keyboard_Breaks_Live_In_Chicago/Universal_Mind.m4a";
         //Track track = Track.getTrack(strTrack);
         //Track track = new PCMTrack(strTrack);
         new Thread(track).start();
-        //System.out.println(track.getInfoSong());
+    }    //System.out.println(track.getInfoSong());
         /*
         ID3TagBox idTag = new ID3TagBox();
         Constructor<? extends MP4InputStream> constructor =

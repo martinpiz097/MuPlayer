@@ -7,78 +7,58 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="52b5c670-5c9d-450c-9e66-4610ab941ce4" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/artifacts/OrangePlayer_jar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/MuPlayer.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MuPlayer.iml" beforeDir="false" afterPath="$PROJECT_DIR$/MuPlayer.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/OrangePlayer.iml" beforeDir="false" afterPath="$PROJECT_DIR$/OrangePlayer.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/MuPlayer.jar" beforeDir="false" afterPath="$PROJECT_DIR$/bin/MuPlayer.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/Test.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hs_err_pid4844.log" beforeDir="false" afterPath="$PROJECT_DIR$/hs_err_pid4844.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/artifacts/OrangePlayer_jar/OrangePlayer.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MuPlayer/META-INF/MANIFEST.MF" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/META-INF/MANIFEST.MF" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/AudioExtensions.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/AudioInfo.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/AudioTag.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/AudioUtil.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/Player.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/Track.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/TrackStates.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/codec/DecodeManager.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/codec/FlacDecoder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/formats/FlacTrack.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/formats/M4ATrack.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/formats/MP3Track.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/formats/OGGTrack.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/formats/PCMTrack.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/interfaces/MusicControls.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/interfaces/PlayerControls.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/audio/interfaces/PlayerListener.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/ontesting/AudioTaggerTest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/ontesting/FormatsTesting.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/ontesting/TestAAC2.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/ontesting/TestPlayer.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/thread/PlayerHandler.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OrangePlayer/org/orangeplayer/thread/ThreadManager.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/AudioExtensions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/AudioExtensions.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/AudioInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/AudioInfo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/AudioTag.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/AudioTag.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/AudioUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/AudioUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/Player.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/Track.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/Track.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/TrackStates.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/TrackStates.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/codec/DecodeManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/codec/DecodeManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/codec/FlacDecoder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/codec/FlacDecoder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/formats/FlacTrack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/formats/FlacTrack.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/formats/M4ATrack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/formats/M4ATrack.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/formats/MP3Track.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/formats/MP3Track.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/formats/OGGTrack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/formats/OGGTrack.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/formats/PCMTrack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/formats/PCMTrack.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/interfaces/MusicControls.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/interfaces/MusicControls.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/interfaces/PlayerControls.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/interfaces/PlayerControls.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/interfaces/PlayerListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/interfaces/PlayerListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/trackstates/FinishedState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/trackstates/FinishedState.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/trackstates/KilledState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/trackstates/KilledState.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/trackstates/PausedState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/trackstates/PausedState.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/trackstates/PlayingState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/trackstates/PlayingState.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/trackstates/StoppedState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/trackstates/StoppedState.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/audio/trackstates/TrackState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/trackstates/TrackState.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/ontesting/AudioTaggerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/ontesting/AudioTaggerTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/ontesting/FormatsTesting.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/ontesting/FormatsTesting.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/ontesting/TestAAC2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/ontesting/TestAAC2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/ontesting/TestPlayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/ontesting/TestPlayer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/thread/PlayerHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/thread/PlayerHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/org/orangeplayer/thread/ThreadManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/thread/ThreadManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/CompatiblityTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/test/CompatiblityTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/FfmpegTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/test/FfmpegTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/GetTrackTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/test/GetTrackTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/Persona.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/test/Persona.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/Personita.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/test/Personita.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/ReflectionTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/test/ReflectionTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/TrackReflectInvoker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/test/TrackReflectInvoker.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/.idea/artifacts/MuPlayer.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/.idea/compiler.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/.idea/dictionaries/martin.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/.idea/uiDesigner.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/.idea/workspace.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/ERRORS.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/META-INF/MANIFEST.MF" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/MuPlayer.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/OrangePlayer.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/STATS.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/SpeedTests.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/TASKS.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/docs/_config.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/docs/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/hs_err_pid4844.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/lib/AuCom.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/lib/commons-logging-api.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/lib/dir.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/lib/jaad-0.8.4.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/lib/jaudiotagger-2.0.4.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/lib/jffmpeg-1.1.0.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/lib/jflac-1.3.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/lib/jl1.0.1.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/lib/jogg-0.0.7.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/lib/jorbis-0.0.15.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/lib/mp3spi1.9.5.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/lib/tritonus-share-0.3.7-2.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/lib/tritonus_jorbis-0.3.6.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/org/muplayer/audio/Track.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MuPlayer/org/muplayer/audio/Track.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/org/muplayer/audio/codec/FlacDecoder.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MuPlayer/org/muplayer/audio/codec/FlacDecoder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/org/muplayer/audio/formats/M4ATrack.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MuPlayer/org/muplayer/audio/formats/M4ATrack.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/org/muplayer/audio/formats/OGGTrack.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MuPlayer/org/muplayer/audio/formats/OGGTrack.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/org/muplayer/test/CompatiblityTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MuPlayer/org/muplayer/test/CompatiblityTest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/org/muplayer/test/GetTrackTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/MuPlayer/org/muplayer/test/GetTrackTest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/MuPlayer/src/META-INF/MANIFEST.MF" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/muplayer/audio/Track.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/Track.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/muplayer/audio/codec/FlacDecoder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/codec/FlacDecoder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/muplayer/audio/formats/M4ATrack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/formats/M4ATrack.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/muplayer/audio/formats/OGGTrack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/audio/formats/OGGTrack.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/muplayer/test/CompatiblityTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/test/CompatiblityTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/org/muplayer/test/GetTrackTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/org/muplayer/test/GetTrackTest.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -93,70 +73,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Player.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/org/muplayer/audio/Player.java">
+      <file leaf-file-name="CompatiblityTest.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/org/muplayer/test/CompatiblityTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="207">
-              <caret line="482" column="76" selection-start-line="482" selection-start-column="76" selection-end-line="482" selection-end-column="76" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#3148#3149#0" expanded="true" />
-                <element signature="e#3210#3211#0" expanded="true" />
-                <element signature="e#8008#8009#0" expanded="true" />
-                <element signature="e#8054#8055#0" expanded="true" />
-                <element signature="e#12662#12663#0" expanded="true" />
-                <element signature="e#12706#12707#0" expanded="true" />
-                <element signature="e#12740#12741#0" expanded="true" />
-                <element signature="e#12784#12785#0" expanded="true" />
-                <element signature="e#15279#15280#0" expanded="true" />
-                <element signature="e#15305#15306#0" expanded="true" />
-                <element signature="e#15646#15647#0" expanded="true" />
-                <element signature="e#15709#15710#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="198">
+              <caret line="14" column="20" selection-start-line="14" selection-start-column="20" selection-end-line="14" selection-end-column="20" />
             </state>
           </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="LambdaUtils.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/muplayer/system/LambdaUtils.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="66">
-              <caret line="3" column="1" selection-start-line="3" selection-start-column="1" selection-end-line="3" selection-end-column="1" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ListenersNames.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/muplayer/audio/ListenersNames.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="176">
-              <caret line="8" column="39" selection-start-line="8" selection-start-column="31" selection-end-line="8" selection-end-column="39" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TestPlayer.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/muplayer/ontesting/TestPlayer.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-277">
-              <caret line="41" column="41" selection-start-line="41" selection-start-column="41" selection-end-line="41" selection-end-column="41" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ERRORS.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ERRORS.txt">
-          <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
       <file leaf-file-name="GetTrackTest.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/muplayer/test/GetTrackTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="814">
-              <caret line="50" column="73" selection-start-line="50" selection-start-column="73" selection-end-line="50" selection-end-column="73" />
+            <state relative-caret-position="154">
+              <caret line="7" column="22" selection-start-line="7" selection-start-column="22" selection-end-line="7" selection-end-column="22" />
             </state>
           </provider>
         </entry>
@@ -164,39 +94,80 @@
       <file leaf-file-name="Track.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/muplayer/audio/Track.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="97">
-              <caret line="218" column="9" selection-start-line="218" selection-start-column="9" selection-end-line="218" selection-end-column="9" />
+            <state relative-caret-position="5940">
+              <caret line="302" selection-start-line="302" selection-end-line="302" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#7192#7193#0" expanded="true" />
-                <element signature="e#7229#7230#0" expanded="true" />
-                <element signature="e#7256#7257#0" expanded="true" />
-                <element signature="e#7294#7295#0" expanded="true" />
                 <element signature="e#7348#7349#0" expanded="true" />
-                <element signature="e#7377#7378#0" expanded="true" />
-                <element signature="e#7392#7393#0" expanded="true" />
-                <element signature="e#7422#7423#0" expanded="true" />
-                <element signature="e#10501#10502#0" expanded="true" />
-                <element signature="e#10568#10569#0" expanded="true" />
+                <element signature="e#7386#7387#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MP3Track.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/muplayer/audio/formats/MP3Track.java">
+      <file leaf-file-name="AudioUtil.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/org/muplayer/audio/AudioUtil.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1056">
-              <caret line="56" column="40" selection-start-line="56" selection-start-column="40" selection-end-line="56" selection-end-column="40" />
+            <state relative-caret-position="66">
+              <caret line="3" column="24" selection-start-line="3" selection-start-column="24" selection-end-line="3" selection-end-column="24" />
+              <folding>
+                <element signature="e#119#120#0" expanded="true" />
+                <element signature="e#172#173#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="M4ATrack.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="OGGTrack.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/org/muplayer/audio/formats/OGGTrack.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="660">
+              <caret line="38" column="5" selection-start-line="38" selection-start-column="5" selection-end-line="38" selection-end-column="5" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="DecodeManager.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/org/muplayer/audio/codec/DecodeManager.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="154">
+              <caret line="32" column="34" selection-start-line="32" selection-start-column="34" selection-end-line="32" selection-end-column="34" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="M4ATrack.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/org/muplayer/audio/formats/M4ATrack.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="286">
-              <caret line="30" column="18" selection-start-line="30" selection-start-column="18" selection-end-line="30" selection-end-column="18" />
+            <state relative-caret-position="192">
+              <caret line="58" column="32" selection-start-line="58" selection-start-column="32" selection-end-line="58" selection-end-column="32" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FileDescriptor.java" pinned="false" current-in-tab="false">
+        <entry file="jar:///usr/lib/jvm/java-8-jdk/src.zip!/java/io/FileDescriptor.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="261">
+              <caret line="58" column="10" selection-start-line="58" selection-start-column="8" selection-end-line="58" selection-end-column="10" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="RandomAccessFile.java" pinned="false" current-in-tab="false">
+        <entry file="jar:///usr/lib/jvm/java-8-jdk/src.zip!/java/io/RandomAccessFile.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="154">
+              <caret line="253" column="24" selection-start-line="253" selection-start-column="24" selection-end-line="253" selection-end-column="24" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FlacDecoder.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/org/muplayer/audio/codec/FlacDecoder.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="748">
+              <caret line="42" column="25" selection-start-line="42" selection-start-column="25" selection-end-line="42" selection-end-column="25" />
             </state>
           </provider>
         </entry>
@@ -212,7 +183,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>getTrack(</find>
       <find>unf</find>
       <find>shutdown(</find>
       <find>start(</find>
@@ -242,6 +212,7 @@
       <find>File:</find>
       <find>seek</find>
       <find>seekF</find>
+      <find>track</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -250,11 +221,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/trackstates/FinishedState.java" />
-        <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/trackstates/KilledState.java" />
-        <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/trackstates/PausedState.java" />
-        <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/trackstates/PlayingState.java" />
-        <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/trackstates/StoppedState.java" />
         <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/trackstates/TrackState.java" />
         <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/tracksFormats/OGGTrack.java" />
         <option value="$PROJECT_DIR$/src/org/orangeplayer/audio/tracksFormats/PCMTrack.java" />
@@ -294,13 +260,18 @@
         <option value="$PROJECT_DIR$/src/org/orangeplayer/ontesting/FormatsTesting.java" />
         <option value="$PROJECT_DIR$/src/org/orangeplayer/ontesting/TestPlayer.java" />
         <option value="$PROJECT_DIR$/.idea/modules.xml" />
-        <option value="$PROJECT_DIR$/src/org/muplayer/test/GetTrackTest.java" />
         <option value="$PROJECT_DIR$/src/org/muplayer/audio/ListenersNames.java" />
         <option value="$PROJECT_DIR$/src/org/muplayer/audio/interfaces/PlayerControls.java" />
         <option value="$PROJECT_DIR$/src/org/muplayer/system/LambdaUtils.java" />
-        <option value="$PROJECT_DIR$/src/org/muplayer/audio/Track.java" />
         <option value="$PROJECT_DIR$/src/org/muplayer/ontesting/TestPlayer.java" />
         <option value="$PROJECT_DIR$/src/org/muplayer/audio/Player.java" />
+        <option value="$PROJECT_DIR$/src/org/muplayer/audio/Track.java" />
+        <option value="$PROJECT_DIR$/src/org/muplayer/audio/codec/FlacDecoder.java" />
+        <option value="$PROJECT_DIR$/src/org/muplayer/test/CompatiblityTest.java" />
+        <option value="$PROJECT_DIR$/src/org/muplayer/audio/codec/DecodeManager.java" />
+        <option value="$PROJECT_DIR$/src/org/muplayer/audio/formats/OGGTrack.java" />
+        <option value="$PROJECT_DIR$/src/org/muplayer/test/GetTrackTest.java" />
+        <option value="$PROJECT_DIR$/src/org/muplayer/audio/formats/M4ATrack.java" />
       </list>
     </option>
   </component>
@@ -320,10 +291,10 @@
     <packageJsonPaths />
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-1" />
-    <option name="y" value="-1" />
-    <option name="width" value="1026" />
-    <option name="height" value="770" />
+    <option name="x" value="352" />
+    <option name="y" value="273" />
+    <option name="width" value="910" />
+    <option name="height" value="496" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="1" id="Add" />
@@ -368,13 +339,6 @@
               <item name="audio" type="462c0819:PsiDirectoryNode" />
               <item name="formats" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="MuPlayer" type="b2602c69:ProjectViewProjectNode" />
-              <item name="MuPlayer" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="muplayer" type="462c0819:PsiDirectoryNode" />
-              <item name="system" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -392,8 +356,8 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="full.screen.before.presentation.mode" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="project.structure.last.edited" value="Artifacts" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/lib/jorbis-0.0.15.jar!/" />
+    <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
@@ -425,7 +389,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.TestPlayer">
+  <component name="RunManager" selected="Application.M4ATrack">
     <configuration name="AudioUtil" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="org.muplayer.audio.AudioUtil" />
       <module name="MuPlayer" />
@@ -433,6 +397,17 @@
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="org.muplayer.audio.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+    </configuration>
+    <configuration name="CompatiblityTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.muplayer.test.CompatiblityTest" />
+      <module name="MuPlayer" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.muplayer.test.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -448,8 +423,8 @@
         </pattern>
       </extension>
     </configuration>
-    <configuration name="PCMTrack" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="org.muplayer.audio.formats.PCMTrack" />
+    <configuration name="M4ATrack" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.muplayer.audio.formats.M4ATrack" />
       <module name="MuPlayer" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <extension name="coverage">
@@ -524,18 +499,19 @@
       <listeners />
     </configuration>
     <list>
-      <item itemvalue="Application.PCMTrack" />
       <item itemvalue="Application.TestPlayer" />
       <item itemvalue="Application.FormatsTesting" />
       <item itemvalue="Application.AudioUtil" />
+      <item itemvalue="Application.CompatiblityTest" />
+      <item itemvalue="Application.M4ATrack" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.M4ATrack" />
+        <item itemvalue="Application.CompatiblityTest" />
         <item itemvalue="Application.TestPlayer" />
         <item itemvalue="Application.TestPlayer" />
         <item itemvalue="Application.FormatsTesting" />
-        <item itemvalue="Application.AudioUtil" />
-        <item itemvalue="Application.PCMTrack" />
       </list>
     </recent_temporary>
   </component>
@@ -564,12 +540,14 @@
       <workItem from="1527814655061" duration="3101000" />
       <workItem from="1527866760990" duration="1548000" />
       <workItem from="1527870922017" duration="1828000" />
-      <workItem from="1527971393660" duration="10441000" />
+      <workItem from="1527971393660" duration="15502000" />
+      <workItem from="1528044897675" duration="2693000" />
+      <workItem from="1528048700273" duration="1143000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="42985000" />
+    <option name="totallyTimeSpent" value="51882000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1" y="23" width="1368" height="746" extended-state="6" />
@@ -585,22 +563,22 @@
       <window_info anchor="bottom" id="Application Servers" order="11" />
       <window_info anchor="right" id="Maven Projects" order="6" weight="0.32954547" />
       <window_info anchor="bottom" id="Database Changes" order="11" show_stripe_button="false" />
+      <window_info anchor="bottom" x="1451" y="24" width="1024" height="743" id="Run" internal_type="SLIDING" order="2" weight="0.297561" />
       <window_info anchor="bottom" id="Version Control" order="9" weight="0.3276923" />
-      <window_info active="true" anchor="bottom" x="1451" y="24" width="1024" height="743" id="Run" internal_type="SLIDING" order="2" visible="true" weight="0.43739837" />
       <window_info anchor="bottom" auto_hide="true" x="1451" y="50" width="1024" height="717" id="Terminal" order="7" weight="0.32615384" />
       <window_info id="Capture Tool" order="4" />
       <window_info id="Designer" order="6" />
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.8082192" visible="true" weight="0.17121212" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.8082192" visible="true" weight="0.17575757" />
       <window_info anchor="right" id="Database" order="8" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32520324" />
       <window_info id="Structure" order="1" sideWeight="0.19178082" side_tool="true" weight="0.17424242" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info id="UI Designer" order="2" />
       <window_info anchor="right" id="Theme Preview" order="5" />
-      <window_info id="Favorites" order="5" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info id="Favorites" order="5" side_tool="true" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32520324" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -610,14 +588,14 @@
       <window_info anchor="right" id="Palette" order="3" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Capture Analysis" order="4" />
-      <window_info anchor="bottom" id="Version Control" order="9" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.26483357" />
       <window_info anchor="right" id="Theme Preview" order="5" />
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.14772727" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.26483357" />
+      <window_info anchor="bottom" id="Version Control" order="9" />
       <window_info id="Image Layers" order="3" />
       <window_info id="Designer" order="6" />
       <window_info id="UI Designer" order="2" />
@@ -651,35 +629,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://$PROJECT_DIR$/../../../javaLibs/Music/jaad-0.8.4.jar!/net/sourceforge/jaad/mp4/MP4InputStream.class" />
-    <entry file="jar:///usr/lib/jvm/default-runtime/src.zip!/javax/sound/sampled/AudioInputStream.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="569">
-          <caret line="437" lean-forward="true" selection-start-line="437" selection-end-line="437" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/muplayer/audio/codec/FlacDecoder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="286">
-          <caret line="21" column="40" selection-start-line="21" selection-start-column="4" selection-end-line="21" selection-end-column="40" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/muplayer/audio/codec/DecodeManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="836">
-          <caret line="46" column="12" selection-start-line="46" selection-start-column="12" selection-end-line="46" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///usr/lib/jvm/default-runtime/src.zip!/java/util/List.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="211">
-          <caret line="492" column="9" selection-start-line="492" selection-start-column="9" selection-end-line="492" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar:///usr/lib/jvm/default-runtime/src.zip!/java/io/File.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="211">
@@ -781,24 +730,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/muplayer/audio/AudioUtil.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="176">
-          <caret line="12" selection-start-line="12" selection-end-line="12" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/org/muplayer/audio/formats/FlacTrack.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1804">
           <caret line="90" column="25" selection-start-line="90" selection-start-column="25" selection-end-line="90" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/muplayer/audio/formats/OGGTrack.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1210">
-          <caret line="66" column="6" selection-start-line="66" selection-start-column="6" selection-end-line="66" selection-end-column="6" />
         </state>
       </provider>
     </entry>
@@ -827,13 +762,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="66">
           <caret line="3" column="13" selection-start-line="3" selection-start-column="13" selection-end-line="3" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/muplayer/test/GetTrackTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="814">
-          <caret line="50" column="73" selection-start-line="50" selection-start-column="73" selection-end-line="50" selection-end-column="73" />
         </state>
       </provider>
     </entry>
@@ -882,13 +810,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/muplayer/audio/formats/M4ATrack.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="286">
-          <caret line="30" column="18" selection-start-line="30" selection-start-column="18" selection-end-line="30" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/org/muplayer/audio/interfaces/PlayerControls.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="220">
@@ -917,29 +838,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/muplayer/audio/Track.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="97">
-          <caret line="218" column="9" selection-start-line="218" selection-start-column="9" selection-end-line="218" selection-end-column="9" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#7192#7193#0" expanded="true" />
-            <element signature="e#7229#7230#0" expanded="true" />
-            <element signature="e#7256#7257#0" expanded="true" />
-            <element signature="e#7294#7295#0" expanded="true" />
-            <element signature="e#7348#7349#0" expanded="true" />
-            <element signature="e#7377#7378#0" expanded="true" />
-            <element signature="e#7392#7393#0" expanded="true" />
-            <element signature="e#7422#7423#0" expanded="true" />
-            <element signature="e#10501#10502#0" expanded="true" />
-            <element signature="e#10568#10569#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/org/muplayer/ontesting/TestPlayer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-277">
+        <state relative-caret-position="902">
           <caret line="41" column="41" selection-start-line="41" selection-start-column="41" selection-end-line="41" selection-end-column="41" />
           <folding>
             <element signature="imports" expanded="true" />
@@ -949,23 +850,90 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/org/muplayer/audio/Player.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="207">
-          <caret line="482" column="76" selection-start-line="482" selection-start-column="76" selection-end-line="482" selection-end-column="76" />
+        <state relative-caret-position="10010">
+          <caret line="487" column="32" selection-start-line="487" selection-start-column="32" selection-end-line="487" selection-end-column="32" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#3148#3149#0" expanded="true" />
-            <element signature="e#3210#3211#0" expanded="true" />
-            <element signature="e#8008#8009#0" expanded="true" />
-            <element signature="e#8054#8055#0" expanded="true" />
-            <element signature="e#12662#12663#0" expanded="true" />
-            <element signature="e#12706#12707#0" expanded="true" />
-            <element signature="e#12740#12741#0" expanded="true" />
-            <element signature="e#12784#12785#0" expanded="true" />
-            <element signature="e#15279#15280#0" expanded="true" />
-            <element signature="e#15305#15306#0" expanded="true" />
-            <element signature="e#15646#15647#0" expanded="true" />
-            <element signature="e#15709#15710#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/muplayer/audio/codec/FlacDecoder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="748">
+          <caret line="42" column="25" selection-start-line="42" selection-start-column="25" selection-end-line="42" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/muplayer/audio/Track.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5940">
+          <caret line="302" selection-start-line="302" selection-end-line="302" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#7348#7349#0" expanded="true" />
+            <element signature="e#7386#7387#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/muplayer/audio/AudioUtil.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="66">
+          <caret line="3" column="24" selection-start-line="3" selection-start-column="24" selection-end-line="3" selection-end-column="24" />
+          <folding>
+            <element signature="e#119#120#0" expanded="true" />
+            <element signature="e#172#173#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/muplayer/test/CompatiblityTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="14" column="20" selection-start-line="14" selection-start-column="20" selection-end-line="14" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/muplayer/audio/formats/OGGTrack.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="660">
+          <caret line="38" column="5" selection-start-line="38" selection-start-column="5" selection-end-line="38" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/muplayer/test/GetTrackTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="7" column="22" selection-start-line="7" selection-start-column="22" selection-end-line="7" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///usr/lib/jvm/java-8-jdk/src.zip!/java/io/RandomAccessFile.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="253" column="24" selection-start-line="253" selection-start-column="24" selection-end-line="253" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///usr/lib/jvm/java-8-jdk/src.zip!/java/io/FileDescriptor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="261">
+          <caret line="58" column="10" selection-start-line="58" selection-start-column="8" selection-end-line="58" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/muplayer/audio/codec/DecodeManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="32" column="34" selection-start-line="32" selection-start-column="34" selection-end-line="32" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/muplayer/audio/formats/M4ATrack.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="192">
+          <caret line="58" column="32" selection-start-line="58" selection-start-column="32" selection-end-line="58" selection-end-column="32" />
         </state>
       </provider>
     </entry>

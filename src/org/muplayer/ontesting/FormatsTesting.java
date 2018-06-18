@@ -1,9 +1,11 @@
 package org.muplayer.ontesting;
 
 import org.muplayer.audio.Track;
+import org.muplayer.audio.TrackHandler;
 import org.muplayer.audio.formats.FlacTrack;
 import org.muplayer.audio.formats.M4ATrack;
 import org.muplayer.audio.formats.OGGTrack;
+import org.muplayer.audio.interfaces.MusicControls;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -13,13 +15,31 @@ import java.util.Scanner;
 
 public class FormatsTesting {
     public static void main(String[] args) throws Exception {
-        execOggTagTest();
+        execFlacSeekTest();
+    }
+
+    public static void execTitleTest() throws Exception {
+        String path = "/home/martin/AudioTesting/test/title.mp3";
+        Track track = Track.getTrack(path);
+        MusicControls controls = new TrackHandler(track);
+        controls.play();
+    }
+
+    public static void execValidTest() throws Exception {
+        String path = "/home/martin/AudioTesting/audio2/flac.flac";
+        Track track = Track.getTrack(path);
+        System.out.println(Track.isValidTrack(path));
+        MusicControls controls = new TrackHandler(track);
+        controls.play();
+
+        String infoSong = track.getInfoSong();
+        System.out.println(infoSong);
     }
 
     public static void execFlacSeekTest()
             throws Exception {
         Track track = new FlacTrack("/" +
-                "home/martin/AudioTesting/audio/flac.flac");
+                "home/martin/AudioTesting/audio2/flac.flac");
         new Thread(track).start();
 
         Scanner scan = new Scanner(System.in);

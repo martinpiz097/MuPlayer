@@ -1,8 +1,5 @@
 package org.muplayer.audio.formats;
 
-import com.jcraft.jorbis.Comment;
-import com.jcraft.jorbis.JOrbisException;
-import com.jcraft.jorbis.VorbisFile;
 import org.muplayer.audio.Track;
 import org.muplayer.audio.codec.DecodeManager;
 import org.tritonus.sampled.file.jorbis.JorbisAudioFileReader;
@@ -15,20 +12,14 @@ import java.io.IOException;
 
 public class OGGTrack extends Track {
 
-    private VorbisFile infoFile;
-    private Comment soundComments;
+    //private VorbisFile infoFile;
+    //private Comment soundComments;
 
     public OGGTrack(File ftrack)
             throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         super(ftrack);
-        try {
-            infoFile = new VorbisFile(ftrack.getCanonicalPath());
-            soundComments = infoFile.getComment(0);
-        } catch (JOrbisException e) {
-            System.out.println("Excepcion vorbis");
-        } catch (IOException e) {
-            System.out.println("Excepcion IO");
-        }
+        //infoFile = new VorbisFile(ftrack.getCanonicalPath());
+        //soundComments = infoFile.getComment(0);
     }
 
     public OGGTrack(String trackPath) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
@@ -44,6 +35,7 @@ public class OGGTrack extends Track {
         audioReader = new JorbisAudioFileReader();
         AudioInputStream soundAis = audioReader.getAudioInputStream(dataSource);
         trackStream = DecodeManager.decodeToPcm(soundAis);
+        //trackStream = DecodeManager.decodeToPcm(soundAis.getFormat(), soundAis);
     }
 
     /*@Override

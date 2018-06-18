@@ -1,5 +1,9 @@
 package org.muplayer.audio;
 
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.tag.TagException;
 import org.muplayer.audio.interfaces.PlayerControls;
 import org.muplayer.audio.interfaces.PlayerListener;
 import org.muplayer.thread.PlayerHandler;
@@ -8,6 +12,7 @@ import org.muplayer.thread.ThreadManager;
 import javax.sound.sampled.SourceDataLine;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -15,7 +20,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import static org.muplayer.audio.ListenersNames.*;
+import static org.muplayer.system.ListenersNames.*;
 
 public class Player extends Thread implements PlayerControls {
     private File rootFolder;
@@ -294,6 +299,29 @@ public class Player extends Thread implements PlayerControls {
         else if (trackIndex < 0)
             trackIndex = listSoundPaths.size()-1;
     }
+
+    public ArrayList<String> getListSoundPaths() {
+        return listSoundPaths;
+    }
+
+    // Se supone que todos los tracks serian validos
+    // sino rescatar de los que sean no mas
+    public ArrayList<AudioTag> getTrackTags() {
+        ArrayList<AudioTag> listTags = new ArrayList<>();
+
+        AudioTag tag;
+        for (int i = 0; i < listSoundPaths.size(); i++) {
+            try {
+                tag = new AudioTag(listSoundPaths.get(i));
+                if (tag.isValidFile())
+                    listTags.add(tag);
+            } catch (ReadOnlyFileException | IOException |
+                    InvalidAudioFrameException | TagException | CannotReadException e) {
+            }
+        }
+        return listTags;
+    }
+
 
     public void addPlayerListener(PlayerListener listener) {
         listListeners.add(listener);

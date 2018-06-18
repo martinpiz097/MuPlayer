@@ -1,12 +1,17 @@
 package org.muplayer.test;
 
-import org.muplayer.audio.Track;
+import org.muplayer.audio.formats.OGGTrack;
 
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
+import java.io.IOException;
 
 public class CompatiblityTest {
-    public static void main(String[] args) {
-        File sound = new File("/home/martin/AudioTesting/music/Alejandro Silva/1 - 1999/AlbumArtSmall.jpg");
-        Track.getTrack(sound);
+    public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        File sound = new File("/home/martin/AudioTesting/music/newogg.ogg");
+        OGGTrack track = new OGGTrack(sound);
+        track.setGain(80);
+        track.run();
     }
 }

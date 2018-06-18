@@ -1,10 +1,11 @@
 package org.muplayer.audio.formats;
 
-import org.kc7bfi.jflac.sound.spi.FlacAudioFileReader;
-import org.kc7bfi.jflac.sound.spi.FlacFormatConversionProvider;
+import org.jflac.sound.spi.FlacAudioFileReader;
+import org.jflac.sound.spi.FlacFormatConversionProvider;
 import org.muplayer.audio.Track;
 
 import javax.sound.sampled.*;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 
@@ -60,7 +61,9 @@ public class FlacTrack extends Track {
 
     @Override
     public void seek(int seconds) throws IOException {
+        System.out.println("FrameLenght: "+trackStream.getFrameLength());
         long seek = transformSecondsInBytes(seconds);
+        System.out.println("TransformInBytes: "+seek);
         trackStream.read(new byte[(int) seek]);
         currentSeconds+=seconds;
     }
@@ -90,6 +93,5 @@ public class FlacTrack extends Track {
         track.setGain(0);
         System.out.println(track.getInfoSong());
     }*/
-
 
 }
