@@ -1,6 +1,7 @@
 package org.muplayer.ontesting;
 
 import org.muplayer.audio.Player;
+import org.muplayer.system.Logger;
 
 import javax.sound.sampled.SourceDataLine;
 import java.io.File;
@@ -100,12 +101,12 @@ public class TestPlayer {
                         player.listTracks();
                         break;
                 }
-            } catch (IllegalArgumentException e1) {
-                System.err.println("Control no soportado");
-            } catch(Exception e2) {
-                System.err.println("Exception: "+e2.getMessage());
-                System.err.println("Cause: "+e2.toString());
-                e2.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                Logger.getLogger(TestPlayer.class, "Exception: "+e.getMessage()).rawError();
+            } catch(Exception e) {
+                Logger.getLogger(TestPlayer.class, "Exception: "+e.getMessage()).rawError();
+                Logger.getLogger(TestPlayer.class, "Cause: "+e.getCause()).rawError();
+                e.printStackTrace();
             }
         }
     }

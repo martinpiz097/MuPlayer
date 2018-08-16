@@ -22,8 +22,8 @@ public class TrackHandler extends Thread implements MusicControls {
     }
 
     @Override
-    public boolean isStoped() throws Exception {
-        return track.isStoped();
+    public boolean isStopped() throws Exception {
+        return track.isStopped();
     }
 
     @Override

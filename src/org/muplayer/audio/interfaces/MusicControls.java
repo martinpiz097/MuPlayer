@@ -3,7 +3,7 @@ package org.muplayer.audio.interfaces;
 public interface MusicControls {
     public boolean isPlaying() throws Exception;
     public boolean isPaused() throws Exception;
-    public boolean isStoped() throws Exception;
+    public boolean isStopped() throws Exception;
     public boolean isFinished() throws Exception;
     public boolean isMute();
 

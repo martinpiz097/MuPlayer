@@ -1,4 +1,4 @@
-package org.muplayer.audio;
+package org.muplayer.audio.util;
 
 public class AudioExtensions {
     public static final String MPEG = "mp3";

@@ -3,7 +3,7 @@ package org.muplayer.thread;
 import org.muplayer.audio.Player;
 
 public class PlayerHandler {
-    private final Player player;
+    private volatile Player player;
 
     private static PlayerHandler handler;
 
@@ -19,7 +19,7 @@ public class PlayerHandler {
         return handler;
     }
 
-    public static Player getPlayer() {
+    public static synchronized Player getPlayer() {
         return handler.player;
     }
 

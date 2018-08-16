@@ -7,4 +7,5 @@ public class TrackStates {
     public static final byte SEEKED = 4;
     public static final byte FINISHED = 5;
     public static final byte KILLED = 6;
+    public static final byte UNKNOWN = 7;
 }

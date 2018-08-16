@@ -1,5 +1,8 @@
 package org.muplayer.ontesting;
 
+import org.jflac.sound.spi.FlacAudioFileReader;
+import org.jflac.sound.spi.FlacFormatConversionProvider;
+import org.muplayer.audio.AudioTag;
 import org.muplayer.audio.Track;
 import org.muplayer.audio.TrackHandler;
 import org.muplayer.audio.formats.FlacTrack;
@@ -7,6 +10,8 @@ import org.muplayer.audio.formats.M4ATrack;
 import org.muplayer.audio.formats.OGGTrack;
 import org.muplayer.audio.interfaces.MusicControls;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
@@ -15,7 +20,51 @@ import java.util.Scanner;
 
 public class FormatsTesting {
     public static void main(String[] args) throws Exception {
-        execFlacSeekTest();
+        //execM4ASeekTest();
+        execOggTagTest();
+    }
+
+    private static void execBytesTest() throws IOException, UnsupportedAudioFileException {
+        String path = "/home/martin/AudioTesting/audio2/flac.flac";
+        File audioFile = new File(path);
+        FlacAudioFileReader audioReader = new FlacAudioFileReader();
+        AudioInputStream flacAis = audioReader.getAudioInputStream(audioFile);
+
+        AudioFormat format = flacAis.getFormat();
+        AudioFormat decodedFormat = new AudioFormat(
+                AudioFormat.Encoding.PCM_SIGNED, format.getSampleRate(),
+                format.getSampleSizeInBits(), format.getChannels(),
+                format.getChannels() * 2, format.getSampleRate(),
+                format.isBigEndian());
+
+        AudioInputStream trackStream = new FlacFormatConversionProvider().
+                getAudioInputStream(decodedFormat, flacAis);
+
+        //byte[] bytes = new byte[(int) audioFile.length()];
+        //System.out.println("FileLenght: "+audioFile.length());
+        //System.out.println(trackStream.read(new byte[20000]));
+        //System.out.println("StreamAvailable: "+trackStream.available());
+        //System.out.println("ReadedData: "+trackStream.read(bytes)/18432);
+
+
+        long readed = 0;
+        int seconds = 0;
+        int count = 0;
+        byte[] buffer = new byte[4096];
+        System.out.println("FrameLenght: "+trackStream.getFrameLength());
+
+        long ti = System.currentTimeMillis();
+        while (trackStream.available() > 0) {
+            readed+=(trackStream.read(buffer));
+            if (System.currentTimeMillis() - ti >= 1000) {
+                seconds++;
+                System.out.println("Bytes por segundo: "+(readed/seconds));
+                ti = System.currentTimeMillis();
+            }
+            count++;
+        }
+        System.out.println("Iterations: "+count);
+
     }
 
     public static void execTitleTest() throws Exception {
@@ -45,6 +94,13 @@ public class FormatsTesting {
         Scanner scan = new Scanner(System.in);
         String line;
         char first;
+        AudioTag tagInfo = track.getTagInfo();
+        System.out.println(tagInfo.getTagReader().toString());
+        System.out.println(track.getDataSource().length());
+
+        System.out.println("Duracion en segundos: "+track.getDurationAsString());
+        System.out.println("Duracion formateada: "+track.getFormattedDuration());
+        //track.finish();
 
         while (true) {
             line = scan.nextLine();
@@ -60,10 +116,10 @@ public class FormatsTesting {
 
     }
 
-    public static void execM4ASeekTest() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-        File sound = new File("/home/martin/AudioTesting/audio/m4a.m4a");
-        Track track = new M4ATrack(sound);
-        new Thread(track).start();
+    public static void execM4ASeekTest() throws Exception {
+        File sound = new File("/home/martin/AudioTesting/audio2/m4a.m4a");
+        TrackHandler handler = new TrackHandler(new M4ATrack(sound));
+        handler.start();
 
         Scanner scan = new Scanner(System.in);
         String line;
@@ -76,7 +132,7 @@ public class FormatsTesting {
             switch (first) {
                 case 'k':
                     int seekSec = Integer.parseInt(line.substring(2));
-                    track.seek(seekSec);
+                    handler.seek(seekSec);
                     break;
             }
 
@@ -86,12 +142,26 @@ public class FormatsTesting {
     public static void execOggTagTest()
             throws UnsupportedAudioFileException,
             IOException, LineUnavailableException {
-        File sound = new File("/home/martin/AudioTesting/audio/sound.ogg");
+        File sound = new File("/home/martin/AudioTesting/audio2/au.ogg");
         Track track = new OGGTrack(sound);
         new Thread(track).start();
-        track.setGain(0);
-        System.out.println(track.getInfoSong());
+        //System.out.println(track.getInfoSong());
 
+        Scanner scan = new Scanner(System.in);
+        String line;
+        char first;
+        while (true) {
+            line = scan.nextLine();
+
+            first = line.charAt(0);
+            switch (first) {
+                case 'k':
+                    int seekSec = Integer.parseInt(line.substring(2));
+                    track.seek(seekSec);
+                    break;
+            }
+
+        }
     }
 
 }

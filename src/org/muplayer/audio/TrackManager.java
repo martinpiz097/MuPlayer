@@ -7,9 +7,9 @@ import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
 
-import static org.muplayer.audio.AudioExtensions.*;
-import static org.muplayer.audio.AudioExtensions.AIFC;
-import static org.muplayer.audio.AudioExtensions.M4A;
+import static org.muplayer.audio.util.AudioExtensions.*;
+import static org.muplayer.audio.util.AudioExtensions.AIFC;
+import static org.muplayer.audio.util.AudioExtensions.M4A;
 
 public class TrackManager {
     public TrackManager() {}

@@ -64,7 +64,16 @@ public class FlacTrack extends Track {
         System.out.println("FrameLenght: "+trackStream.getFrameLength());
         long seek = transformSecondsInBytes(seconds);
         System.out.println("TransformInBytes: "+seek);
-        trackStream.read(new byte[(int) seek]);
+        int seekRead = trackStream.read(new byte[(int) seek]);
+        //System.out.println("Seek: "+seek);
+        //System.out.println("SeekRead: "+seekRead);
+        //int diffRead = (int) (seek-seekRead);
+        //System.out.println("Diference: "+diffRead);
+        /*if (diffRead > 0) {
+            for (int i = 0; i < diffRead; i++)
+                trackStream.read();
+
+        }*/
         currentSeconds+=seconds;
     }
 

@@ -9,15 +9,17 @@ import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
-import org.jaudiotagger.tag.datatype.Artwork;
+import org.jaudiotagger.tag.TagField;
+import org.jaudiotagger.tag.images.Artwork;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 
 public class AudioTag {
     private File fileSource;
     private AudioFile audioFile;
-    private Tag fileTag;
+    private Tag tagReader;
     private AudioHeader header;
 
     public AudioTag(File sound)
@@ -25,7 +27,7 @@ public class AudioTag {
             CannotReadException, InvalidAudioFrameException, IOException {
         this.fileSource = sound;
         this.audioFile = AudioFileIO.read(sound);
-        fileTag = audioFile.getTag();
+        tagReader = audioFile.getTag();
         header = audioFile.getAudioHeader();
     }
 
@@ -36,15 +38,38 @@ public class AudioTag {
     }
 
     public boolean isValidFile() {
-        return fileTag != null;
+        return tagReader != null;
+    }
+
+    public boolean hasCover() {
+        return isValidFile() && getCover() != null;
     }
 
     public File getFileSource() {
         return fileSource;
     }
 
+    public Tag getTagReader() {
+        return tagReader;
+    }
+
+    public AudioHeader getHeader() {
+        return header;
+    }
+
+    public Iterator<TagField> getTags() {
+        return tagReader.getFields();
+    }
+
     public String getTag(FieldKey tag) {
-        return fileTag.getFirst(tag);
+        if (tagReader == null) {
+            System.out.println("Solicitando tag "+tag.name()+" nulo");
+            return null;
+        }
+        String tagValue = tagReader.getFirst(tag);
+        if (tagValue != null)
+            tagValue = tagValue.trim();
+        return tagValue;
     }
 
     public String getTag(String tagName) {
@@ -56,7 +81,11 @@ public class AudioTag {
     }
 
     public Artwork getCover() {
-        return fileTag.getFirstArtwork();
+        return tagReader.getFirstArtwork();
+    }
+
+    public byte[] getCoverData() {
+        return hasCover() ? getCover().getBinaryData() : null;
     }
 
 }

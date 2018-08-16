@@ -6,12 +6,13 @@ import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.TagException;
 import org.muplayer.audio.interfaces.PlayerControls;
 import org.muplayer.audio.interfaces.PlayerListener;
+import org.muplayer.system.Logger;
+import org.muplayer.system.TrackStates;
 import org.muplayer.thread.PlayerHandler;
 import org.muplayer.thread.ThreadManager;
 
 import javax.sound.sampled.SourceDataLine;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -24,17 +25,18 @@ import static org.muplayer.system.ListenersNames.*;
 
 public class Player extends Thread implements PlayerControls {
     private File rootFolder;
-    private Track current;
-    private Thread currentThread;
+    private volatile Track current;
+    private volatile Thread currentThread;
 
     private final ArrayList<String> listSoundPaths;
+    private final ArrayList<String> listFolderPaths;
     private final ArrayList<PlayerListener> listListeners;
 
     private int trackIndex;
     private float currentVolume;
     private boolean on;
 
-    public static float DEFAULT_VOLUME = 80.0f;
+    public static float DEFAULT_VOLUME = 85.0f;
 
     /*private static Player player;
 
@@ -54,23 +56,27 @@ public class Player extends Thread implements PlayerControls {
         return player;
     }*/
 
-    public Player() throws FileNotFoundException {
+    public Player() {
         this(null);
     }
-    public Player(File rootFolder) throws FileNotFoundException {
+    public Player(File rootFolder) {
         this.rootFolder = rootFolder;
         listSoundPaths = new ArrayList<>();
+        listFolderPaths = new ArrayList<>();
         listListeners = new ArrayList<>();
-        trackIndex = 0;
+        trackIndex = -1;
         currentVolume = DEFAULT_VOLUME;
         on = false;
 
         if (rootFolder != null) {
             if (!rootFolder.exists())
-                throw new FileNotFoundException();
+                rootFolder.mkdirs();
+                //throw new FileNotFoundException();
             else {
                 loadTracks(rootFolder);
                 sortTracks();
+
+
             }
             setName("ThreadPlayer "+getId());
         }
@@ -90,18 +96,27 @@ public class Player extends Thread implements PlayerControls {
         File[] fldFiles = folder.listFiles();
         File f = null;
         if (fldFiles != null) {
+
+            boolean hasFiles = false;
             for (int i = 0; i < fldFiles.length; i++) {
                 f = fldFiles[i];
                 if (f.isDirectory())
                     loadTracks(f);
-                else
+                else {
                     listSoundPaths.add(f.getPath());
+                    hasFiles = true;
+                }
             }
+            if (folder != rootFolder && hasFiles)
+                try {
+                    listFolderPaths.add(folder.getCanonicalPath());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
         }
     }
 
     private void loadTracks(List<File> listFiles) {
-        trackIndex = 0;
         listFiles.stream().forEach(f->{
             if (f.isDirectory())
                 loadTracks(f);
@@ -114,6 +129,25 @@ public class Player extends Thread implements PlayerControls {
 
     private void sortTracks() {
         listSoundPaths.sort(Comparator.naturalOrder());
+        listFolderPaths.sort(Comparator.naturalOrder());
+
+        /*listFolderPaths.forEach(fp->{
+            System.out.println(new File(fp).getName());
+        });
+
+        System.exit(0);*/
+    }
+
+    private int getFolderIndex() {
+        String currentParent = current != null ? current.getDataSource().getParent() : null;
+        if (currentParent != null) {
+            for (int i = 0; i < listFolderPaths.size(); i++) {
+                System.out.println(listFolderPaths.get(i));
+                if (listFolderPaths.get(i).equals(currentParent))
+                    return i;
+            }
+        }
+        return -1;
     }
 
     private Track getTrack(int index, boolean isNext) {
@@ -132,8 +166,11 @@ public class Player extends Thread implements PlayerControls {
                     break;
                 }
             }
+            if (next != null)
+                next.setGain(currentVolume);
             return next;
         }
+
         else {
             if (index == 0)
                 index = getSongsCount()-1;
@@ -149,16 +186,13 @@ public class Player extends Thread implements PlayerControls {
                     break;
                 }
             }
+            next.setGain(currentVolume);
             return next;
         }
     }
 
-    private Track getNextTrack() {
-        return getTrack(trackIndex, true);
-    }
-
-    private Track getPreviousTrack() {
-        return getTrack(trackIndex, false);
+    private void updateTrack(boolean next) {
+        current = getTrack(trackIndex, next);
     }
 
     private void finishTrack(Track current) {
@@ -168,8 +202,8 @@ public class Player extends Thread implements PlayerControls {
 
     private void startNewTrackThread() {
         currentThread = new Thread(current);
-        String trackName = current.getDataSource().getName();
-        int strLimit = trackName.length() < 10 ? trackName.length() : 10;
+        final String trackName = current.getDataSource().getName();
+        final int strLimit = trackName.length() < 10 ? trackName.length() : 10;
         currentThread.setName("ThreadTrack: "+current.getDataSource().getName().substring(0, strLimit));
         current.setGain(currentVolume);
         currentThread.start();
@@ -215,9 +249,8 @@ public class Player extends Thread implements PlayerControls {
         }
     }
 
-    private synchronized void waitSong() {
+    private synchronized void freezePlayer() {
         ThreadManager.freezeThread(this);
-        System.out.println("Frezeeado");
     }
 
     /*private synchronized void unfreeze() {
@@ -258,24 +291,40 @@ public class Player extends Thread implements PlayerControls {
         // Se debe verificar que no es un archivo de audio porque
         // cuando solo hay archivos que no son audio se lanza un
         // nullpointerexception
-
         waitForSongs();
         Track cur = current;
-        current = getNextTrack();
-        finishTrack(cur);
-        if (current != null) {
+        updateTrack(true);
+        if (cur != null && !cur.isFinished())
+            cur.finish();
+        if (current != null)
             startNewTrackThread();
-            System.out.println("Song: "+trackIndex);
-            System.out.println(current.getInfoSong());
-        }
-        loadListenerMethod(ONSONGCHANGE, current);
     }
 
-    public boolean hasSounds() {
+    public synchronized boolean hasSounds() {
         return !listSoundPaths.isEmpty();
     }
 
-    public void analyzeFiles() {
+    public byte getCurrentTrackState() {
+        return current == null ? TrackStates.UNKNOWN : current.getState();
+    }
+
+    public String getCurrentTrackStateToString() {
+        return current == null ? "Unknown" : current.getStateToString();
+    }
+
+    public int getFoldersCount() {
+        return listFolderPaths.size();
+    }
+
+    public ArrayList<String> getListFolderPaths() {
+        return listFolderPaths;
+    }
+
+    public synchronized ArrayList<PlayerListener> getListListeners() {
+        return listListeners;
+    }
+
+    public synchronized void analyzeFiles() {
         int tracksSize = listSoundPaths.size();
         List<String> listAnalyzed = (
                 listSoundPaths.getClass().isInstance(LinkedList.class)?
@@ -286,10 +335,23 @@ public class Player extends Thread implements PlayerControls {
         });
         listSoundPaths.clear();
         listSoundPaths.addAll(listAnalyzed);
+
+        listSoundPaths.sort(Comparator.naturalOrder());
+
+        int folderSize = listFolderPaths.size();
+        for (int i = 0; i < folderSize; i++) {
+            int finalI = i;
+            if (!listSoundPaths.parallelStream().anyMatch(sp->
+                    new File(sp).getParent().equals(listFolderPaths.get(finalI)))) {
+                listFolderPaths.remove(i);
+                folderSize--;
+            }
+        }
+
     }
 
     // Test
-    public void jumpTrack(int jumps) {
+    public synchronized void jumpTrack(int jumps) {
         if (jumps > 0)
             trackIndex+=(--jumps);
         else
@@ -300,13 +362,13 @@ public class Player extends Thread implements PlayerControls {
             trackIndex = listSoundPaths.size()-1;
     }
 
-    public ArrayList<String> getListSoundPaths() {
+    public synchronized ArrayList<String> getListSoundPaths() {
         return listSoundPaths;
     }
 
     // Se supone que todos los tracks serian validos
     // sino rescatar de los que sean no mas
-    public ArrayList<AudioTag> getTrackTags() {
+    public synchronized ArrayList<AudioTag> getTrackTags() {
         ArrayList<AudioTag> listTags = new ArrayList<>();
 
         AudioTag tag;
@@ -323,21 +385,21 @@ public class Player extends Thread implements PlayerControls {
     }
 
 
-    public void addPlayerListener(PlayerListener listener) {
+    public synchronized void addPlayerListener(PlayerListener listener) {
         listListeners.add(listener);
     }
 
-    public ArrayList<PlayerListener> getListeners() {
+    public synchronized ArrayList<PlayerListener> getListeners() {
         return listListeners;
     }
 
-    public void removePlayerListener(PlayerListener reference) {
+    public synchronized void removePlayerListener(PlayerListener reference) {
         for (int i = 0; i < listListeners.size(); i++)
             if (listListeners.get(i).equals(reference))
                 listListeners.remove(i);
     }
 
-    public void removeAllListeners() {
+    public synchronized void removeAllListeners() {
         listListeners.clear();
     }
 
@@ -348,49 +410,44 @@ public class Player extends Thread implements PlayerControls {
         sortTracks();
     }
 
-    public Track getCurrent() {
+    public synchronized Track getCurrent() {
         return current;
     }
 
     public synchronized SourceDataLine getTrackLine() {
-        if (current == null)
-            System.out.println("Current is null");
-        else {
-            System.out.println("CurrentLine: "+current.getTrackLine());
-        }
         return current == null ? null :
                 (current.getTrackLine() == null ?
                         null : current.getTrackLine().getDriver());
     }
 
     @Override
-    public boolean isPlaying() {
+    public synchronized boolean isPlaying() {
         return current == null ? false : current.isPlaying();
     }
 
 
     @Override
-    public boolean isPaused() {
+    public synchronized boolean isPaused() {
         return current == null ? false : current.isPaused();
     }
 
     @Override
-    public boolean isStoped() {
-        return current == null ? false : current.isStoped();
+    public synchronized boolean isStopped() {
+        return current == null ? false : current.isStopped();
     }
 
     @Override
-    public boolean isFinished() {
+    public synchronized boolean isFinished() {
         return current == null ? false : current.isFinished();
     }
 
     @Override
-    public boolean isMute() {
+    public synchronized boolean isMute() {
         return current == null ? true : current.isMute();
     }
 
     @Override
-    public void open(File sound) {
+    public synchronized void open(File sound) {
         listSoundPaths.clear();
         listSoundPaths.add(sound.getPath());
         if (isPlaying())
@@ -402,7 +459,7 @@ public class Player extends Thread implements PlayerControls {
     }
 
     @Override
-    public void open(List<File> listSounds) {
+    public synchronized void open(List<File> listSounds) {
         listSounds.clear();
         loadTracks(listSounds);
         sortTracks();
@@ -418,13 +475,14 @@ public class Player extends Thread implements PlayerControls {
     }
 
     @Override
-    public void addMusic(List<File> listSounds) {
+    public synchronized void addMusic(List<File> listSounds) {
         if (!listSounds.isEmpty()) {
             final Consumer<File> consumer = sound->{
                 if (sound.isDirectory())
                     loadTracks(sound);
-                else
+                else {
                     listSoundPaths.add(sound.getPath());
+                }
             };
             final Stream<File> stream = listSounds.stream();
             if (hasSounds()) {
@@ -444,7 +502,7 @@ public class Player extends Thread implements PlayerControls {
     }
 
     @Override
-    public void addMusic(File musicFolder) {
+    public synchronized void addMusic(File musicFolder) {
         this.rootFolder = musicFolder;
         if (hasSounds()) {
             loadTracks(musicFolder);
@@ -458,71 +516,87 @@ public class Player extends Thread implements PlayerControls {
         }
     }
 
-    public void listTracks() {
-        System.out.println("------------------------------");
+    public synchronized void listTracks() {
+        Logger.getLogger(this, "------------------------------").rawInfo();
         if (rootFolder == null)
-            System.out.println("Music in folder");
+            Logger.getLogger(this, "Music in folder").rawInfo();
         else
-            System.out.println("Music in folder "+rootFolder.getName());
-        System.out.println("------------------------------");
+            Logger.getLogger(this, "Music in folder "+rootFolder.getName()).rawInfo();
+        Logger.getLogger(this, "------------------------------").rawInfo();
         for (int i = 0; i < getSongsCount(); i++)
-            System.out.println("Track "+(i+1)+": "
-                    +new File(listSoundPaths.get(i)).getName());
-        System.out.println("------------------------------");
+            Logger.getLogger(this, "Track "+(i+1)+": "
+                    +new File(listSoundPaths.get(i)).getName()).rawInfo();
+        Logger.getLogger(this, "------------------------------").rawInfo();
+
     }
 
-    public int getTrackProgress() {
+    public synchronized int getTrackProgress() {
         return current.getProgress();
     }
 
-    public int getSongsCount() {
+    public synchronized int getSongsCount() {
         return listSoundPaths.size();
     }
 
-    public void seekFolder(boolean next) {
-        if (current != null) {
-            boolean isFolderFound = false;
-            String currentParent =
-                    current.getDataSource().getParent();
-            File nextSound = null;
-            int count = 0;
+    public synchronized void seekFolder(boolean next) {
+        seekFolder(next, 1);
+    }
 
-            if (next)
-                for (int i = trackIndex+1; i < getSongsCount(); i++) {
-                    nextSound = new File(listSoundPaths.get(i));
-                    count++;
-                    if (!nextSound.getParent().equals(currentParent)) {
-                        isFolderFound = true;
-                        break;
+    public synchronized void seekFolder(boolean next, int jumps) {
+        int folderIndex = getFolderIndex();
+        Logger.getLogger(this, "Current FolderIndex en seekFolder: "+ folderIndex).rawInfo();
+        Logger.getLogger(this, "Current Parent en seekFolder: "+ current.getDataSource().getParent()).rawInfo();
+        if (folderIndex != -1) {
+            int newIndex;
+
+            if (next) {
+                newIndex = folderIndex+jumps;
+
+                if (newIndex >= getFoldersCount()) {
+                    trackIndex = -1;
+                    playNext();
+                }
+                else {
+                    int currentJumps = 0;
+                    File fileSong = null;
+                    for (int i = trackIndex+1; i < getSongsCount(); i++) {
+                        fileSong = new File(listSoundPaths.get(i));
+                        if (!fileSong.getParent().equals(current.getDataSource().getParent())) {
+                            currentJumps++;
+                        }
+                        if (jumps == currentJumps) {
+                            play(fileSong);
+                            break;
+                        }
                     }
                 }
-            else
-                for (int i = trackIndex-1; i >= 0; i--) {
-                    nextSound = new File(listSoundPaths.get(i));
-                    count--;
-                    if (!nextSound.getParent().equals(currentParent)) {
-                        isFolderFound = true;
-                        currentParent = nextSound.getParent();
-                    }
-                    // Buscar el primero de la carpeta
-                    else if (isFolderFound &&
-                            !nextSound.getParent().equals(currentParent)) {
-                        nextSound = new File(listSoundPaths.get(i+1));
-                        System.out.println("NextSound: "+nextSound.getName());
-                        break;
-                    }
+            }
+
+            else {
+                int finalFolderIndex = folderIndex - jumps;
+
+                if (finalFolderIndex < 0) {
+                    trackIndex = 0;
+                    playPrevious();
                 }
-            if (isFolderFound)
-                play(nextSound);
-                // Ultima carpeta
-            else
-                play(new File(next ? listSoundPaths.get(0) :
-                        listSoundPaths.get(getSongsCount()-1)));
+                else {
+                    File fileSong = null;
+                    File folderToFind = new File(listFolderPaths.get(finalFolderIndex));
+
+                    for (int i = trackIndex-1; i >= 0; i--) {
+                        fileSong = new File(listSoundPaths.get(i));
+                        if (fileSong.getParent().equals(folderToFind.getParent()))
+                            break;
+                    }
+                    if (fileSong != null)
+                        play(fileSong);
+                }
+            }
         }
     }
 
     @Override
-    public void play() {
+    public synchronized void play() {
         if (!isAlive())
             start();
         else if (current != null) {
@@ -532,33 +606,44 @@ public class Player extends Thread implements PlayerControls {
     }
 
     // Reproduce archivo de audio en la lista
+    // (is alive)
     @Override
-    public void play(File track) {
+    public synchronized void play(File track) {
         int indexOf = listSoundPaths.indexOf(track.getPath());
         if (indexOf != -1) {
-            trackIndex = indexOf == 0 ? getSongsCount() :  indexOf-1;
-            playNext();
+            trackIndex = indexOf;
+            if (current != null)
+                current.kill();
+            current = Track.getTrack(track);
+            startNewTrackThread();
         }
     }
 
     @Override
-    public void play(String trackName) {
+    public synchronized void play(String trackName) {
         int indexOf = -1;
+        File song = null;
+
         for (int i = 0; i < listSoundPaths.size(); i++) {
-            if (new File(listSoundPaths.get(i)).getName().equals(trackName)) {
+            song = new File(listSoundPaths.get(i));
+            if (song.getName().equals(trackName)) {
                 indexOf = i;
                 break;
             }
+            song = null;
         }
 
         if (indexOf != -1) {
-            trackIndex = indexOf == 0 ? getSongsCount() :  indexOf-1;
-            playNext();
+            trackIndex = indexOf;
+            if (current != null)
+                current.kill();
+            current = Track.getTrack(song);
+            startNewTrackThread();
         }
     }
 
     @Override
-    public void pause() {
+    public synchronized void pause() {
         if (current != null) {
             current.pause();
             loadListenerMethod(ONPAUSED, current);
@@ -566,7 +651,7 @@ public class Player extends Thread implements PlayerControls {
     }
 
     @Override
-    public void resumeTrack() {
+    public synchronized void resumeTrack() {
         if (current != null) {
             current.resumeTrack();
             loadListenerMethod(ONRESUMED, current);
@@ -574,7 +659,7 @@ public class Player extends Thread implements PlayerControls {
     }
 
     @Override
-    public void stopTrack() {
+    public synchronized void stopTrack() {
         if (current != null) {
             current.stopTrack();
             loadListenerMethod(ONSTOPPED, current);
@@ -582,12 +667,12 @@ public class Player extends Thread implements PlayerControls {
     }
 
     @Override
-    public  void finish() {
+    public synchronized void finish() {
         shutdown();
     }
 
     @Override
-    public void seek(int seconds) {
+    public synchronized void seek(int seconds) {
         if (current != null) {
             try {
                 current.seek(seconds);
@@ -599,29 +684,33 @@ public class Player extends Thread implements PlayerControls {
     }
 
     @Override
-    public float getGain() {
+    public synchronized float getGain() {
         return current == null ? -1 : current.getGain();
     }
 
     // 0-100
     @Override
-    public void setGain(float volume) {
+    public synchronized void setGain(float volume) {
         if (current != null) {
             current.setGain(volume);
-            currentVolume = volume < 0 ? 0 : (volume > 100 ? 100 : volume);
+            currentVolume = current.getGain();
         }
     }
 
     @Override
-    public void mute() {
-        if (current != null)
+    public synchronized void mute() {
+        if (current != null) {
             current.mute();
+            currentVolume = 0;
+        }
     }
 
     @Override
-    public void unmute() {
-        if (current != null)
+    public synchronized void unmute() {
+        if (current != null) {
             current.unmute();
+            currentVolume = current.getGain();
+        }
     }
 
     @Override
@@ -629,42 +718,36 @@ public class Player extends Thread implements PlayerControls {
         if (current != null)
             current.finish();
         else
-            current = getNextTrack();
+            updateTrack(true);
+        loadListenerMethod(ONSONGCHANGE, current);
     }
 
     @Override
     public synchronized void playPrevious() {
         Track cur = current;
-        current = getPreviousTrack();
-        if (cur != null) {
-            cur.unlinkPlayer();
-            finishTrack(cur);
-        }
+        updateTrack(false);
+        if (cur != null)
+            cur.kill();
         startNewTrackThread();
-        System.out.println(current.getInfoSong());
         loadListenerMethod(ONSONGCHANGE, current);
     }
 
     @Override
-    public void shutdown() {
+    public synchronized void shutdown() {
         on = false;
         // Se usa kill porque con finish se cambia la cancion
-        System.out.println(currentThread.isAlive());
-        System.out.println("Antes de apagar current");
         shutdownCurrent();
-        System.out.println("Antes de descongelar player");
         this.interrupt();
-        System.out.println("Player descongelado");
         loadListenerMethod(ONSHUTDOWN, null);
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
         PlayerHandler.setInstance(this);
         on = true;
         loadListenerMethod(ONSTARTED, null);
         loadNextTrack();
-        waitSong();
+        freezePlayer();
     }
 
 }

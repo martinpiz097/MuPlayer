@@ -14,7 +14,6 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
-import java.lang.reflect.Field;
 import java.util.List;
 
 public class M4ATrack extends Track {
@@ -46,6 +45,19 @@ public class M4ATrack extends Track {
         //MP4InputStream mp4 = new MP4InputStream();
     }
 
+    /*private AudioInputStream decodeRandomAccessMP4(File inputFile) throws IOException,
+            UnsupportedAudioFileException {
+        RandomAccessFile randomAccess = new RandomAccessFile(inputFile, "r");
+        final MP4Container cont = new MP4Container(randomAccess);
+        final List<net.sourceforge.jaad.mp4.api.Track> tracks =
+                cont.getMovie().getTracks(AudioTrack.AudioCodec.AAC);
+        if (tracks.isEmpty())
+            throw new UnsupportedAudioFileException("Movie does not contain any AAC track");
+
+        final AudioTrack track = (AudioTrack) tracks.get(0);
+        return new M4AAudioInputStream(inputFile, new AudioDataInputStream(), track);
+    }*/
+
     private AudioInputStream decodeRandomAccessMP4(File inputFile)
             throws UnsupportedAudioFileException, IOException {
         ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
@@ -55,13 +67,10 @@ public class M4ATrack extends Track {
 
         try {
             randomAccess = new RandomAccessFile(inputFile, "r");
-            Field fd = FileDescriptor.class
-                    .getDeclaredField("fd");
-            fd.setAccessible(true);
-            System.out.println("Decriptor: "+fd.getInt(randomAccess.getFD()));
             final MP4Container cont = new MP4Container(randomAccess);
             final Movie movie = cont.getMovie();
-            final List<net.sourceforge.jaad.mp4.api.Track> tracks = movie.getTracks(AudioTrack.AudioCodec.AAC);
+            final List<net.sourceforge.jaad.mp4.api.Track> tracks =
+                    movie.getTracks(AudioTrack.AudioCodec.AAC);
             if (tracks.isEmpty())
                 throw new UnsupportedAudioFileException("Movie does not contain any AAC track");
 
@@ -69,6 +78,11 @@ public class M4ATrack extends Track {
             final Decoder dec = new Decoder(track.getDecoderSpecificInfo());
             Frame frame;
             final SampleBuffer buf = new SampleBuffer();
+
+            // leer en el mismo while y que en track no se valide si
+            // el ais es distinto de null para ser valido cuando es m4a
+            // para el streaming se puede crear un inputstream aparte que
+            // tenga informacion del sonido o enviar el audioformat por socket
 
             while (track.hasMoreFrames()) {
                 frame = track.readNextFrame();
@@ -79,10 +93,6 @@ public class M4ATrack extends Track {
             decFormat = new AudioFormat(track.getSampleRate(),
                     track.getSampleSize(), track.getChannelCount(),
                     true, true);
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
         } finally {
             audioData = byteOut.toByteArray();
             byteOut.close();

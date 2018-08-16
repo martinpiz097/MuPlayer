@@ -13,7 +13,7 @@ import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
 
-import static org.muplayer.audio.AudioExtensions.*;
+import static org.muplayer.audio.util.AudioExtensions.*;
 
 public class GetTrackTest {
     static long ti;

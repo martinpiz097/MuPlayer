@@ -88,8 +88,18 @@ Music player library in pure Java.
 	## Se crea clase ListenersNames para manejar los nombres de los metodos en los listeners genericamente
 	## Se corrige problema con playPrevious, se hace un poco mas optimo
 	## Se agrega funcion seekFolder para saltar entre carpetas cuando se cargan las canciones
-## 0.8.2 Beta (Actual)
+## 0.8.2 Beta
 	## Se corrige error al leer equivocadamente una imagen simplificando lectura de audio
 	## Dependencias actualizadas a ultimas versiones
 	## Se crea clase TrackHandler para manejar objetos Track utilizando solo los controles de audio
 	## Se crea interfaz TrackInfo para solo rescatar la informacion de la cancion como un objeto aparte
+## 0.9 Beta
+	## Se corrige error en volumen, ahora si el reproductor esta en mute tambien lo estará cuando pase a una siguiente canción.
+	## Se agrega metodo para obtener duracion formateada en los Track
+	## Se eliminan clases innecesarias
+	## Se añade logger propio para mensajes a consola
+	## Se optimiza la forma en mostrar la info de la cancion por consola, para ambitos de produccion
+	## Problema al mostrar titulo de la cancion corregido
+	## Problema al reproducir primera cancion al inicio corregido.
+	## Se añade funcionalidad que permite visualizar un listado de las subcarpetas en nuestra carpeta de musica
+	

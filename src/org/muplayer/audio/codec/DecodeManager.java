@@ -39,6 +39,7 @@ public class DecodeManager {
                 baseFormat.getSampleRate(),
                 baseFormat.isBigEndian());
     }
+
     public static AudioInputStream decodeToPcm(
             AudioFormat baseFormat, AudioInputStream encodedAis) {
         AudioFormat decodedFormat = getPcmFormatByMpeg(baseFormat);
