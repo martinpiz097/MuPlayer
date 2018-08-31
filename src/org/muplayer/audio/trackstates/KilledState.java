@@ -1,11 +1,12 @@
-package org.muplayer.audio.trackstates;
+/*package org.muplayer.audio.trackstates;
 
-/*import org.aucom.sound.Speaker;
+import org.aucom.sound.Speaker;
 import org.muplayer.audio.Track;
+import org.muplayer.system.Logger;
 
 import javax.sound.sampled.AudioInputStream;
 
-public class KilledState implements TrackState {
+public class KilledState extends TrackState {
 
     private Track track;
     private AudioInputStream trackStream;
@@ -19,7 +20,7 @@ public class KilledState implements TrackState {
 
     @Override
     public void handle() {
-        track.closeAll();
+        Logger.getLogger(this, "Track completed!").info();
+        track.closeAllStreams();
     }
-}
-*/
+}*/

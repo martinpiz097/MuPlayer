@@ -5,7 +5,7 @@ import org.muplayer.audio.Track;
 
 import javax.sound.sampled.AudioInputStream;
 
-public class PausedState implements TrackState {
+public class PausedState extends TrackState {
 
     private Track track;
     private AudioInputStream trackStream;
@@ -19,7 +19,7 @@ public class PausedState implements TrackState {
 
     @Override
     public void handle() {
-        while (true) {}
+        while (track.isPaused()) {}
     }
 }
 */

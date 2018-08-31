@@ -2,10 +2,12 @@
 
 import org.aucom.sound.Speaker;
 import org.muplayer.audio.Track;
+import org.muplayer.system.Logger;
+import org.muplayer.thread.PlayerHandler;
 
 import javax.sound.sampled.AudioInputStream;
 
-public class FinishedState implements TrackState {
+public class FinishedState extends TrackState {
 
     private Track track;
     private AudioInputStream trackStream;
@@ -19,7 +21,12 @@ public class FinishedState implements TrackState {
 
     @Override
     public void handle() {
-        track.closeAll();
+        Logger.getLogger(this, "Track completed!").info();
+        if (PlayerHandler.hasInstance() && track.isPlayerLinked()) {
+            //Logger.getLogger(this, "Entra a if isfinished").error();
+            track.closeAllStreams();
+            PlayerHandler.getPlayer().waitNextTrack();
+        }
     }
 }
 */

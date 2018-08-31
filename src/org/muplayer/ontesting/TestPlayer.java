@@ -11,7 +11,10 @@ import java.util.Scanner;
 public class TestPlayer {
     public static void main(String[] args) throws IOException {
         boolean hasArgs = args != null && args.length > 0;
-        String fPath = hasArgs ? args[0] : "/home/martin/Escritorio/Archivos/Música";
+        String fPath =
+                hasArgs ? args[0] : "/home/martin/Escritorio/Archivos/Música"
+                //"/home/martin/AudioTesting/music/"
+                ;
 
         // Ver validacion de archivos de audio y que hacer cuando
         // la carpeta esta vacia al cargar la carpeta para evitar
@@ -19,9 +22,9 @@ public class TestPlayer {
 
         //Player.newInstance(fPath);
         //Player player = Player.getPlayer();
-        Player player = new Player();
+        Player player = new Player(new File(fPath));
         player.start();
-        player.addMusic(new File(fPath));
+        //player.addMusic(new File(fPath));
         //player.analyzeFiles();
         System.out.println("Sounds total: "+player.getSongsCount());
 
@@ -98,7 +101,10 @@ public class TestPlayer {
                         System.out.println(player.getSongsCount());
                         break;
                     case 'l':
-                        player.listTracks();
+                        if (line.length() == 2 && line.charAt(1) == 'f')
+                            player.printFolders();
+                        else
+                            player.printTracks();
                         break;
                 }
             } catch (IllegalArgumentException e) {

@@ -1,7 +1,6 @@
 /*package org.muplayer.audio.trackstates;
 
-@FunctionalInterface
-public interface TrackState {
-    public void handle();
+public abstract class TrackState {
+    public abstract void handle();
 }
 */

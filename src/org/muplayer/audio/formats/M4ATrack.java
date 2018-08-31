@@ -1,19 +1,21 @@
 package org.muplayer.audio.formats;
 
 import net.sourceforge.jaad.aac.Decoder;
-import net.sourceforge.jaad.aac.SampleBuffer;
 import net.sourceforge.jaad.mp4.MP4Container;
 import net.sourceforge.jaad.mp4.api.AudioTrack;
-import net.sourceforge.jaad.mp4.api.Frame;
 import net.sourceforge.jaad.mp4.api.Movie;
 import net.sourceforge.jaad.spi.javasound.AACAudioFileReader;
 import org.muplayer.audio.Track;
+import org.muplayer.audio.formats.io.M4AInputStream;
+import org.muplayer.system.Logger;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.List;
 
 public class M4ATrack extends Track {
@@ -28,11 +30,11 @@ public class M4ATrack extends Track {
     @Override
     protected void loadAudioStream() throws IOException, UnsupportedAudioFileException {
         try {
-            // Es m4a normal
+            // Es m4a normal o aac
             audioReader = new AACAudioFileReader();
             trackStream = audioReader.getAudioInputStream(dataSource);
         } catch (UnsupportedAudioFileException e) {
-            System.out.println("No soportado");
+            Logger.getLogger(this, "File not supported!").rawError();
             e.printStackTrace();
         } catch (IOException e) {
             //System.out.println("LoadAudioStreamIOException: "+e.getMessage());
@@ -58,52 +60,32 @@ public class M4ATrack extends Track {
         return new M4AAudioInputStream(inputFile, new AudioDataInputStream(), track);
     }*/
 
-    private AudioInputStream decodeRandomAccessMP4(File inputFile)
-            throws UnsupportedAudioFileException, IOException {
-        ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-        AudioFormat decFormat = null;
-        RandomAccessFile randomAccess = null;
-        byte[] audioData = null;
+    private AudioTrack getM4ATrack(RandomAccessFile randomAccess) throws IOException, UnsupportedAudioFileException {
+        final MP4Container cont = new MP4Container(randomAccess);
+        final Movie movie = cont.getMovie();
+        final List<net.sourceforge.jaad.mp4.api.Track> tracks =
+                movie.getTracks(AudioTrack.AudioCodec.AAC);
 
+        if (tracks.isEmpty())
+            throw new UnsupportedAudioFileException("Movie does not contain any AAC track");
+
+        return (AudioTrack) tracks.get(0);
+    }
+
+    private AudioInputStream decodeRandomAccessMP4(File inputFile) {
         try {
-            randomAccess = new RandomAccessFile(inputFile, "r");
-            final MP4Container cont = new MP4Container(randomAccess);
-            final Movie movie = cont.getMovie();
-            final List<net.sourceforge.jaad.mp4.api.Track> tracks =
-                    movie.getTracks(AudioTrack.AudioCodec.AAC);
-            if (tracks.isEmpty())
-                throw new UnsupportedAudioFileException("Movie does not contain any AAC track");
-
-            final AudioTrack track = (AudioTrack) tracks.get(0);
+            final RandomAccessFile randomAccess = new RandomAccessFile(inputFile, "r");
+            final AudioTrack track = getM4ATrack(randomAccess);
             final Decoder dec = new Decoder(track.getDecoderSpecificInfo());
-            Frame frame;
-            final SampleBuffer buf = new SampleBuffer();
-
-            // leer en el mismo while y que en track no se valide si
-            // el ais es distinto de null para ser valido cuando es m4a
-            // para el streaming se puede crear un inputstream aparte que
-            // tenga informacion del sonido o enviar el audioformat por socket
-
-            while (track.hasMoreFrames()) {
-                frame = track.readNextFrame();
-                dec.decodeFrame(frame.getData(), buf);
-                byteOut.write(buf.getData());
-            }
-
-            decFormat = new AudioFormat(track.getSampleRate(),
+            M4AInputStream inputStream = new M4AInputStream(track, dec, randomAccess);
+            AudioFormat decFormat = new AudioFormat(track.getSampleRate(),
                     track.getSampleSize(), track.getChannelCount(),
                     true, true);
-        } finally {
-            audioData = byteOut.toByteArray();
-            byteOut.close();
-            randomAccess.close();
+            return new AudioInputStream(inputStream, decFormat, inputFile.length());
+        } catch (Exception e){
+            Logger.getLogger(this, "Exception", e.getMessage()).error();
+            return null;
         }
-
-       if (audioData != null) {
-           ByteArrayInputStream inputStream = new ByteArrayInputStream(audioData);
-           return new AudioInputStream(inputStream, decFormat, audioData.length);
-       }
-       return null;
     }
 
     @Override
@@ -129,7 +111,7 @@ public class M4ATrack extends Track {
                 .append(':').append(sec < 10 ? '0'+sec:sec).toString();
     }*/
 
-    public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    /*public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         String strTrack = "/home/martin/AudioTesting/music/random.m4a";
         Track track = new M4ATrack(strTrack);
         //String strTrack = "/home/martin/AudioTesting/music/John Petrucci/" +

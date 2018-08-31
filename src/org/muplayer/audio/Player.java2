@@ -233,7 +233,7 @@ public class Player extends Thread implements PlayerControls {
         while (on && getSongsCount() == 0);
     }
 
-    public void waitNextTrack() {
+    void waitNextTrack() {
         // Se debe verificar que no es un archivo de audio porque
         // cuando solo hay archivos que no son audio se lanza un
         // nullpointerexception

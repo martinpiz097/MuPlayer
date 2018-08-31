@@ -7,9 +7,9 @@ import java.io.InputStream;
 
 public class AudioDataInputStream extends InputStream {
 
-    private ByteBuffer byteBuffer;
-    private long readed;
-    private boolean isClosed;
+    protected ByteBuffer byteBuffer;
+    protected long readed;
+    protected boolean isClosed;
 
     public AudioDataInputStream() {
         this(new ByteBuffer());

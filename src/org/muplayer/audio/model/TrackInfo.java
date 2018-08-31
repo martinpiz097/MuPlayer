@@ -1,4 +1,4 @@
-package org.muplayer.audio;
+package org.muplayer.audio.model;
 
 import org.jaudiotagger.tag.FieldKey;
 

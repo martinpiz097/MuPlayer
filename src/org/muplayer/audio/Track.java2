@@ -9,7 +9,6 @@ import org.jaudiotagger.tag.TagException;
 import org.muplayer.audio.codec.DecodeManager;
 import org.muplayer.audio.formats.*;
 import org.muplayer.audio.interfaces.MusicControls;
-import org.muplayer.audio.model.TrackInfo;
 import org.muplayer.system.AudioUtil;
 import org.muplayer.system.Logger;
 import org.muplayer.thread.PlayerHandler;
@@ -148,7 +147,7 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
     // Ver opcion de usar archivo temporal y leer desde ahi
     protected abstract void loadAudioStream() throws IOException, UnsupportedAudioFileException;
 
-    public void resetStream() throws IOException, LineUnavailableException, UnsupportedAudioFileException {
+    protected void resetStream() throws IOException, LineUnavailableException, UnsupportedAudioFileException {
         if (trackStream != null)
             trackStream.close();
         currentSeconds = 0;
@@ -183,7 +182,7 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
         }
     }
 
-    public void closeAllStreams() {
+    protected void closeAll() {
         closeLine();
         currentSeconds = 0;
         // Libero al archivo de audio del bloqueo
@@ -218,10 +217,6 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
 
     public boolean isTrackFinished() throws IOException {
         return trackStream.read() == -1;
-    }
-
-    public boolean isPlayerLinked() {
-        return isPlayerLinked;
     }
 
     public AudioInputStream getTrackStream() {
@@ -360,12 +355,12 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
     @Override
     public void finish() {
         state = FINISHED;
-        closeAllStreams();
+        closeAll();
     }
 
     void kill() {
         state = KILLED;
-        closeAllStreams();
+        closeAll();
     }
 
     @Override
@@ -503,7 +498,7 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
             System.err.println("FrameSize: "+trackStream.getFormat().getFrameSize());
             System.err.println("FrameRate: "+trackStream.getFormat().getFrameRate());
             */
-            //System.out.println("FrameSize: "+trackStream.getFrameLength());
+             //System.out.println("FrameSize: "+trackStream.getFrameLength());
             //System.out.println("FrameSize/1024: "+trackStream.getFrameLength()/1024);
             byte[] audioBuffer = new byte[getBuffLen()];
             int read;
@@ -550,8 +545,10 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
                     resetStream();
             }
             Logger.getLogger(this, "Track completed!").info();
-            if (isFinished() && (PlayerHandler.hasInstance() && isPlayerLinked))
+            if (isFinished() && (PlayerHandler.hasInstance() && isPlayerLinked)) {
+                //Logger.getLogger(this, "Entra a if isfinished").error();
                 PlayerHandler.getPlayer().waitNextTrack();
+            }
         } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
             e.printStackTrace();
         }

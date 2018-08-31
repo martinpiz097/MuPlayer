@@ -1,5 +1,6 @@
-package org.muplayer.audio;
+package org.muplayer.audio.util;
 
+import org.muplayer.audio.Track;
 import org.muplayer.audio.interfaces.MusicControls;
 
 public class TrackHandler extends Thread implements MusicControls {

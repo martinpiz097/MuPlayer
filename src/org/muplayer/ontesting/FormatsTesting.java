@@ -4,7 +4,7 @@ import org.jflac.sound.spi.FlacAudioFileReader;
 import org.jflac.sound.spi.FlacFormatConversionProvider;
 import org.muplayer.audio.AudioTag;
 import org.muplayer.audio.Track;
-import org.muplayer.audio.TrackHandler;
+import org.muplayer.audio.util.TrackHandler;
 import org.muplayer.audio.formats.FlacTrack;
 import org.muplayer.audio.formats.M4ATrack;
 import org.muplayer.audio.formats.OGGTrack;

@@ -1,4 +1,4 @@
-package org.muplayer.audio;
+package org.muplayer.audio.util;
 
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
