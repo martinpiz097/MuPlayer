@@ -1,27 +1,49 @@
-package org.muplayer.ontesting;
+package org.muplayer.tests.ontesting;
 
 import org.jflac.sound.spi.FlacAudioFileReader;
 import org.jflac.sound.spi.FlacFormatConversionProvider;
 import org.muplayer.audio.AudioTag;
 import org.muplayer.audio.Track;
-import org.muplayer.audio.util.TrackHandler;
 import org.muplayer.audio.formats.FlacTrack;
 import org.muplayer.audio.formats.M4ATrack;
 import org.muplayer.audio.formats.OGGTrack;
 import org.muplayer.audio.interfaces.MusicControls;
+import org.muplayer.audio.util.TrackHandler;
+import org.muplayer.tests.TestingManager;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 
+import static org.muplayer.tests.TestingKeys.TESTINGPATH;
+
 public class FormatsTesting {
+
+    private static TestingManager manager;
+
+    static {
+        try {
+            manager = new TestingManager();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         //execM4ASeekTest();
-        execOggTagTest();
+        //execOggTagTest();
+        executeFormatTest("m4a");
+    }
+
+    private static void executeFormatTest(String folderName) throws FileNotFoundException {
+        File folderTesting = new File(manager.getProperty(TESTINGPATH), folderName);
+        TestPlayer player = new TestPlayer(folderTesting);
+        player.start();
     }
 
     private static void execBytesTest() throws IOException, UnsupportedAudioFileException {
@@ -42,9 +64,9 @@ public class FormatsTesting {
 
         //byte[] bytes = new byte[(int) audioFile.length()];
         //System.out.println("FileLenght: "+audioFile.length());
-        //System.out.println(trackStream.read(new byte[20000]));
-        //System.out.println("StreamAvailable: "+trackStream.available());
-        //System.out.println("ReadedData: "+trackStream.read(bytes)/18432);
+        //System.out.println(decodedStream.read(new byte[20000]));
+        //System.out.println("StreamAvailable: "+decodedStream.available());
+        //System.out.println("ReadedData: "+decodedStream.read(bytes)/18432);
 
 
         long readed = 0;

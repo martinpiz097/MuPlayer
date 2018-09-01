@@ -1,4 +1,4 @@
-package org.muplayer.test;
+package org.muplayer.tests.other;
 
 import java.util.Arrays;
 

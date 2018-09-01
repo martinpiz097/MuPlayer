@@ -1,32 +1,30 @@
-package org.muplayer.ontesting;
+package org.muplayer.tests.ontesting;
 
 import org.muplayer.audio.Player;
 import org.muplayer.system.Logger;
 
 import javax.sound.sampled.SourceDataLine;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class TestPlayer {
-    public static void main(String[] args) throws IOException {
-        boolean hasArgs = args != null && args.length > 0;
-        String fPath =
-                hasArgs ? args[0] : "/home/martin/Escritorio/Archivos/Música"
-                //"/home/martin/AudioTesting/music/"
-                ;
+public class TestPlayer extends Thread {
 
-        // Ver validacion de archivos de audio y que hacer cuando
-        // la carpeta esta vacia al cargar la carpeta para evitar
-        // un buble infinito cuando se lee una carpeta sin archivos de audio
+    private volatile Player player;
 
-        //Player.newInstance(fPath);
-        //Player player = Player.getPlayer();
-        Player player = new Player(new File(fPath));
-        player.start();
-        //player.addMusic(new File(fPath));
-        //player.analyzeFiles();
+    public TestPlayer(String folderPath) throws FileNotFoundException {
+        this(new File(folderPath));
+    }
+
+    public TestPlayer(File folder) throws FileNotFoundException {
+        this.player = new Player(folder);
+    }
+
+    @Override
+    public void run() {
         System.out.println("Sounds total: "+player.getSongsCount());
+        player.start();
 
         Scanner scan = new Scanner(System.in);
         SourceDataLine playerLine;
@@ -66,7 +64,7 @@ public class TestPlayer {
                             player.seekFolder(false);
                         else if (line.length() >= 3)
                             player.jumpTrack((Integer.parseInt(line.substring(2))) * -1);
-                            player.playPrevious();
+                        player.playPrevious();
                         break;
                     case 's':
                         player.stopTrack();
@@ -106,6 +104,10 @@ public class TestPlayer {
                         else
                             player.printTracks();
                         break;
+
+                    case 'd':
+                        System.out.println(player.getCurrent().getDurationAsString());
+                        break;
                 }
             } catch (IllegalArgumentException e) {
                 Logger.getLogger(TestPlayer.class, "Exception: "+e.getMessage()).rawError();
@@ -115,5 +117,16 @@ public class TestPlayer {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static void main(String[] args) throws IOException {
+        boolean hasArgs = args != null && args.length > 0;
+        String fPath =
+                //hasArgs ? args[0] : "/home/martin/Escritorio/Archivos/Música"
+                "/home/martin/AudioTesting/music/"
+                ;
+        TestPlayer testPlayer = new TestPlayer(fPath);
+        testPlayer.start();
+
     }
 }

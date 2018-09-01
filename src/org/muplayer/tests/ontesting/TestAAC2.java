@@ -1,4 +1,4 @@
-package org.muplayer.ontesting;
+package org.muplayer.tests.ontesting;
 
 import net.sourceforge.jaad.aac.AACException;
 import net.sourceforge.jaad.aac.Decoder;

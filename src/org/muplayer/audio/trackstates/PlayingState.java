@@ -30,7 +30,7 @@ public class PlayingState extends TrackState {
     public void handle() {
         while (track.isPlaying()) {
             try {
-                read = track.getTrackStream().read(audioBuffer);
+                read = track.getDecodedStream().read(audioBuffer);
                 readedBytes+=read;
                 if (ThreadManager.hasOneSecond(ti)) {
                     //currentSeconds=(getSecondsByBytes(readedBytes));

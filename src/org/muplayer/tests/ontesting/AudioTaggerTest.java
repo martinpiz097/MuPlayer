@@ -1,4 +1,4 @@
-package org.muplayer.ontesting;
+package org.muplayer.tests.ontesting;
 
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;

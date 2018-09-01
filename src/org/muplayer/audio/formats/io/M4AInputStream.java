@@ -5,7 +5,6 @@ import net.sourceforge.jaad.aac.SampleBuffer;
 import net.sourceforge.jaad.mp4.api.AudioTrack;
 import net.sourceforge.jaad.mp4.api.Frame;
 import org.bytebuffer.ByteBuffer;
-import org.muplayer.system.Logger;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -29,25 +28,33 @@ public class M4AInputStream extends AudioDataInputStream {
         this.decoder = decoder;
         this.randomAccessFile = randomAccessFile;
         sampleBuffer = new SampleBuffer();
+        System.out.println("TrackType: "+audioTrack.getType().name());
+        System.out.println("DecoderInfo: "+audioTrack.getDecoderInfo());
+    }
+
+    private Frame getNextFrame() throws IOException {
+        return audioTrack.readNextFrame();
     }
 
     private byte[] decodeNextFrame() throws IOException {
-        if (audioTrack.hasMoreFrames()) {
-            frame = audioTrack.readNextFrame();
-            Logger.getLogger(this, "EncodedLenght: "+frame.getData().length).rawWarning();
+        frame = getNextFrame();
+        if (frame != null) {
             decoder.decodeFrame(frame.getData(), sampleBuffer);
-            Logger.getLogger(this, "DecodedLenght: "+sampleBuffer.getData().length).rawWarning();
-            Logger.getLogger(this, "---------------------------").rawWarning();
             return sampleBuffer.getData();
         }
         else
             return null;
     }
 
-    private void readNextFrame() throws IOException {
-        byte[] nextFrame = decodeNextFrame();
-        if (nextFrame != null)
-            byteBuffer.addFrom(nextFrame);
+    private int readNextFrame() throws IOException {
+        byte[] frameBytes = decodeNextFrame();
+        if (frameBytes != null)
+            byteBuffer.addFrom(frameBytes);
+        return frameBytes == null ? -1 : frameBytes.length;
+    }
+
+    public int getTime() {
+        return frame == null ? 0 : (int) frame.getTime();
     }
 
     @Override
@@ -64,7 +71,26 @@ public class M4AInputStream extends AudioDataInputStream {
 
     @Override
     public long skip(long n) throws IOException {
-        return super.skip(n);
+        /*long readCount = (long) audioTrack.seek(n);
+
+        // pequeña inchorencia con readed pero que igual funciona
+        if (readCount == -1 || !audioTrack.hasMoreFrames()) {
+            byteBuffer.clear();
+            readed = 0;
+        }
+
+        */
+        if (audioTrack.hasMoreFrames()) {
+            do {
+                frame = getNextFrame();
+                if ((long)frame.getTime()>=n)
+                    break;
+
+            } while (frame != null);
+        }
+        else
+            n = 0;
+        return n;
     }
 
     @Override

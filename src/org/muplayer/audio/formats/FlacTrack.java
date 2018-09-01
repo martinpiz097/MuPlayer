@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class FlacTrack extends Track {
-    
+
     public FlacTrack(File ftrack) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         super(ftrack);
     }
@@ -30,9 +30,9 @@ public class FlacTrack extends Track {
         FlacDecoder decoder = new FlacDecoder(dataSource);
         if (decoder.isFlac()) {
             decoder.decode();
-            trackStream = decoder.getDecodedStream();
+            decodedStream = decoder.getDecodedStream();
             decoder = null;
-            System.out.println("FlacAis: "+trackStream);
+            System.out.println("FlacAis: "+decodedStream);
         }
 
         } catch (FileNotFoundException e) {
@@ -60,7 +60,7 @@ public class FlacTrack extends Track {
 
     @Override
     public void seek(int seconds) throws IOException {
-        System.out.println("FrameLenght: "+trackStream.getFrameLength());
+        System.out.println("FrameLenght: "+ trackStream.getFrameLength());
         long seek = transformSecondsInBytes(seconds);
         System.out.println("TransformInBytes: "+seek);
         int seekRead = trackStream.read(new byte[(int) seek]);
@@ -70,7 +70,7 @@ public class FlacTrack extends Track {
         //System.out.println("Diference: "+diffRead);
         /*if (diffRead > 0) {
             for (int i = 0; i < diffRead; i++)
-                trackStream.read();
+                decodedStream.read();
 
         }*/
         currentSeconds+=seconds;

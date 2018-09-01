@@ -1,4 +1,4 @@
-package org.muplayer.audio;
+package org.muplayer.tests.other;
 
 /*public class TrackReflectInvoker {
     private static final Class<Track> trackClass;

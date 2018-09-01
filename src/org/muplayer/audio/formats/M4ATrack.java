@@ -19,6 +19,9 @@ import java.io.RandomAccessFile;
 import java.util.List;
 
 public class M4ATrack extends Track {
+
+    private M4AInputStream m4aStream;
+
     public M4ATrack(File ftrack) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         super(ftrack);
     }
@@ -33,6 +36,12 @@ public class M4ATrack extends Track {
             // Es m4a normal o aac
             audioReader = new AACAudioFileReader();
             trackStream = audioReader.getAudioInputStream(dataSource);
+
+            // Para leer progreso en segundos de vorbis(posible opcion)
+
+            //OggInfoReader info = new OggInfoReader();
+            //FlacStreamReader streamReader = new FlacStreamReader();
+
         } catch (UnsupportedAudioFileException e) {
             Logger.getLogger(this, "File not supported!").rawError();
             e.printStackTrace();
@@ -77,22 +86,45 @@ public class M4ATrack extends Track {
             final RandomAccessFile randomAccess = new RandomAccessFile(inputFile, "r");
             final AudioTrack track = getM4ATrack(randomAccess);
             final Decoder dec = new Decoder(track.getDecoderSpecificInfo());
-            M4AInputStream inputStream = new M4AInputStream(track, dec, randomAccess);
+            m4aStream = new M4AInputStream(track, dec, randomAccess);
             AudioFormat decFormat = new AudioFormat(track.getSampleRate(),
                     track.getSampleSize(), track.getChannelCount(),
                     true, true);
-            return new AudioInputStream(inputStream, decFormat, inputFile.length());
+            return new AudioInputStream(m4aStream, decFormat, inputFile.length());
         } catch (Exception e){
             Logger.getLogger(this, "Exception", e.getMessage()).error();
             return null;
         }
     }
 
+    /*private long getSoundSize() {
+        long size = (long) ((decodedStream.getFormat().getSampleRate()/8)*getDuration());
+        System.out.println("SoundSize: "+size);
+        return size;
+    }*/
+
     @Override
     public void seek(int seconds) throws IOException {
-        long seek = transformSecondsInBytes(seconds);
-        trackStream.read(new byte[(int) seek]);
-        currentSeconds+=seconds;
+        if (m4aStream == null) {
+            //long seek = transformSecondsInBytes(seconds);
+            long seek = bytesPerSecond == 0 ? seconds*180000: seconds*bytesPerSecond;
+            pause();
+            trackStream.skip(seek);
+            resumeTrack();
+            currentSeconds+=seconds;
+            System.out.println("Properties");
+        }
+        else {
+            pause();
+            m4aStream.skip(seconds);
+            currentSeconds+=seconds;
+            resumeTrack();
+        }
+    }
+
+    @Override
+    public int getProgress() {
+        return m4aStream == null ? super.getProgress() : m4aStream.getTime();
     }
 
     // Ver si duracion mostrada es real antes de entregar valor en segundos

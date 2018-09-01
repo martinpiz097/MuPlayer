@@ -33,6 +33,8 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
     protected byte state;
     protected int available;
     protected int currentSeconds;
+    protected long readedBytes;
+    protected long bytesPerSecond;
     protected float volume;
     protected boolean isMute;
     protected boolean isPlayerLinked;
@@ -91,6 +93,8 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
                 }
             }
         } catch (IOException | LineUnavailableException e) {
+            e.printStackTrace();
+        } catch (InvalidAudioFrameException e) {
             e.printStackTrace();
         }
 
@@ -201,7 +205,15 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
     }
 
     protected long transformSecondsInBytes(int seconds) {
-        return Math.round((((double)seconds* dataSource.length()) / getDuration()));
+        long secToBytes = Math.round((((double)seconds* dataSource.length()) / getDuration()));
+        System.out.println("SecToBytes: "+secToBytes);
+        return (long) (secToBytes);
+    }
+
+    protected long transformSecondsInBytes(int seconds, long soundSize) {
+        long secToBytes = Math.round((((double)seconds* soundSize) / getDuration()));
+        System.out.println("SecToBytes: "+secToBytes);
+        return secToBytes;
     }
 
     void linkPlayer() {
@@ -224,7 +236,7 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
         return isPlayerLinked;
     }
 
-    public AudioInputStream getTrackStream() {
+    public AudioInputStream getDecodedStream() {
         return trackStream;
     }
 
@@ -370,10 +382,23 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
 
     @Override
     public void seek(int seconds)
-            throws UnsupportedAudioFileException, IOException,
-            LineUnavailableException {
-        gotoSecond(seconds+getProgress());
-        //trackStream.skip(transformSecondsInBytes(seconds));
+            throws IOException {
+        long totalSkipped = 0;
+        long skipped = 0;
+        int SKIP_INACCURACY_SIZE = 1200;
+
+        while (totalSkipped < (seconds - SKIP_INACCURACY_SIZE)) {
+            skipped = trackStream.skip(seconds - totalSkipped);
+            System.out.println("Skipped: "+skipped);
+            if (skipped == 0)
+                break;
+            totalSkipped +=skipped;
+            System.out.println("InternalTotalSkipped: "+totalSkipped);
+            if (totalSkipped == -1) {
+                break;
+            }
+        }
+        System.out.println("TotalSkipped: "+totalSkipped);
     }
 
     @Override
@@ -510,7 +535,7 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
             play();
 
             long ti = System.currentTimeMillis();
-            int readedBytes = 0;
+            readedBytes = 0;
 
             //System.out.println("TotalLen: "+ dataSource.length());
             //System.out.println("TotalDuration: "+getDuration());
@@ -534,6 +559,8 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
                             //currentSeconds=(getSecondsByBytes(readedBytes));
                             currentSeconds++;
                             ti = System.currentTimeMillis();
+                            bytesPerSecond = readedBytes/currentSeconds;
+                            //System.out.println("BytesPerSecond: "+readedBytes/currentSeconds);
                         }
                         if (read == -1) {
                             finish();

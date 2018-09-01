@@ -1,4 +1,4 @@
-package org.muplayer.test;
+package org.muplayer.tests.other;
 
 public class FfmpegTest {
     public static void main(String[] args) {

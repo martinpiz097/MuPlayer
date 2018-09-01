@@ -38,6 +38,8 @@ public class AudioDataInputStream extends InputStream {
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
         int available = available();
+        if (available == 0)
+            return -1;
         if (available < len)
             len = available;
 

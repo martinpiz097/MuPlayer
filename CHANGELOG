@@ -127,3 +127,12 @@
 	## Se añaden funcionalidades para evaluar si existen carpetas registradas
 	## Eliminacion de librerias innecesarias al momento de compilar y generar el jar
 	## Optimizacion de lectura de archivos .m4a (aac), falta comprobar seek
+	## Correccion de errores menores en coherencia de codigo en la clase Player
+
+## 0.9.2 Beta
+	## Creacion de TestingManager para definir carpetas para la prueba de formatos de audio
+	## Problema en seek en formato M4A random corregido y mejorado
+	## Se obtiene un tiempo mas exacto al consultar cuantos segundos se han reproducido para
+	el formato m4a random
+	## Seek corregido en formato mp3
+	## Falta corregir seek en m4a normal (quedan detalles minimos de incoherencia)

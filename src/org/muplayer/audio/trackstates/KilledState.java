@@ -9,12 +9,12 @@ import javax.sound.sampled.AudioInputStream;
 public class KilledState extends TrackState {
 
     private Track track;
-    private AudioInputStream trackStream;
+    private AudioInputStream decodedStream;
     private Speaker trackLine;
 
     public KilledState(Track track) {
         this.track = track;
-        trackStream = track.getTrackStream();
+        decodedStream = track.getDecodedStream();
         trackLine = track.getTrackLine();
     }
 

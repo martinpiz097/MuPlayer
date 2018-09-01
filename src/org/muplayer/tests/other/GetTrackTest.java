@@ -1,7 +1,8 @@
-package org.muplayer.test;
+package org.muplayer.tests.other;
 
 import com.jcraft.jorbis.JOrbisException;
 import com.jcraft.jorbis.VorbisFile;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.muplayer.audio.Track;
 import org.muplayer.audio.codec.DecodeManager;
 import org.muplayer.audio.formats.FlacTrack;
@@ -46,7 +47,7 @@ public class GetTrackTest {
         try {
             VorbisFile vorbisTest = new VorbisFile(fSound.getCanonicalPath());
             result = new OGGTrack(fSound);
-            System.out.println("OGGAis: "+result.getTrackStream());
+            System.out.println("OGGAis: "+result.getDecodedStream());
             System.out.println("OGGFileFormat: "+result.getFileFormat());
         } catch (JOrbisException e) {
             try {
@@ -54,10 +55,12 @@ public class GetTrackTest {
             } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e1) {
                 //System.out.println(e.getMessage());
                 result = new FlacTrack(fSound);
-                if (result.getTrackStream() == null)
+                if (result.getDecodedStream() == null)
                     result = null;
                 else
-                    System.out.println("TrackStream: "+result.getTrackStream());
+                    System.out.println("TrackStream: "+result.getDecodedStream());
+            } catch (InvalidAudioFrameException e1) {
+                e1.printStackTrace();
             }
         } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
             //System.out.println(e.getMessage());
@@ -109,6 +112,8 @@ public class GetTrackTest {
 
             }
         } catch (IOException | LineUnavailableException e) {
+            e.printStackTrace();
+        } catch (InvalidAudioFrameException e) {
             e.printStackTrace();
         }
     }

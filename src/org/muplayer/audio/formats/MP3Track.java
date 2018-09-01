@@ -1,23 +1,55 @@
 package org.muplayer.audio.formats;
 
 import javazoom.spi.mpeg.sampled.file.MpegAudioFileReader;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.mp3.MP3AudioHeader;
 import org.muplayer.audio.Track;
 import org.muplayer.audio.codec.DecodeManager;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
 
 public class MP3Track extends Track {
 
+    private MP3AudioHeader audioHeader;
+
+    private long audioStartByte;
+    private long audioSize;
+    private long frameCount;
+    private long frameSize;
+    double frameDurationInSec;
+
+
     public MP3Track(File ftrack) throws IOException,
-            UnsupportedAudioFileException, LineUnavailableException {
+            UnsupportedAudioFileException, LineUnavailableException, InvalidAudioFrameException {
         super(ftrack);
+        audioHeader = new MP3AudioHeader(ftrack);
+        audioStartByte = audioHeader.getMp3StartByte();
+        audioSize = dataSource.length() - audioStartByte;
+        frameCount = audioHeader.getNumberOfFrames();
+        frameSize = audioSize / frameCount;
+        frameDurationInSec = (audioHeader.getPreciseTrackLength() / (double) frameCount);
+        System.out.println("StartByte: "+audioStartByte);
+        System.out.println("Mp3StartByte: "+audioHeader.getMp3StartByte());
+        System.out.println("AudioSize: "+audioSize);
+        System.out.println("FrameCount: "+frameCount);
+        System.out.println("FrameSize: "+frameSize);
+        System.out.println("FrameDuration: "+frameDurationInSec);
+        System.out.println("TrackLenght: "+audioHeader.getTrackLength());
+        System.out.println("PreciseTrackLenght: "+audioHeader.getPreciseTrackLength());
+        System.out.println("AudioDataLenght: "+audioHeader.getAudioDataLength());
+        System.out.println("LenghtAsString"+audioHeader.getTrackLengthAsString());
+
     }
 
     public MP3Track(String trackPath)
-            throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-        super(trackPath);
+            throws UnsupportedAudioFileException, IOException,
+            LineUnavailableException, InvalidAudioFrameException {
+        this(new File(trackPath));
     }
 
     public boolean isValidTrack() {
@@ -34,6 +66,33 @@ public class MP3Track extends Track {
             trackStream.close();
         trackStream = DecodeManager.decodeToPcm(baseFormat, soundAis);
     }
+
+    private long getBytesToSeek(int sec) {
+        int frameNeeded = (int) (sec / frameDurationInSec);
+        return frameNeeded*frameSize;
+    }
+
+    private int getSecondsFromBytes(long bytes) {
+        int frames = (int) (bytes / frameSize);
+        return (int) Math.round(frames*frameDurationInSec);
+    }
+
+    @Override
+    public void seek(int seconds) throws IOException {
+        //double framesForSecs = seconds / frameDurationInSec;
+        //long bytePositionForSec = (long) (audioStartByte + (framesForSecs * frameSize));
+        long seek = getBytesToSeek(seconds);
+        trackStream.skip(seek);
+        currentSeconds+=seconds;
+        readedBytes+=seek;
+        System.out.println("AudioDataStart: "+audioHeader.getAudioDataStartPosition());
+        System.out.println("AudioDataEnd: "+audioHeader.getAudioDataEndPosition());
+    }
+
+    /*@Override
+    public int getProgress() {
+        return (int) getSecondsFromBytes(readedBytes);
+    }*/
 
     /*@Override
     public long getDuration() {

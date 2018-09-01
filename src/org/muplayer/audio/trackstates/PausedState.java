@@ -8,12 +8,12 @@ import javax.sound.sampled.AudioInputStream;
 public class PausedState extends TrackState {
 
     private Track track;
-    private AudioInputStream trackStream;
+    private AudioInputStream decodedStream;
     private Speaker trackLine;
 
     public PausedState(Track track) {
         this.track = track;
-        trackStream = track.getTrackStream();
+        decodedStream = track.getDecodedStream();
         trackLine = track.getTrackLine();
     }
 

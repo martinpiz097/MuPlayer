@@ -23,7 +23,7 @@ public class PCMTrack extends Track {
 
     /*@Override
     public long getDuration() {
-        AudioFormat format = trackStream.getFormat();
+        AudioFormat format = decodedStream.getFormat();
         // Bits por sample, channels y sampleRate
         System.out.println(format.getSampleSizeInBits());
         double bcm = format.getSampleSizeInBits()/8

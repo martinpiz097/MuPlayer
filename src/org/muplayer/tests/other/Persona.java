@@ -1,4 +1,4 @@
-package org.muplayer.test;
+package org.muplayer.tests.other;
 
 public class Persona {
     private int id;
