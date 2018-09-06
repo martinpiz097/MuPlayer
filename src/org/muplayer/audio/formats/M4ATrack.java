@@ -20,7 +20,7 @@ import java.util.List;
 
 public class M4ATrack extends Track {
 
-    private M4AInputStream m4aStream;
+    private volatile M4AInputStream m4aStream;
 
     public M4ATrack(File ftrack) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         super(ftrack);

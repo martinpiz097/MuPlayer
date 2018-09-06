@@ -1,4 +1,4 @@
-package org.muplayer.tests.ontesting;
+package org.muplayer.main;
 
 import org.muplayer.audio.Player;
 import org.muplayer.system.Logger;
@@ -9,15 +9,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class TestPlayer extends Thread {
+public class MusicPlayer extends Thread {
 
     private volatile Player player;
 
-    public TestPlayer(String folderPath) throws FileNotFoundException {
+    public MusicPlayer(String folderPath) throws FileNotFoundException {
         this(new File(folderPath));
     }
 
-    public TestPlayer(File folder) throws FileNotFoundException {
+    public MusicPlayer(File folder) throws FileNotFoundException {
         this.player = new Player(folder);
     }
 
@@ -41,7 +41,7 @@ public class TestPlayer extends Thread {
                 switch (c) {
                     case 'n':
                         if (line.length() == 2 && line.charAt(1) == 'f')
-                            player.seekFolder(true);
+                            player.seekFolder(Player.SeekOption.NEXT);
                         else {
                             if (line.length() >= 3)
                                 player.jumpTrack(Integer.parseInt(line.substring(2)));
@@ -50,18 +50,18 @@ public class TestPlayer extends Thread {
                             playerLine = player.getTrackLine();
                             System.err.println("TrackLineNull: "+
                                     (playerLine == null ? "Yes":"No"));
-                        /*if (playerLine != null) {
-                            System.err.println("Antes de controls");
-                            System.out.println("Controls: "+Arrays.toString(playerLine.getControls()));
-                            Control pan = playerLine.getControl(FloatControl.Type.PAN);
-                            System.out.println("PAN: "+pan);
-                        }*/
+                            /*if (playerLine != null) {
+                                System.err.println("Antes de controls");
+                                System.out.println("Controls: "+ Arrays.toString(playerLine.getControls()));
+                                Control pan = playerLine.getControl(FloatControl.Type.PAN);
+                                System.out.println("PAN: "+pan);
+                            }*/
                         }
                         break;
 
                     case 'p':
                         if (line.length() == 2 && line.charAt(1) == 'f')
-                            player.seekFolder(false);
+                            player.seekFolder(Player.SeekOption.PREV);
                         else if (line.length() >= 3)
                             player.jumpTrack((Integer.parseInt(line.substring(2))) * -1);
                         player.playPrevious();
@@ -108,13 +108,49 @@ public class TestPlayer extends Thread {
                     case 'd':
                         System.out.println(player.getCurrent().getDurationAsString());
                         break;
-                }
+
+                    case 'x':
+                        System.out.println("ParentFile: "+player.getCurrent().getDataSource().getParentFile().getName());
+                        break;
+                    case 'f':
+                        System.out.println(player.getCurrent().getFormat());
+                        break;
+                    case 'i':
+                        player.getCurrent().getLineInfo();
+                        break;
+                    case 'ñ':
+                        player.play();
+                        break;
+                    /*case 'o':
+                        //AudioFileFormat format = AudioSystem.getAudioFileFormat(player.getCurrent().getDataSource());
+                        AudioFormat format = player.getCurrent().getDecodedStream().getFormat();
+                        Iterator<Map.Entry<String, Object>> it = format.properties().entrySet().iterator();
+                        System.out.println("AudioFileFormat Properties!");
+                        System.out.println("---------------------------");
+                        Map.Entry<String, Object> next;
+                        //ByteArrayInputStream bais = null;
+                        while (it.hasNext()) {
+                            next = it.next();
+                            System.out.println(next.getKey()+'='+next.getValue().toString());
+                            /*if (next.getKey().equals("mp3.id3tag.v2")) {
+                                System.out.println("Bais: "+next.getValue());
+                                bais = (ByteArrayInputStream) next.getValue();
+                            }*/
+                        }
+                        /*File cover = new File("/home/martin/AudioTesting/data");
+                        cover.createNewFile();
+                        byte[] bytes = new byte[bais.available()];
+                        bais.read(bytes);
+                        Files.write(cover.toPath(), bytes, StandardOpenOption.TRUNCATE_EXISTING);
+                        break;*/
+
+
             } catch (IllegalArgumentException e) {
-                Logger.getLogger(TestPlayer.class, "Exception: "+e.getMessage()).rawError();
+                Logger.getLogger(MusicPlayer.class, "Exception: "+e.getMessage()).rawError();
             } catch(Exception e) {
-                Logger.getLogger(TestPlayer.class, "Exception: "+e.getMessage()).rawError();
-                Logger.getLogger(TestPlayer.class, "Cause: "+e.getCause()).rawError();
-                e.printStackTrace();
+                Logger.getLogger(MusicPlayer.class, "Exception: "+e.getMessage()).rawError();
+                Logger.getLogger(MusicPlayer.class, "Cause: "+e.getCause()).rawError();
+                //e.printStackTrace();
             }
         }
     }
@@ -122,11 +158,11 @@ public class TestPlayer extends Thread {
     public static void main(String[] args) throws IOException {
         boolean hasArgs = args != null && args.length > 0;
         String fPath =
-                //hasArgs ? args[0] : "/home/martin/Escritorio/Archivos/Música"
-                "/home/martin/AudioTesting/music/"
+                hasArgs ? args[0] : "/home/martin/Escritorio/Archivos/Música"
+                //"/home/martin/AudioTesting/music/"
                 ;
-        TestPlayer testPlayer = new TestPlayer(fPath);
-        testPlayer.start();
+        MusicPlayer musicPlayer = new MusicPlayer(fPath);
+        musicPlayer.start();
 
     }
 }

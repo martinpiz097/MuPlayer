@@ -15,13 +15,13 @@ import java.io.IOException;
 
 public class MP3Track extends Track {
 
-    private MP3AudioHeader audioHeader;
+    private volatile MP3AudioHeader audioHeader;
 
-    private long audioStartByte;
-    private long audioSize;
-    private long frameCount;
-    private long frameSize;
-    double frameDurationInSec;
+    private volatile long audioStartByte;
+    private volatile long audioSize;
+    private volatile long frameCount;
+    private volatile long frameSize;
+    private volatile double frameDurationInSec;
 
 
     public MP3Track(File ftrack) throws IOException,
@@ -33,16 +33,21 @@ public class MP3Track extends Track {
         frameCount = audioHeader.getNumberOfFrames();
         frameSize = audioSize / frameCount;
         frameDurationInSec = (audioHeader.getPreciseTrackLength() / (double) frameCount);
-        System.out.println("StartByte: "+audioStartByte);
+        System.out.println("AISFrameSize: "+trackStream.getFormat().getFrameSize());
+        System.out.println("FrameSize: "+frameSize);
+        System.out.println("FrameLenght: "+trackStream.getFrameLength());
+        System.out.println("FrameDuration: "+frameDurationInSec);
+        /*System.out.println("StartByte: "+audioStartByte);
         System.out.println("Mp3StartByte: "+audioHeader.getMp3StartByte());
         System.out.println("AudioSize: "+audioSize);
+        System.out.println("AudioSize2: "+frameSize*frameCount);
         System.out.println("FrameCount: "+frameCount);
         System.out.println("FrameSize: "+frameSize);
         System.out.println("FrameDuration: "+frameDurationInSec);
         System.out.println("TrackLenght: "+audioHeader.getTrackLength());
         System.out.println("PreciseTrackLenght: "+audioHeader.getPreciseTrackLength());
         System.out.println("AudioDataLenght: "+audioHeader.getAudioDataLength());
-        System.out.println("LenghtAsString"+audioHeader.getTrackLengthAsString());
+        System.out.println("LenghtAsString"+audioHeader.getTrackLengthAsString());*/
 
     }
 
@@ -72,9 +77,30 @@ public class MP3Track extends Track {
         return frameNeeded*frameSize;
     }
 
+    // bytesLeidos -> bytesTotales
+    // segundosLeidos(x) -> segundosTotales
+    // bytesLeidos*segundosTotales
+    // ---------------------------
+    //     bytesTotales
+
+    // framesLeidos(x) --> framesTotales
+    // bytesLeidos-startByte --> bytesTotales
+    //
+    // --------------------------------------
+    //
+    // framesLeidos --> framesTotales
+    // secsLeidos(x) --> secsTotales
+
+    // Despues probar con duracion de frames en segundos y antes
+    // de eso con la duracion precisa
+
+    // nombres de variables dados por iniciales
     private int getSecondsFromBytes(long bytes) {
-        int frames = (int) (bytes / frameSize);
-        return (int) Math.round(frames*frameDurationInSec);
+        bytes -= audioStartByte;
+        long btxft = bytes*frameCount;
+        long framesReaded = btxft/audioSize;
+        long frxst = (long) (framesReaded*audioHeader.getPreciseTrackLength());
+        return (int) (frxst / frameCount);
     }
 
     @Override
@@ -138,4 +164,62 @@ public class MP3Track extends Track {
     }
     */
 
+    /*@Override
+    public void run() {
+        try {
+            setGain(0);
+            boolean isPlayerLinked = PlayerHandler.hasInstance();
+            byte[] audioBuffer = new byte[getBuffLen()];
+            int read;
+            play();
+
+            long ti = System.currentTimeMillis();
+            readedBytes = 0;
+
+            frameSize = trackStream.getFormat().getFrameSize();
+            long secs = 0;
+            while (!isFinished() && !isKilled() && isValidTrack()) {
+                while (isPlaying())
+                    try {
+                        read = trackStream.read(audioBuffer);
+                        readedBytes+=read;
+                        if (ThreadManager.hasOneSecond(ti)) {
+                            int readedFrames = (int) (readedBytes/frameSize);
+                            currentSeconds++;
+                            ti = System.currentTimeMillis();
+                            bytesPerSecond = readedBytes/currentSeconds;
+                            System.out.println("BytesReaded: "+readedBytes);
+                            System.out.println("FrameDuration: "+frameDurationInSec);
+                            System.out.println("FrameSize: "+frameSize);
+                            System.out.println("ReadedFrames: "+readedFrames);
+                            secs = ((long)(frameDurationInSec*readedFrames))/1000;
+                            System.out.println("Seconds: "+secs);
+                            System.out.println("CurrentSeconds: "+currentSeconds);
+                            System.out.println("----------------------------");
+                        }
+                        if (read == -1) {
+                            finish();
+                            break;
+                        }
+                        if (trackLine != null)
+                            trackLine.playAudio(audioBuffer);
+                        else
+                            Logger.getLogger(this, "TrackLineNull").info();
+                    } catch (IndexOutOfBoundsException e) {
+                        finish();
+                    }
+                if (isStopped())
+                    resetStream();
+                Thread.sleep(10);
+            }
+            Logger.getLogger(this, "Track completed!").info();
+            if (isFinished() && (PlayerHandler.hasInstance() && isPlayerLinked))
+                PlayerHandler.getPlayer().playNext();
+        } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+*/
 }

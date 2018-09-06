@@ -9,6 +9,7 @@ import org.muplayer.audio.formats.M4ATrack;
 import org.muplayer.audio.formats.OGGTrack;
 import org.muplayer.audio.interfaces.MusicControls;
 import org.muplayer.audio.util.TrackHandler;
+import org.muplayer.main.MusicPlayer;
 import org.muplayer.tests.TestingManager;
 
 import javax.sound.sampled.AudioFormat;
@@ -37,12 +38,14 @@ public class FormatsTesting {
     public static void main(String[] args) throws Exception {
         //execM4ASeekTest();
         //execOggTagTest();
-        executeFormatTest("m4a");
+        Scanner scan = new Scanner(System.in);
+        System.out.print("Format to test: ");
+        executeFormatTest(scan.nextLine());
     }
 
     private static void executeFormatTest(String folderName) throws FileNotFoundException {
         File folderTesting = new File(manager.getProperty(TESTINGPATH), folderName);
-        TestPlayer player = new TestPlayer(folderTesting);
+        MusicPlayer player = new MusicPlayer(folderTesting);
         player.start();
     }
 

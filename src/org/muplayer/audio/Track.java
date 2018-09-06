@@ -10,6 +10,7 @@ import org.muplayer.audio.codec.DecodeManager;
 import org.muplayer.audio.formats.*;
 import org.muplayer.audio.interfaces.MusicControls;
 import org.muplayer.audio.model.TrackInfo;
+import org.muplayer.audio.util.Time;
 import org.muplayer.system.AudioUtil;
 import org.muplayer.system.Logger;
 import org.muplayer.thread.PlayerHandler;
@@ -23,21 +24,21 @@ import java.io.IOException;
 import static org.muplayer.audio.util.AudioExtensions.*;
 import static org.muplayer.system.TrackStates.*;
 
-public abstract class Track implements Runnable, MusicControls, TrackInfo {
-    protected final File dataSource;
-    protected Speaker trackLine;
-    protected AudioInputStream trackStream;
-    protected AudioFileReader audioReader;
-    protected AudioTag tagInfo;
+public abstract class Track extends Thread implements MusicControls, TrackInfo {
+    protected volatile File dataSource;
+    protected volatile Speaker trackLine;
+    protected volatile AudioInputStream trackStream;
+    protected volatile AudioFileReader audioReader;
+    protected volatile AudioTag tagInfo;
 
-    protected byte state;
-    protected int available;
-    protected int currentSeconds;
-    protected long readedBytes;
-    protected long bytesPerSecond;
-    protected float volume;
-    protected boolean isMute;
-    protected boolean isPlayerLinked;
+    protected volatile byte state;
+    protected volatile int available;
+    protected volatile int currentSeconds;
+    protected volatile long currentTime;
+    protected volatile long readedBytes;
+    protected volatile long bytesPerSecond;
+    protected volatile float volume;
+    protected volatile boolean isMute;
     //protected TrackState state;
 
     public static final int BUFFSIZE = 4096;
@@ -119,22 +120,20 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
         Logger.getLogger(this, "TrackFile: "+ dataSource.getParentFile().getName()+'/'+dataSource.getName())
                 .rawInfo();
         this.dataSource = dataSource;
-        //stateCode = STOPPED;
         state = STOPPED;
         currentSeconds = 0;
         initLine();
-        isPlayerLinked = PlayerHandler.hasInstance();
         try {
            if (isValidTrack()) {
-               byte[] buffer = new byte[(int) dataSource.length()];
+               /*byte[] buffer = new byte[(int) dataSource.length()];
                int read = trackStream.read(buffer);
                buffer = null;
                System.out.println("StreamRead: "+read);
-               System.out.println("DataSourceLenght: "+dataSource.length());
+               System.out.println("DataSourceLenght: "+dataSource.length());*/
                initLine();
 
-               System.err.println("TrackAvailable: "+available);
                available = trackStream.available();
+               System.err.println("TrackAvailable: "+available);
                setGain(Player.DEFAULT_VOLUME);
                tagInfo = new AudioTag(dataSource);
            }
@@ -174,9 +173,8 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
                 System.err.println("Error: "+e1.getMessage());
             }
         }
-        else {
+        else
             System.out.println("TrackStream null por tanto line is null");
-        }
     }
 
     protected void closeLine() {
@@ -198,11 +196,11 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
         }
     }
 
-    protected short getSecondsByBytes(int readedBytes) {
+    /*protected short getSecondsByBytes(int readedBytes) {
         long secs = getDuration();
         long fLen = dataSource.length();
         return (short) ((readedBytes * secs) / fLen);
-    }
+    }*/
 
     protected long transformSecondsInBytes(int seconds) {
         long secToBytes = Math.round((((double)seconds* dataSource.length()) / getDuration()));
@@ -216,25 +214,17 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
         return secToBytes;
     }
 
-    void linkPlayer() {
-        isPlayerLinked = true;
-    }
-
-    void unlinkPlayer() {
-        isPlayerLinked = false;
-    }
-
     public boolean isValidTrack() {
         return trackStream != null && trackLine != null;
     }
 
-    public boolean isTrackFinished() throws IOException {
+    /*public boolean isTrackFinished() throws IOException {
         return trackStream.read() == -1;
-    }
+    }*/
 
-    public boolean isPlayerLinked() {
-        return isPlayerLinked;
-    }
+    /*public boolean isPlayerLinked() {
+        return PlayerHandler.hasInstance();
+    }*/
 
     public AudioInputStream getDecodedStream() {
         return trackStream;
@@ -252,7 +242,7 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
         return stateCode;
     }*/
 
-    public byte getState() {
+    public byte getTrackState() {
         return state;
     }
 
@@ -286,6 +276,7 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
     }
 
     // Ir a un segundo especifico de la cancion
+    // inhabiliado si aplico freeze al pausar
     public void gotoSecond(int second) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
         long gtBytes = transformSecondsInBytes(second);
         System.out.println("GoToBytes: "+gtBytes);
@@ -348,15 +339,14 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
 
     @Override
     public void play() {
-        //if (stateCode == PAUSED)
-        //    ThreadManager.unfreezeThread(Thread.currentThread());
+        /*if (state == PAUSED)
+            this.interrupt();*/
         state = PLAYING;
     }
 
     @Override
     public void pause() {
         state = PAUSED;
-        //ThreadManager.freezeThread(Thread.currentThread());
     }
 
     @Override
@@ -380,15 +370,16 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
         closeAllStreams();
     }
 
+    // en este caso pasan a ser bytes
     @Override
-    public void seek(int seconds)
+    public void seek(int bytes)
             throws IOException {
         long totalSkipped = 0;
         long skipped = 0;
         int SKIP_INACCURACY_SIZE = 1200;
-
-        while (totalSkipped < (seconds - SKIP_INACCURACY_SIZE)) {
-            skipped = trackStream.skip(seconds - totalSkipped);
+        System.out.println("SecsInBytes: "+transformSecondsInBytes(bytes));
+        while (totalSkipped < (bytes - SKIP_INACCURACY_SIZE)) {
+            skipped = trackStream.skip(bytes - totalSkipped);
             System.out.println("Skipped: "+skipped);
             if (skipped == 0)
                 break;
@@ -399,6 +390,7 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
             }
         }
         System.out.println("TotalSkipped: "+totalSkipped);
+
     }
 
     @Override
@@ -488,6 +480,10 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
         return getProperty(FieldKey.ENCODER);
     }
 
+    public String getFormat() {
+        return trackStream.getFormat().toString();
+    }
+
     // Testing
     public String getInfoSong() {
         StringBuilder sbInfo = new StringBuilder();
@@ -516,10 +512,42 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
         return sbInfo.toString();
     }
 
+    public void getLineInfo() {
+        SourceDataLine driver = trackLine.getDriver();
+        System.out.println("Soporte de controles en line");
+        System.out.println("---------------");
+        System.out.println("Pan: "+
+                driver.isControlSupported(FloatControl.Type.PAN));
+
+        System.out.println("AuxReturn: "+
+                driver.isControlSupported(FloatControl.Type.AUX_RETURN));
+
+        System.out.println("AuxSend: "+
+                driver.isControlSupported(FloatControl.Type.AUX_SEND));
+
+        System.out.println("Balance: "+
+                driver.isControlSupported(FloatControl.Type.BALANCE));
+
+        System.out.println("ReverbReturn: "+
+                driver.isControlSupported(FloatControl.Type.REVERB_RETURN));
+
+        System.out.println("ReberbSend: "+
+                driver.isControlSupported(FloatControl.Type.REVERB_SEND));
+
+        System.out.println("Volume: "+
+                driver.isControlSupported(FloatControl.Type.VOLUME));
+
+        System.out.println("SampleRate: "+
+                driver.isControlSupported(FloatControl.Type.SAMPLE_RATE));
+
+        System.out.println("MasterGain: "+
+                driver.isControlSupported(FloatControl.Type.MASTER_GAIN));
+    }
+
     @Override
     public void run() {
         try {
-            isPlayerLinked = PlayerHandler.hasInstance();
+            boolean isPlayerLinked = PlayerHandler.hasInstance();
             /*setGain(0);
             System.err.println("---------------------");
             System.err.println("Available: "+trackStream.available());
@@ -533,23 +561,20 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
             byte[] audioBuffer = new byte[getBuffLen()];
             int read;
             play();
-
-            long ti = System.currentTimeMillis();
+            long ti = Time.getInstance().getTime();
             readedBytes = 0;
-
-            //System.out.println("TotalLen: "+ dataSource.length());
-            //System.out.println("TotalDuration: "+getDuration());
 
             Logger logger = Logger.getLogger(this, null);
             //logger.setMsg(getInfoSong());
             logger.setMsg("CurrentTrack: "+getTitle());
             logger.rawWarning();
-            logger.setMsg("HasTrackLine: "+(getTrackLine() != null?"Si":"No"));
-            logger.rawWarning();
 
             logger.setMsg("Track Started!");
             logger.rawInfo();
 
+            long tiAux = 0;
+
+            //setGain(0);
             while (!isFinished() && !isKilled() && isValidTrack()) {
                 while (isPlaying())
                     try {
@@ -558,9 +583,17 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
                         if (ThreadManager.hasOneSecond(ti)) {
                             //currentSeconds=(getSecondsByBytes(readedBytes));
                             currentSeconds++;
-                            ti = System.currentTimeMillis();
+                            //ti = System.currentTimeMillis();
+                            tiAux = ti;
+                            ti = Time.getInstance().getTime();
+                            currentTime += (ti-tiAux);
                             bytesPerSecond = readedBytes/currentSeconds;
-                            //System.out.println("BytesPerSecond: "+readedBytes/currentSeconds);
+                            // Rescatar time desde calendar
+                            //System.out.println("CurrentTime: "+currentTime);
+                            if (currentTime/1000 != currentSeconds) {
+                                //System.out.println("Tiempos diferentes");
+                                currentSeconds = (int) (currentTime / 1000);
+                            }
                         }
                         if (read == -1) {
                             finish();
@@ -575,11 +608,14 @@ public abstract class Track implements Runnable, MusicControls, TrackInfo {
                     }
                 if (isStopped())
                     resetStream();
+                Thread.sleep(10);
             }
             Logger.getLogger(this, "Track completed!").info();
             if (isFinished() && (PlayerHandler.hasInstance() && isPlayerLinked))
-                PlayerHandler.getPlayer().waitNextTrack();
+                PlayerHandler.getPlayer().playNext();
         } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }

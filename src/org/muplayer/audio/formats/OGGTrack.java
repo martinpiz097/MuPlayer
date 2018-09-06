@@ -31,8 +31,7 @@ public class OGGTrack extends Track {
         audioReader = new JorbisAudioFileReader();
         AudioInputStream soundAis = audioReader.getAudioInputStream(dataSource);
         trackStream = DecodeManager.decodeToPcm(soundAis);
-
-        //decodedStream = DecodeManager.decodeToPcm(soundAis.getFormat(), soundAis);
+        //trackStream = DecodeManager.decodeToPcm(soundAis.getFormat(), soundAis);
     }
 
     @Override

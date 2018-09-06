@@ -1,8 +1,11 @@
 package org.muplayer.audio.formats;
 
+import org.jflac.metadata.StreamInfo;
+import org.jflac.sound.spi.Flac2PcmAudioInputStream;
 import org.jflac.sound.spi.FlacAudioFileReader;
 import org.jflac.sound.spi.FlacFormatConversionProvider;
 import org.muplayer.audio.Track;
+import org.muplayer.audio.codec.FlacDecoder;
 
 import javax.sound.sampled.*;
 import java.io.File;
@@ -41,6 +44,26 @@ public class FlacTrack extends Track {
         try {
             audioReader = new FlacAudioFileReader();
             AudioInputStream flacAis = audioReader.getAudioInputStream(dataSource);
+            FlacDecoder flacDecoder = new FlacDecoder(dataSource);
+            if (flacDecoder.isFlac()) {
+                StreamInfo info = flacDecoder.getFlacInfo();
+                System.out.println("SoundLenght: "+info.calcLength());
+                System.out.println("MinBlockSize: "+info.getMinBlockSize());
+                System.out.println("MaxBlockSize: "+info.getMaxBlockSize());
+                System.out.println("MinFrameSize: "+info.getMinFrameSize());
+                System.out.println("MaxFrameSize: "+info.getMaxFrameSize());
+                System.out.println("BitPerSample: "+info.getBitsPerSample());
+                System.out.println("Total Samples: "+info.getTotalSamples());
+                System.out.println("Sample Rate: "+info.getSampleRate());
+                System.out.println("Channels: "+info.getChannels());
+            }
+
+            try {
+                System.out.println("IsFLacAIS: "+(flacAis instanceof Flac2PcmAudioInputStream));
+                Flac2PcmAudioInputStream ais = (Flac2PcmAudioInputStream) flacAis;
+            } catch (Exception e) {
+                System.out.println("AIS Can't be cast to Flac2PcmAudioInputStream");
+            }
 
             AudioFormat format = flacAis.getFormat();
             AudioFormat decodedFormat = new AudioFormat(

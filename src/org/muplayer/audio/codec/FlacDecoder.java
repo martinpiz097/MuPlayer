@@ -45,6 +45,10 @@ public class FlacDecoder implements PCMProcessor {
         }
     }
 
+    public StreamInfo getFlacInfo() {
+        return flacInfo;
+    }
+
     public AudioInputStream getDecodedStream() {
         return decodedAis;
     }

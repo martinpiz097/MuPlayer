@@ -1,5 +1,6 @@
 package org.muplayer.audio.codec;
 
+import org.muplayer.system.Logger;
 import org.tritonus.sampled.file.jorbis.JorbisAudioFileReader;
 
 import javax.sound.sampled.AudioFormat;
@@ -30,7 +31,16 @@ public class DecodeManager {
         return false;
     }
 
+    // considerar bajar el samplerate para tener una reproduccion no
+    // tan apurada
     public static AudioFormat getPcmFormatByMpeg(AudioFormat baseFormat) {
+        Logger.getLogger(DecodeManager.class, "SampleRate: "+baseFormat.getSampleRate())
+                .info();
+        Logger.getLogger(DecodeManager.class, "FrameRate: "+baseFormat.getFrameRate())
+                .info();
+        Logger.getLogger(DecodeManager.class, "FrameSize: "+baseFormat.getFrameSize())
+                .info();
+
         return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
                 baseFormat.getSampleRate(),
                 16,

@@ -1,0 +1,35 @@
+package org.muplayer.audio.util;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
+public class Time {
+
+    private static volatile Time time = new Time();
+
+    public static Time getInstance() {
+        return time;
+    }
+
+    public Time() {
+
+    }
+
+    private Calendar getCalendar() {
+        return new GregorianCalendar();
+    }
+
+    /*private long getHours(Calendar cal) {
+        int hours = cal.get(Calendar.HOUR_OF_DAY);
+    }*/
+
+    public long getTime() {
+        //Calendar cal = getCalendar();
+        //cal.get(Calendar.MILLISECOND);
+        return new Date().getTime();
+    }
+
+
+
+}

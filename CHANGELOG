@@ -136,3 +136,11 @@
 	el formato m4a random
 	## Seek corregido en formato mp3
 	## Falta corregir seek en m4a normal (quedan detalles minimos de incoherencia)
+	## Estructura de paquetes modificada
+
+## 0.9.3 Beta
+	## Optimización de funcionalidades en clase Player
+	## Se corrige error con primera cancion reproducida al cargar carpeta, se estaba reproduciendo la segunda
+	## Se disminuye la carga de la CPU al pausar y parar canciones mientras se espera respuesta
+	## Se mejora lectura de tiempo transcurrido de reproduccion de cancion, se espera revisar y mejorar mas
+	## Se añaden mas funcionalidades al reproductor de pruebas

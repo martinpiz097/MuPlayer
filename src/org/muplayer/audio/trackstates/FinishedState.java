@@ -25,7 +25,7 @@ public class FinishedState extends TrackState {
         if (PlayerHandler.hasInstance() && track.isPlayerLinked()) {
             //Logger.getLogger(this, "Entra a if isfinished").error();
             track.closeAllStreams();
-            PlayerHandler.getPlayer().waitNextTrack();
+            PlayerHandler.getPlayer().startPlaying();
         }
     }
 }
