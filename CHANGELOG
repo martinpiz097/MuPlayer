@@ -144,3 +144,10 @@
 	## Se disminuye la carga de la CPU al pausar y parar canciones mientras se espera respuesta
 	## Se mejora lectura de tiempo transcurrido de reproduccion de cancion, se espera revisar y mejorar mas
 	## Se añaden mas funcionalidades al reproductor de pruebas
+
+## 0.9.4 Beta
+	## Mejora el seek m4a random, se corrige problema de incoherencia con los segundos adelantados
+	## Thread de reproduccion de canciones optimizado al pausar cancion, se disminuye carga en CPU
+	## Se obtiene el progreso de la cancion en segundos directamente desde la clase Track para todos los formatos
+	## Se añade funcion en clase Player para obtener a traves de la interface el progreso de la cancion actual
+	## Se corrige accion al encontrar errores en las canciones, ahora simplemente se saltan

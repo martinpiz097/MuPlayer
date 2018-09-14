@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Class-Path: tritonus-share-0.3.7-2.jar commons-logging-api.jar jogg-0.
- 0.7.jar jl1.0.1.jar jaudiotagger-2.0.4.jar jaad-0.8.4.jar jorbis-0.0.
- 15.jar mp3spi1.9.5.jar tritonus_jorbis-0.3.6.jar AuCom.jar jflac-1.3.
- jar jffmpeg-1.1.0.jar
-Main-Class: org.muplayer.main.MusicPlayer
