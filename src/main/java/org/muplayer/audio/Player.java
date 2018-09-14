@@ -137,7 +137,7 @@ public class Player extends Thread implements PlayerControls {
                 next = Track.getTrack(listSoundPaths.get(i));
                 // Este if es por si existen archivos que no fuesen sonidos
                 // en las carpetas
-                if (next != null) {
+                if (next != null && next.isValidTrack()) {
                     trackIndex = i;
                     break;
                 }

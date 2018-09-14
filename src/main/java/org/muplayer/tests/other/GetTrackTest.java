@@ -1,7 +1,5 @@
 package org.muplayer.tests.other;
 
-import com.jcraft.jorbis.JOrbisException;
-import com.jcraft.jorbis.VorbisFile;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.muplayer.audio.Track;
 import org.muplayer.audio.codec.DecodeManager;
@@ -25,12 +23,12 @@ public class GetTrackTest {
 
     public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         long oldSound, newSound, oldImg, newImg;
-        oldGetTrack(fSound);
+        //oldGetTrack(fSound);
         oldSound = tf;
         newGetTrack(fSound);
         newSound = tf;
 
-        oldGetTrack(fImg);
+        //oldGetTrack(fImg);
         oldImg = tf;
 
         newGetTrack(fImg);
@@ -42,7 +40,7 @@ public class GetTrackTest {
         System.err.println("NewGetTrackImg: "+newImg);
     }
 
-    public static void oldGetTrack(File fSound) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    /*public static void oldGetTrack(File fSound) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         ti = System.currentTimeMillis();
         try {
             VorbisFile vorbisTest = new VorbisFile(fSound.getCanonicalPath());
@@ -68,7 +66,7 @@ public class GetTrackTest {
         }
         tf = System.currentTimeMillis();
         tf -= ti;
-    }
+    }*/
 
     public static void newGetTrack(File fSound) {
         String trackName = fSound.getName();

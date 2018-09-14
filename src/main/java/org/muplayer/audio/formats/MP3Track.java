@@ -33,10 +33,10 @@ public class MP3Track extends Track {
         frameCount = audioHeader.getNumberOfFrames();
         frameSize = audioSize / frameCount;
         frameDurationInSec = (audioHeader.getPreciseTrackLength() / (double) frameCount);
-        System.out.println("AISFrameSize: "+trackStream.getFormat().getFrameSize());
+        /*System.out.println("AISFrameSize: "+trackStream.getFormat().getFrameSize());
         System.out.println("FrameSize: "+frameSize);
         System.out.println("FrameLenght: "+trackStream.getFrameLength());
-        System.out.println("FrameDuration: "+frameDurationInSec);
+        System.out.println("FrameDuration: "+frameDurationInSec);*/
         /*System.out.println("StartByte: "+audioStartByte);
         System.out.println("Mp3StartByte: "+audioHeader.getMp3StartByte());
         System.out.println("AudioSize: "+audioSize);

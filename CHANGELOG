@@ -151,3 +151,6 @@
 	## Se obtiene el progreso de la cancion en segundos directamente desde la clase Track para todos los formatos
 	## Se añade funcion en clase Player para obtener a traves de la interface el progreso de la cancion actual
 	## Se corrige accion al encontrar errores en las canciones, ahora simplemente se saltan
+
+## 0.9.4-1 Beta
+	## Dependencia faltante subida
