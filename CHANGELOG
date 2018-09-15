@@ -163,3 +163,4 @@
 	## Seek corregido en todos los formatos de prueba, falta mejorar velocidad y desempeño en seek ogg y flac
 	## Se espera revisar todas las canciones en busca de errores
 	## Falta averiguar el por que en el jar algunas librerias no funcionan
+	## Se volvio al algoritmo de lectura antiguo de m4a random permitiendo mas lentitud ya que se debe corregir stream propio
