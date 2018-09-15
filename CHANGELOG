@@ -154,3 +154,12 @@
 
 ## 0.9.4-1 Beta
 	## Dependencia faltante subida
+
+## 0.10 Beta
+	## Se corrige error al leer track, se cargaba stream dos veces
+	## Se corrige reconocimiento de formatos en archivos pcm
+	## Se obtiene el formato de audio de los archivos de audio
+	## Se define un algoritmo seek funcional por defecto pero con excepcion en flac
+	## Seek corregido en todos los formatos de prueba, falta mejorar velocidad y desempeño en seek ogg y flac
+	## Se espera revisar todas las canciones en busca de errores
+	## Falta averiguar el por que en el jar algunas librerias no funcionan

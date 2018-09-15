@@ -53,8 +53,10 @@ public class M4AInputStream extends AudioDataInputStream {
         return frameBytes == null ? -1 : frameBytes.length;
     }
 
-    public int getFrameTime() {
-        return frame == null ? 0 : (int) frame.getTime();
+    // Utilizado para ver los segundos actuales de la cancion
+    // reemplazado por metodo de clase padre Track
+    public double getFrameTime() {
+        return frame == null ? 0 : frame.getTime();
     }
 
     @Override
@@ -64,33 +66,24 @@ public class M4AInputStream extends AudioDataInputStream {
 
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
-        readNextFrame();
-        readNextFrame();
+        while (available() < len)
+            if (readNextFrame() == -1)
+                break;
         return super.read(b, off, len);
     }
 
     @Override
     public long skip(long seconds) throws IOException {
-        /*long readCount = (long) audioTrack.seek(seconds);
-
-        // pequeña inchorencia con readed pero que igual funciona
-        if (readCount == -1 || !audioTrack.hasMoreFrames()) {
-            byteBuffer.clear();
-            readed = 0;
-        }
-
-        */
         double frameTime;
-        double currentTime = frame == null ? 0 : frame.getTime();
+        double currentTime = getFrameTime();
         if (audioTrack.hasMoreFrames()) {
-            do {
-                frame = getNextFrame();
+            while ((frame = getNextFrame()) != null) {
                 frameTime = frame.getTime();
-                System.out.print("\rFrameTime: "+frameTime);
+                //System.out.print("\rFrameTime: "+frameTime);
                 if ((long)(frameTime-currentTime)>=seconds)
                     break;
-            } while (frame != null);
-            System.out.println("\nLastFrameTime: "+frameTime);
+            }
+            //System.out.println("\nLastFrameTime: "+frameTime);
         }
         else
             seconds = 0;

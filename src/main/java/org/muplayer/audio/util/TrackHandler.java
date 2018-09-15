@@ -91,7 +91,7 @@ public class TrackHandler extends Thread implements MusicControls {
     }
 
     @Override
-    public int getProgress() {
+    public double getProgress() {
         return track.getProgress();
     }
 

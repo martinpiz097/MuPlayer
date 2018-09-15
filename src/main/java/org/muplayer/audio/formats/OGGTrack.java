@@ -35,14 +35,4 @@ public class OGGTrack extends Track {
 
     }
 
-    @Override
-    public void seek(int seconds) throws IOException {
-        pause();
-        long seek = seconds*bytesPerSecond;
-        super.seek((int) seek);
-        resumeTrack();
-        readedBytes+=seek;
-        secsSeeked+=seconds;
-    }
-
 }

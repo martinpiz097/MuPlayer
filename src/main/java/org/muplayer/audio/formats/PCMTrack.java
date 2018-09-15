@@ -47,7 +47,7 @@ public class PCMTrack extends Track {
     @Override
     protected void loadAudioStream() throws IOException, UnsupportedAudioFileException {
         final AudioFileFormat fileFormat = AudioSystem.getAudioFileFormat(dataSource);
-        final String extension = fileFormat.getType().getExtension();
+        final String extension = '.'+fileFormat.getType().getExtension();
         switch (extension) {
             case WAVE:
                 audioReader = new WaveFileReader();
@@ -63,6 +63,17 @@ public class PCMTrack extends Track {
                 break;
         }
         trackStream = audioReader.getAudioInputStream(dataSource);
+    }
+
+    @Override
+    public void seek(int seconds) throws IOException {
+        secsSeeked+=seconds;
+        AudioFormat audioFormat = getAudioFormat();
+        float frameRate = audioFormat.getFrameRate();
+        int frameSize = audioFormat.getFrameSize();
+        double framesToSeek = frameRate*seconds;
+        long seek = Math.round(framesToSeek*frameSize);
+        trackStream.skip(seek);
     }
 
     /*public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {

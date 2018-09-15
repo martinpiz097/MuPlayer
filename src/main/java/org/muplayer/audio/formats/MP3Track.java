@@ -32,6 +32,9 @@ public class MP3Track extends Track {
         audioSize = dataSource.length() - audioStartByte;
         frameCount = audioHeader.getNumberOfFrames();
         frameSize = audioSize / frameCount;
+        System.out.println("MP3FrameSize: "+frameSize);
+        System.out.println("TrackFrameSize: "+getAudioFormat().getFrameSize());
+
         frameDurationInSec = (audioHeader.getPreciseTrackLength() / (double) frameCount);
         /*System.out.println("AISFrameSize: "+trackStream.getFormat().getFrameSize());
         System.out.println("FrameSize: "+frameSize);
@@ -73,8 +76,8 @@ public class MP3Track extends Track {
     }
 
     private long getBytesToSeek(int sec) {
-        int frameNeeded = (int) (sec / frameDurationInSec);
-        return frameNeeded*frameSize;
+        double frameNeeded = ((double)sec) / frameDurationInSec;
+        return (long) (frameNeeded*frameSize);
     }
 
     // bytesLeidos -> bytesTotales

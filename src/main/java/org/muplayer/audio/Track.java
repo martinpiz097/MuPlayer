@@ -1,6 +1,7 @@
 package org.muplayer.audio;
 
 import org.aucom.sound.Speaker;
+import org.bytebuffer.ByteBuffer;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
@@ -36,9 +37,11 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     protected volatile int secsSeeked;
     protected volatile double currentTime;
     protected volatile long readedBytes;
-    protected volatile long bytesPerSecond;
+    protected volatile double bytesPerSecond;
     protected volatile float volume;
     protected volatile boolean isMute;
+
+    protected ByteBuffer playingBuffer;
     //protected TrackState state;
 
     public static final int BUFFSIZE = 4096;
@@ -130,12 +133,13 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
                buffer = null;
                System.out.println("StreamRead: "+read);
                System.out.println("DataSourceLenght: "+dataSource.length());*/
-               initLine();
+               //initLine();
 
                available = trackStream.available();
                System.err.println("TrackAvailable: "+available);
                setGain(Player.DEFAULT_VOLUME);
                tagInfo = new AudioTag(dataSource);
+               playingBuffer = new ByteBuffer();
            }
            else
                available = -1;
@@ -203,10 +207,10 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         return (short) ((readedBytes * secs) / fLen);
     }*/
 
-    protected long transformSecondsInBytes(int seconds) {
-        long secToBytes = Math.round((((double)seconds* dataSource.length()) / getDuration()));
+    protected long transformSecondsInBytes(double seconds) {
+        long secToBytes = Math.round(((seconds* dataSource.length()) / getDuration()));
         System.out.println("SecToBytes: "+secToBytes);
-        return (long) (secToBytes);
+        return secToBytes;
     }
 
     protected long transformSecondsInBytes(int seconds, long soundSize) {
@@ -215,9 +219,15 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         return secToBytes;
     }
 
-    protected float getSecondsPosition() {
-        float microSecPos = (float)trackLine.getDriver().getMicrosecondPosition();
-        return microSecPos / 1000000;
+    protected double getSecondsPosition() {
+        return ((double)trackLine.getDriver().getMicrosecondPosition()) / 1000000;
+    }
+
+    // Posible motivo de error para mas adelante
+    protected int getBuffLen() {
+        long frameLen = trackStream == null ? BUFFSIZE : trackStream.getFrameLength();
+        //Logger.getLogger(this, "FrameLenght: "+frameLen).rawInfo();
+        return frameLen > 0 ? (int) (frameLen / 1024) : BUFFSIZE;
     }
 
     public boolean isValidTrack() {
@@ -231,6 +241,10 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     /*public boolean isPlayerLinked() {
         return PlayerHandler.hasInstance();
     }*/
+
+    public double getBytesPerSecond() {
+        return bytesPerSecond;
+    }
 
     public AudioInputStream getDecodedStream() {
         return trackStream;
@@ -278,41 +292,23 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     }
 
     @Override
-    public synchronized int getProgress() {
-        return Math.round(getSecondsPosition())+secsSeeked;
+    public synchronized double getProgress() {
+        return getSecondsPosition()+secsSeeked;
     }
 
     // Ir a un segundo especifico de la cancion
     // inhabiliado si aplico freeze al pausar
-    public void gotoSecond(int second) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
-        long gtBytes = transformSecondsInBytes(second);
-        System.out.println("GoToBytes: "+gtBytes);
-        System.out.println("SoundBytes: "+transformSecondsInBytes((int) getDuration()));
-        float currentVolume = trackLine.getControl(
-                FloatControl.Type.MASTER_GAIN).getValue();
-        if (gtBytes > dataSource.length())
-            gtBytes = dataSource.length();
-
-        pause();
-        resetStream();
-        trackLine.setGain(currentVolume);
-        play();
-        long skip = trackStream.skip(gtBytes);
-        System.out.println("gtBytes: "+gtBytes);
-        System.out.println("Skip: "+skip);
-
-        secsSeeked = second;
+    public void gotoSecond(double second) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
+        int gt = (int) Math.round(second-getProgress());
+        seek(gt);
     }
 
     public AudioFileFormat getFileFormat() throws IOException, UnsupportedAudioFileException {
         return audioReader == null ? null : audioReader.getAudioFileFormat(dataSource);
     }
 
-    // Posible motivo de error para mas adelante
-    public int getBuffLen() {
-        long frameLen = trackStream == null ? BUFFSIZE : trackStream.getFrameLength();
-        //Logger.getLogger(this, "FrameLenght: "+frameLen).rawInfo();
-        return frameLen > 0 ? (int) (frameLen / 1024) : BUFFSIZE;
+    public AudioFormat getAudioFormat() {
+        return trackStream.getFormat();
     }
 
     @Override
@@ -379,27 +375,19 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         closeAllStreams();
     }
 
-    // en este caso pasan a ser bytes
+    // en este caso pasan a ser seconds
     @Override
-    public void seek(int bytes)
+    public void seek(int seconds)
             throws IOException {
-
-        long totalSkipped = 0;
-        long skipped = 0;
-        int SKIP_INACCURACY_SIZE = 1200;
-        System.out.println("SecsInBytes: "+transformSecondsInBytes(bytes));
-        while (totalSkipped < (bytes - SKIP_INACCURACY_SIZE)) {
-            skipped = trackStream.skip(bytes - totalSkipped);
-            System.out.println("Skipped: "+skipped);
-            if (skipped == 0)
-                break;
-            totalSkipped +=skipped;
-            System.out.println("InternalTotalSkipped: "+totalSkipped);
-            if (totalSkipped == -1) {
-                break;
-            }
-        }
-        System.out.println("TotalSkipped: "+totalSkipped);
+        secsSeeked+=seconds;
+        AudioFormat audioFormat = getAudioFormat();
+        float frameRate = audioFormat.getFrameRate();
+        int frameSize = audioFormat.getFrameSize();
+        double framesToSeek = frameRate*seconds;
+        long seek = Math.round(framesToSeek*frameSize);
+        pause();
+        trackStream.skip(seek);
+        resumeTrack();
 
     }
 
@@ -558,31 +546,21 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     public void run() {
 
         boolean isPlayerLinked = PlayerHandler.hasInstance();
-        /*
-        System.err.println("---------------------");
-        System.err.println("Available: "+trackStream.available());
-        System.err.println("FileSize: "+dataSource.length());
-        System.err.println("FrameLen: "+trackStream.getFrameLength());
-        System.err.println("FrameSize: "+trackStream.getFormat().getFrameSize());
-        System.err.println("FrameRate: "+trackStream.getFormat().getFrameRate());
-        */
-        byte[] audioBuffer = new byte[getBuffLen()];
+        byte[] audioBuffer = new byte[4096];
+        //System.err.println("AudioBuffer.Lenght: "+audioBuffer.length);
         int read;
         play();
         long ti = Time.getInstance().getTime();
         readedBytes = 0;
 
         Logger logger = Logger.getLogger(this, null);
-        //logger.setMsg(getInfoSong());
-        logger.setMsg("CurrentTrack: " + getTitle());
-        logger.rawWarning();
-
-        logger.setMsg("Track Started!");
+        logger.setMsg("Starting Track "+getTitle()+"...");
         logger.rawInfo();
 
         long tiAux = 0;
 
-        //setGain(0);
+
+        double progress;
         while (!isFinished() && !isKilled() && isValidTrack()) {
             try {
                 while (isPlaying())
@@ -590,23 +568,16 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
                         if (isPaused())
                             break;
                         read = trackStream.read(audioBuffer);
+                        //playingBuffer.addFrom(audioBuffer);
                         readedBytes += read;
+
                         if (ThreadManager.hasOneSecond(ti)) {
-                            //secsSeeked=(getSecondsByBytes(readedBytes));
-                            //secsSeeked++;
-                            //ti = System.currentTimeMillis();
-                            tiAux = ti;
-                            ti = Time.getInstance().getTime();
-                            currentTime += (ti - tiAux);
-                            bytesPerSecond = readedBytes / getProgress();
-                            // Rescatar time desde calendar
-                            //System.out.println("CurrentTime: "+currentTime);
-                            /*if (currentTime/1000 != secsSeeked) {
-                                //System.out.println("Tiempos diferentes");
-                                secsSeeked = (int) (currentTime / 1000);
-                            }*/
+                            progress = getProgress();
+                            bytesPerSecond = readedBytes / (progress == 0?1:progress);
                         }
                         if (read == -1) {
+                            Logger.getLogger(this,
+                                    "FinalProgress/Duration: "+getProgress()+"/"+getDuration()).info();
                             finish();
                             break;
                         }
@@ -631,7 +602,6 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
                 break;
             }
         }
-
         Logger.getLogger(this, "Track completed!").info();
         if (isFinished() && (PlayerHandler.hasInstance() && isPlayerLinked))
             PlayerHandler.getPlayer().playNext();

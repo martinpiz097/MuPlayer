@@ -18,5 +18,5 @@ public interface MusicControls {
     public void mute();
     public void unmute();
 
-    public int getProgress();
+    public double getProgress();
 }

@@ -736,7 +736,7 @@ public class Player extends Thread implements PlayerControls {
         }
     }
 
-    public int getProgress() {
+    public double getProgress() {
         return current == null ? 0 : current.getProgress();
     }
 

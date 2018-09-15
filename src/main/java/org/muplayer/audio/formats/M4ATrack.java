@@ -1,8 +1,10 @@
 package org.muplayer.audio.formats;
 
 import net.sourceforge.jaad.aac.Decoder;
+import net.sourceforge.jaad.aac.SampleBuffer;
 import net.sourceforge.jaad.mp4.MP4Container;
 import net.sourceforge.jaad.mp4.api.AudioTrack;
+import net.sourceforge.jaad.mp4.api.Frame;
 import net.sourceforge.jaad.mp4.api.Movie;
 import net.sourceforge.jaad.spi.javasound.AACAudioFileReader;
 import org.muplayer.audio.Track;
@@ -13,9 +15,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.util.List;
 
 public class M4ATrack extends Track {
@@ -85,11 +85,29 @@ public class M4ATrack extends Track {
             final RandomAccessFile randomAccess = new RandomAccessFile(inputFile, "r");
             final AudioTrack track = getM4ATrack(randomAccess);
             final Decoder dec = new Decoder(track.getDecoderSpecificInfo());
-            m4aStream = new M4AInputStream(track, dec, randomAccess);
+
+            /*m4aStream = new M4AInputStream(track, dec, randomAccess);
             AudioFormat decFormat = new AudioFormat(track.getSampleRate(),
                     track.getSampleSize(), track.getChannelCount(),
                     true, true);
             return new AudioInputStream(m4aStream, decFormat, inputFile.length());
+            */
+            SampleBuffer buffer = new SampleBuffer();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            Frame frame;
+
+            while (track.hasMoreFrames()) {
+                frame = track.readNextFrame();
+                dec.decodeFrame(frame.getData(), buffer);
+                baos.write(buffer.getData());
+            }
+            AudioFormat decFormat = new AudioFormat(track.getSampleRate(),
+                    track.getSampleSize(), track.getChannelCount(),
+                    true, true);
+            byte[] audioData = baos.toByteArray();
+            return new AudioInputStream(new ByteArrayInputStream(
+                    audioData), decFormat, audioData.length);
+
         } catch (Exception e){
             Logger.getLogger(this, "Exception", e.getMessage()).error();
             return null;
@@ -102,36 +120,14 @@ public class M4ATrack extends Track {
         return size;
     }*/
 
-    @Override
+    /*@Override
     public void seek(int seconds) throws IOException {
         if (m4aStream == null) {
             //long seek = transformSecondsInBytes(seconds);
             // si es m4a aac
         }
-        else {
+        else
             secsSeeked+=m4aStream.skip(seconds);
-        }
-    }
-
-    /*@Override
-    public int getProgress() {
-        return m4aStream == null ? super.getProgress() : m4aStream.getFrameTime();
-    }*/
-
-    // Ver si duracion mostrada es real antes de entregar valor en segundos
-    /*@Override
-    public long getDuration() {
-        String strDuration = getProperty("duration");
-        return strDuration == null ? 0 : Long.parseLong(strDuration);
-    }
-
-    @Override
-    public String getDurationAsString() {
-        long sec = getDuration() / 1000/1000;
-        long min = sec / 60;
-        sec = sec-(min*60);
-        return new StringBuilder().append(min)
-                .append(':').append(sec < 10 ? '0'+sec:sec).toString();
     }*/
 
     /*public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {

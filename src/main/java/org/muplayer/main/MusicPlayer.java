@@ -1,6 +1,7 @@
 package org.muplayer.main;
 
 import org.muplayer.audio.Player;
+import org.muplayer.audio.Track;
 import org.muplayer.system.Logger;
 
 import javax.sound.sampled.SourceDataLine;
@@ -27,7 +28,7 @@ public class MusicPlayer extends Thread {
         player.start();
 
         Scanner scan = new Scanner(System.in);
-        SourceDataLine playerLine;
+        SourceDataLine playerLine = null;
 
         char c;
         String line;
@@ -123,8 +124,24 @@ public class MusicPlayer extends Thread {
                                 .getTrackLine().getDriver().getMicrosecondPosition()/1000000);
                         break;
                     case '2':
-                        System.out.println(player.getCurrent()
-                                .getTrackLine().getDriver().getLongFramePosition());
+                        SourceDataLine driver = player.getCurrent().getTrackLine().getDriver();
+                        double seconds = ((double)driver.getMicrosecondPosition())/1000000;
+                        long longFramePosition = driver.getLongFramePosition();
+                        float frameRate = driver.getFormat().getFrameRate();
+                        int frameSize = driver.getFormat().getFrameSize();
+                        // framepos es igual a currentFrames*frameSize;
+                        Track current = player.getCurrent();
+                        System.out.println("FramePos: "+longFramePosition);
+                        System.out.println("FrameRate: "+frameRate);
+                        System.out.println("Seconds: "+seconds);
+                        double currentFrames = frameRate*seconds;
+                        System.out.println("CurrentFrames: "+currentFrames);
+                        System.out.println("SizeCount: "+(frameSize*currentFrames));
+                        double totalFrames = frameRate*current.getDuration();
+                        System.out.println("TotalFrames: "+totalFrames);
+                        System.out.println("TotalSize: "+Math.round(totalFrames*frameSize));
+                        System.out.println("FileLenght: "+current.getDataSource().length());
+                        //System.out.println("BytesCount: "+player.getCurrent().getBytesPerSecond()*seconds);
                         break;
                     case '3':
                         System.out.println(player.getCurrent()
@@ -169,6 +186,7 @@ public class MusicPlayer extends Thread {
         String fPath =
                 hasArgs ? args[0] : "/home/martin/Escritorio/Archivos/Música"
                 //"/home/martin/AudioTesting/music/"
+
                 ;
         MusicPlayer musicPlayer = new MusicPlayer(fPath);
         musicPlayer.start();

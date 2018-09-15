@@ -37,22 +37,31 @@ public class AudioDataInputStream extends InputStream {
 
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
-        int available = available();
-        if (available == 0)
+        if (isClosed)
             return -1;
-        if (available < len)
-            len = available;
+        else {
+            int available = available();
+            if (available == 0)
+                return -1;
+            if (available < len)
+                len = available;
 
-        for (int i = 0; i < len; i++)
-            b[i+off] = (byte) read();
+            for (int i = 0; i < len; i++)
+                b[i+off] = (byte) read();
 
-        return len;
+            readed+=len;
+            return len;
+        }
     }
 
     @Override
     public long skip(long n) throws IOException {
-        readed += n;
-        return readed;
+       if (isClosed)
+           return 0;
+       else {
+           readed += n;
+           return readed;
+       }
     }
 
     @Override
@@ -67,7 +76,8 @@ public class AudioDataInputStream extends InputStream {
 
     @Override
     public synchronized void mark(int readlimit) {
-        readed = readlimit;
+        if (!isClosed)
+            readed = readlimit;
     }
 
     @Override
@@ -82,7 +92,7 @@ public class AudioDataInputStream extends InputStream {
 
     @Override
     public int read() throws IOException {
-        return byteBuffer.get((int) readed++);
+        return isClosed ? -1 : byteBuffer.get((int) readed++);
     }
 
 }

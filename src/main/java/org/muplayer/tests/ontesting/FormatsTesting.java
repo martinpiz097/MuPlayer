@@ -7,9 +7,11 @@ import org.muplayer.audio.Track;
 import org.muplayer.audio.formats.FlacTrack;
 import org.muplayer.audio.formats.M4ATrack;
 import org.muplayer.audio.formats.OGGTrack;
+import org.muplayer.audio.formats.PCMTrack;
 import org.muplayer.audio.interfaces.MusicControls;
 import org.muplayer.audio.util.TrackHandler;
 import org.muplayer.main.MusicPlayer;
+import org.muplayer.system.Logger;
 import org.muplayer.tests.TestingManager;
 
 import javax.sound.sampled.AudioFormat;
@@ -39,6 +41,15 @@ public class FormatsTesting {
         //execM4ASeekTest();
         //execOggTagTest();
         executeFormatTest();
+        //executeSongTesting(args[0]);
+    }
+
+    private static void executeSongTesting(String path) {
+        try {
+            new PCMTrack(path).start();
+        } catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
+            Logger.getLogger(FormatsTesting.class, "Exception", e.getMessage()).error();
+        }
     }
 
     private static void executeFormatTest() {

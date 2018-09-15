@@ -105,7 +105,7 @@ public class FlacTrack extends Track {
     }
 
     @Override
-    public void gotoSecond(int second) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
+    public void gotoSecond(double second) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
         long bytes = transformSecondsInBytes(second);
         float currentVolume = trackLine.getControl(
                 FloatControl.Type.MASTER_GAIN).getValue();
@@ -117,7 +117,7 @@ public class FlacTrack extends Track {
         trackLine.setGain(currentVolume);
         trackStream.read(new byte[(int)bytes]);
         play();
-        secsSeeked = second;
+        secsSeeked = (int) Math.round(second);
     }
 
 }
