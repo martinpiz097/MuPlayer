@@ -12,7 +12,7 @@ public interface MusicControls {
     public void resumeTrack() throws Exception;
     public void stopTrack() throws Exception;
     public void finish() throws Exception;
-    public void seek(int seconds) throws Exception;
+    public void seek(double seconds) throws Exception;
     public float getGain();
     public void setGain(float volume);
     public void mute();

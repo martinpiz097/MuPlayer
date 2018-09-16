@@ -75,8 +75,8 @@ public class MP3Track extends Track {
         trackStream = DecodeManager.decodeToPcm(baseFormat, soundAis);
     }
 
-    private long getBytesToSeek(int sec) {
-        double frameNeeded = ((double)sec) / frameDurationInSec;
+    private long getBytesToSeek(double sec) {
+        double frameNeeded = sec / frameDurationInSec;
         return (long) (frameNeeded*frameSize);
     }
 
@@ -107,15 +107,29 @@ public class MP3Track extends Track {
     }
 
     @Override
-    public void seek(int seconds) throws IOException {
+    public void seek(double seconds) throws IOException {
         //double framesForSecs = seconds / frameDurationInSec;
         //long bytePositionForSec = (long) (audioStartByte + (framesForSecs * frameSize));
         long seek = getBytesToSeek(seconds);
+        mute();
         trackStream.skip(seek);
+        unmute();
         secsSeeked+=seconds;
         readedBytes+=seek;
-        //System.out.println("AudioDataStart: "+audioHeader.getAudioDataStartPosition());
-        //System.out.println("AudioDataEnd: "+audioHeader.getAudioDataEndPosition());
+    }
+
+    @Override
+    public void gotoSecond(double second) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
+        double progress = getProgress();
+        if (second >= progress) {
+            int gt = (int) Math.round(second-getProgress());
+            seek(gt);
+        }
+        else if (second < progress) {
+            stopTrack();
+            resumeTrack();
+            seek(second);
+        }
     }
 
     /*@Override

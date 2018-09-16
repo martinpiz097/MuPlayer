@@ -1,0 +1,18 @@
+Funcionalidades a testear
+
+- Play
+- Pause
+- Stop
+- Seek
+- Goto
+- Next
+- Prev
+- NextFolder
+- PrevFolder
+
+
+---------------------------------
+seek y goto ogg corregidos pero quedan lentos
+seek y goto aac y mp3 muteados
+seek y goto flac corregido
+problemas con goto prev en mp3

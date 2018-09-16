@@ -35,4 +35,26 @@ public class OGGTrack extends Track {
 
     }
 
+    @Override
+    public void seek(double seconds) throws IOException {
+        mute();
+        super.seek(seconds);
+        unmute();
+    }
+
+    public void gotoSecond(double second) throws IOException,
+            LineUnavailableException, UnsupportedAudioFileException {
+        double progress = getProgress();
+        if (second >= progress) {
+            int gt = (int) Math.round(second-getProgress());
+            seek(gt);
+        }
+        else if (second < progress) {
+            stopTrack();
+            resumeTrack();
+            secsSeeked = 0;
+            seek(second);
+        }
+    }
+
 }

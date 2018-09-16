@@ -8,7 +8,6 @@ import net.sourceforge.jaad.mp4.api.Frame;
 import net.sourceforge.jaad.mp4.api.Movie;
 import net.sourceforge.jaad.spi.javasound.AACAudioFileReader;
 import org.muplayer.audio.Track;
-import org.muplayer.audio.formats.io.M4AInputStream;
 import org.muplayer.system.Logger;
 
 import javax.sound.sampled.AudioFormat;
@@ -20,14 +19,15 @@ import java.util.List;
 
 public class M4ATrack extends Track {
 
-    private volatile M4AInputStream m4aStream;
+    //private volatile M4AInputStream m4aStream;
+    private boolean isAac;
 
     public M4ATrack(File ftrack) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         super(ftrack);
     }
 
     public M4ATrack(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        super(trackPath);
+        this(new File(trackPath));
     }
 
     @Override
@@ -37,17 +37,15 @@ public class M4ATrack extends Track {
             audioReader = new AACAudioFileReader();
             trackStream = audioReader.getAudioInputStream(dataSource);
             // Para leer progreso en segundos de vorbis(posible opcion)
-
             //OggInfoReader info = new OggInfoReader();
             //FlacStreamReader streamReader = new FlacStreamReader();
-
+            isAac = true;
         } catch (UnsupportedAudioFileException e) {
             Logger.getLogger(this, "File not supported!").rawError();
             e.printStackTrace();
         } catch (IOException e) {
-            //System.out.println("LoadAudioStreamIOException: "+e.getMessage());
             trackStream = decodeRandomAccessMP4(dataSource);
-            //e.printStackTrace();
+            isAac = false;
         }
         // Probar despues transformando a PCM
         //MPG4Codec codec = new MPG4Codec();
@@ -114,20 +112,41 @@ public class M4ATrack extends Track {
         }
     }
 
+    public void seek(double seconds) throws IOException {
+        if (isAac) {
+            mute();
+            super.seek(seconds);
+            unmute();
+        }
+        else
+            super.seek(seconds);
+    }
+
+    public void gotoSecond(double second) throws
+            IOException, LineUnavailableException, UnsupportedAudioFileException {
+        double progress = getProgress();
+        if (second >= progress) {
+            int gt = (int) Math.round(second-getProgress());
+            seek(gt);
+        }
+        else if (second < progress) {
+            pause();
+            if (isAac)
+                resetStream();
+            else {
+                trackStream.reset();
+                resetLine();
+            }
+            resumeTrack();
+            secsSeeked = 0;
+            seek(second);
+        }
+    }
+
     /*private long getSoundSize() {
         long size = (long) ((decodedStream.getFormat().getSampleRate()/8)*getDuration());
         System.out.println("SoundSize: "+size);
         return size;
-    }*/
-
-    /*@Override
-    public void seek(int seconds) throws IOException {
-        if (m4aStream == null) {
-            //long seek = transformSecondsInBytes(seconds);
-            // si es m4a aac
-        }
-        else
-            secsSeeked+=m4aStream.skip(seconds);
     }*/
 
     /*public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {

@@ -65,17 +65,6 @@ public class PCMTrack extends Track {
         trackStream = audioReader.getAudioInputStream(dataSource);
     }
 
-    @Override
-    public void seek(int seconds) throws IOException {
-        secsSeeked+=seconds;
-        AudioFormat audioFormat = getAudioFormat();
-        float frameRate = audioFormat.getFrameRate();
-        int frameSize = audioFormat.getFrameSize();
-        double framesToSeek = frameRate*seconds;
-        long seek = Math.round(framesToSeek*frameSize);
-        trackStream.skip(seek);
-    }
-
     /*public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         Track track = new PCMTrack("/home/martin/AudioTesting/audio/wav2.wav");
         new Thread(track).start();

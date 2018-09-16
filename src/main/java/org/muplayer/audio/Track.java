@@ -34,7 +34,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     protected volatile byte state;
     protected volatile int available;
-    protected volatile int secsSeeked;
+    protected volatile double secsSeeked;
     protected volatile double currentTime;
     protected volatile long readedBytes;
     protected volatile double bytesPerSecond;
@@ -125,7 +125,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         this.dataSource = dataSource;
         state = STOPPED;
         secsSeeked = 0;
-        initLine();
+        initAll();
         try {
            if (isValidTrack()) {
                /*byte[] buffer = new byte[(int) dataSource.length()];
@@ -133,7 +133,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
                buffer = null;
                System.out.println("StreamRead: "+read);
                System.out.println("DataSourceLenght: "+dataSource.length());*/
-               //initLine();
+               //initAll();
 
                available = trackStream.available();
                System.err.println("TrackAvailable: "+available);
@@ -156,15 +156,18 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     // Ver opcion de usar archivo temporal y leer desde ahi
     protected abstract void loadAudioStream() throws IOException, UnsupportedAudioFileException;
 
+    protected void resetLine() throws LineUnavailableException {
+        trackLine.stop();
+        trackLine.open();
+    }
+
     public void resetStream() throws IOException, LineUnavailableException, UnsupportedAudioFileException {
-        if (trackStream != null)
-            trackStream.close();
-        secsSeeked = 0;
-        initLine();
+        closeAllStreams();
+        initAll();
         setGain(volume);
     }
 
-    protected void initLine() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+    protected void initAll() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         loadAudioStream();
         // Se deja el if porque puede que no se pueda leer el archivo
         // por n razones
@@ -220,6 +223,8 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     }
 
     protected double getSecondsPosition() {
+        if (trackLine == null)
+            return 0;
         return ((double)trackLine.getDriver().getMicrosecondPosition()) / 1000000;
     }
 
@@ -298,10 +303,6 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     // Ir a un segundo especifico de la cancion
     // inhabiliado si aplico freeze al pausar
-    public void gotoSecond(double second) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
-        int gt = (int) Math.round(second-getProgress());
-        seek(gt);
-    }
 
     public AudioFileFormat getFileFormat() throws IOException, UnsupportedAudioFileException {
         return audioReader == null ? null : audioReader.getAudioFileFormat(dataSource);
@@ -360,7 +361,10 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     }
 
     @Override
-    public synchronized void stopTrack() {
+    public synchronized void stopTrack()
+            throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        suspend();
+        resetStream();
         state = STOPPED;
     }
 
@@ -377,18 +381,34 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     // en este caso pasan a ser seconds
     @Override
-    public void seek(int seconds)
+    public void seek(double seconds)
             throws IOException {
+        if (seconds == 0)
+            return;
         secsSeeked+=seconds;
         AudioFormat audioFormat = getAudioFormat();
         float frameRate = audioFormat.getFrameRate();
         int frameSize = audioFormat.getFrameSize();
         double framesToSeek = frameRate*seconds;
         long seek = Math.round(framesToSeek*frameSize);
-        pause();
         trackStream.skip(seek);
-        resumeTrack();
+    }
 
+    public void gotoSecond(double second) throws
+            IOException, LineUnavailableException, UnsupportedAudioFileException {
+        double progress = getProgress();
+        if (second >= progress) {
+            int gt = (int) Math.round(second-getProgress());
+            seek(gt);
+        }
+        else if (second < progress) {
+            trackStream.reset();
+            pause();
+            resetLine();
+            resumeTrack();
+            secsSeeked = 0;
+            seek(second);
+        }
     }
 
     @Override
@@ -402,13 +422,15 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         this.volume = volume > 100 ? 100 : (volume < 0 ? 0 : volume);
         if (trackLine != null)
             trackLine.setGain(AudioUtil.convertVolRangeToLineRange(volume));
+        isMute = this.volume == 0;
     }
 
     @Override
     public void mute() {
         if (!isMute) {
             isMute = true;
-            setGain(0);
+            if (trackLine != null)
+                trackLine.setGain(AudioUtil.convertVolRangeToLineRange(0));
         }
     }
 
@@ -544,7 +566,6 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     @Override
     public void run() {
-
         boolean isPlayerLinked = PlayerHandler.hasInstance();
         byte[] audioBuffer = new byte[4096];
         //System.err.println("AudioBuffer.Lenght: "+audioBuffer.length);
@@ -588,12 +609,8 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
                     } catch (IndexOutOfBoundsException e) {
                         finish();
                     }
-                if (isStopped())
-                    resetStream();
                 Thread.sleep(50);
             } catch (IOException |
-                    UnsupportedAudioFileException |
-                    LineUnavailableException |
                     InterruptedException e) {
                 e.printStackTrace();
             } catch(IllegalArgumentException e) {
@@ -602,8 +619,8 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
                 break;
             }
         }
-        Logger.getLogger(this, "Track completed!").info();
-        if (isFinished() && (PlayerHandler.hasInstance() && isPlayerLinked))
+        Logger.getLogger(this, "Track "+getTitle()+" completed!").rawWarning();
+        if (isFinished() && isPlayerLinked && PlayerHandler.hasInstance())
             PlayerHandler.getPlayer().playNext();
     }
 

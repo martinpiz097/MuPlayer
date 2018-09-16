@@ -131,12 +131,7 @@ public class MusicPlayer extends Thread {
                         int frameSize = driver.getFormat().getFrameSize();
                         // framepos es igual a currentFrames*frameSize;
                         Track current = player.getCurrent();
-                        System.out.println("FramePos: "+longFramePosition);
-                        System.out.println("FrameRate: "+frameRate);
-                        System.out.println("Seconds: "+seconds);
                         double currentFrames = frameRate*seconds;
-                        System.out.println("CurrentFrames: "+currentFrames);
-                        System.out.println("SizeCount: "+(frameSize*currentFrames));
                         double totalFrames = frameRate*current.getDuration();
                         System.out.println("TotalFrames: "+totalFrames);
                         System.out.println("TotalSize: "+Math.round(totalFrames*frameSize));
@@ -186,7 +181,7 @@ public class MusicPlayer extends Thread {
         String fPath =
                 hasArgs ? args[0] : "/home/martin/Escritorio/Archivos/Música"
                 //"/home/martin/AudioTesting/music/"
-
+                //"/home/martin/AudioTesting/test/mix"
                 ;
         MusicPlayer musicPlayer = new MusicPlayer(fPath);
         musicPlayer.start();

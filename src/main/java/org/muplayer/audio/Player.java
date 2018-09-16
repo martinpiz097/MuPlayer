@@ -12,7 +12,9 @@ import org.muplayer.system.TrackStates;
 import org.muplayer.thread.PlayerHandler;
 import org.muplayer.thread.ThreadManager;
 
+import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -239,7 +241,7 @@ public class Player extends Thread implements PlayerControls {
     }*/
 
     private void shutdownCurrent() {
-        if (current != null && (!current.isFinished() && !current.isKilled()))
+        if (current != null)
             current.kill();
     }
 
@@ -682,7 +684,8 @@ public class Player extends Thread implements PlayerControls {
     }
 
     @Override
-    public synchronized void stopTrack() {
+    public synchronized void stopTrack()
+            throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         if (current != null) {
             current.stopTrack();
             loadListenerMethod(ONSTOPPED, current);
@@ -695,7 +698,7 @@ public class Player extends Thread implements PlayerControls {
     }
 
     @Override
-    public synchronized void seek(int seconds) {
+    public synchronized void seek(double seconds) {
         if (current != null) {
             try {
                 current.seek(seconds);

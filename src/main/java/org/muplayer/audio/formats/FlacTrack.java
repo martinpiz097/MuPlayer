@@ -87,37 +87,30 @@ public class FlacTrack extends Track {
     }
 
     @Override
-    public void seek(int seconds) throws IOException {
-        System.out.println("FrameLenght: "+ trackStream.getFrameLength());
-        long seek = transformSecondsInBytes(seconds);
-        System.out.println("TransformInBytes: "+seek);
-        int seekRead = trackStream.read(new byte[(int) seek]);
-        //System.out.println("Seek: "+seek);
-        //System.out.println("SeekRead: "+seekRead);
-        //int diffRead = (int) (seek-seekRead);
-        //System.out.println("Diference: "+diffRead);
-        /*if (diffRead > 0) {
-            for (int i = 0; i < diffRead; i++)
-                decodedStream.read();
-
-        }*/
+    public void seek(double seconds) throws IOException {
+        if (seconds == 0)
+            return;
         secsSeeked+=seconds;
+        AudioFormat audioFormat = getAudioFormat();
+        float frameRate = audioFormat.getFrameRate();
+        int frameSize = audioFormat.getFrameSize();
+        double framesToSeek = frameRate*seconds;
+        long seek = Math.round(framesToSeek*frameSize);
+        trackStream.read(new byte[(int) seek]);
     }
 
     @Override
     public void gotoSecond(double second) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
-        long bytes = transformSecondsInBytes(second);
-        float currentVolume = trackLine.getControl(
-                FloatControl.Type.MASTER_GAIN).getValue();
-        if (bytes > dataSource.length())
-            bytes = dataSource.length();
-
-        pause();
-        resetStream();
-        trackLine.setGain(currentVolume);
-        trackStream.read(new byte[(int)bytes]);
-        play();
-        secsSeeked = (int) Math.round(second);
+        double progress = getProgress();
+        if (second >= progress) {
+            int gt = (int) Math.round(second-getProgress());
+            seek(gt);
+        }
+        else if (second < progress) {
+            stopTrack();
+            resumeTrack();
+            seek(second);
+        }
     }
 
 }

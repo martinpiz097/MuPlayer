@@ -66,7 +66,7 @@ public class TrackHandler extends Thread implements MusicControls {
     }
 
     @Override
-    public void seek(int seconds) throws Exception {
+    public void seek(double seconds) throws Exception {
         track.seek(seconds);
     }
 
