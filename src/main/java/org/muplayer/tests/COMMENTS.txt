@@ -1,0 +1,10 @@
+## Clase Track constructor if isValidTrack
+      /*byte[] buffer = new byte[(int) dataSource.length()];
+                   int read = trackStream.read(buffer);
+                   buffer = null;
+                   System.out.println("StreamRead: "+read);
+                   System.out.println("DataSourceLenght: "+dataSource.length());*/
+
+                   //available = trackStream.available();
+                   //System.err.println("TrackAvailable: "+available);
+                   //playingBuffer = new ByteBuffer();

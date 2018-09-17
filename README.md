@@ -1,6 +1,7 @@
 # MuPlayer
 Music player library in pure Java.
 
+
 ## Note 1: If you wish to edit the source code and compile you will need the AuCom dependency, you will find it in the following link: https://gitlab.com/martinpiz097/AuCom
     Once downloaded and inside the project folder execute: 
     mvn install 

@@ -67,9 +67,8 @@ public class AudioTag {
             return null;
         }
         String tagValue = tagReader.getFirst(tag);
-        if (tagValue != null)
-            tagValue = tagValue.trim();
-        return tagValue;
+        return tagValue == null || tagValue.isEmpty() ?
+                null : tagValue.trim();
     }
 
     public String getTag(String tagName) {

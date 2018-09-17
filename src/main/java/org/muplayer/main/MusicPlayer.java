@@ -35,6 +35,8 @@ public class MusicPlayer extends Thread {
 
         boolean on = true;
 
+
+
         while (on) {
             try {
                 line = scan.nextLine().trim();

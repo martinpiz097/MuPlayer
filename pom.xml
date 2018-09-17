@@ -6,7 +6,7 @@
 
     <groupId>org.orangeplayer</groupId>
     <artifactId>muplayer</artifactId>
-    <version>0.11-Beta</version>
+    <version>0.12-Beta</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -187,7 +187,7 @@
         </dependency>
 
         <dependency>
-            <groupId>org.jflac</groupId
+            <groupId>org.jflac</groupId>
             <artifactId>jflac-codec</artifactId>
             <version>1.5.2</version>
         </dependency>

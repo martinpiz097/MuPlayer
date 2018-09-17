@@ -6,12 +6,15 @@
 	- Falta metodo seek en clase Track.
 	- Falta añadir soporte para ogg y aac
 
+
 - 0.1.1 Beta
 	- Reestructuración de clase Track afectando a clases hijas
+
 
 - 0.2 Beta
 	- Añadido soporte para OGG
 	- Revisar errores de memoria
+
 
 - 0.2.1 Beta
 	- Construida la clase Player
@@ -19,27 +22,34 @@
 	- Reproduccion eficiente y rapida
 	- Validacion de tipo de archivo al leer
 
+
 - 0.3 Beta
 	- Añadido soporte flac
 	- Se debe verificar que sucede cuando leo un archivo con x formato que termina en y formato en su nombre
 	- Falta corregir soporte AAC
 
+
 - 0.3.1 Beta
 	- Lista de archivos sustituida por lista de rutas para optimizacion de memoria.
 	- Añadido soporte para cambiar volumen de 0 a 100
 
+
 - 0.3.2 Beta
 	- Error en playNext() y playPrevious() corregido
+
 
 - 0.3.3 Beta
 	- Ahora se puede apagar el reproductor mediante un metodo propio de la clase
 	- Habilitada la opcion para obtener informacion de la cancion
 
+
 - 0.3.3-1 Beta
     - Se mantiene el mismo volumen en la cancion siguiente una vez este haya sido modificado externamente
 
+
 - 0.3.4 Beta
 	- Se lanza una excepcion FileNotFoundException cuando la carpeta de Música escogida no existe.
+
 
 - 0.4 Beta
 	- Soporte añadido para rescatar informacion a audios OGG (metodo diferente a los otro formatos)
@@ -48,29 +58,36 @@
 	- Mejora en soporte Flac (tiempos de carga disminuidos)
 	- Soporte especial de lectura de etiquetas para ogg añadido
 
+
 - 0.5 Beta
 	- Soporte para archivos m4a añadido
 
+
 - 0.5.1 Beta
 	- Problema con reconocimiento de formato M4A en jar corregido
+
 
 - 0.5.2 Beta
 	- Se añaden listeners a clase Player
 	- Se optimiza el uso del procesador al momento de utilizar la clase Player, bajando de un 25% a un 1.4% aprox.
 
+
 - 0.5.3 Beta
 	- Se elimina ciclo principal en la clase Player, ahora todo se hace con wait y notify
 	- Se corrige problema con stop en la clase Track
+
 
 - 0.5.4 Beta
 	- Optimizacion de memoria al leer archivos FLAC
 	- Falta corregir lectura de etiquetas FLAC
 	- Falta corregir lectura de archivos AAC (de otra forma retirar codec)
 
+
 - 0.5.5 Beta
 	- Se optimiza la memoria para la ejecucion de la libreria
 	- Se logra obtener duracion de archivos flac y ogg
 	- Se permite realizar un seek en archivos mp3, ogg y flac por segundos de audio
+
 
 - 0.6 Beta
 	- Se lee duracion de archivos PCM correctamente.
@@ -81,24 +98,30 @@
 	- Se añade opcion de ver tiempo actual de la cancion
 	- Se añade opcion de dirigirse a un segundo especifico de la cancion (No disponible correctamente en archivos FLAC y M4A)
 
+
 - 0.6.1 Beta
 	- Se añade funcion para agregar más musica al reproductor
+
 
 - 0.7 Release
 	- Se logra obtener duracion de archivos de audio para todos los formatos disponibles
 	- Se añade opcion para obtener la caratula de un archivo de audio cualquiera
 
+
 - 0.7.1 Release
 	- Se corrige el error que se produce al momento de dirigirse a una carpeta sin canciones
+
 
 - 0.7.2 Beta
 	- Se corrige error al hacer un seek con el formato FLAC
 	- Metodos seek y getDuration globales con algunas sobreescrituras especificas segun sea el caso
 
+
 - 0.8 Beta
 	- Se corrige error al hacer seek en M4A
 	- Se mejora seek en FLAC y M4A
 	- Funcion mute y unmute en Player añadida
+
 
 - 0.8.1 Beta
 	- Se renombran paquetes internos
@@ -107,11 +130,13 @@
 	- Se corrige problema con playPrevious, se hace un poco mas optimo
 	- Se agrega funcion seekFolder para saltar entre carpetas cuando se cargan las canciones
 
+
 - 0.8.2 Beta
 	- Se corrige error al leer equivocadamente una imagen simplificando lectura de audio
 	- Dependencias actualizadas a ultimas versiones
 	- Se crea clase TrackHandler para manejar objetos Track utilizando solo los controles de audio
 	- Se crea interfaz TrackInfo para solo rescatar la informacion de la cancion como un objeto aparte
+
 
 - 0.9 Beta
 	- Se corrige error en volumen, ahora si el reproductor esta en mute tambien lo estará cuando pase a una siguiente canción.
@@ -123,12 +148,14 @@
 	- Problema al reproducir primera cancion al inicio corregido.
 	- Se añade funcionalidad que permite visualizar un listado de las subcarpetas en nuestra carpeta de musica
 
+
 - 0.9.1 Beta
 	- Se mejora la comprobacion de formatos soportados segun sistema operativo
 	- Se añaden funcionalidades para evaluar si existen carpetas registradas
 	- Eliminacion de librerias innecesarias al momento de compilar y generar el jar
 	- Optimizacion de lectura de archivos .m4a (aac), falta comprobar seek
 	- Correccion de errores menores en coherencia de codigo en la clase Player
+
 
 - 0.9.2 Beta
 	- Creacion de TestingManager para definir carpetas para la prueba de formatos de audio
@@ -139,12 +166,14 @@
 	- Falta corregir seek en m4a normal (quedan detalles minimos de incoherencia)
 	- Estructura de paquetes modificada
 
+
 - 0.9.3 Beta
 	- Optimización de funcionalidades en clase Player
 	- Se corrige error con primera cancion reproducida al cargar carpeta, se estaba reproduciendo la segunda
 	- Se disminuye la carga de la CPU al pausar y parar canciones mientras se espera respuesta
 	- Se mejora lectura de tiempo transcurrido de reproduccion de cancion, se espera revisar y mejorar mas
 	- Se añaden mas funcionalidades al reproductor de pruebas
+
 
 - 0.9.4 Beta
 	- Mejora el seek m4a random, se corrige problema de incoherencia con los segundos adelantados
@@ -153,8 +182,10 @@
 	- Se añade funcion en clase Player para obtener a traves de la interface el progreso de la cancion actual
 	- Se corrige accion al encontrar errores en las canciones, ahora simplemente se saltan
 
+
 - 0.9.4-1 Beta
 	- Dependencia faltante subida
+
 
 - 0.10 Beta
 	- Se corrige error al leer track, se cargaba stream dos veces
@@ -166,7 +197,15 @@
 	- Falta averiguar el por que en el jar algunas librerias no funcionan
 	- Se volvio al algoritmo de lectura antiguo de m4a random permitiendo mas lentitud ya que se debe corregir stream propio
 
+
 - 0.11 Beta
 	- Error con mute y unmute corregido
 	- Se revisa seek y gotoseconds en canciones reales, se corrige seek y goto en todos los formatos, falta revisar goto prev de mp3
 
+
+- 0.12 Beta
+    - Se realiza una limpieza de código eliminando funciones sin utilidad.
+    - Se añade nuevo constructor a clase Player para recibir directamente la ruta de la 
+    carpeta a cargar
+    - Se corrigen errores probables con metodos de reproduccion en clase track
+    - Se mejora la muestra de informacion de sonidos

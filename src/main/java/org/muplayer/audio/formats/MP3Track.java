@@ -32,8 +32,8 @@ public class MP3Track extends Track {
         audioSize = dataSource.length() - audioStartByte;
         frameCount = audioHeader.getNumberOfFrames();
         frameSize = audioSize / frameCount;
-        System.out.println("MP3FrameSize: "+frameSize);
-        System.out.println("TrackFrameSize: "+getAudioFormat().getFrameSize());
+        //System.out.println("MP3FrameSize: "+frameSize);
+        //System.out.println("TrackFrameSize: "+getAudioFormat().getFrameSize());
 
         frameDurationInSec = (audioHeader.getPreciseTrackLength() / (double) frameCount);
         /*System.out.println("AISFrameSize: "+trackStream.getFormat().getFrameSize());
@@ -58,10 +58,6 @@ public class MP3Track extends Track {
             throws UnsupportedAudioFileException, IOException,
             LineUnavailableException, InvalidAudioFrameException {
         this(new File(trackPath));
-    }
-
-    public boolean isValidTrack() {
-        return trackStream != null;
     }
 
     @Override
@@ -115,7 +111,7 @@ public class MP3Track extends Track {
         trackStream.skip(seek);
         unmute();
         secsSeeked+=seconds;
-        readedBytes+=seek;
+        //readedBytes+=seek;
     }
 
     @Override

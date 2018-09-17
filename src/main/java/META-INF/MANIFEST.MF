@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
-Class-Path: jlayer-1.0.1.4.jar junit-3.8.2.jar jorbis-0.3.6.jar triton
- us-share-0.3.7-1.jar jogg-0.0.7.jar jaad-0.8.4.jar bytebuffer-0.2.jar
-  aucom-0.10.jar mp3spi-1.9.5-1.jar jorbis-0.0.17.jar jflac-codec-1.5.
- 2.jar jaudiotagger-2.2.3.jar
+Class-Path: tritonus-share-0.3.7-1.jar jogg-0.0.7.jar jlayer-1.0.1.4.j
+ ar junit-3.8.2.jar jorbis-0.0.17.jar jorbis-0.3.6.jar mp3spi-1.9.5-1.
+ jar jflac-codec-1.5.2.jar jaudiotagger-2.2.3.jar jaad-0.8.4.jar aucom
+ -0.10.jar bytebuffer-0.2.jar
 Main-Class: org.muplayer.main.MusicPlayer
 

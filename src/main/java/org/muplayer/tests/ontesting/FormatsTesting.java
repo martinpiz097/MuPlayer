@@ -60,7 +60,10 @@ public class FormatsTesting {
             while (folderTesting == null || !folderTesting.exists()) {
                 try {
                     System.out.println("Format to test: "+((folderName = scan.nextLine())));
-                    folderTesting = new File(manager.getProperty(TESTINGPATH), folderName);
+                    if (folderName.equals("music"))
+                        folderTesting = new File("/home/martin/Escritorio/Archivos/Música");
+                    else
+                        folderTesting = new File(manager.getProperty(TESTINGPATH), folderName);
                     player = new MusicPlayer(folderTesting);
                 } catch (FileNotFoundException e) {
                     folderTesting = null;
@@ -126,7 +129,7 @@ public class FormatsTesting {
         MusicControls controls = new TrackHandler(track);
         controls.play();
 
-        String infoSong = track.getInfoSong();
+        String infoSong = track.getSongInfo();
         System.out.println(infoSong);
     }
 
@@ -190,7 +193,7 @@ public class FormatsTesting {
         File sound = new File("/home/martin/AudioTesting/audio2/au.ogg");
         Track track = new OGGTrack(sound);
         new Thread(track).start();
-        //System.out.println(track.getInfoSong());
+        //System.out.println(track.getSongInfo());
 
         Scanner scan = new Scanner(System.in);
         String line;

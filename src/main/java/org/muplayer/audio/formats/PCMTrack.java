@@ -68,7 +68,7 @@ public class PCMTrack extends Track {
     /*public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         Track track = new PCMTrack("/home/martin/AudioTesting/audio/wav2.wav");
         new Thread(track).start();
-        System.out.println(track.getInfoSong());
+        System.out.println(track.getSongInfo());
         AudioInputStream ais = AudioSystem.getAudioInputStream(
                 new File("/home/martin/AudioTesting/audio/sound.ogg"));
         Clip clip = AudioSystem.getClip();

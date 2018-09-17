@@ -135,7 +135,7 @@ public class M4ATrack extends Track {
                 resetStream();
             else {
                 trackStream.reset();
-                resetLine();
+                initLine();
             }
             resumeTrack();
             secsSeeked = 0;
@@ -157,7 +157,7 @@ public class M4ATrack extends Track {
         //Track track = Track.getTrack(strTrack);
         //Track track = new PCMTrack(strTrack);
         new Thread(track).start();
-    }    //System.out.println(track.getInfoSong());
+    }    //System.out.println(track.getSongInfo());
         /*
         ID3TagBox idTag = new ID3TagBox();
         Constructor<? extends MP4InputStream> constructor =

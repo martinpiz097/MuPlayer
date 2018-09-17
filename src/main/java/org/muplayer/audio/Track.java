@@ -1,13 +1,11 @@
 package org.muplayer.audio;
 
 import org.aucom.sound.Speaker;
-import org.bytebuffer.ByteBuffer;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.TagException;
-import org.muplayer.audio.codec.DecodeManager;
 import org.muplayer.audio.formats.*;
 import org.muplayer.audio.interfaces.MusicControls;
 import org.muplayer.audio.model.TrackInfo;
@@ -15,7 +13,6 @@ import org.muplayer.audio.util.Time;
 import org.muplayer.system.AudioUtil;
 import org.muplayer.system.Logger;
 import org.muplayer.thread.PlayerHandler;
-import org.muplayer.thread.ThreadManager;
 
 import javax.sound.sampled.*;
 import javax.sound.sampled.spi.AudioFileReader;
@@ -33,15 +30,15 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     protected volatile AudioTag tagInfo;
 
     protected volatile byte state;
-    protected volatile int available;
+    //protected volatile int available;
     protected volatile double secsSeeked;
-    protected volatile double currentTime;
-    protected volatile long readedBytes;
+    //protected volatile double currentTime;
+    //protected volatile long readedBytes;
     protected volatile double bytesPerSecond;
     protected volatile float volume;
     protected volatile boolean isMute;
 
-    protected ByteBuffer playingBuffer;
+    //protected ByteBuffer playingBuffer;
     //protected TrackState state;
 
     public static final int BUFFSIZE = 4096;
@@ -66,28 +63,10 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
                 System.out.println("Es mp4");
                 result = new M4ATrack(fSound);
             }
-            // Por si no tiene formato en el nombre
-            /*else {
-                AudioFileFormat fileFormat = AudioSystem.getAudioFileFormat(fSound);
-                // Es ogg, aac o mp3
-                if (AudioSystem.isConversionSupported(
-                        AudioFormat.Encoding.PCM_SIGNED, fileFormat.getFormat())) {
-                    // no es mp3
-                    if (DecodeManager.isVorbis(fSound))
-                        result = new OGGTrack(fSound);
-                    else
-                        // Tambien sirve para los mp4
-                        result = new PCMTrack(fSound);
-                } else
-                    result = new MP3Track(fSound);
-
-                // Ver si es mp3
-                // Podria ser que por reflection revise entre todas las subclases
-                // si una es compatible con el archivo en cuestion
-            }*/
-        } catch (UnsupportedAudioFileException e) {
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException | InvalidAudioFrameException e) {
+            e.printStackTrace();
             // Es flac
-            if (DecodeManager.isFlac(fSound)) {
+            /*if (DecodeManager.isFlac(fSound)) {
                 try {
                     result = new FlacTrack(fSound);
                     if (!result.isValidTrack())
@@ -95,11 +74,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
                 } catch (LineUnavailableException | UnsupportedAudioFileException | IOException e1) {
                     e1.printStackTrace();
                 }
-            }
-        } catch (IOException | LineUnavailableException e) {
-            e.printStackTrace();
-        } catch (InvalidAudioFrameException e) {
-            e.printStackTrace();
+            }*/
         }
 
         return result;
@@ -125,26 +100,13 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         this.dataSource = dataSource;
         state = STOPPED;
         secsSeeked = 0;
+        volume = Player.DEFAULT_VOLUME;
         initAll();
         try {
-           if (isValidTrack()) {
-               /*byte[] buffer = new byte[(int) dataSource.length()];
-               int read = trackStream.read(buffer);
-               buffer = null;
-               System.out.println("StreamRead: "+read);
-               System.out.println("DataSourceLenght: "+dataSource.length());*/
-               //initAll();
-
-               available = trackStream.available();
-               System.err.println("TrackAvailable: "+available);
-               setGain(Player.DEFAULT_VOLUME);
+           if (isValidTrack())
                tagInfo = new AudioTag(dataSource);
-               playingBuffer = new ByteBuffer();
-           }
-           else
-               available = -1;
         } catch (TagException | ReadOnlyFileException | InvalidAudioFrameException | CannotReadException e) {
-            System.err.println("Problema con caratula en archivo: "+ dataSource.getName());
+            Logger.getLogger(this, e.getClass().getSimpleName(), e.getMessage()).error();
         }
         setPriority(MAX_PRIORITY);
     }
@@ -164,25 +126,32 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     public void resetStream() throws IOException, LineUnavailableException, UnsupportedAudioFileException {
         closeAllStreams();
         initAll();
-        setGain(volume);
     }
 
-    protected void initAll() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        loadAudioStream();
+    protected void initLine() throws LineUnavailableException {
         // Se deja el if porque puede que no se pueda leer el archivo
         // por n razones
         if (trackStream != null) {
-            if (trackLine != null)
+            if (trackLine != null) {
+                trackLine.stop();
                 trackLine.close();
+            }
             try {
                 trackLine = new Speaker(trackStream.getFormat());
                 trackLine.open();
+                setGain(volume);
             } catch (IllegalArgumentException e1) {
                 System.err.println("Error: "+e1.getMessage());
             }
         }
         else
             System.out.println("TrackStream null por tanto line is null");
+    }
+
+    protected void initAll() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        loadAudioStream();
+        initLine();
+
     }
 
     protected void closeLine() {
@@ -239,13 +208,9 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         return trackStream != null && trackLine != null;
     }
 
-    /*public boolean isTrackFinished() throws IOException {
-        return trackStream.read() == -1;
-    }*/
-
-    /*public boolean isPlayerLinked() {
+    public boolean hasPlayerAssociated() {
         return PlayerHandler.hasInstance();
-    }*/
+    }
 
     public double getBytesPerSecond() {
         return bytesPerSecond;
@@ -343,29 +308,35 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     @Override
     public void play() {
-        /*if (state == PAUSED)
-            this.interrupt();*/
-        state = PLAYING;
+        if (isAlive())
+            state = PLAYING;
     }
 
     @Override
     public void pause() {
-        suspend();
-        state = PAUSED;
+        if (isPlaying()) {
+            suspend();
+            state = PAUSED;
+        }
     }
 
     @Override
     public void resumeTrack() {
-        resume();
-        play();
+        if (isAlive() && (isPaused() || isStopped())) {
+            resume();
+            play();
+        }
     }
 
     @Override
     public synchronized void stopTrack()
             throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-        suspend();
-        resetStream();
-        state = STOPPED;
+        if (isAlive() && (isPlaying() || isPaused())) {
+            if (isPlaying())
+                suspend();
+            resetStream();
+            state = STOPPED;
+        }
     }
 
     @Override
@@ -419,15 +390,17 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     // -80 to 5.5
     @Override
     public void setGain(float volume) {
-        this.volume = volume > 100 ? 100 : (volume < 0 ? 0 : volume);
-        if (trackLine != null)
-            trackLine.setGain(AudioUtil.convertVolRangeToLineRange(volume));
-        isMute = this.volume == 0;
+        if (isValidTrack()) {
+            this.volume = volume > 100 ? 100 : (volume < 0 ? 0 : volume);
+            if (trackLine != null)
+                trackLine.setGain(AudioUtil.convertVolRangeToLineRange(volume));
+            isMute = this.volume == 0;
+        }
     }
 
     @Override
     public void mute() {
-        if (!isMute) {
+        if (isValidTrack() && !isMute) {
             isMute = true;
             if (trackLine != null)
                 trackLine.setGain(AudioUtil.convertVolRangeToLineRange(0));
@@ -436,7 +409,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     @Override
     public void unmute() {
-        if (isMute) {
+        if (isValidTrack() && isMute) {
             isMute = false;
             setGain(volume);
         }
@@ -455,7 +428,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     @Override
     public String getProperty(FieldKey key) {
         if (tagInfo == null) {
-            System.out.println("Solicitando "+key.name()+" nulo");
+            //System.out.println("Solicitando "+key.name()+" nulo");
             return null;
         }
         return tagInfo.getTag(key);
@@ -469,20 +442,17 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     @Override
     public String getAlbum() {
-        String prop = getProperty(FieldKey.ALBUM);
-        return prop == null ? null : prop;
+        return getProperty(FieldKey.ALBUM);
     }
 
     @Override
     public String getArtist() {
-        String prop = getProperty(FieldKey.ARTIST);
-        return prop == null ? null : prop;
+        return getProperty(FieldKey.ARTIST);
     }
 
     @Override
     public String getDate() {
-        String prop = getProperty(FieldKey.YEAR);
-        return prop == null ? null : prop;
+        return getProperty(FieldKey.YEAR);
     }
 
     @Override
@@ -505,31 +475,79 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     }
 
     // Testing
-    public String getInfoSong() {
+    public String getSongInfo() {
         StringBuilder sbInfo = new StringBuilder();
-        sbInfo.append("Title: ").append(getTitle()).append('\n');
-        sbInfo.append("Album: ").append(getAlbum()).append('\n');
-        sbInfo.append("Artist: ").append(getArtist()).append('\n');
-        sbInfo.append("Date: ").append(getDate()).append('\n');
-        sbInfo.append("Duration: ").append(getDurationAsString()).append('\n');
-        sbInfo.append("Tiene carátula: ").append(hasCover()?"Si":"No").append('\n');
-        sbInfo.append("Encoder: ").append(getEncoder()).append('\n');
-        sbInfo.append("------------------------");
-        /*File fileCover = new File("/home/martin/AudioTesting/test/trackCover.png");
-        try {
-            if (fileCover.exists())
-                fileCover.delete();
-            byte[] coverData = getCoverData();
-            if (coverData != null) {
-                fileCover.createNewFile();
-                Files.write(fileCover.toPath(), coverData, StandardOpenOption.WRITE);
-            }
+        String title = getTitle();
+        String album = getAlbum();
+        String artist = getArtist();
+        String date = getDate();
+        String duration = getDurationAsString();
+        String hasCover = hasCover()?"Si":"No";
+        String encoder = getEncoder();
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
+        StringBuilder sbTabs = new StringBuilder();
+        String currentLine = "Song: "+title;
+        int biggerLenght = currentLine.length();
+        sbInfo.append(currentLine).append('\n');
 
-        return sbInfo.toString();
+        if (album != null) {
+            sbTabs.append("    ");
+            currentLine = sbTabs.toString()+"Album: "+album;
+            if (biggerLenght < currentLine.length())
+                biggerLenght = currentLine.length();
+            sbInfo.append(currentLine).append('\n');
+        }
+
+        if (artist != null) {
+            sbTabs.append("    ");
+            currentLine = sbTabs.toString()+"Artist: "+artist;
+            if (biggerLenght < currentLine.length())
+                biggerLenght = currentLine.length();
+            sbInfo.append(currentLine).append('\n');
+        }
+
+        if (date != null) {
+            sbTabs.append("    ");
+            currentLine = sbTabs.toString()+"Date: "+date;
+            if (biggerLenght < currentLine.length())
+                biggerLenght = currentLine.length();
+            sbInfo.append(currentLine).append('\n');
+        }
+
+        if (duration != null) {
+            sbTabs.append("    ");
+            currentLine = sbTabs.toString()+"Duration: "+duration;
+            if (biggerLenght < currentLine.length())
+                biggerLenght = currentLine.length();
+            sbInfo.append(currentLine).append('\n');
+        }
+
+        if (hasCover != null) {
+            sbTabs.append("    ");
+            currentLine = sbTabs.toString()+"Has Cover: "+hasCover;
+            if (biggerLenght < currentLine.length())
+                biggerLenght = currentLine.length();
+            sbInfo.append(currentLine).append('\n');
+        }
+
+        if (encoder != null) {
+            sbTabs.append("    ");
+            currentLine = sbTabs.toString()+"Encoder: "+encoder;
+            if (biggerLenght < currentLine.length())
+                biggerLenght = currentLine.length();
+            sbInfo.append(currentLine).append('\n');
+        }
+        sbTabs.delete(0, sbTabs.length());
+
+        for (int i = 0; i < biggerLenght; i++)
+            sbTabs.append('-');
+        sbTabs.append('\n').append(sbInfo.toString());
+
+        for (int i = 0; i < biggerLenght; i++)
+            sbTabs.append('-');
+        sbTabs.append('\n');
+
+        return sbTabs.toString();
     }
 
     public void getLineInfo() {
@@ -568,20 +586,15 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     public void run() {
         boolean isPlayerLinked = PlayerHandler.hasInstance();
         byte[] audioBuffer = new byte[4096];
-        //System.err.println("AudioBuffer.Lenght: "+audioBuffer.length);
         int read;
         play();
         long ti = Time.getInstance().getTime();
-        readedBytes = 0;
 
         Logger logger = Logger.getLogger(this, null);
-        logger.setMsg("Starting Track "+getTitle()+"...");
+        //logger.setMsg("Starting Track "+getTitle()+"...");
+        logger.setMsg(getSongInfo());
         logger.rawInfo();
 
-        long tiAux = 0;
-
-
-        double progress;
         while (!isFinished() && !isKilled() && isValidTrack()) {
             try {
                 while (isPlaying())
@@ -589,16 +602,8 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
                         if (isPaused())
                             break;
                         read = trackStream.read(audioBuffer);
-                        //playingBuffer.addFrom(audioBuffer);
-                        readedBytes += read;
 
-                        if (ThreadManager.hasOneSecond(ti)) {
-                            progress = getProgress();
-                            bytesPerSecond = readedBytes / (progress == 0?1:progress);
-                        }
                         if (read == -1) {
-                            Logger.getLogger(this,
-                                    "FinalProgress/Duration: "+getProgress()+"/"+getDuration()).info();
                             finish();
                             break;
                         }
@@ -619,6 +624,8 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
                 break;
             }
         }
+        Logger.getLogger(this,
+                "FinalProgress/Duration: "+getProgress()+"/"+getDuration()).info();
         Logger.getLogger(this, "Track "+getTitle()+" completed!").rawWarning();
         if (isFinished() && isPlayerLinked && PlayerHandler.hasInstance())
             PlayerHandler.getPlayer().playNext();

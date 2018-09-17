@@ -16,3 +16,7 @@ seek y goto ogg corregidos pero quedan lentos
 seek y goto aac y mp3 muteados
 seek y goto flac corregido
 problemas con goto prev en mp3
+
+revisar goto mp3
+revisar nextfolder y prevfolder
+arreglar m4astream

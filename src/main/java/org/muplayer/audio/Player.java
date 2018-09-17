@@ -46,7 +46,7 @@ public class Player extends Thread implements PlayerControls {
     }
 
     public Player() throws FileNotFoundException {
-        this(null);
+        this((File) null);
     }
 
     public Player(File rootFolder) throws FileNotFoundException {
@@ -67,6 +67,10 @@ public class Player extends Thread implements PlayerControls {
             setName("ThreadPlayer "+getId());
         }
         trackIndex = -1;
+    }
+
+    public Player(String folderPath) throws FileNotFoundException {
+        this(new File(folderPath));
     }
 
     // Problema con ogg al leer tagInfo archivo
@@ -272,7 +276,7 @@ public class Player extends Thread implements PlayerControls {
                 (Track.isValidTrack(fileTrack)?Track.getTrack(fileTrack):null);
     }
 
-    public void startPlaying() {
+    private void startPlaying() {
         // Se debe verificar que no es un archivo de audio porque
         // cuando solo hay archivos que no son audio se lanza un
         // nullpointerexception
