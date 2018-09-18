@@ -7,19 +7,16 @@ import org.muplayer.system.Logger;
 import javax.sound.sampled.SourceDataLine;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Scanner;
 
-public class MusicPlayer extends Thread {
+public class MusicPlayer extends ConsolePlayer {
 
-    private volatile Player player;
-
-    public MusicPlayer(String folderPath) throws FileNotFoundException {
-        this(new File(folderPath));
+    public MusicPlayer(File rootFolder) throws FileNotFoundException {
+        super(rootFolder);
     }
 
-    public MusicPlayer(File folder) throws FileNotFoundException {
-        this.player = new Player(folder);
+    public MusicPlayer(String folder) throws FileNotFoundException {
+        super(folder);
     }
 
     @Override
@@ -178,14 +175,19 @@ public class MusicPlayer extends Thread {
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         boolean hasArgs = args != null && args.length > 0;
         String fPath =
                 hasArgs ? args[0] : "/home/martin/Escritorio/Archivos/Música"
                 //"/home/martin/AudioTesting/music/"
                 //"/home/martin/AudioTesting/test/mix"
                 ;
-        MusicPlayer musicPlayer = new MusicPlayer(fPath);
+        MusicPlayer musicPlayer = null;
+        try {
+            musicPlayer = new MusicPlayer(fPath);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         musicPlayer.start();
 
     }

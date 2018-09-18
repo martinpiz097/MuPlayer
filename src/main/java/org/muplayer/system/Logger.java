@@ -140,11 +140,11 @@ public class Logger {
     }
 
     public void rawInfo() {
-        System.out.println(getRawMsg(getWriter(ConsoleColor.ANSI_CYAN)));
+        System.out.print(getRawMsg(getWriter(ConsoleColor.ANSI_CYAN)));
     }
 
     public void rawWarning() {
-        System.out.println(getRawMsg(getWriter(ConsoleColor.YELLOW)));
+        System.out.print(getRawMsg(getWriter(ConsoleColor.YELLOW)));
     }
 
     public void printMsg() {

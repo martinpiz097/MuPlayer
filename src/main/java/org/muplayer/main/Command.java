@@ -29,7 +29,16 @@ public class Command {
     }
 
     public String getOptionAt(int index) {
-        return hasOptions()?options[index]:null;
+        return hasOptions()?(getOptionsCount()>index?options[index]:null):null;
+    }
+
+    public Number getOptionAsNumber(int index) {
+        String option = getOptionAt(index);
+        try {
+            return option==null ? null : Double.parseDouble(option);
+        }catch (NumberFormatException e){
+            return null;
+        }
     }
 
     public String getOrder() {

@@ -60,7 +60,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
                     || trackName.endsWith(AIFF) || trackName.endsWith(AIFC))
                 result = new PCMTrack(fSound);
             else if (trackName.endsWith(M4A) || trackName.endsWith(AAC)){
-                System.out.println("Es mp4");
+                //System.out.println("Es mp4");
                 result = new M4ATrack(fSound);
             }
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException | InvalidAudioFrameException e) {
@@ -95,8 +95,8 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     protected Track(File dataSource)
             throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        Logger.getLogger(this, "TrackFile: "+ dataSource.getParentFile().getName()+'/'+dataSource.getName())
-                .rawInfo();
+        //Logger.getLogger(this, "TrackFile: "+ dataSource.getParentFile().getName()+'/'+dataSource.getName())
+        //        .rawInfo();
         this.dataSource = dataSource;
         state = STOPPED;
         secsSeeked = 0;
@@ -145,7 +145,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
             }
         }
         else
-            System.out.println("TrackStream null por tanto line is null");
+            System.out.println("TrackStream & TrackLine null");
     }
 
     protected void initAll() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
@@ -179,17 +179,17 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         return (short) ((readedBytes * secs) / fLen);
     }*/
 
-    protected long transformSecondsInBytes(double seconds) {
+    /*protected long transformSecondsInBytes(double seconds) {
         long secToBytes = Math.round(((seconds* dataSource.length()) / getDuration()));
-        System.out.println("SecToBytes: "+secToBytes);
+        //System.out.println("SecToBytes: "+secToBytes);
         return secToBytes;
-    }
+    }*/
 
-    protected long transformSecondsInBytes(int seconds, long soundSize) {
+    /*protected long transformSecondsInBytes(int seconds, long soundSize) {
         long secToBytes = Math.round((((double)seconds* soundSize) / getDuration()));
         System.out.println("SecToBytes: "+secToBytes);
         return secToBytes;
-    }
+    }*/
 
     protected double getSecondsPosition() {
         if (trackLine == null)
@@ -590,10 +590,10 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         play();
         long ti = Time.getInstance().getTime();
 
-        Logger logger = Logger.getLogger(this, null);
+        //Logger logger = Logger.getLogger(this, null);
         //logger.setMsg("Starting Track "+getTitle()+"...");
-        logger.setMsg(getSongInfo());
-        logger.rawInfo();
+        //logger.setMsg(getSongInfo());
+        //logger.rawInfo();
 
         while (!isFinished() && !isKilled() && isValidTrack()) {
             try {
@@ -624,9 +624,9 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
                 break;
             }
         }
-        Logger.getLogger(this,
-                "FinalProgress/Duration: "+getProgress()+"/"+getDuration()).info();
-        Logger.getLogger(this, "Track "+getTitle()+" completed!").rawWarning();
+        //Logger.getLogger(this,
+        //        "FinalProgress/Duration: "+getProgress()+"/"+getDuration()).info();
+        //Logger.getLogger(this, "Track "+getTitle()+" completed!").rawWarning();
         if (isFinished() && isPlayerLinked && PlayerHandler.hasInstance())
             PlayerHandler.getPlayer().playNext();
     }

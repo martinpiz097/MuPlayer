@@ -63,7 +63,7 @@ public class AudioTag {
 
     public String getTag(FieldKey tag) {
         if (tagReader == null) {
-            System.out.println("Solicitando tag "+tag.name()+" nulo");
+            //System.out.println("Solicitando tag "+tag.name()+" nulo");
             return null;
         }
         String tagValue = tagReader.getFirst(tag);

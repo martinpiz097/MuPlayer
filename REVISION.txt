@@ -20,3 +20,4 @@ problemas con goto prev en mp3
 revisar goto mp3
 revisar nextfolder y prevfolder
 arreglar m4astream
+ver metodo jump en Player

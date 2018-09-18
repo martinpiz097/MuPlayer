@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.orangeplayer</groupId>
   <artifactId>muplayer</artifactId>
-  <version>0.11-Beta</version>
+  <version>0.12-Beta</version>
   <build>
     <plugins>
       <plugin>

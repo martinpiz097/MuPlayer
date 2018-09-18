@@ -209,3 +209,6 @@
     carpeta a cargar
     - Se corrigen errores probables con metodos de reproduccion en clase track
     - Se mejora la muestra de informacion de sonidos
+
+- 0.13 Beta
+    - Se añade nueva funcionalidad de reproducción en consola(falta mejorar).

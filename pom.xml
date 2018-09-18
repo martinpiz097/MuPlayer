@@ -129,7 +129,7 @@
         <dependency>
             <groupId>org.aucom</groupId>
             <artifactId>aucom</artifactId>
-            <version>0.10</version>
+            <version>0.10.1</version>
         </dependency>
 
         <dependency>
