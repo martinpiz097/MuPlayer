@@ -6,7 +6,7 @@
 
     <groupId>org.orangeplayer</groupId>
     <artifactId>muplayer</artifactId>
-    <version>0.12-Beta</version>
+    <version>0.13-Beta</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -23,8 +23,8 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
-                    <meminitial>32m</meminitial>
-                    <maxmem>128m</maxmem>
+                    <!--<meminitial>32m</meminitial>
+                    <maxmem>128m</maxmem>-->
                 </configuration>
             </plugin>
 
@@ -45,12 +45,32 @@
                     <archive>
                         <manifest>
                             <mainClass>org.muplayer.main.MusicPlayer</mainClass>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
                         </manifest>
                     </archive>
                 </configuration>
             </plugin>
 
+            <!--Dependencias fuera-->
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--Con Dependencias dentro -->
+            <!--<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <executions>
@@ -64,25 +84,7 @@
                 <configuration>
                     <finalName>${artifactId}-${version}</finalName>
                 </configuration>
-            </plugin>
-
-            <!--Dependencias fuera-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+            </plugin>-->
 
             <!--<plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
