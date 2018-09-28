@@ -56,25 +56,16 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
             else if (trackName.endsWith(FLAC))
                 result = new FlacTrack(fSound);
             else if (trackName.endsWith(WAVE) || trackName.endsWith(AU)
-                    || trackName.endsWith(AU) || trackName.endsWith(SND)
-                    || trackName.endsWith(AIFF) || trackName.endsWith(AIFC))
+                    || trackName.endsWith(SND) || trackName.endsWith(AIFF) 
+                    || trackName.endsWith(AIFC))
                 result = new PCMTrack(fSound);
-            else if (trackName.endsWith(M4A) || trackName.endsWith(AAC)){
-                //System.out.println("Es mp4");
+            else if (trackName.endsWith(M4A) || trackName.endsWith(AAC))
                 result = new M4ATrack(fSound);
-            }
+            /*else if (trackName.endsWith(SPEEX))
+                result = new SpeexTrack(fSound);*/
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException | InvalidAudioFrameException e) {
-            e.printStackTrace();
-            // Es flac
-            /*if (DecodeManager.isFlac(fSound)) {
-                try {
-                    result = new FlacTrack(fSound);
-                    if (!result.isValidTrack())
-                        result = null;
-                } catch (LineUnavailableException | UnsupportedAudioFileException | IOException e1) {
-                    e1.printStackTrace();
-                }
-            }*/
+            Logger.getLogger(Track.class,
+                    e.getClass().getSimpleName(), e.getMessage()).error();
         }
 
         return result;
@@ -95,8 +86,6 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     protected Track(File dataSource)
             throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        //Logger.getLogger(this, "TrackFile: "+ dataSource.getParentFile().getName()+'/'+dataSource.getName())
-        //        .rawInfo();
         this.dataSource = dataSource;
         state = STOPPED;
         secsSeeked = 0;
@@ -373,12 +362,9 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
             seek(gt);
         }
         else if (second < progress) {
-            trackStream.reset();
-            pause();
-            resetLine();
-            resumeTrack();
-            secsSeeked = 0;
+            stopTrack();
             seek(second);
+            resumeTrack();
         }
     }
 

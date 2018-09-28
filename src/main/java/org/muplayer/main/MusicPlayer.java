@@ -32,8 +32,6 @@ public class MusicPlayer extends ConsolePlayer {
 
         boolean on = true;
 
-
-
         while (on) {
             try {
                 line = scan.nextLine().trim();
@@ -99,8 +97,13 @@ public class MusicPlayer extends ConsolePlayer {
                         System.out.println(player.getSongsCount());
                         break;
                     case 'l':
-                        if (line.length() == 2 && line.charAt(1) == 'f')
-                            player.printFolders();
+                        int lineLen = line.length();
+                        if (lineLen == 2) {
+                            if (line.charAt(1) == 'f')
+                                player.printFolders();
+                            else if (line.charAt(1) == 'c')
+                                player.printFolderTracks();
+                        }
                         else
                             player.printTracks();
                         break;

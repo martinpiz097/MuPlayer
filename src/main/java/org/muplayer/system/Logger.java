@@ -76,35 +76,6 @@ public class Logger {
         this(clazz.getSimpleName(), msg);
     }
 
-    /*private String getCurrentTime() {
-        StringBuilder sbTime = new StringBuilder();
-        Calendar calendar = new GregorianCalendar();
-        char timeSeparator = ':';
-
-        byte hour = (byte) calendar.get(Calendar.HOUR_OF_DAY);
-        byte minutes = (byte) calendar.get(Calendar.MINUTE);
-        byte seconds = (byte) calendar.get(Calendar.SECOND);
-
-        if (hour < 10)
-            sbTime.append('0').append(hour);
-        else
-            sbTime.append(hour);
-        sbTime.append(timeSeparator);
-
-        if (minutes < 10)
-            sbTime.append('0').append(minutes);
-        else
-            sbTime.append(minutes);
-        sbTime.append(timeSeparator);
-
-        if (seconds < 10)
-            sbTime.append('0').append(seconds);
-        else
-            sbTime.append(seconds);
-
-        return sbTime.toString();
-    }*/
-
     private StringBuilder getWriter(String color) {
         return new StringBuilder().append(color);
     }
@@ -115,12 +86,12 @@ public class Logger {
         if (title != null)
             sbMsg.append(title).append(": ");
         sbMsg.append(msg);
-        sbMsg.append(ConsoleColor.RESET);
+        sbMsg.append(ConsoleColor.RESET).append('\n');
         return sbMsg.toString();
     }
 
     private String getRawMsg(StringBuilder sbMsg) {
-        return sbMsg.append(msg).append(ConsoleColor.RESET).toString();
+        return sbMsg.append(msg).append(ConsoleColor.RESET).append('\n').toString();
     }
 
     public void error() {

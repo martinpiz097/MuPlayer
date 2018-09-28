@@ -544,11 +544,49 @@ public class Player extends Thread implements PlayerControls {
         else
             Logger.getLogger(this, "Music in folder "+rootFolder.getName()).rawInfo();
         Logger.getLogger(this, "------------------------------").rawInfo();
-        for (int i = 0; i < getSongsCount(); i++)
-            Logger.getLogger(this, "Track "+(i+1)+": "
-                    +new File(listSoundPaths.get(i)).getName()).rawInfo();
+
+        if (rootFolder != null) {
+            File fileTrack;
+            for (int i = 0; i < getSongsCount(); i++) {
+                fileTrack = new File(listSoundPaths.get(i));
+                if (current != null && fileTrack.getPath().equals(current.getDataSource().getPath()))
+                    Logger.getLogger(this, "Track "+(i+1)+": "
+                            +fileTrack.getName()).rawWarning();
+                else
+                    Logger.getLogger(this, "Track "+(i+1)+": "
+                            +fileTrack.getName()).rawInfo();
+            }
+            Logger.getLogger(this, "------------------------------").rawInfo();
+        }
+    }
+
+    public synchronized void printFolderTracks() {
+        File parentFolder = current == null ? null : current.getDataSource().getParentFile();
         Logger.getLogger(this, "------------------------------").rawInfo();
 
+        if (parentFolder == null)
+            Logger.getLogger(this, "Music in current folder").rawInfo();
+        else
+            Logger.getLogger(this, "Music in folder "+parentFolder.getName()).rawInfo();
+        Logger.getLogger(this, "------------------------------").rawInfo();
+
+        if (parentFolder != null) {
+            File fileTrack;
+            File currentFile = current.getDataSource();
+
+            for (int i = 0; i < getSongsCount(); i++) {
+                fileTrack = new File(listSoundPaths.get(i));
+                if (fileTrack.getParentFile().equals(parentFolder)) {
+                    if (fileTrack.getPath().equals(currentFile.getPath()))
+                        Logger.getLogger(this, "Track "+(i+1)+": "
+                                +fileTrack.getName()).rawWarning();
+                    else
+                        Logger.getLogger(this, "Track "+(i+1)+": "
+                                +fileTrack.getName()).rawInfo();
+                }
+            }
+            Logger.getLogger(this, "------------------------------").rawInfo();
+        }
     }
 
     public synchronized void printFolders() {
@@ -641,6 +679,7 @@ public class Player extends Thread implements PlayerControls {
     // (is alive)
     @Override
     public synchronized void play(File track) {
+        System.out.println("xd");
         int indexOf = listSoundPaths.indexOf(track.getPath());
         if (indexOf == -1) {
             if (Track.isValidTrack(track)) {

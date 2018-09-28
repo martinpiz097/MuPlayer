@@ -17,6 +17,7 @@ public class AudioExtensions {
     public static final String AIFC = ".aifc";
     public static final String AU = ".au";
     public static final String SND = ".snd";
+    //public static final String SPEEX = ".spx";
 
     public static String[] SUPPORTEDEXTENSIONS = {};
 
@@ -30,13 +31,13 @@ public class AudioExtensions {
         listSupportedFormats.add(WAVE);
         listSupportedFormats.add(M4A);
         listSupportedFormats.add(SND);
-        listSupportedFormats.add(AU);
         if (ISUNIX)
             listSupportedFormats.add(AU);
         if (ISMAC) {
             listSupportedFormats.add(AIFF);
             listSupportedFormats.add(AIFC);
         }
+        //listSupportedFormats.add(SPEEX);
         int supportedSize = listSupportedFormats.size();
         SUPPORTEDEXTENSIONS = new String[supportedSize];
         for (int i = 0; i < supportedSize; i++)

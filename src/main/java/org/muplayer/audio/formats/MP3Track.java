@@ -94,145 +94,30 @@ public class MP3Track extends Track {
     // de eso con la duracion precisa
 
     // nombres de variables dados por iniciales
-    private int getSecondsFromBytes(long bytes) {
+    /*private int getSecondsFromBytes(long bytes) {
         bytes -= audioStartByte;
         long btxft = bytes*frameCount;
         long framesReaded = btxft/audioSize;
         long frxst = (long) (framesReaded*audioHeader.getPreciseTrackLength());
         return (int) (frxst / frameCount);
-    }
-
-    @Override
-    public void seek(double seconds) throws IOException {
-        //double framesForSecs = seconds / frameDurationInSec;
-        //long bytePositionForSec = (long) (audioStartByte + (framesForSecs * frameSize));
-        long seek = getBytesToSeek(seconds);
-        mute();
-        trackStream.skip(seek);
-        unmute();
-        secsSeeked+=seconds;
-        //readedBytes+=seek;
-    }
-
-    @Override
-    public void gotoSecond(double second) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
-        double progress = getProgress();
-        if (second >= progress) {
-            int gt = (int) Math.round(second-getProgress());
-            seek(gt);
-        }
-        else if (second < progress) {
-            stopTrack();
-            resumeTrack();
-            seek(second);
-        }
-    }
-
-    /*@Override
-    public int getProgress() {
-        return (int) getSecondsFromBytes(readedBytes);
     }*/
 
-    /*@Override
-    public long getDuration() {
-        String strDuration = getProperty("duration");
-        return strDuration == null ? 0 :
-                Long.parseLong(strDuration) / 1000 / 1000;
-    }
+    /*public static void main(String[] args) throws IOException, UnsupportedAudioFileException, LineUnavailableException, URISyntaxException {
+        URL url = new URL("http://localhost/au.mp3");
+        File dataSource = new File(url.toString());
+        MpegAudioFileReader audioReader = new MpegAudioFileReader();
+        AudioInputStream soundAis = audioReader.getAudioInputStream(dataSource);
+        AudioFormat baseFormat = soundAis.getFormat();
+        AudioInputStream trackStream = DecodeManager.decodeToPcm(baseFormat, soundAis);
+        Speaker speaker = new Speaker(trackStream.getFormat());
+        speaker.open();
 
-    @Override
-    public String getDurationAsString() {
-        long sec = getDuration();
-        long min = sec / 60;
-        sec = sec-(min*60);
-        return new StringBuilder().append(min)
-                .append(':').append(sec < 10 ? '0'+sec:sec).toString();
+        byte[] buffer = new byte[4096];
+        while (true) {
+            trackStream.read(buffer);
+            speaker.playAudio(buffer);
+        }
+
     }*/
 
-    // Una vez obtenidas todas las duraciones por formato
-    // el metodo seek sera universal
-
-    // Libreria AAC genera problemas con archivos mp3 y ogg
-    /*public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException, InterruptedException {
-        File sound = new File("/home/martin/AudioTesting/audio/au.mp3");
-        //System.out.println(new MpegAudioFileReader().getAudioFileFormat(sound).getType().toString());
-        //System.out.println(new JorbisAudioFileReader().getAudioFileFormat(sound).getType().toString());
-        //System.out.println(AudioSystem.getAudioFileFormat(sound).getType().toString());
-
-        System.out.println(AudioSystem.getAudioFileFormat(sound).toString());
-
-        Track track = new MP3Track(sound);
-        Thread tTrack = new Thread(track);
-        tTrack.start();
-
-        Thread.sleep(300000);
-
-        AudioFileFormat fileFormat = AudioSystem.getAudioFileFormat(sound);
-        System.out.println(AudioSystem.isConversionSupported(
-                AudioFormat.Encoding.PCM_SIGNED, fileFormat.getFormat()));
-        //Thread.sleep(3000);
-        //track.pause();
-        //Thread.sleep(3000);
-        //track.resume();
-    }
-    */
-
-    /*@Override
-    public void run() {
-        try {
-            setGain(0);
-            boolean isPlayerLinked = PlayerHandler.hasInstance();
-            byte[] audioBuffer = new byte[getBuffLen()];
-            int read;
-            play();
-
-            long ti = System.currentTimeMillis();
-            readedBytes = 0;
-
-            frameSize = trackStream.getFormat().getFrameSize();
-            long secs = 0;
-            while (!isFinished() && !isKilled() && isValidTrack()) {
-                while (isPlaying())
-                    try {
-                        read = trackStream.read(audioBuffer);
-                        readedBytes+=read;
-                        if (ThreadManager.hasOneSecond(ti)) {
-                            int readedFrames = (int) (readedBytes/frameSize);
-                            secsSeeked++;
-                            ti = System.currentTimeMillis();
-                            bytesPerSecond = readedBytes/secsSeeked;
-                            System.out.println("BytesReaded: "+readedBytes);
-                            System.out.println("FrameDuration: "+frameDurationInSec);
-                            System.out.println("FrameSize: "+frameSize);
-                            System.out.println("ReadedFrames: "+readedFrames);
-                            secs = ((long)(frameDurationInSec*readedFrames))/1000;
-                            System.out.println("Seconds: "+secs);
-                            System.out.println("CurrentSeconds: "+secsSeeked);
-                            System.out.println("----------------------------");
-                        }
-                        if (read == -1) {
-                            finish();
-                            break;
-                        }
-                        if (trackLine != null)
-                            trackLine.playAudio(audioBuffer);
-                        else
-                            Logger.getLogger(this, "TrackLineNull").info();
-                    } catch (IndexOutOfBoundsException e) {
-                        finish();
-                    }
-                if (isStopped())
-                    resetStream();
-                Thread.sleep(10);
-            }
-            Logger.getLogger(this, "Track completed!").info();
-            if (isFinished() && (PlayerHandler.hasInstance() && isPlayerLinked))
-                PlayerHandler.getPlayer().playNext();
-        } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-*/
 }

@@ -6,7 +6,7 @@
 
     <groupId>org.orangeplayer</groupId>
     <artifactId>muplayer</artifactId>
-    <version>0.13-Beta</version>
+    <version>0.14-Beta</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -114,11 +114,6 @@
             <id>jaudiotagger-repository</id>
             <url>https://dl.bintray.com/ijabz/maven</url>
         </repository>
-
-        <repository>
-            <id>jcenter</id>
-            <url>http://jcenter.bintray.com</url>
-        </repository>
     </repositories>
 
     <dependencies>
@@ -165,8 +160,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.tritonus</groupId>
-            <artifactId>jorbis</artifactId>
+            <groupId>org.soundlibs</groupId>
+            <artifactId>tritonus-jorbis</artifactId>
             <version>0.3.6</version>
         </dependency>
 
@@ -193,6 +188,12 @@
             <artifactId>jflac-codec</artifactId>
             <version>1.5.2</version>
         </dependency>
+
+        <!--<dependency>
+            <groupId>org.xiph.speex</groupId>
+            <artifactId>jspeex-codec</artifactId>
+            <version>0.9.8-SNAPSHOT</version>
+        </dependency>-->
 
 
     </dependencies>

@@ -210,5 +210,13 @@
     - Se corrigen errores probables con metodos de reproduccion en clase track
     - Se mejora la muestra de informacion de sonidos
 
+
 - 0.13 Beta
     - Se añade nueva funcionalidad de reproducción en consola(falta mejorar).
+    
+
+- 0.14 Beta
+    - Se mejora tester de libreria
+    - Se corrige goto prev en mp3, flac y ogg
+    - Metodo goto en comun para todos los formatos excepto m4a
+        

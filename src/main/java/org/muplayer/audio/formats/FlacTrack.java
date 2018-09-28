@@ -6,7 +6,10 @@ import org.jflac.sound.spi.FlacAudioFileReader;
 import org.jflac.sound.spi.FlacFormatConversionProvider;
 import org.muplayer.audio.Track;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
 
@@ -97,20 +100,6 @@ public class FlacTrack extends Track {
         double framesToSeek = frameRate*seconds;
         long seek = Math.round(framesToSeek*frameSize);
         trackStream.read(new byte[(int) seek]);
-    }
-
-    @Override
-    public void gotoSecond(double second) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
-        double progress = getProgress();
-        if (second >= progress) {
-            int gt = (int) Math.round(second-getProgress());
-            seek(gt);
-        }
-        else if (second < progress) {
-            stopTrack();
-            resumeTrack();
-            seek(second);
-        }
     }
 
 }
