@@ -114,19 +114,34 @@
             <id>jaudiotagger-repository</id>
             <url>https://dl.bintray.com/ijabz/maven</url>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+        <repository>
+            <id>in-project</id>
+            <name>In Project Repo</name>
+            <url>file://${project.basedir}/libs</url>
+        </repository>
     </repositories>
 
     <dependencies>
         <dependency>
-            <groupId>org.bytebuffer</groupId>
-            <artifactId>bytebuffer</artifactId>
-            <version>0.2</version>
+            <groupId>com.gitlab.martinpiz097</groupId>
+            <artifactId>ByteBuffer</artifactId>
+            <version>v0.2</version>
         </dependency>
 
         <dependency>
-            <groupId>org.aucom</groupId>
-            <artifactId>aucom</artifactId>
-            <version>0.10.1</version>
+            <groupId>com.gitlab.martinpiz097</groupId>
+            <artifactId>AuCom</artifactId>
+            <version>v0.10.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.gitlab.OrangePlayerProject</groupId>
+            <artifactId>orangelogger</artifactId>
+            <version>v0.2-RC</version>
         </dependency>
 
         <dependency>
@@ -142,16 +157,16 @@
         </dependency>
 
         <dependency>
-            <groupId>org.soundlibs</groupId>
-            <artifactId>jogg</artifactId>
-            <version>0.0.7</version>
+            <groupId>com.googlecode.soundlibs</groupId>
+            <artifactId>jorbis</artifactId>
+            <version>0.0.17.4</version>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>org.jcraft</groupId>
             <artifactId>jorbis</artifactId>
             <version>0.0.17</version>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>com.googlecode.soundlibs</groupId>
@@ -160,9 +175,11 @@
         </dependency>
 
         <dependency>
-            <groupId>org.soundlibs</groupId>
-            <artifactId>tritonus-jorbis</artifactId>
+            <groupId>org.tritonus</groupId>
+            <artifactId>jorbis</artifactId>
             <version>0.3.6</version>
+            <systemPath>${project.basedir}/libs/tritonus_jorbis-0.3.6.jar</systemPath>
+            <scope>system</scope>
         </dependency>
 
         <dependency>
