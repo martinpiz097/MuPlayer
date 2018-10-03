@@ -28,7 +28,7 @@
                 </configuration>
             </plugin>
 
-            <plugin>
+            <!--<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.9</version>
@@ -36,7 +36,7 @@
                     <argLine>-Xmx64M</argLine>
                     <argLine>-Xms32M</argLine>
                 </configuration>
-            </plugin>
+            </plugin>-->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -67,49 +67,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-
-            <!--<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>2.5</version>
-                <executions>
-                    <execution>
-                        <id>lib1</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <groupId>org.tritonus</groupId>
-                            <artifactId>jorbis</artifactId>
-                            <version>0.3.6</version>
-                            <packaging>jar</packaging>
-                            <file>${basedir}/libs/tritonus_jorbis-0.3.6.jar</file>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>lib2</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <groupId>net.sourceforge.jaadec</groupId>
-                            <artifactId>jaad</artifactId>
-                            <version>0.8.7</version>
-                            <packaging>jar</packaging>
-                            <file>${basedir}/libs/jaad-0.8.5.jar</file>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>-->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <configuration>
-                    <classpathScope>compile</classpathScope>
-                </configuration>
             </plugin>
 
             <!--Con Dependencias dentro -->
@@ -150,13 +107,63 @@
                     </execution>
                 </executions>
             </plugin>-->
+
+
+            <!--<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5</version>
+                <executions>
+                    <execution>
+                        <id>lib1</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <groupId>org.tritonus</groupId>
+                            <artifactId>jorbis</artifactId>
+                            <version>0.3.6</version>
+                            <packaging>jar</packaging>
+                            <file>${basedir}/libs/tritonus_jorbis-0.3.6.jar</file>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>lib2</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <groupId>net.sourceforge.jaadec</groupId>
+                            <artifactId>jaad</artifactId>
+                            <version>0.8.7</version>
+                            <packaging>jar</packaging>
+                            <file>${basedir}/libs/jaad-0.8.5.jar</file>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>-->
+            <!--<plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <configuration>
+                    <classpathScope>compile</classpathScope>
+                </configuration>
+            </plugin>-->
+
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+            </plugin>
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.1.2</version>
+            </plugin>
+
         </plugins>
     </build>
     <repositories>
-        <repository>
-            <id>jaudiotagger-repository</id>
-            <url>https://dl.bintray.com/ijabz/maven</url>
-        </repository>
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
@@ -169,7 +176,6 @@
     </repositories>
 
     <dependencies>
-
         <!--
            <dependency>
             <groupId>org.apache.maven.plugins</groupId>
@@ -177,8 +183,14 @@
             <version>2.5.2</version>
             <type>maven-plugin</type>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>2.1.2</version>
+            <type>maven-plugin</type>
+        </dependency>
         -->
+
         <dependency>
             <groupId>com.gitlab.martinpiz097</groupId>
             <artifactId>ByteBuffer</artifactId>
@@ -198,9 +210,9 @@
         </dependency>
 
         <dependency>
-            <groupId>net.jthink</groupId>
+            <groupId>org</groupId>
             <artifactId>jaudiotagger</artifactId>
-            <version>2.2.3</version>
+            <version>2.0.3</version>
         </dependency>
 
         <dependency>
