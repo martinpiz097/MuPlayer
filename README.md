@@ -1,4 +1,5 @@
 # MuPlayer
+[! [] (https://jitpack.io/v/com.gitlab.martinpiz097/MuPlayer.svg)] (https://jitpack.io/#com.gitlab.martinpiz097/MuPlayer)
 Music player library in pure Java.
 
 
