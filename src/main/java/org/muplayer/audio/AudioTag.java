@@ -10,7 +10,7 @@ import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
 import org.jaudiotagger.tag.TagField;
-import org.jaudiotagger.tag.images.Artwork;
+import org.jaudiotagger.tag.datatype.Artwork;
 
 import java.io.File;
 import java.io.IOException;
