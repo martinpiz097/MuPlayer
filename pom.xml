@@ -44,7 +44,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass><org class="muplayer mai"></org>n.ConsolePlayer</mainClass>
+                            <mainClass>org.muplayer.main.ConsolePlayer</mainClass>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
                         </manifest>
@@ -153,7 +153,9 @@
         <dependency>
             <groupId>net.sourceforge.jaadec</groupId>
             <artifactId>jaad</artifactId>
-            <version>0.8.4</version>
+            <version>0.8.5</version>
+            <systemPath>${project.basedir}/libs/jaad-0.8.5.jar</systemPath>
+            <scope>system</scope>
         </dependency>
 
         <dependency>
