@@ -1,6 +1,6 @@
 # MuPlayer
-Music player library in pure Java.
 https://jitpack.io/v/com.gitlab.martinpiz097/MuPlayer.svg?style=flat-square
+Music player library in pure Java.
 
 ## Note: To compile the project you must execute "mvn clean install" command to
 generate the jar file and "lib" folder with de project dependencies, these files you can find
