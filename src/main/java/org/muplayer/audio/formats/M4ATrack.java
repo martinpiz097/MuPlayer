@@ -8,7 +8,7 @@ import net.sourceforge.jaad.mp4.api.Frame;
 import net.sourceforge.jaad.mp4.api.Movie;
 import net.sourceforge.jaad.spi.javasound.AACAudioFileReader;
 import org.muplayer.audio.Track;
-import org.muplayer.system.Logger;
+import org.orangelogger.sys.Logger;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -44,7 +44,7 @@ public class M4ATrack extends Track {
             Logger.getLogger(this, "File not supported!").rawError();
             e.printStackTrace();
         } catch (IOException e) {
-            trackStream = decodeRandomAccessMP4(dataSource);
+            trackStream = decodeM4a(dataSource);
             isAac = false;
         }
         // Probar despues transformando a PCM
@@ -53,7 +53,7 @@ public class M4ATrack extends Track {
         //MP4InputStream mp4 = new MP4InputStream();
     }
 
-    /*private AudioInputStream decodeRandomAccessMP4(File inputFile) throws IOException,
+    /*private AudioInputStream decodeM4a(File inputFile) throws IOException,
             UnsupportedAudioFileException {
         RandomAccessFile randomAccess = new RandomAccessFile(inputFile, "r");
         final MP4Container cont = new MP4Container(randomAccess);
@@ -78,7 +78,7 @@ public class M4ATrack extends Track {
         return (AudioTrack) tracks.get(0);
     }
 
-    private AudioInputStream decodeRandomAccessMP4(File inputFile) {
+    private AudioInputStream decodeM4a(File inputFile) {
         try {
             final RandomAccessFile randomAccess = new RandomAccessFile(inputFile, "r");
             final AudioTrack track = getM4ATrack(randomAccess);

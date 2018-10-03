@@ -3,21 +3,21 @@ package org.muplayer.audio.model;
 import org.jaudiotagger.tag.FieldKey;
 
 public interface TrackInfo {
-    public boolean hasCover();
+    boolean hasCover();
     String getProperty(String key);
     String getProperty(FieldKey key);
-    public String getTitle();
-    public String getAlbum();
-    public String getArtist();
-    public String getDate();
-    public byte[] getCoverData();
-    public long getDuration();
+    String getTitle();
+    String getAlbum();
+    String getArtist();
+    String getDate();
+    byte[] getCoverData();
+    long getDuration();
 
-    public default String getDurationAsString() {
-        return String.valueOf(getDuration());
+    default String getDurationAsString() {
+        return getFormattedDuration();
     }
 
-    public default String getFormattedDuration() {
+    default String getFormattedDuration() {
         long duration = getDuration();
         if (duration < 60)
             return String.valueOf(duration);
@@ -54,6 +54,6 @@ public interface TrackInfo {
         return sbDuration.toString();
     }
 
-    public String getEncoder();
+    String getEncoder();
 
 }

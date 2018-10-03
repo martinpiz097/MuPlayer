@@ -11,14 +11,22 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: org.bytebuffer:bytebuffer:0.2" level="project" />
-    <orderEntry type="library" name="Maven: org.aucom:aucom:0.10.1" level="project" />
+    <orderEntry type="library" name="Maven: com.gitlab.martinpiz097:ByteBuffer:v0.2" level="project" />
+    <orderEntry type="library" name="Maven: com.gitlab.martinpiz097:AuCom:v0.10.1" level="project" />
+    <orderEntry type="library" name="Maven: com.gitlab.OrangePlayerProject:orangelogger:v0.2-RC" level="project" />
     <orderEntry type="library" name="Maven: net.jthink:jaudiotagger:2.2.3" level="project" />
     <orderEntry type="library" name="Maven: net.sourceforge.jaadec:jaad:0.8.4" level="project" />
-    <orderEntry type="library" name="Maven: org.soundlibs:jogg:0.0.7" level="project" />
-    <orderEntry type="library" name="Maven: org.jcraft:jorbis:0.0.17" level="project" />
+    <orderEntry type="library" name="Maven: com.googlecode.soundlibs:jorbis:0.0.17.4" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.soundlibs:mp3spi:1.9.5-1" level="project" />
-    <orderEntry type="library" name="Maven: org.soundlibs:tritonus-jorbis:0.3.6" level="project" />
+    <orderEntry type="module-library">
+      <library name="Maven: org.tritonus:jorbis:0.3.6">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/tritonus_jorbis-0.3.6.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="library" name="Maven: com.googlecode.soundlibs:tritonus-share:0.3.7-1" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.soundlibs:jlayer:1.0.1.4" level="project" />
     <orderEntry type="library" name="Maven: junit:junit:3.8.2" level="project" />

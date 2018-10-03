@@ -15,7 +15,7 @@ public class AudioUtil {
     }
 
     public static boolean isSupported(File track) {
-        String trackName = track.getName();
+        final String trackName = track.getName();
         boolean isSupported = false;
 
         for (int i = 0; i < SUPPORTEDEXTENSIONS.length; i++) {

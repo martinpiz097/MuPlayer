@@ -1,8 +1,8 @@
 package org.muplayer.main;
 
-import org.muplayer.audio.Player;
+import org.muplayer.audio.SeekOption;
 import org.muplayer.audio.Track;
-import org.muplayer.system.Logger;
+import org.orangelogger.sys.Logger;
 
 import javax.sound.sampled.SourceDataLine;
 import java.io.File;
@@ -39,29 +39,16 @@ public class MusicPlayer extends ConsolePlayer {
                 switch (c) {
                     case 'n':
                         if (line.length() == 2 && line.charAt(1) == 'f')
-                            player.seekFolder(Player.SeekOption.NEXT);
-                        else {
-                            if (line.length() >= 3)
-                                player.jumpTrack(Integer.parseInt(line.substring(2)));
-                            player.playNext();
-                            System.err.println("Antes de playerLine");
-                            playerLine = player.getTrackLine();
-                            System.err.println("TrackLineNull: "+
-                                    (playerLine == null ? "Yes":"No"));
-                            /*if (playerLine != null) {
-                                System.err.println("Antes de controls");
-                                System.out.println("Controls: "+ Arrays.toString(playerLine.getControls()));
-                                Control pan = playerLine.getControl(FloatControl.Type.PAN);
-                                System.out.println("PAN: "+pan);
-                            }*/
-                        }
+                            player.seekFolder(SeekOption.NEXT);
+                        else
+                            player.jumpTrack(Integer.parseInt(line.substring(2)), SeekOption.NEXT);
                         break;
 
                     case 'p':
                         if (line.length() == 2 && line.charAt(1) == 'f')
-                            player.seekFolder(Player.SeekOption.PREV);
+                            player.seekFolder(SeekOption.PREV);
                         else if (line.length() >= 3)
-                            player.jumpTrack((Integer.parseInt(line.substring(2))) * -1);
+                            player.jumpTrack((Integer.parseInt(line.substring(2))), SeekOption.PREV);
                         player.playPrevious();
                         break;
                     case 's':
@@ -116,7 +103,10 @@ public class MusicPlayer extends ConsolePlayer {
                         System.out.println("ParentFile: "+player.getCurrent().getDataSource().getParentFile().getName());
                         break;
                     case 'f':
-                        System.out.println(player.getCurrent().getFormat());
+                        Track cur = player.getCurrent();
+                        String curClassName = cur.getClass().getSimpleName();
+                        curClassName = curClassName.substring(0, curClassName.length()-5).toLowerCase();
+                        System.out.println(cur.getFormat()+' '+curClassName);
                         break;
                     case 'i':
                         player.getCurrent().getLineInfo();
@@ -168,11 +158,8 @@ public class MusicPlayer extends ConsolePlayer {
                         break;*/
 
 
-            } catch (IllegalArgumentException e) {
-                Logger.getLogger(MusicPlayer.class, "Exception: "+e.getMessage()).rawError();
             } catch(Exception e) {
-                Logger.getLogger(MusicPlayer.class, "Exception: "+e.getMessage()).rawError();
-                Logger.getLogger(MusicPlayer.class, "Cause: "+e.getCause()).rawError();
+                Logger.getLogger(MusicPlayer.class, e.getClass().getSimpleName(), e.getMessage()).error();
                 //e.printStackTrace();
             }
         }

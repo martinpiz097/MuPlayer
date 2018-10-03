@@ -29,7 +29,9 @@ public class Command {
     }
 
     public String getOptionAt(int index) {
-        return hasOptions()?(getOptionsCount()>index?options[index]:null):null;
+        return hasOptions() ?
+                ((getOptionsCount() > index)
+                        ? options[index] : null) : null;
     }
 
     public Number getOptionAsNumber(int index) {

@@ -5,6 +5,7 @@ import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.mp3.MP3AudioHeader;
 import org.muplayer.audio.Track;
 import org.muplayer.audio.codec.DecodeManager;
+import org.orangelogger.sys.Logger;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -74,6 +75,22 @@ public class MP3Track extends Track {
     private long getBytesToSeek(double sec) {
         double frameNeeded = sec / frameDurationInSec;
         return (long) (frameNeeded*frameSize);
+    }
+
+    @Override
+    public void seek(double seconds)
+            throws IOException {
+        if (seconds == 0)
+            return;
+        secsSeeked+=seconds;
+        long bytesToSeek = getBytesToSeek(seconds);
+        long skip = -2;
+        try {
+            skip = trackStream.skip(bytesToSeek);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            Logger.getLogger(this, e.getClass().getSimpleName(), e.getMessage()).error();
+            System.out.println("Skipped: "+skip+"/BytesToSkip: "+bytesToSeek);
+        }
     }
 
     // bytesLeidos -> bytesTotales

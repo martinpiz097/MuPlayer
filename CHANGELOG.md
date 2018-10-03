@@ -219,4 +219,13 @@
     - Se mejora tester de libreria
     - Se corrige goto prev en mp3, flac y ogg
     - Metodo goto en comun para todos los formatos excepto m4a
+    
+- 1.0 RC
+    - Se mejora funcion ConsolePlayer permitiendo a la librería actuar por si sola
+    - Se deben corregir detalles en formato mp3 al saltar y ir a un segundo específico, los
+    otros formatos si funcionan bien en ese aspecto.
+    - Se realiza limpieza de código en algunas funcionalidades
+    - Se consigue desactivar loggers de librerias innecesarios
+    
+    
         

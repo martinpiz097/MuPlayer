@@ -9,15 +9,15 @@ import org.jaudiotagger.tag.TagException;
 import org.muplayer.audio.formats.*;
 import org.muplayer.audio.interfaces.MusicControls;
 import org.muplayer.audio.model.TrackInfo;
-import org.muplayer.audio.util.Time;
 import org.muplayer.system.AudioUtil;
-import org.muplayer.system.Logger;
 import org.muplayer.thread.PlayerHandler;
+import org.orangelogger.sys.Logger;
 
 import javax.sound.sampled.*;
 import javax.sound.sampled.spi.AudioFileReader;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
 
 import static org.muplayer.audio.util.AudioExtensions.*;
 import static org.muplayer.system.TrackStates.*;
@@ -43,8 +43,8 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     public static final int BUFFSIZE = 4096;
 
-    public static Track getTrack(File fSound){
-        if (!fSound.exists())
+    public static Track getTrack(File fSound) {
+            if (!fSound.exists())
             return null;
         Track result = null;
         final String trackName = fSound.getName();
@@ -56,7 +56,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
             else if (trackName.endsWith(FLAC))
                 result = new FlacTrack(fSound);
             else if (trackName.endsWith(WAVE) || trackName.endsWith(AU)
-                    || trackName.endsWith(SND) || trackName.endsWith(AIFF) 
+                    || trackName.endsWith(SND) || trackName.endsWith(AIFF)
                     || trackName.endsWith(AIFC))
                 result = new PCMTrack(fSound);
             else if (trackName.endsWith(M4A) || trackName.endsWith(AAC))
@@ -92,8 +92,9 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         volume = Player.DEFAULT_VOLUME;
         initAll();
         try {
-           if (isValidTrack())
-               tagInfo = new AudioTag(dataSource);
+            disableTagLogger();
+            if (isValidTrack())
+                tagInfo = new AudioTag(dataSource);
         } catch (TagException | ReadOnlyFileException | InvalidAudioFrameException | CannotReadException e) {
             Logger.getLogger(this, e.getClass().getSimpleName(), e.getMessage()).error();
         }
@@ -117,6 +118,11 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         initAll();
     }
 
+    protected void initAll() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        loadAudioStream();
+        initLine();
+    }
+
     protected void initLine() throws LineUnavailableException {
         // Se deja el if porque puede que no se pueda leer el archivo
         // por n razones
@@ -135,12 +141,6 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         }
         else
             System.out.println("TrackStream & TrackLine null");
-    }
-
-    protected void initAll() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        loadAudioStream();
-        initLine();
-
     }
 
     protected void closeLine() {
@@ -191,6 +191,14 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         long frameLen = trackStream == null ? BUFFSIZE : trackStream.getFrameLength();
         //Logger.getLogger(this, "FrameLenght: "+frameLen).rawInfo();
         return frameLen > 0 ? (int) (frameLen / 1024) : BUFFSIZE;
+    }
+
+    protected void disableTagLogger() {
+        java.util.logging.Logger[] pin = new java.util.logging.Logger[]
+                {java.util.logging.Logger.getLogger("org.jaudiotagger")};
+
+        for (java.util.logging.Logger l : pin)
+            l.setLevel(Level.OFF);
     }
 
     public boolean isValidTrack() {
@@ -303,28 +311,22 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     @Override
     public void pause() {
-        if (isPlaying()) {
-            suspend();
+        if (isPlaying())
             state = PAUSED;
-        }
     }
 
     @Override
     public void resumeTrack() {
-        if (isAlive() && (isPaused() || isStopped())) {
-            resume();
+        if (isAlive() && (isPaused() || isStopped()))
             play();
-        }
     }
 
     @Override
     public synchronized void stopTrack()
             throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         if (isAlive() && (isPlaying() || isPaused())) {
-            if (isPlaying())
-                suspend();
-            resetStream();
             state = STOPPED;
+            resetStream();
         }
     }
 
@@ -339,7 +341,6 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         closeAllStreams();
     }
 
-    // en este caso pasan a ser seconds
     @Override
     public void seek(double seconds)
             throws IOException {
@@ -361,7 +362,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
             int gt = (int) Math.round(second-getProgress());
             seek(gt);
         }
-        else if (second < progress) {
+        else {
             stopTrack();
             seek(second);
             resumeTrack();
@@ -570,16 +571,8 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     @Override
     public void run() {
-        boolean isPlayerLinked = PlayerHandler.hasInstance();
         byte[] audioBuffer = new byte[4096];
-        int read;
         play();
-        long ti = Time.getInstance().getTime();
-
-        //Logger logger = Logger.getLogger(this, null);
-        //logger.setMsg("Starting Track "+getTitle()+"...");
-        //logger.setMsg(getSongInfo());
-        //logger.rawInfo();
 
         while (!isFinished() && !isKilled() && isValidTrack()) {
             try {
@@ -587,25 +580,28 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
                     try {
                         if (isPaused())
                             break;
-                        read = trackStream.read(audioBuffer);
-
-                        if (read == -1) {
+                        if (trackStream.read(audioBuffer) == -1) {
                             finish();
                             break;
                         }
+                        // corrige nullpointerexception al momento de hacer kill()
                         if (trackLine != null)
                             trackLine.playAudio(audioBuffer);
-                        else
-                            Logger.getLogger(this, "TrackLineNull").info();
                     } catch (IndexOutOfBoundsException e) {
-                        finish();
+                        if (hasPlayerAssociated())
+                            finish();
+                        else
+                            kill();
                     }
-                Thread.sleep(50);
+                Thread.sleep(10);
             } catch (IOException |
                     InterruptedException e) {
-                e.printStackTrace();
+                Logger.getLogger(this, e.getMessage()).error();
             } catch(IllegalArgumentException e) {
-                finish();
+                if (hasPlayerAssociated())
+                    finish();
+                else
+                    kill();
                 Logger.getLogger(this, e.getMessage()).error();
                 break;
             }
@@ -613,8 +609,10 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         //Logger.getLogger(this,
         //        "FinalProgress/Duration: "+getProgress()+"/"+getDuration()).info();
         //Logger.getLogger(this, "Track "+getTitle()+" completed!").rawWarning();
-        if (isFinished() && isPlayerLinked && PlayerHandler.hasInstance())
+        if (isFinished() && hasPlayerAssociated())
             PlayerHandler.getPlayer().playNext();
+
+        //Logger.getLogger(this, "Track "+getTitle()+" Finished!").warning();
     }
 
 

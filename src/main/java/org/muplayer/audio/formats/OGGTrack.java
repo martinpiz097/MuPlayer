@@ -37,9 +37,9 @@ public class OGGTrack extends Track {
 
     @Override
     public void seek(double seconds) throws IOException {
-        mute();
+        pause();
         super.seek(seconds);
-        unmute();
+        resumeTrack();
     }
 
 }

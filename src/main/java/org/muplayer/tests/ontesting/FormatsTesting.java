@@ -11,7 +11,7 @@ import org.muplayer.audio.formats.PCMTrack;
 import org.muplayer.audio.interfaces.MusicControls;
 import org.muplayer.audio.util.TrackHandler;
 import org.muplayer.main.MusicPlayer;
-import org.muplayer.system.Logger;
+import org.orangelogger.sys.Logger;
 import org.muplayer.tests.TestingManager;
 
 import javax.sound.sampled.AudioFormat;

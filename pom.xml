@@ -6,7 +6,7 @@
 
     <groupId>org.orangeplayer</groupId>
     <artifactId>muplayer</artifactId>
-    <version>0.14-Beta</version>
+    <version>1.0-RC</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -44,7 +44,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.muplayer.main.MusicPlayer</mainClass>
+                            <mainClass><org class="muplayer mai"></org>n.ConsolePlayer</mainClass>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
                         </manifest>
@@ -118,11 +118,11 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
-        <repository>
+        <!--<repository>
             <id>in-project</id>
             <name>In Project Repo</name>
             <url>file://${project.basedir}/libs</url>
-        </repository>
+        </repository>-->
     </repositories>
 
     <dependencies>

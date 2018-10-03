@@ -2,7 +2,7 @@
 
 import org.aucom.sound.Speaker;
 import org.muplayer.audio.Track;
-import org.muplayer.system.Logger;
+import org.orangelogger.sys.Logger;
 
 import javax.sound.sampled.AudioInputStream;
 

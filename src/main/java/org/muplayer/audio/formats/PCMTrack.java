@@ -47,7 +47,7 @@ public class PCMTrack extends Track {
     @Override
     protected void loadAudioStream() throws IOException, UnsupportedAudioFileException {
         final AudioFileFormat fileFormat = AudioSystem.getAudioFileFormat(dataSource);
-        final String extension = '.'+fileFormat.getType().getExtension();
+        final String extension = '.'+fileFormat.getType().getExtension().toLowerCase();
         switch (extension) {
             case WAVE:
                 audioReader = new WaveFileReader();

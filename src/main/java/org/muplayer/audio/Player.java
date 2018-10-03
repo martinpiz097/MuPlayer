@@ -7,7 +7,7 @@ import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.TagException;
 import org.muplayer.audio.interfaces.PlayerControls;
 import org.muplayer.audio.interfaces.PlayerListener;
-import org.muplayer.system.Logger;
+import org.orangelogger.sys.Logger;
 import org.muplayer.system.TrackStates;
 import org.muplayer.thread.PlayerHandler;
 import org.muplayer.thread.ThreadManager;
@@ -18,10 +18,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -40,10 +37,6 @@ public class Player extends Thread implements PlayerControls {
     private volatile boolean on;
 
     public static float DEFAULT_VOLUME = 85.0f;
-
-    public enum SeekOption {
-        NEXT, PREV
-    }
 
     public Player() throws FileNotFoundException {
         this((File) null);
@@ -121,7 +114,7 @@ public class Player extends Thread implements PlayerControls {
     }
 
     private int getFolderIndex() {
-        String currentParent = current != null ? current.getDataSource().getParent() : null;
+        final String currentParent = current != null ? current.getDataSource().getParent() : null;
         if (currentParent != null) {
             for (int i = 0; i < listFolderPaths.size(); i++) {
                 //System.out.println(listFolderPaths.get(i));
@@ -257,23 +250,19 @@ public class Player extends Thread implements PlayerControls {
     // este ya debe haber sido validado por indexOf para saber
     // si existe o no en la ruta padre
     private Track findFirstIn(String folderPath) {
-        //System.out.println("FolderToFind: "+folderPath);
-
-        File parentFile = new File(folderPath);
-        ArrayList<File> listSounds = getListSounds();
+        File[] folderFiles = new File(folderPath).listFiles();
+        Arrays.sort(folderFiles, Comparator.comparing(File::getName));
 
         File fileTrack = null;
-        for (int i = 0; i < listSounds.size(); i++) {
-            fileTrack = listSounds.get(i);
-            if (fileTrack.getParentFile().equals(parentFile))
+        File current;
+        for (int i = 0; i < folderFiles.length; i++) {
+            current = folderFiles[i];
+            if (Track.isValidTrack(current)) {
+                fileTrack = current;
                 break;
+            }
         }
-
-        //System.out.println("FirstFound: "+fileTrack.getPath());
-        if (fileTrack == null)
-            return null;
-        return fileTrack == null ? null :
-                (Track.isValidTrack(fileTrack)?Track.getTrack(fileTrack):null);
+        return fileTrack == null ? null : Track.getTrack(fileTrack);
     }
 
     private void startPlaying() {
@@ -282,6 +271,16 @@ public class Player extends Thread implements PlayerControls {
         // nullpointerexception
         waitForSongs();
         playNext();
+    }
+
+    private void finishCurrent(boolean finish) {
+        if (current != null) {
+            if (finish)
+                current.finish();
+            else
+                current.kill();
+            while (current.isAlive());
+        }
     }
 
     private void waitForFinish() {
@@ -362,15 +361,18 @@ public class Player extends Thread implements PlayerControls {
 
     // Test
     // revisar
-    public synchronized void jumpTrack(int jumps) {
-        if (jumps > 0)
-            trackIndex+=(--jumps);
-        else
-            trackIndex-=(++jumps);
-        if (trackIndex >= listSoundPaths.size())
-            trackIndex = 0;
-        else if (trackIndex < 0)
-            trackIndex = listSoundPaths.size()-1;
+    public synchronized void jumpTrack(int jumps, SeekOption option) {
+        if (option == SeekOption.NEXT) {
+            trackIndex+=jumps;
+            if (trackIndex >= listSoundPaths.size())
+                trackIndex = 0;
+        }
+        else {
+            trackIndex -= jumps;
+            if (trackIndex < 0)
+                trackIndex = listSoundPaths.size()-1;
+        }
+        play(trackIndex);
     }
 
     public synchronized ArrayList<String> getListSoundPaths() {
@@ -444,27 +446,27 @@ public class Player extends Thread implements PlayerControls {
 
     @Override
     public synchronized boolean isPlaying() {
-        return current == null ? false : current.isPlaying();
+        return current != null && current.isPlaying();
     }
 
     @Override
     public synchronized boolean isPaused() {
-        return current == null ? false : current.isPaused();
+        return current != null && current.isPaused();
     }
 
     @Override
     public synchronized boolean isStopped() {
-        return current == null ? false : current.isStopped();
+        return current != null && current.isStopped();
     }
 
     @Override
     public synchronized boolean isFinished() {
-        return current == null ? false : current.isFinished();
+        return current != null && current.isFinished();
     }
 
     @Override
     public synchronized boolean isMute() {
-        return current == null ? true : current.isMute();
+        return current == null || current.isMute();
     }
 
     @Override
@@ -476,7 +478,7 @@ public class Player extends Thread implements PlayerControls {
         listSoundPaths.add(sound.getPath());
         listFolderPaths.add(sound.getParent());
         if (isPlaying())
-            current.finish();
+            current.kill();
         else if (isAlive()) {
             current = Track.getTrack(sound);
             startThreadTrack();
@@ -489,7 +491,6 @@ public class Player extends Thread implements PlayerControls {
     public synchronized void open(List<File> listSounds) {
         if (!listSounds.parallelStream().anyMatch(fileSound->Track.isValidTrack(fileSound)))
             return;
-
         listSoundPaths.clear();
         listFolderPaths.clear();
         loadTracks(listSounds);
@@ -596,9 +597,16 @@ public class Player extends Thread implements PlayerControls {
         else
             Logger.getLogger(this, "Folders in "+rootFolder.getName()).rawInfo();
         Logger.getLogger(this, "------------------------------").rawInfo();
-        for (int i = 0; i < getFoldersCount(); i++)
-            Logger.getLogger(this, "Folder "+(i+1)+": "
-                    +new File(listFolderPaths.get(i)).getName()).rawInfo();
+        File currentFolder;
+        for (int i = 0; i < getFoldersCount(); i++) {
+            currentFolder = new File(listFolderPaths.get(i));
+            if (current != null && currentFolder.getPath().equals(current.getDataSource().getParent()))
+                Logger.getLogger(this, "Folder "+(i+1)+": "
+                        +currentFolder.getName()).rawWarning();
+            else
+                Logger.getLogger(this, "Folder "+(i+1)+": "
+                        +currentFolder.getName()).rawInfo();
+        }
         Logger.getLogger(this, "------------------------------").rawInfo();
     }
 
@@ -612,9 +620,6 @@ public class Player extends Thread implements PlayerControls {
 
     public synchronized void seekFolder(SeekOption option, int jumps) {
         int folderIndex = getFolderIndex();
-        //Logger.getLogger(this, "Current FolderIndex en seekFolder: "+ folderIndex).rawInfo();
-        //Logger.getLogger(this, "Jumps: "+ jumps).rawInfo();
-        //Logger.getLogger(this, "Current Parent en seekFolder: "+ current.getDataSource().getParent()).rawInfo();
         if (folderIndex != -1) {
             int newFolderIndex;
             String parentToFind;
@@ -628,22 +633,21 @@ public class Player extends Thread implements PlayerControls {
                     parentToFind = listFolderPaths.get(newFolderIndex);
             }
             else {
-                newFolderIndex = folderIndex - jumps;
-                //Logger.getLogger(this, "SeekPrevFolder", "NewFolderIndex: "+newFolderIndex)
-                //        .info();
+                newFolderIndex = folderIndex-jumps;
                 if (newFolderIndex < 0)
                     parentToFind = listFolderPaths.get(listFolderPaths.size()-1);
                 else
                     parentToFind  = listFolderPaths.get(newFolderIndex);
+                findFirstIn(parentToFind);
+
             }
 
             next = findFirstIn(parentToFind);
-            //System.out.println("NextSeek: "+(next==null?"Null":next.getTitle()));
             if (next != null) {
                 try {
                     trackIndex = listSoundPaths.indexOf(next.getDataSource().getCanonicalPath());
-                    if (current != null)
-                        current.kill();
+                    folderIndex = newFolderIndex;
+                    finishCurrent(false);
                     current = next;
                     startThreadTrack();
                 } catch (IOException e) {
@@ -668,10 +672,12 @@ public class Player extends Thread implements PlayerControls {
             return;
         if (current != null) {
             current.kill();
+            waitForFinish();
             String soundPath = listSoundPaths.get(index);
             Track track = Track.getTrack(soundPath);
             current = track;
             startThreadTrack();
+            trackIndex = index;
         }
     }
 
@@ -679,7 +685,6 @@ public class Player extends Thread implements PlayerControls {
     // (is alive)
     @Override
     public synchronized void play(File track) {
-        System.out.println("xd");
         int indexOf = listSoundPaths.indexOf(track.getPath());
         if (indexOf == -1) {
             if (Track.isValidTrack(track)) {
@@ -803,7 +808,6 @@ public class Player extends Thread implements PlayerControls {
         if (current != null)
             current.kill();
         getNextTrack(SeekOption.NEXT);
-        waitForFinish();
         startThreadTrack();
         loadListenerMethod(ONSONGCHANGE, current);
     }

@@ -1,16 +1,22 @@
 package org.muplayer.main;
 
 import org.muplayer.audio.Player;
+import org.muplayer.audio.SeekOption;
 import org.muplayer.audio.Track;
-import org.muplayer.system.Logger;
+import org.orangelogger.sys.ConsoleColor;
+import org.orangelogger.sys.Logger;
+import org.orangelogger.sys.SystemUtil;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Scanner;
 
 import static java.nio.file.StandardOpenOption.WRITE;
 import static org.muplayer.main.ConsoleOrder.HELP_MAP;
@@ -19,14 +25,18 @@ public class ConsolePlayer extends Thread {
     protected volatile Player player;
     protected volatile CommandInterpreter interpreter;
 
+    protected volatile File playerFolder;
     protected volatile Scanner scanner;
+    protected boolean on;
 
     protected static final String LINEHEADER = "[MuPlayer]> ";
 
     public ConsolePlayer(File rootFolder) throws FileNotFoundException {
         player = new Player(rootFolder);
         initInterpreter();
+        this.playerFolder = rootFolder;
         scanner = new Scanner(System.in);
+        on = false;
         setName("ConsolePlayer");
     }
 
@@ -41,6 +51,8 @@ public class ConsolePlayer extends Thread {
 
             switch (cmdOrder) {
                 case ConsoleOrder.START:
+                    if (player == null)
+                        player = new Player(playerFolder);
                     if (player.isAlive() && cmd.hasOptions()) {
                         File musicFolder = new File(cmd.getOptionAt(0));
                         if (musicFolder.exists()) {
@@ -57,135 +69,213 @@ public class ConsolePlayer extends Thread {
 
                     break;
                 case ConsoleOrder.ISSTARTED:
-                    Logger.getLogger(this, player.isPlaying()?"Is playing":"Is not playing").rawInfo();
+                    if (player != null)
+                        Logger.getLogger(this, player.isPlaying()?"Is playing":"Is not playing").rawInfo();
                     break;
 
 
                 case ConsoleOrder.PLAY:
-                    player.play();
+                    if (player != null)
+                        if (cmd.hasOptions()) {
+                            Number playIndex = cmd.getOptionAsNumber(0);
+                            if (playIndex != null &&
+                                    playIndex.intValue() > 0 && playIndex.intValue() <= player.getSongsCount())
+                                player.play(playIndex.intValue()-1);
+                        }
+                        else
+                            player.play();
                     break;
 
                 case ConsoleOrder.PAUSE:
-                    player.pause();
+                    if (player != null)
+                        player.pause();
                     break;
 
                 case ConsoleOrder.STOP:
-                    player.stopTrack();
+                    if (player != null)
+                        player.stopTrack();
                     break;
 
                 case ConsoleOrder.RESUME:
-                    player.resumeTrack();
+                    if (player != null)
+                        player.resumeTrack();
                     break;
 
                 case ConsoleOrder.NEXT:
-                    if (cmd.hasOptions()) {
-                        Number jumps = cmd.getOptionAsNumber(0);
-                        if (jumps == null)
-                            Logger.getLogger(this, "Jump value incorrect").rawError();
+                    if (player != null)
+                        if (cmd.hasOptions()) {
+                            Number jumps = cmd.getOptionAsNumber(0);
+                            if (jumps == null)
+                                Logger.getLogger(this, "Jump value incorrect").rawError();
+                            else
+                                player.jumpTrack(jumps.intValue(), SeekOption.NEXT);
+                        }
                         else
-                            player.jumpTrack(jumps.intValue());
-                    }
-                    else
-                        player.playNext();
+                            player.playNext();
                     break;
 
                 case ConsoleOrder.PREV:
-                    player.playPrevious();
+                    if (player != null)
+                        if (cmd.hasOptions()) {
+                            Number jumps = cmd.getOptionAsNumber(0);
+                            if (jumps == null)
+                                Logger.getLogger(this, "Jump value incorrect").rawError();
+                            else
+                                player.jumpTrack(jumps.intValue(), SeekOption.PREV);
+                        }
+                        else
+                            player.playPrevious();
                     break;
 
-                case ConsoleOrder.JUMP:
+                /*case ConsoleOrder.JUMP:
                     if (cmd.hasOptions()) {
                         Number jump = cmd.getOptionAsNumber(0);
                         if (jump == null)
                             Logger.getLogger(this, "Jump value incorrect").rawError();
                         else {
-                            player.jumpTrack(jump.intValue());
+                            player.jumpTrack(jump.intValue(), SeekOption.NEXT);
                             Logger.getLogger(this, "Jumped").rawInfo();
                         }
                     }
-                    break;
+                    break;*/
 
                 case ConsoleOrder.MUTE:
-                    player.mute();
+                    if (player != null)
+                        player.mute();
                     break;
 
                 case ConsoleOrder.UNMUTE:
-                    player.unmute();
+                    if (player != null)
+                        player.unmute();
                     break;
 
-                case ConsoleOrder.LIST:
-                    player.printTracks();
+                case ConsoleOrder.LIST1:
+                    if (player != null)
+                        player.printTracks();
+                    break;
+
+                case ConsoleOrder.LIST2:
+                    if (player != null)
+                        player.printTracks();
+                    break;
+
+                case ConsoleOrder.LISTCURRENTFOLDER:
+                    if (player != null)
+                        player.printFolderTracks();
+                    break;
+
+                case ConsoleOrder.LISTFOLDERS:
+                    if (player != null)
+                        player.printFolders();
                     break;
 
                 case ConsoleOrder.GETGAIN:
-                    Logger.getLogger(this, "Player Volume(0-100): "+player.getGain()).rawInfo();
+                    if (player != null)
+                        Logger.getLogger(this, "Player Volume(0-100): "+player.getGain()).rawInfo();
                     break;
 
                 case ConsoleOrder.SETGAIN:
-                    if (cmd.hasOptions()) {
-                        Number volume = cmd.getOptionAsNumber(0);
-                        if (volume == null)
-                            Logger.getLogger(this, "Volume value incorrect").rawError();
-                        else {
-                            player.setGain(volume.floatValue());
-                            Logger.getLogger(this, "Volume value changed").rawInfo();
+                    if (player != null)
+                        if (cmd.hasOptions()) {
+                            Number volume = cmd.getOptionAsNumber(0);
+                            if (volume == null)
+                                Logger.getLogger(this, "Volume value incorrect").rawError();
+                            else {
+                                player.setGain(volume.floatValue());
+                                Logger.getLogger(this, "Volume value changed").rawInfo();
+                            }
                         }
-                    }
                     break;
                 case ConsoleOrder.SHUTDOWN:
-                    player.shutdown();
+                    if (player != null) {
+                        player.shutdown();
+                        player = null;
+                    }
+                    break;
+
+                case ConsoleOrder.EXIT:
+                    if (player != null) {
+                        player.shutdown();
+                        player = null;
+                    }
+                    on = false;
+                    break;
+
+                case ConsoleOrder.QUIT:
+                    if (player != null) {
+                        player.shutdown();
+                        player = null;
+                    }
+                    on = false;
                     break;
 
                 case ConsoleOrder.SEEK:
-                    if (cmd.hasOptions()) {
-                        Number seekSec = cmd.getOptionAsNumber(0);
-                        if (seekSec == null)
-                            Logger.getLogger(this, "Seek value incorrect").rawError();
-                        else {
-                            player.seek(seekSec.doubleValue());
-                            Logger.getLogger(this, "Seeked").rawInfo();
-                        }
-                    }
-                    break;
-                case ConsoleOrder.SEEKFLD:
-                    if (cmd.hasOptions()) {
-                        String optionParam = cmd.getOptionAt(0);
-                        Player.SeekOption option = optionParam.equals("next")? Player.SeekOption.NEXT
-                                : (optionParam.equals("prev")? Player.SeekOption.PREV:null);
-                        Number jumps = cmd.getOptionAsNumber(1);
-
-                        if (cmd.getOptionsCount() > 1 && jumps == null)
-                            Logger.getLogger(this, "Seek value incorrect").rawError();
-                        else {
-                            if (jumps == null && option == null)
-                                Logger.getLogger(this, "Option value incorrect").rawError();
-                            else if (jumps == null)
-                                player.seekFolder(option);
-                            else if (jumps.intValue() < 0)
-                                Logger.getLogger(this, "Jumps value incorrect").rawError();
+                    if (player != null)
+                        if (cmd.hasOptions()) {
+                            Number seekSec = cmd.getOptionAsNumber(0);
+                            if (seekSec == null)
+                                Logger.getLogger(this, "Seek value incorrect").rawError();
                             else {
-                                player.seekFolder(option, jumps.intValue());
+                                player.seek(seekSec.doubleValue());
                                 Logger.getLogger(this, "Seeked").rawInfo();
                             }
                         }
+                    break;
+                case ConsoleOrder.SEEKFLD:
+                    if (player != null)
+                        if (cmd.hasOptions()) {
+                            String optionParam = cmd.getOptionAt(0);
+                            SeekOption option = optionParam.equals("next") ? SeekOption.NEXT
+                                    : (optionParam.equals("prev") ? SeekOption.PREV : null);
+                            Number jumps = cmd.getOptionAsNumber(1);
 
-                    }
-                    else {
-                        player.seekFolder(Player.SeekOption.NEXT);
-                    }
+                            if (cmd.getOptionsCount() > 1 && jumps == null)
+                                Logger.getLogger(this, "Seek value incorrect").rawError();
+                            else {
+                                if (jumps == null && option == null)
+                                    Logger.getLogger(this, "Option value incorrect").rawError();
+                                else if (jumps == null)
+                                    player.seekFolder(option);
+                                else if (jumps.intValue() < 0)
+                                    Logger.getLogger(this, "Jumps value incorrect").rawError();
+                                else {
+                                    player.seekFolder(option, jumps.intValue());
+                                    Logger.getLogger(this, "Seeked").rawInfo();
+                                }
+                            }
+
+                        }
+                        else
+                            player.seekFolder(SeekOption.NEXT);
+                    break;
+
+                case ConsoleOrder.RELOAD:
+                    if (player != null)
+                        player.reloadTracks();
                     break;
                 case ConsoleOrder.GOTOSEC:
-                    if (cmd.hasOptions()) {
-                        Number gotoSec = cmd.getOptionAsNumber(0);
-                        if (gotoSec == null)
-                            Logger.getLogger(this, "Go to value incorrect").rawError();
-                        else {
-                            player.seek(gotoSec.doubleValue());
-                            Logger.getLogger(this, "Right Goto command").rawInfo();
+                    if (player != null)
+                        if (cmd.hasOptions()) {
+                            Number gotoSec = cmd.getOptionAsNumber(0);
+                            if (gotoSec == null)
+                                Logger.getLogger(this, "Go to value incorrect").rawError();
+                            else {
+                                player.seek(gotoSec.doubleValue());
+                                Logger.getLogger(this, "Right Goto command").rawInfo();
+                            }
                         }
-                    }
                     break;
-
+                case ConsoleOrder.SOUNDCOUNT:
+                    if (player != null)
+                        Logger.getLogger(this, player.getSongsCount()).info();
+                    break;
+                case ConsoleOrder.DURATION:
+                    if (player != null)
+                        if (cmdOrder.length() > 1 && cmdOrder.charAt(1) == 's')
+                            Logger.getLogger(this, player.getCurrent().getDurationAsString()).info();
+                        else
+                            Logger.getLogger(this, player.getCurrent().getDuration()).info();
+                    break;
                 case ConsoleOrder.GETCOVER:
                     current = player.getCurrent();
                     if (current == null)
@@ -222,49 +312,83 @@ public class ConsolePlayer extends Thread {
                         Logger.getLogger(this, current.getProgress()).rawInfo();
                     break;
 
-                case ConsoleOrder.HELP:
-                    HashMap<String, String> helpMap = HELP_MAP;
+                case ConsoleOrder.FORMAT:
+                    current = player.getCurrent();
+                    if (current == null)
+                        Logger.getLogger(this, "Current track unavailable").rawError();
+                    else {
+                        String className = current.getClass().getSimpleName();
+                        Logger.getLogger(
+                                this,
+                                className.substring(0, className.length()-5).toLowerCase()).rawInfo();
 
-                    Iterator<Map.Entry<String, String>> it = helpMap.entrySet().iterator();
-                    Map.Entry<String, String> entry;
-                    StringBuilder sbHelp = new StringBuilder();
-                    int count = 1;
-                    while (it.hasNext()) {
-                        entry = it.next();
-                        sbHelp.append(count).append(") ")
-                                .append(entry.getKey())
-                                .append(": ")
-                                .append(entry.getValue())
-                                .append('\n');
-                        count++;
                     }
-                    Logger.getLogger(this, "---------").rawInfo();
-                    Logger.getLogger(this, "Help Info").rawInfo();
-                    Logger.getLogger(this, "---------").rawInfo();
-                    Logger.getLogger(this, sbHelp.toString()).rawInfo();
+                    break;
+
+                case ConsoleOrder.HELP1:
+                    printHelp();
+                    break;
+
+                case ConsoleOrder.HELP2:
+                    printHelp();
+                    break;
+
+                default:
+                    Logger.getLogger(this, "Comando desconocido, inserte el comando \"h\" o \"help\"\n" +
+                            "para desplegar el menú de ayuda.").rawWarning();
                     break;
             }
 
         };
     }
 
-    protected void startPlayer() {
+    protected void printHelp() {
+        Map<String, String> helpMap = HELP_MAP;
+
+        Iterator<Map.Entry<String, String>> it = helpMap.entrySet().iterator();
+        Map.Entry<String, String> entry;
+        StringBuilder sbHelp = new StringBuilder();
+        int count = 1;
+        while (it.hasNext()) {
+            entry = it.next();
+            sbHelp.append(count).append(") ")
+                    .append(entry.getKey())
+                    .append(": ")
+                    .append(entry.getValue())
+                    .append('\n');
+            count++;
+        }
+        Logger.getLogger(this, "---------").rawInfo();
+        Logger.getLogger(this, "Help Info").rawInfo();
+        Logger.getLogger(this, "---------").rawInfo();
+        Logger.getLogger(this, sbHelp.toString()).rawInfo();
+    }
+
+    /*protected void startPlayer() {
         try {
             interpreter.interprate(new Command(ConsoleOrder.START));
         } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
             e.printStackTrace();
         }
+    }*/
+
+    protected void printHeader() throws IOException {
+        FileOutputStream stdout = SystemUtil.getStdout();
+        stdout.write(Logger.getLogger(this, LINEHEADER)
+                .getColoredMsg(ConsoleColor.ANSI_CYAN).getBytes());
+        stdout.flush();
     }
 
     @Override
     public void run() {
         Logger.getLogger(this, "MuPlayer started...").rawInfo();
         String cmd;
-        startPlayer();
+        //startPlayer();
+        on = true;
 
         try {
-            while (player.isAlive()) {
-                System.out.print(LINEHEADER);
+            while (on) {
+                printHeader();
                 cmd = scanner.nextLine().trim();
                 interpreter.interprate(cmd);
             }
@@ -275,8 +399,10 @@ public class ConsolePlayer extends Thread {
 
     public static void main(String[] args) {
         try {
-            //new ConsolePlayer(args[0]).start();
-            new ConsolePlayer("/home/martin/Escritorio/Archivos/Música").start();
+            if (args.length == 0)
+                new ConsolePlayer("/home/martin/Escritorio/Archivos/Música").start();
+            else
+                new ConsolePlayer(args[0]).start();
         } catch (Exception e) {
             Logger.getLogger(ConsolePlayer.class, e.getClass().getSimpleName(), e.getMessage()).error();
         }
