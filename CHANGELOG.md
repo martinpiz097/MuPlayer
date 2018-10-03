@@ -227,5 +227,7 @@
     - Se realiza limpieza de código en algunas funcionalidades
     - Se consigue desactivar loggers de librerias innecesarios
     
-    
+- 1.0.1 RC
+    - Se compacta jar con todas las dependencias dentro al generarlo, corrigiendo los errores subyacentes
+    - Se cargan librerias externas a mavencentral desde el repositorio jitpack.io
         

@@ -45,14 +45,14 @@
                     <archive>
                         <manifest>
                             <mainClass>org.muplayer.main.ConsolePlayer</mainClass>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
                         </manifest>
                     </archive>
                 </configuration>
             </plugin>
 
             <!--Dependencias fuera-->
+
+            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -68,9 +68,9 @@
                     </execution>
                 </executions>
             </plugin>
-
+             -->
             <!--Con Dependencias dentro -->
-            <!--<plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <executions>
@@ -84,7 +84,7 @@
                 <configuration>
                     <finalName>${artifactId}-${version}</finalName>
                 </configuration>
-            </plugin>-->
+            </plugin>
 
             <!--<plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -168,11 +168,6 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
-        <repository>
-            <id>in-project</id>
-            <name>In Project Repo</name>
-            <url>file://${project.basedir}/repo</url>
-        </repository>
     </repositories>
 
     <dependencies>
@@ -210,21 +205,21 @@
         </dependency>
 
         <dependency>
+            <groupId>com.gitlab.audiolibs</groupId>
+            <artifactId>jaad</artifactId>
+            <version>0.8.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.gitlab.audiolibs</groupId>
+            <artifactId>tritonus-jorbis</artifactId>
+            <version>0.3.6-RC</version>
+        </dependency>
+
+        <dependency>
             <groupId>org</groupId>
             <artifactId>jaudiotagger</artifactId>
             <version>2.0.3</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.tritonus</groupId>
-            <artifactId>tritonus-jorbis</artifactId>
-            <version>0.3.6</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.sourceforge.jaadec</groupId>
-            <artifactId>jaad</artifactId>
-            <version>0.8.5</version>
         </dependency>
 
         <dependency>

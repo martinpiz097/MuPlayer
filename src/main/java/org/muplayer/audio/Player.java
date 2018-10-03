@@ -673,12 +673,12 @@ public class Player extends Thread implements PlayerControls {
         if (current != null) {
             current.kill();
             waitForFinish();
-            String soundPath = listSoundPaths.get(index);
-            Track track = Track.getTrack(soundPath);
-            current = track;
-            startThreadTrack();
-            trackIndex = index;
         }
+        String soundPath = listSoundPaths.get(index);
+        Track track = Track.getTrack(soundPath);
+        current = track;
+        startThreadTrack();
+        trackIndex = index;
     }
 
     // Reproduce archivo de audio en la lista

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+<module type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
@@ -14,14 +14,15 @@
     <orderEntry type="library" name="Maven: com.gitlab.martinpiz097:ByteBuffer:v0.2" level="project" />
     <orderEntry type="library" name="Maven: com.gitlab.martinpiz097:AuCom:v0.10.1" level="project" />
     <orderEntry type="library" name="Maven: com.gitlab.OrangePlayerProject:orangelogger:v0.2-RC" level="project" />
-    <orderEntry type="library" name="Maven: com.gitlab.audiolibs:jaad:0.8.5" level="project" />
-    <orderEntry type="library" name="Maven: com.gitlab.audiolibs:tritonus-jorbis:0.3.6-RC" level="project" />
     <orderEntry type="library" name="Maven: org:jaudiotagger:2.0.3" level="project" />
+    <orderEntry type="library" name="Maven: org.tritonus:tritonus-jorbis:0.3.6" level="project" />
+    <orderEntry type="library" name="Maven: net.sourceforge.jaadec:jaad:0.8.5" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.soundlibs:jorbis:0.0.17.4" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.soundlibs:mp3spi:1.9.5-1" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.soundlibs:tritonus-share:0.3.7-1" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.soundlibs:jlayer:1.0.1.4" level="project" />
     <orderEntry type="library" name="Maven: junit:junit:3.8.2" level="project" />
     <orderEntry type="library" name="Maven: org.jflac:jflac-codec:1.5.2" level="project" />
+    <orderEntry type="library" name="Maven: com.gitlab.audiolibs:jaad:0.8.5" level="project" />
   </component>
 </module>
