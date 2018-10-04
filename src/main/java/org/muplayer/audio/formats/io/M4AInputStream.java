@@ -28,8 +28,6 @@ public class M4AInputStream extends AudioDataInputStream {
         this.decoder = decoder;
         this.randomAccessFile = randomAccessFile;
         sampleBuffer = new SampleBuffer();
-        System.out.println("TrackType: "+audioTrack.getType().name());
-        System.out.println("DecoderInfo: "+audioTrack.getDecoderInfo());
     }
 
     private Frame getNextFrame() throws IOException {

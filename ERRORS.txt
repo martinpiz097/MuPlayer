@@ -1,5 +1,0 @@
-- Saltar cancion automaticamente cuando tiene errores
-- Problema Nullpointer exception en cancion Pussycat dolls cuando se intenta leer titulo
-- Arreglar seek en ogg, el falling in love again suena feo
-- Problema con algunos m4a random, corregir non integral
-- Algunos m4a random tienen errores al ser escucharlos

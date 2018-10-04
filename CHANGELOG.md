@@ -230,4 +230,8 @@
 - 1.0.1 RC
     - Se compacta jar con todas las dependencias dentro al generarlo, corrigiendo los errores subyacentes
     - Se cargan librerias externas a mavencentral desde el repositorio jitpack.io
+    - Soporte añadido para aac (no mencionado).
         
+- 1.0.2 RC
+    - Se corrige funcion de testing MusicPlayer
+    - Se limpia un poco el código

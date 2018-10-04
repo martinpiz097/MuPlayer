@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.orangeplayer</groupId>
   <artifactId>muplayer</artifactId>
-  <version>1.0-RC</version>
+  <version>1.0.1-RC</version>
   <build>
     <plugins>
       <plugin>
@@ -36,14 +36,6 @@
         <configuration>
           <finalName>${artifactId}-${version}</finalName>
         </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
-      </plugin>
-      <plugin>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>2.1.2</version>
       </plugin>
     </plugins>
   </build>

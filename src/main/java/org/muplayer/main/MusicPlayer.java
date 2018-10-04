@@ -38,18 +38,23 @@ public class MusicPlayer extends ConsolePlayer {
                 c = line.charAt(0);
                 switch (c) {
                     case 'n':
-                        if (line.length() == 2 && line.charAt(1) == 'f')
-                            player.seekFolder(SeekOption.NEXT);
+                        if (line.length() > 1)
+                            if (line.length() == 2 && line.charAt(1) == 'f')
+                                player.seekFolder(SeekOption.NEXT);
+                            else
+                                player.jumpTrack(Integer.parseInt(line.substring(2)), SeekOption.NEXT);
                         else
-                            player.jumpTrack(Integer.parseInt(line.substring(2)), SeekOption.NEXT);
+                            player.playNext();
                         break;
 
                     case 'p':
-                        if (line.length() == 2 && line.charAt(1) == 'f')
-                            player.seekFolder(SeekOption.PREV);
-                        else if (line.length() >= 3)
-                            player.jumpTrack((Integer.parseInt(line.substring(2))), SeekOption.PREV);
-                        player.playPrevious();
+                        if (line.length() > 1)
+                            if (line.length() == 2 && line.charAt(1) == 'f')
+                                player.seekFolder(SeekOption.PREV);
+                            else
+                                player.jumpTrack((Integer.parseInt(line.substring(2))), SeekOption.PREV);
+                        else
+                            player.playPrevious();
                         break;
                     case 's':
                         player.stopTrack();

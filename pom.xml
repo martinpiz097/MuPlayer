@@ -6,7 +6,7 @@
 
     <groupId>org.orangeplayer</groupId>
     <artifactId>muplayer</artifactId>
-    <version>1.0-RC</version>
+    <version>1.0.2-RC</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -27,16 +27,6 @@
                     <maxmem>128m</maxmem>-->
                 </configuration>
             </plugin>
-
-            <!--<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.9</version>
-                <configuration>
-                    <argLine>-Xmx64M</argLine>
-                    <argLine>-Xms32M</argLine>
-                </configuration>
-            </plugin>-->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -84,81 +74,6 @@
                 <configuration>
                     <finalName>${artifactId}-${version}</finalName>
                 </configuration>
-            </plugin>
-
-            <!--<plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <archive>
-                        <manifest>
-                            <mainClass>org.muplayer.main.MusicPlayer</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>-->
-
-
-            <!--<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>2.5</version>
-                <executions>
-                    <execution>
-                        <id>lib1</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <groupId>org.tritonus</groupId>
-                            <artifactId>jorbis</artifactId>
-                            <version>0.3.6</version>
-                            <packaging>jar</packaging>
-                            <file>${basedir}/libs/tritonus_jorbis-0.3.6.jar</file>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>lib2</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <groupId>net.sourceforge.jaadec</groupId>
-                            <artifactId>jaad</artifactId>
-                            <version>0.8.7</version>
-                            <packaging>jar</packaging>
-                            <file>${basedir}/libs/jaad-0.8.5.jar</file>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>-->
-            <!--<plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <configuration>
-                    <classpathScope>compile</classpathScope>
-                </configuration>
-            </plugin>-->
-
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-            </plugin>
-            <plugin>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.1.2</version>
             </plugin>
 
         </plugins>
@@ -213,7 +128,7 @@
         <dependency>
             <groupId>com.gitlab.audiolibs</groupId>
             <artifactId>tritonus-jorbis</artifactId>
-            <version>0.3.6-RC</version>
+            <version>0.3.7</version>
         </dependency>
 
         <dependency>

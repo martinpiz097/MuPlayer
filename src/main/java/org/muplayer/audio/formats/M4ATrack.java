@@ -34,17 +34,13 @@ public class M4ATrack extends Track {
     protected void loadAudioStream() {
         try {
             // Es aac
-            audioReader = new AACAudioFileReader();
-            trackStream = audioReader.getAudioInputStream(dataSource);
-            // Para leer progreso en segundos de vorbis(posible opcion)
-            //OggInfoReader info = new OggInfoReader();
-            //FlacStreamReader streamReader = new FlacStreamReader();
+            decodeAAC();
             isAac = true;
         } catch (UnsupportedAudioFileException e) {
             Logger.getLogger(this, "File not supported!").rawError();
             e.printStackTrace();
         } catch (IOException e) {
-            trackStream = decodeM4a(dataSource);
+            trackStream = decodeM4A(dataSource);
             isAac = false;
         }
         // Probar despues transformando a PCM
@@ -53,7 +49,17 @@ public class M4ATrack extends Track {
         //MP4InputStream mp4 = new MP4InputStream();
     }
 
-    /*private AudioInputStream decodeM4a(File inputFile) throws IOException,
+    private void decodeAAC() throws IOException, UnsupportedAudioFileException {
+        audioReader = new AACAudioFileReader();
+        trackStream = audioReader.getAudioInputStream(dataSource);
+        // Para leer progreso en segundos de vorbis(posible opcion)
+        //OggInfoReader info = new OggInfoReader();
+        //FlacStreamReader streamReader = new FlacStreamReader();
+    }
+
+
+
+    /*private AudioInputStream decodeM4A(File inputFile) throws IOException,
             UnsupportedAudioFileException {
         RandomAccessFile randomAccess = new RandomAccessFile(inputFile, "r");
         final MP4Container cont = new MP4Container(randomAccess);
@@ -78,7 +84,7 @@ public class M4ATrack extends Track {
         return (AudioTrack) tracks.get(0);
     }
 
-    private AudioInputStream decodeM4a(File inputFile) {
+    private AudioInputStream decodeM4A(File inputFile) {
         try {
             final RandomAccessFile randomAccess = new RandomAccessFile(inputFile, "r");
             final AudioTrack track = getM4ATrack(randomAccess);
@@ -92,19 +98,26 @@ public class M4ATrack extends Track {
             */
             SampleBuffer buffer = new SampleBuffer();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            Frame frame;
 
-            while (track.hasMoreFrames()) {
-                frame = track.readNextFrame();
-                dec.decodeFrame(frame.getData(), buffer);
-                baos.write(buffer.getData());
-            }
             AudioFormat decFormat = new AudioFormat(track.getSampleRate(),
                     track.getSampleSize(), track.getChannelCount(),
                     true, true);
+
+            Frame frame;
+            while (track.hasMoreFrames()) {
+                try {
+                    frame = track.readNextFrame();
+                    dec.decodeFrame(frame.getData(), buffer);
+                    baos.write(buffer.getData());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
             byte[] audioData = baos.toByteArray();
-            return new AudioInputStream(new ByteArrayInputStream(
-                    audioData), decFormat, audioData.length);
+            if (audioData == null)
+                return null;
+
+            return new AudioInputStream(new ByteArrayInputStream(audioData), decFormat, audioData.length);
 
         } catch (Exception e){
             Logger.getLogger(this, "Exception", e.getMessage()).error();
