@@ -20,8 +20,8 @@ Music player library in pure Java.
         Then add the dependency:
             <dependency>
                 <groupId>com.gitlab.martinpiz097</groupId>
-                <artifactId>MuPlayer</artifactId>
-                <version>1.0.1</version>
+                <artifactId>muplayer</artifactId>
+                <version>1.0.2</version>
             </dependency>
     Gradle:
         Add the repository:
@@ -57,8 +57,8 @@ Music player library in pure Java.
         Luego añade la dependencia:
             <dependency>
                 <groupId>com.gitlab.martinpiz097</groupId>
-                <artifactId>MuPlayer</artifactId>
-                <version>1.0.1</version>
+                <artifactId>muplayer</artifactId>
+                <version>1.0.2</version>
             </dependency>
     Gradle:
         Añade el repositorio:
