@@ -89,11 +89,8 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     }
 
     protected static void disableTagLogger() {
-        java.util.logging.Logger[] pin = new java.util.logging.Logger[]
-                {java.util.logging.Logger.getLogger("org.jaudiotagger")};
-
-        for (java.util.logging.Logger l : pin)
-            l.setLevel(Level.OFF);
+        java.util.logging.Logger.getLogger("org.jaudiotagger")
+                .setLevel(Level.OFF);
     }
 
     protected Track(File dataSource)

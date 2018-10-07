@@ -240,3 +240,6 @@
     - Se realiza limpieza de código en ConsolePlayer
     - Se añade funcion clear y cls para limpiar pantalla en ConsolePlayer
     - Se limpia código en clase Track.
+
+- 1.1.1 RC
+    - Se cambia color en logging de informacion

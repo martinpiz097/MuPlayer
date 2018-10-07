@@ -10,9 +10,10 @@ import org.muplayer.audio.formats.OGGTrack;
 import org.muplayer.audio.formats.PCMTrack;
 import org.muplayer.audio.interfaces.MusicControls;
 import org.muplayer.audio.util.TrackHandler;
-import org.muplayer.main.MusicPlayer;
-import org.orangelogger.sys.Logger;
+import org.muplayer.main.ConsoleOrder;
+import org.muplayer.main.ConsolePlayer;
 import org.muplayer.tests.TestingManager;
+import org.orangelogger.sys.Logger;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -56,7 +57,7 @@ public class FormatsTesting {
         Scanner scan = new Scanner(System.in);
         String folderName;
         File folderTesting = null;
-        MusicPlayer player = null;
+        ConsolePlayer player = null;
             while (folderTesting == null || !folderTesting.exists()) {
                 try {
                     System.out.println("Format to test: "+((folderName = scan.nextLine())));
@@ -64,12 +65,13 @@ public class FormatsTesting {
                         folderTesting = new File("/home/martin/Escritorio/Archivos/Música");
                     else
                         folderTesting = new File(manager.getProperty(TESTINGPATH), folderName);
-                    player = new MusicPlayer(folderTesting);
+                    player = new ConsolePlayer(folderTesting);
                 } catch (FileNotFoundException e) {
                     folderTesting = null;
                 }
             }
             player.start();
+            player.execCommand(ConsoleOrder.START);
     }
 
     private static void execBytesTest() throws IOException, UnsupportedAudioFileException {

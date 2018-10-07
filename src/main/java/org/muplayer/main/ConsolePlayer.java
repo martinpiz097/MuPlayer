@@ -4,7 +4,6 @@ import org.muplayer.audio.Player;
 import org.muplayer.audio.SeekOption;
 import org.muplayer.audio.Track;
 import org.muplayer.system.SysInfo;
-import org.orangelogger.sys.ConsoleColor;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
 
@@ -58,17 +57,15 @@ public class ConsolePlayer extends Thread {
                             player.shutdown();
                             newPlayer.start();
                             player = newPlayer;
-                        }
-                        else
+                        } else
                             Logger.getLogger(this, "Folder not exists").rawError();
-                    }
-                    else if(!player.isAlive())
+                    } else if (!player.isAlive())
                         player.start();
 
                     break;
                 case ConsoleOrder.ISSTARTED:
                     if (player != null)
-                        Logger.getLogger(this, player.isPlaying()?"Is playing":"Is not playing").rawInfo();
+                        Logger.getLogger(this, player.isPlaying() ? "Is playing" : "Is not playing").rawWarning();
                     break;
 
 
@@ -78,9 +75,8 @@ public class ConsolePlayer extends Thread {
                             Number playIndex = cmd.getOptionAsNumber(0);
                             if (playIndex != null &&
                                     playIndex.intValue() > 0 && playIndex.intValue() <= player.getSongsCount())
-                                player.play(playIndex.intValue()-1);
-                        }
-                        else
+                                player.play(playIndex.intValue() - 1);
+                        } else
                             player.play();
                     break;
 
@@ -107,8 +103,7 @@ public class ConsolePlayer extends Thread {
                                 Logger.getLogger(this, "Jump value incorrect").rawError();
                             else
                                 player.jumpTrack(jumps.intValue(), SeekOption.NEXT);
-                        }
-                        else
+                        } else
                             player.playNext();
                     break;
 
@@ -120,8 +115,7 @@ public class ConsolePlayer extends Thread {
                                 Logger.getLogger(this, "Jump value incorrect").rawError();
                             else
                                 player.jumpTrack(jumps.intValue(), SeekOption.PREV);
-                        }
-                        else
+                        } else
                             player.playPrevious();
                     break;
 
@@ -169,7 +163,7 @@ public class ConsolePlayer extends Thread {
 
                 case ConsoleOrder.GETGAIN:
                     if (player != null)
-                        Logger.getLogger(this, "Player Volume(0-100): "+player.getGain()).rawInfo();
+                        Logger.getLogger(this, "Player Volume(0-100): " + player.getGain()).rawWarning();
                     break;
 
                 case ConsoleOrder.SETGAIN:
@@ -180,7 +174,7 @@ public class ConsolePlayer extends Thread {
                                 Logger.getLogger(this, "Volume value incorrect").rawError();
                             else {
                                 player.setGain(volume.floatValue());
-                                Logger.getLogger(this, "Volume value changed").rawInfo();
+                                Logger.getLogger(this, "Volume value changed").rawWarning();
                             }
                         }
                     break;
@@ -215,7 +209,7 @@ public class ConsolePlayer extends Thread {
                                 Logger.getLogger(this, "Seek value incorrect").rawError();
                             else {
                                 player.seek(seekSec.doubleValue());
-                                Logger.getLogger(this, "Seeked").rawInfo();
+                                Logger.getLogger(this, "Seeked").rawWarning();
                             }
                         }
                     break;
@@ -238,12 +232,11 @@ public class ConsolePlayer extends Thread {
                                     Logger.getLogger(this, "Jumps value incorrect").rawError();
                                 else {
                                     player.seekFolder(option, jumps.intValue());
-                                    Logger.getLogger(this, "Seeked").rawInfo();
+                                    Logger.getLogger(this, "Seeked").rawWarning();
                                 }
                             }
 
-                        }
-                        else
+                        } else
                             player.seekFolder(SeekOption.NEXT);
                     break;
 
@@ -259,7 +252,7 @@ public class ConsolePlayer extends Thread {
                                 Logger.getLogger(this, "Go to value incorrect").rawError();
                             else {
                                 player.seek(gotoSec.doubleValue());
-                                Logger.getLogger(this, "Right Goto command").rawInfo();
+                                Logger.getLogger(this, "Right Goto command").rawWarning();
                             }
                         }
                     break;
@@ -281,12 +274,11 @@ public class ConsolePlayer extends Thread {
                         File folderPath = new File(cmd.getOptionAt(0));
                         if (!folderPath.exists())
                             folderPath = player.getRootFolder();
-                        File fileCover = new File(folderPath, "cover-"+current.getTitle()+".png");
+                        File fileCover = new File(folderPath, "cover-" + current.getTitle() + ".png");
                         fileCover.createNewFile();
                         Files.write(fileCover.toPath(), current.getCoverData(), WRITE);
-                        Logger.getLogger(this, "Created cover with name "+fileCover.getName()).rawInfo();
-                    }
-                    else {
+                        Logger.getLogger(this, "Created cover with name " + fileCover.getName()).rawWarning();
+                    } else {
                         Logger.getLogger(this, "Cover path not defined").rawError();
                     }
                     break;
@@ -296,7 +288,7 @@ public class ConsolePlayer extends Thread {
                     if (current == null)
                         Logger.getLogger(this, "Current track unavailable").rawError();
                     else
-                        Logger.getLogger(this, current.getSongInfo()).rawInfo();
+                        Logger.getLogger(this, current.getSongInfo()).rawWarning();
                     break;
 
                 case ConsoleOrder.GETPROGRESS:
@@ -304,7 +296,7 @@ public class ConsolePlayer extends Thread {
                     if (current == null)
                         Logger.getLogger(this, "Current track unavailable").rawError();
                     else
-                        Logger.getLogger(this, current.getProgress()).rawInfo();
+                        Logger.getLogger(this, current.getProgress()).rawWarning();
                     break;
 
                 case ConsoleOrder.CLEAR1:
@@ -323,7 +315,7 @@ public class ConsolePlayer extends Thread {
                         String className = current.getClass().getSimpleName();
                         Logger.getLogger(
                                 this,
-                                className.substring(0, className.length()-5).toLowerCase()).rawInfo();
+                                className.substring(0, className.length() - 5).toLowerCase()).rawWarning();
 
                     }
                     break;
@@ -357,7 +349,7 @@ public class ConsolePlayer extends Thread {
         if (SysInfo.ISUNIX)
             process = Runtime.getRuntime().exec("clear");
         else
-            process = Runtime.getRuntime().exec ("cls");
+            process = Runtime.getRuntime().exec("cls");
         try {
             process.waitFor();
         } catch (InterruptedException e) {
@@ -385,10 +377,10 @@ public class ConsolePlayer extends Thread {
                     .append('\n');
             count++;
         }
-        Logger.getLogger(this, "---------").rawInfo();
-        Logger.getLogger(this, "Help Info").rawInfo();
-        Logger.getLogger(this, "---------").rawInfo();
-        Logger.getLogger(this, sbHelp.toString()).rawInfo();
+        Logger.getLogger(this, "---------").rawWarning();
+        Logger.getLogger(this, "Help Info").rawWarning();
+        Logger.getLogger(this, "---------").rawWarning();
+        Logger.getLogger(this, sbHelp.toString()).rawWarning();
     }
 
     /*protected void startPlayer() {
@@ -399,11 +391,24 @@ public class ConsolePlayer extends Thread {
         }
     }*/
 
-    protected void printHeader() throws IOException {
+    protected void printHeader() {
         FileOutputStream stdout = SystemUtil.getStdout();
-        stdout.write(Logger.getLogger(this, LINEHEADER)
-                .getColoredMsg(ConsoleColor.ANSI_CYAN).getBytes());
-        stdout.flush();
+        try {
+            stdout.write(Logger.getLogger(this, LINEHEADER)
+                    .getColoredMsg(Logger.INFOCOLOR).getBytes());
+            stdout.flush();
+        } catch (IOException e) {
+            Logger.getLogger(this, e.getClass().getSimpleName(), e.getMessage()).error();
+        }
+    }
+
+    public void execCommand(String strCmd) {
+        try {
+            interpreter.interprate(strCmd);
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            Logger.getLogger(this, e.getClass().getSimpleName(), e.getMessage()).error();
+        }
+
     }
 
     @Override
@@ -412,15 +417,10 @@ public class ConsolePlayer extends Thread {
         String cmd;
         //startPlayer();
         on = true;
-
-        try {
-            while (on) {
-                printHeader();
-                cmd = scanner.nextLine().trim();
-                interpreter.interprate(cmd);
-            }
-        } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
-            Logger.getLogger(this, e.getClass().getSimpleName(), e.getMessage()).error();
+        while (on) {
+            printHeader();
+            cmd = scanner.nextLine().trim();
+            execCommand(cmd);
         }
     }
 

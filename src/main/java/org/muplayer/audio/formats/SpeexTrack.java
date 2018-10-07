@@ -1,7 +1,8 @@
 /*package org.muplayer.audio.formats;
 
 import org.muplayer.audio.Track;
-import org.xiph.speex.SpeexDecoder;
+import org.muplayer.audio.codec.DecodeManager;
+import org.xiph.speex.spi.Speex2PcmAudioInputStream;
 import org.xiph.speex.spi.SpeexAudioFileReader;
 import org.xiph.speex.spi.SpeexFormatConvertionProvider;
 
@@ -14,7 +15,7 @@ import java.io.IOException;
 
 public class SpeexTrack extends Track {
 
-    private SpeexDecoder decoder;
+    //private SpeexDecoder decoder;
     private SpeexFormatConvertionProvider provider;
 
     public SpeexTrack(File dataSource) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
@@ -27,29 +28,17 @@ public class SpeexTrack extends Track {
 
     @Override
     protected void loadAudioStream() throws IOException, UnsupportedAudioFileException {
-        decoder = new SpeexDecoder();
+        //decoder = new SpeexDecoder();
         provider = new SpeexFormatConvertionProvider();
         audioReader = new SpeexAudioFileReader();
         AudioInputStream soundAis = audioReader.getAudioInputStream(dataSource);
         if (trackStream != null)
             trackStream.close();
-        trackStream = provider.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, soundAis);
-    }
-
-    @Override
-    public String getDurationAsString() {
-        return null;
-    }
-
-    @Override
-    public String getFormattedDuration() {
-        return null;
-    }
-
-    public static void main(String[] args) {
-        Track.getTrack("/home/martin/AudioTesting/au.spx").start();
-
+        AudioFormat targetFormat = DecodeManager.getPcmFormatByMpeg(soundAis.getFormat());
+        trackStream = new Speex2PcmAudioInputStream(soundAis, targetFormat, dataSource.length());
+        //trackStream = provider.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, soundAis);
     }
 
 }
+
 */

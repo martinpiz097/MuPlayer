@@ -21,7 +21,7 @@ Music player library in pure Java.
             <dependency>
                 <groupId>com.gitlab.martinpiz097</groupId>
                 <artifactId>muplayer</artifactId>
-                <version>1.1</version>
+                <version>1.1.1</version>
             </dependency>
     Gradle:
         Add the repository:
@@ -58,7 +58,7 @@ Music player library in pure Java.
             <dependency>
                 <groupId>com.gitlab.martinpiz097</groupId>
                 <artifactId>muplayer</artifactId>
-                <version>1.1</version>
+                <version>1.1.1</version>
             </dependency>
     Gradle:
         Añade el repositorio:

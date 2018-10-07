@@ -9,4 +9,6 @@ public class SysInfo {
 
     public static final boolean ISUNIX = ISLINUX || ISMAC;
 
+    public static final String USERNAME = System.getProperty("user.name");
+
 }

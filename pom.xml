@@ -6,7 +6,7 @@
 
     <groupId>org.orangeplayer</groupId>
     <artifactId>muplayer</artifactId>
-    <version>1.1-RC</version>
+    <version>1.1.1-RC</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -116,20 +116,14 @@
 
         <dependency>
             <groupId>com.gitlab.martinpiz097</groupId>
-            <artifactId>ByteBuffer</artifactId>
-            <version>v0.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.gitlab.martinpiz097</groupId>
-            <artifactId>AuCom</artifactId>
-            <version>v0.10.1</version>
+            <artifactId>aucom</artifactId>
+            <version>0.10.1</version>
         </dependency>
 
         <dependency>
             <groupId>com.gitlab.OrangePlayerProject</groupId>
             <artifactId>orangelogger</artifactId>
-            <version>v0.2-RC</version>
+            <version>0.3</version>
         </dependency>
 
         <dependency>
@@ -144,6 +138,12 @@
             <version>0.3.7</version>
         </dependency>
 
+        <!--<dependency>
+            <groupId>com.gitlab.audiolibs</groupId>
+            <artifactId>jspeex-codec</artifactId>
+            <version>0.9.8</version>
+        </dependency>-->
+
         <dependency>
             <groupId>org</groupId>
             <artifactId>jaudiotagger</artifactId>
@@ -155,12 +155,6 @@
             <artifactId>jorbis</artifactId>
             <version>0.0.17.4</version>
         </dependency>
-
-        <!--<dependency>
-            <groupId>org.jcraft</groupId>
-            <artifactId>jorbis</artifactId>
-            <version>0.0.17</version>
-        </dependency>-->
 
         <dependency>
             <groupId>com.googlecode.soundlibs</groupId>
@@ -174,12 +168,6 @@
             <version>0.3.7-1</version>
         </dependency>
 
-        <!--<dependency>
-            <groupId>javazoom</groupId>
-            <artifactId>jlayer</artifactId>
-            <version>1.0.1</version>
-        </dependency>-->
-
         <dependency>
             <groupId>com.googlecode.soundlibs</groupId>
             <artifactId>jlayer</artifactId>
@@ -191,13 +179,6 @@
             <artifactId>jflac-codec</artifactId>
             <version>1.5.2</version>
         </dependency>
-
-        <!--<dependency>
-            <groupId>org.xiph.speex</groupId>
-            <artifactId>jspeex-codec</artifactId>
-            <version>0.9.8-SNAPSHOT</version>
-        </dependency>-->
-
 
     </dependencies>
 
