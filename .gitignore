@@ -2,3 +2,6 @@
 /libs/
 /Txt/
 MuPlayer.iml*
+/docs/
+dependency-reduced-pom.xml
+testingInfo.properties

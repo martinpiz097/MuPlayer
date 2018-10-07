@@ -33,9 +33,11 @@ public class ConsoleOrder {
     public static final String GETCOVER = "cover";
     public static final String GETINFO = "info";
     public static final String GETPROGRESS = "prog";
+    public static final String CLEAR1 = "clear";
+    public static final String CLEAR2 = "cls";
+    public static final String FORMAT = "format";
     public static final String HELP1 = "h";
     public static final String HELP2 = "help";
-    public static final String FORMAT = "format";
     public static final Map<String, String> HELP_MAP;
 
     static {
@@ -70,6 +72,8 @@ public class ConsoleOrder {
                 "y la guarda en la ruta seleccionada");
         HELP_MAP.put(GETINFO, "Obtiene información de la canción actual");
         HELP_MAP.put(GETPROGRESS, "Obtiene los segundos actuales reproducidos de la canción actual");
+        HELP_MAP.put(CLEAR1, "Limpia la pantalla");
+        HELP_MAP.put(CLEAR2, "Limpia la pantalla");
         HELP_MAP.put(HELP1, "Despliega el menú de ayuda de comandos");
         HELP_MAP.put(HELP2, "Despliega el menú de ayuda de comandos");
         HELP_MAP.put(FORMAT, "Obtiene el formato de audio de la canción");

@@ -235,3 +235,8 @@
 - 1.0.2 RC
     - Se corrige funcion de testing MusicPlayer
     - Se limpia un poco el código
+    
+- 1.1 RC
+    - Se realiza limpieza de código en ConsolePlayer
+    - Se añade funcion clear y cls para limpiar pantalla en ConsolePlayer
+    - Se limpia código en clase Track.

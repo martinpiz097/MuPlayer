@@ -3,16 +3,14 @@ package org.muplayer.main;
 import org.muplayer.audio.Player;
 import org.muplayer.audio.SeekOption;
 import org.muplayer.audio.Track;
+import org.muplayer.system.SysInfo;
 import org.orangelogger.sys.ConsoleColor;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.Iterator;
 import java.util.Map;
@@ -271,10 +269,7 @@ public class ConsolePlayer extends Thread {
                     break;
                 case ConsoleOrder.DURATION:
                     if (player != null)
-                        if (cmdOrder.length() > 1 && cmdOrder.charAt(1) == 's')
-                            Logger.getLogger(this, player.getCurrent().getDurationAsString()).info();
-                        else
-                            Logger.getLogger(this, player.getCurrent().getDuration()).info();
+                        Logger.getLogger(this, player.getCurrent().getFormattedDuration()).info();
                     break;
                 case ConsoleOrder.GETCOVER:
                     current = player.getCurrent();
@@ -312,6 +307,14 @@ public class ConsolePlayer extends Thread {
                         Logger.getLogger(this, current.getProgress()).rawInfo();
                     break;
 
+                case ConsoleOrder.CLEAR1:
+                    clearConsole();
+                    break;
+
+                case ConsoleOrder.CLEAR2:
+                    clearConsole();
+                    break;
+
                 case ConsoleOrder.FORMAT:
                     current = player.getCurrent();
                     if (current == null)
@@ -340,6 +343,30 @@ public class ConsolePlayer extends Thread {
             }
 
         };
+    }
+
+    protected void printStreamOut(InputStream cmdStream) throws IOException {
+        int read;
+        FileOutputStream stdout = SystemUtil.getStdout();
+        while ((read = cmdStream.read()) != -1)
+            stdout.write(read);
+    }
+
+    protected void clearConsole() throws IOException {
+        Process process;
+        if (SysInfo.ISUNIX)
+            process = Runtime.getRuntime().exec("clear");
+        else
+            process = Runtime.getRuntime().exec ("cls");
+        try {
+            process.waitFor();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if (process.exitValue() == 0)
+            printStreamOut(process.getInputStream());
+        else
+            printStreamOut(process.getErrorStream());
     }
 
     protected void printHelp() {

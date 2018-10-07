@@ -6,7 +6,7 @@
 
     <groupId>org.orangeplayer</groupId>
     <artifactId>muplayer</artifactId>
-    <version>1.0.2-RC</version>
+    <version>1.1-RC</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -91,11 +91,11 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
-        <repository>
+        <!--<repository>
             <id>in-project</id>
             <name>In Project Repo</name>
             <url>file://${project.basedir}/repo</url>
-        </repository>
+        </repository>-->
     </repositories>
 
     <dependencies>

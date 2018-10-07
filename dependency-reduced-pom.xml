@@ -44,11 +44,6 @@
       <id>jitpack.io</id>
       <url>https://jitpack.io</url>
     </repository>
-    <repository>
-      <id>in-project</id>
-      <name>In Project Repo</name>
-      <url>file://${project.basedir}/repo</url>
-    </repository>
   </repositories>
   <properties>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>

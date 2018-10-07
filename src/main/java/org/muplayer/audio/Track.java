@@ -41,6 +41,10 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     //protected ByteBuffer playingBuffer;
     //protected TrackState state;
 
+    static {
+        disableTagLogger();
+    }
+
     public static final int BUFFSIZE = 4096;
 
     public static Track getTrack(File fSound) {
@@ -84,6 +88,14 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         return isSupported /*&& getTrack(track).isValidTrack()*/;
     }
 
+    protected static void disableTagLogger() {
+        java.util.logging.Logger[] pin = new java.util.logging.Logger[]
+                {java.util.logging.Logger.getLogger("org.jaudiotagger")};
+
+        for (java.util.logging.Logger l : pin)
+            l.setLevel(Level.OFF);
+    }
+
     protected Track(File dataSource)
             throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this.dataSource = dataSource;
@@ -92,7 +104,6 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         volume = Player.DEFAULT_VOLUME;
         initAll();
         try {
-            disableTagLogger();
             if (isValidTrack())
                 tagInfo = new AudioTag(dataSource);
         } catch (TagException | ReadOnlyFileException | InvalidAudioFrameException | CannotReadException e) {
@@ -191,14 +202,6 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         long frameLen = trackStream == null ? BUFFSIZE : trackStream.getFrameLength();
         //Logger.getLogger(this, "FrameLenght: "+frameLen).rawInfo();
         return frameLen > 0 ? (int) (frameLen / 1024) : BUFFSIZE;
-    }
-
-    protected void disableTagLogger() {
-        java.util.logging.Logger[] pin = new java.util.logging.Logger[]
-                {java.util.logging.Logger.getLogger("org.jaudiotagger")};
-
-        for (java.util.logging.Logger l : pin)
-            l.setLevel(Level.OFF);
     }
 
     public boolean isValidTrack() {
