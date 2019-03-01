@@ -1,0 +1,19 @@
+OldGetTrackSoundMp3: 555
+NewGetTrackSoundMp3: 59
+OldGetTrackImg: 64
+NewGetTrackImg: 53
+------------------------
+OldGetTrackSoundOGG: 989
+NewGetTrackSoundOGG: 120
+OldGetTrackImg: 40
+NewGetTrackImg: 25
+-------------------------
+OldGetTrackSoundFlac: 3740
+NewGetTrackSoundFlac: 3595
+OldGetTrackImg: 22
+NewGetTrackImg: 21
+-------------------------
+OldGetTrackSoundWav: 93
+NewGetTrackSoundWav: 521
+OldGetTrackImg: 48
+NewGetTrackImg: 24

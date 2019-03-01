@@ -1,0 +1,11 @@
+- Saltar cancion automaticamente cuando tiene errores
+- Problema Nullpointer exception en cancion Pussycat dolls cuando se intenta leer titulo
+- NullPointerexception en Burning up y salta a falling down o no se que onda
+- Arreglar seek en ogg, el falling in love again suena feo
+- Problema con algunos m4a random, corregir non integral
+- Algunos m4a random tienen errores al ser escucharlos
+
+- Cuando inicio con plf antes de st al terminar la cancion no se reproduce la siguiente y queda el progreso en 0.0
+- Cuando se mutea la cancion y se pasa a la siguiente se entrega el volumen en 0 por tanto no se desmutea, se arreglaria dejando un boolean ismute cuando se consulta si esta muteado y asegurar el valor del volumen
+
+- Error al escanear bien pistas como track 11 de aspc live ya que al saltarlas en el OrangePlayer Desktop produce errores con la lista

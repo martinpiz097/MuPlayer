@@ -1,0 +1,16 @@
+- opcion para mostrar las siguientes o anteriores x canciones y si son de otra carpeta se muestra carpeta como prefijo
+- opcion para trabajar con mejoramiento de audio
+- mostrar todas las opciones por comando en menu de ayuda
+- crear opcion para mostrar una gui del reproductor en consola
+- mostrar canciones de una carpeta en especifico entregando el indice
+
+- probar que pasa si cargo dos lines en una cancion (reproduccion de sonido doble)
+- agregar comando acercade o version para ver detalles del software
+- crear objeto ordendescription con un string con la descripcion y un codigo que puede ser el id de una lista y en el una lista de comandos que contengan esa instruccion y cuando cargo el help se crea un objeto helpmanager que contenga una lista con lo orden description para que cuando haya mas de un comando con la misma orden este se mueste con las ordenes separadas por slashs
+- agregar modos de reproducción -- aleatorio, repetir todo, repetir cancion
+
+- Mostrar cancion carpeta siguiente segun comando
+- Listar hacia el lado detectando linea mas larga
+- Ver si se puede cambiar el tamaño del buffer a 512
+- Comando para mostrar cancion siguiente y anterior (ln lp)
+- opcion && para ejecutar mas de un comando a la vez

@@ -1,0 +1,11 @@
+Evaluacion de los tiempos de carga de los archivos de audio en milisegundos
+considerando 4 comprobaciones
+
+Array solo : 52,5 milliseconds
+
+Arrays.asList Stream : 224 milliseconds
+Arrays.asList Parallel : 245,5 milliseconds
+
+
+Arrays.stream : 244,75 milliseconds
+Arrays.parallel : 298,5 milliseconds

@@ -12,28 +12,28 @@ Music player library in pure Java.
         Add the repository:
             <repositories>
                 <repository>
-                    <id>jitpack.io</id>
-                    <url>https://jitpack.io</url>
+                    <id>clojars</id>
+                    <url>https://clojars.org/repo</url>
                 </repository>
             </repositories>
         
         Then add the dependency:
             <dependency>
-                <groupId>com.gitlab.martinpiz097</groupId>
+                <groupId>org.orangeplayer</groupId>
                 <artifactId>muplayer</artifactId>
-                <version>1.1.1</version>
+                <version>1.2-RC</version>
             </dependency>
     Gradle:
         Add the repository:
             allprojects {
                 repositories {
                     ...
-                    maven { url 'https://jitpack.io' }
+                    maven { url 'https://clojars.org/repo' }
                 }
             }
         Then add the dependency:
             dependencies {
-                implementation 'com.gitlab.martinpiz097:MuPlayer:Tag'
+                implementation 'org.orangeplayer:muplayer:1.2-RC'
             }
 # ------------------------------------------------------------------------------------
 
@@ -50,26 +50,26 @@ Music player library in pure Java.
             <repositories>
                 <repository>
                     <id>jitpack.io</id>
-                    <url>https://jitpack.io</url>
+                    <url>https://clojars.org/repo</url>
                 </repository>
             </repositories>
         
         Luego añade la dependencia:
             <dependency>
-                <groupId>com.gitlab.martinpiz097</groupId>
+                <groupId>org.orangeplayer</groupId>
                 <artifactId>muplayer</artifactId>
-                <version>1.1.1</version>
+                <version>1.2-RC</version>
             </dependency>
     Gradle:
         Añade el repositorio:
             allprojects {
                 repositories {
                     ...
-                    maven { url 'https://jitpack.io' }
+                    maven { url 'https://clojars.org/repo' }
                 }
             }
         Luego añade la dependencia:
             dependencies {
-                implementation 'com.gitlab.martinpiz097:MuPlayer:Tag'
+                implementation 'org.orangeplayer:muplayer:1.2-RC'
             }
     

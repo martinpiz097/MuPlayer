@@ -1,0 +1,14 @@
+GOTO MP3 Hacia atras no funciona bien en carpeta pop en algunas canciones
+agregar opcion al reproductor para entregar informacion general
+    cancion reproducida actualmente y formato
+    carpeta de la cancion
+    volumen actual
+    carpeta padre
+    numero de canciones cargadas
+    numero de carpetas cargadas
+    
+revisar seek mp3 en canciones de carpeta pop
+
+    
+    
+    

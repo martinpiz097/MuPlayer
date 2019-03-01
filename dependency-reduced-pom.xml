@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.orangeplayer</groupId>
   <artifactId>muplayer</artifactId>
-  <version>1.1-RC</version>
+  <version>1.2-RC</version>
   <build>
     <plugins>
       <plugin>
@@ -11,6 +11,9 @@
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
+          <fork>true</fork>
+          <meminitial>32m</meminitial>
+          <maxmem>128m</maxmem>
         </configuration>
       </plugin>
       <plugin>
@@ -37,14 +40,41 @@
           <finalName>${artifactId}-${version}</finalName>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.2.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>java</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <mainClass>org.muplayer.main.ConsolePlayer</mainClass>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <repositories>
+    <repository>
+      <id>clojars</id>
+      <name>Clojars repository</name>
+      <url>https://clojars.org/repo</url>
+    </repository>
     <repository>
       <id>jitpack.io</id>
       <url>https://jitpack.io</url>
     </repository>
   </repositories>
+  <distributionManagement>
+    <repository>
+      <id>clojars</id>
+      <name>Clojars repository</name>
+      <url>https://clojars.org/repo</url>
+    </repository>
+  </distributionManagement>
   <properties>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>

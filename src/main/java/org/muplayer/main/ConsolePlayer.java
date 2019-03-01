@@ -11,6 +11,7 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
@@ -39,6 +40,20 @@ public class ConsolePlayer extends Thread {
 
     public ConsolePlayer(String folder) throws FileNotFoundException {
         this(new File(folder));
+    }
+
+    private void execSysCommand(String cmd) {
+        Process process = null;
+        try {
+            process = Runtime.getRuntime().exec(cmd);
+            process.waitFor();
+            if (process.exitValue() == 0)
+                printStreamOut(process.getInputStream());
+            else
+                printStreamOut(process.getErrorStream());
+        } catch (IOException | InterruptedException e) {
+            Logger.getLogger(this, e.getMessage()).error();
+        }
     }
 
     protected void initInterpreter() {
@@ -257,12 +272,16 @@ public class ConsolePlayer extends Thread {
                         }
                     break;
                 case ConsoleOrder.SOUNDCOUNT:
+                    System.out.println("in soundcount option");
+                    int count = player.getSongsCount();
+                    System.out.println("SoundCount: "+count);
                     if (player != null)
-                        Logger.getLogger(this, player.getSongsCount()).info();
+                        Logger.getLogger(this, count).info();
                     break;
                 case ConsoleOrder.DURATION:
-                    if (player != null)
+                    if (player != null) {
                         Logger.getLogger(this, player.getCurrent().getFormattedDuration()).info();
+                    }
                     break;
                 case ConsoleOrder.GETCOVER:
                     current = player.getCurrent();
@@ -295,8 +314,14 @@ public class ConsolePlayer extends Thread {
                     current = player.getCurrent();
                     if (current == null)
                         Logger.getLogger(this, "Current track unavailable").rawError();
-                    else
-                        Logger.getLogger(this, current.getProgress()).rawWarning();
+                    else {
+                        if (cmd.hasOptions()) {
+                            if (cmd.getOptionAt(0).equals("h"))
+                                Logger.getLogger(this, current.getFormattedProgress()).rawWarning();
+                        }
+                        else
+                            Logger.getLogger(this, current.getProgress()).rawWarning();
+                    }
                     break;
 
                 case ConsoleOrder.CLEAR1:
@@ -326,6 +351,16 @@ public class ConsolePlayer extends Thread {
 
                 case ConsoleOrder.HELP2:
                     printHelp();
+                    break;
+
+                case ConsoleOrder.SYSTEM1:
+                    if (cmd.hasOptions())
+                        execSysCommand(cmd.getOptionAt(0));
+                    break;
+
+                case ConsoleOrder.SYSTEM2:
+                    if (cmd.hasOptions())
+                        execSysCommand(cmd.getOptionAt(0));
                     break;
 
                 default:
@@ -417,21 +452,27 @@ public class ConsolePlayer extends Thread {
         String cmd;
         //startPlayer();
         on = true;
+        final String CMD_DIVISOR = " && ";
         while (on) {
             printHeader();
             cmd = scanner.nextLine().trim();
-            execCommand(cmd);
+            if (cmd.contains(CMD_DIVISOR))
+                Arrays.stream(cmd.split(CMD_DIVISOR))
+                        .forEach(this::execCommand);
+            else
+                execCommand(cmd);
         }
     }
 
     public static void main(String[] args) {
         try {
             if (args.length == 0)
-                new ConsolePlayer("/home/martin/Escritorio/Archivos/Música").start();
+                new ConsolePlayer("/home/martin/Escritorio/Música").start();
             else
                 new ConsolePlayer(args[0]).start();
         } catch (Exception e) {
-            Logger.getLogger(ConsolePlayer.class, e.getClass().getSimpleName(), e.getMessage()).error();
+            e.printStackTrace();
+            //Logger.getLogger(ConsolePlayer.class, e.getClass().getSimpleName(), e.getMessage()).error();
         }
     }
 

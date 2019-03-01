@@ -38,6 +38,8 @@ public class ConsoleOrder {
     public static final String FORMAT = "format";
     public static final String HELP1 = "h";
     public static final String HELP2 = "help";
+    public static final String SYSTEM1 = "system";
+    public static final String SYSTEM2 = "sys";
     public static final Map<String, String> HELP_MAP;
 
     static {
@@ -77,5 +79,7 @@ public class ConsoleOrder {
         HELP_MAP.put(HELP1, "Despliega el menú de ayuda de comandos");
         HELP_MAP.put(HELP2, "Despliega el menú de ayuda de comandos");
         HELP_MAP.put(FORMAT, "Obtiene el formato de audio de la canción");
+        HELP_MAP.put(SYSTEM1, "Ejecuta comandos del sistema");
+        HELP_MAP.put(SYSTEM2, "Ejecuta comandos del sistema");
     }
 }

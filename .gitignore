@@ -1,7 +1,3 @@
-/target/
-/libs/
-/Txt/
-MuPlayer.iml*
-/docs/
-dependency-reduced-pom.xml
-testingInfo.properties
+target/
+compileandtest.sh
+testing.sh
