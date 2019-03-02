@@ -6,7 +6,7 @@
 
     <groupId>org.orangeplayer</groupId>
     <artifactId>muplayer</artifactId>
-    <version>1.2-RC</version>
+    <version>1.2</version>
     <packaging>jar</packaging>
 
     <properties>
