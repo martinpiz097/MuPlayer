@@ -1,13 +1,15 @@
-package org.muplayer.audio.formats.io;
+/*package org.muplayer.audio.formats.io;
 
 import net.sourceforge.jaad.aac.Decoder;
 import net.sourceforge.jaad.aac.SampleBuffer;
 import net.sourceforge.jaad.mp4.MP4Container;
 import net.sourceforge.jaad.mp4.api.AudioTrack;
 import net.sourceforge.jaad.mp4.api.Frame;
+import org.aucom.io.AudioBuffer;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.DigitalAudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +26,10 @@ public class M4AAudioInputStream extends AudioInputStream {
     private SampleBuffer buff;
     private Frame frame;
 
+    private AudioBuffer buffer;
+
+    private int pushBackLen = 0;
+
     private AudioDataOutputStream outputStream;
     private AudioDataInputStream inputStream;
 
@@ -31,6 +37,7 @@ public class M4AAudioInputStream extends AudioInputStream {
         super(stream, new AudioFormat(track.getSampleRate(),
                 track.getSampleSize(), track.getChannelCount(),
                 true, true), inputFile.length());
+        buffer = new AudioBuffer();
         this.inputFile = inputFile;
         outputStream = new AudioDataOutputStream(stream.getByteBuffer());
         inputStream = stream;
@@ -64,7 +71,62 @@ public class M4AAudioInputStream extends AudioInputStream {
 
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
-        return super.read(b, off, len);
+        if( (len%frameSize) != 0 ) {
+            len -= (len%frameSize);
+            if (len == 0) {
+                return 0;
+            }
+        }
+
+        if( frameLength != DigitalAudioSystem.NOT_SPECIFIED ) {
+            if( framePos >= frameLength ) {
+                return -1;
+            } else {
+
+                // don't try to read beyond our own set length in frames
+                if( (len/frameSize) > (frameLength-framePos) ) {
+                    len = (int) (frameLength-framePos) * frameSize;
+                }
+            }
+        }
+
+        int bytesRead = 0;
+        int thisOff = off;
+
+        // if we've bytes left from last call to read(),
+        // use them first
+        if (pushBackLen > 0 && len >= pushBackLen) {
+            System.arraycopy(pushBackBuffer, 0,
+                    b, off, pushBackLen);
+            thisOff += pushBackLen;
+            len -= pushBackLen;
+            bytesRead += pushBackLen;
+            pushBackLen = 0;
+        }
+
+        int thisBytesRead = buff.read(b, thisOff, len);
+        if (thisBytesRead == -1) {
+            return -1;
+        }
+        if (thisBytesRead > 0) {
+            bytesRead += thisBytesRead;
+        }
+        if (bytesRead > 0) {
+            pushBackLen = bytesRead % frameSize;
+            if (pushBackLen > 0) {
+                // copy everything we got from the beginning of the frame
+                // to our pushback buffer
+                if (pushBackBuffer == null) {
+                    pushBackBuffer = new byte[frameSize];
+                }
+                System.arraycopy(b, off + bytesRead - pushBackLen,
+                        pushBackBuffer, 0, pushBackLen);
+                bytesRead -= pushBackLen;
+            }
+            // make sure to update our framePos
+            framePos += bytesRead/frameSize;
+        }
+        return bytesRead;
     }
 
     @Override
@@ -98,3 +160,4 @@ public class M4AAudioInputStream extends AudioInputStream {
     }
 
 }
+*/

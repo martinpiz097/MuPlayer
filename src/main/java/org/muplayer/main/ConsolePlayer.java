@@ -193,6 +193,24 @@ public class ConsolePlayer extends Thread {
                             }
                         }
                     break;
+                case ConsoleOrder.GETSYSVOL:
+                    if (player != null)
+                        Logger.getLogger(this, "Player Volume(0-100): " + player.getSystemVolume()).rawWarning();
+                    break;
+
+                case ConsoleOrder.SETSYSVOL:
+                    if (player != null)
+                        if (cmd.hasOptions()) {
+                            Number volume = cmd.getOptionAsNumber(0);
+                            if (volume == null)
+                                Logger.getLogger(this, "Volume value incorrect").rawError();
+                            else {
+                                player.setSystemVolume(volume.floatValue());
+                                Logger.getLogger(this, "Volume value changed").rawWarning();
+                            }
+                        }
+                    break;
+
                 case ConsoleOrder.SHUTDOWN:
                     if (player != null) {
                         player.shutdown();

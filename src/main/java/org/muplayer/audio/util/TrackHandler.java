@@ -71,6 +71,11 @@ public class TrackHandler extends Thread implements MusicControls {
     }
 
     @Override
+    public void gotoSecond(double second) throws Exception{
+        track.gotoSecond(second);
+    }
+
+    @Override
     public float getGain() {
         return track.getGain();
     }

@@ -1,17 +1,50 @@
 package org.muplayer.system;
 
+import javax.sound.sampled.FloatControl;
 import java.io.File;
 
 import static org.muplayer.audio.util.AudioExtensions.SUPPORTEDEXTENSIONS;
 
 public class AudioUtil {
 
-    private static final float DELIMITER = 0.855f;
-    public static float convertVolRangeToLineRange(float volume) {
-        return (float) ((DELIMITER *volume)-80.0);
+    private static final float MAX_VOL = 0.855f;
+    private static final float MIN_VOL = -80f;
+    public static final float VOL_RANGE = MAX_VOL-MIN_VOL;
+    public static final float MiDDLE_VOL = VOL_RANGE / 2;
+
+    private static final float DEFAULT_MIN_VOL = 0;
+    private static final float DEFAULT_MAX_VOL = 100;
+    private static final float DEFAULT_VOL_RANGE = DEFAULT_MAX_VOL-DEFAULT_MIN_VOL;
+
+    private static float convertVolRangeToLineRange(float volume, float minLineVol, float maxLineVol) {
+        float volRange = maxLineVol-minLineVol;
+        float volScale = 1 / (DEFAULT_VOL_RANGE / volRange);
+
+        float result = (volume * volScale)+minLineVol;
+        return result < minLineVol ? minLineVol : (result > maxLineVol ? maxLineVol : result);
     }
+    private static float convertLineRangeToVolRange(float volume, float minLineVol, float maxLineVol) {
+        float volRange = maxLineVol-minLineVol;
+        float volScale = 1 / (DEFAULT_VOL_RANGE / volRange);
+
+        float result = (volume - minLineVol) / volScale;
+        return result < DEFAULT_MIN_VOL ? DEFAULT_MIN_VOL : (result > DEFAULT_MAX_VOL ? DEFAULT_MAX_VOL : result);
+    }
+
+    public static float convertVolRangeToLineRange(float volume) {
+        return convertVolRangeToLineRange(volume, MIN_VOL, MAX_VOL);
+    }
+
     public static float convertLineRangeToVolRange(float volume) {
-        return (float) ((volume+80.0) / DELIMITER);
+        return convertLineRangeToVolRange(volume, MIN_VOL, MAX_VOL);
+    }
+
+    public static float convertVolRangeToLineRange(float volume, FloatControl control) {
+        return convertVolRangeToLineRange(volume, control.getMinimum(), control.getMaximum());
+    }
+
+    public static float convertLineRangeToVolRange(float volume, FloatControl control) {
+        return convertLineRangeToVolRange(volume, control.getMinimum(), control.getMaximum());
     }
 
     public static boolean isSupported(File track) {
@@ -25,6 +58,12 @@ public class AudioUtil {
             }
         }
         return isSupported;
+    }
+
+    public static void main(String[] args) {
+        float lineVol = convertVolRangeToLineRange(100);
+        System.out.println(lineVol);
+        System.out.println(convertLineRangeToVolRange(lineVol));
     }
 
 }

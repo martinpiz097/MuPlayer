@@ -21,6 +21,8 @@ public class ConsoleOrder {
     public static final String LISTFOLDERS = "lf";
     public static final String GETGAIN = "gv";
     public static final String SETGAIN = "v";
+    public static final String GETSYSVOL = "gsv";
+    public static final String SETSYSVOL = "sv";
     public static final String SHUTDOWN = "sh";
     public static final String EXIT = "exit";
     public static final String QUIT = "quit";
@@ -61,6 +63,8 @@ public class ConsoleOrder {
         HELP_MAP.put(LISTFOLDERS, "Lista todas las carpetas leídas por el reproductor");
         HELP_MAP.put(GETGAIN, "Obtiene el volumen actual del reproductor");
         HELP_MAP.put(SETGAIN, "Cambia el volumen del reproductor (valor entre 0 y 100 ambos incluidos)");
+        HELP_MAP.put(GETSYSVOL, "Obtiene el volumen actual del sistema");
+        HELP_MAP.put(SETSYSVOL, "Cambia el volumen del sistema (valor entre 0 y 100 ambos incluidos)");
         HELP_MAP.put(SHUTDOWN, "Apaga el reproductor");
         HELP_MAP.put(EXIT, "Apaga el reproductor y finaliza la ejecución de MuPlayer");
         HELP_MAP.put(QUIT, "Apaga el reproductor y finaliza la ejecución de MuPlayer");

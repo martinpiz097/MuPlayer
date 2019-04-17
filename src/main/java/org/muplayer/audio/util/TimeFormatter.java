@@ -3,7 +3,10 @@ package org.muplayer.audio.util;
 public class TimeFormatter {
     public static String format(long time) {
         if (time < 60)
-            return String.valueOf(time);
+            if (time < 10)
+                return "00:0"+time;
+            else
+                return "00:"+time;
 
         StringBuilder sbDuration = new StringBuilder();
 

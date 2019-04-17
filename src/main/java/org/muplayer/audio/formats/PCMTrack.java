@@ -69,9 +69,9 @@ public class PCMTrack extends Track {
         Track track = new PCMTrack("/home/martin/AudioTesting/audio/wav2.wav");
         new Thread(track).start();
         System.out.println(track.getSongInfo());
-        AudioInputStream ais = AudioSystem.getAudioInputStream(
+        AudioInputStream ais = DigitalAudioSystem.getAudioInputStream(
                 new File("/home/martin/AudioTesting/audio/sound.ogg"));
-        Clip clip = AudioSystem.getClip();
+        Clip clip = DigitalAudioSystem.getClip();
         clip.open(ais);
         clip.start();
     }

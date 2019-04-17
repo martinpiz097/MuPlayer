@@ -252,3 +252,14 @@
     - Se agrega metodo getTracksInfo para solo obtener la informacion de las canciones
     - Se corrige metodo reloadTracks para el un futuro recargar desde rutas en un archivo
     - Se agrega opcion de compatibilidad multicomando en una linea (&&)
+
+- 1.3-RC
+    - Se agrega metodo gotoSecond en clase Player
+    - Se mejora el algoritmo de cambio de volumen
+    - Funcionalidad para modificar volumen del sistema agregada
+    - Problema goto corregido
+    - Metodo getFormattedProgress disponible en clase Player directamente
+    
+- 1.3.1-RC
+    - Se corrige error en getTracksInfo
+    

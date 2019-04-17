@@ -140,7 +140,7 @@ public class MusicPlayer extends ConsolePlayer {
                                 .getTrackLine().getDriver().available());
                         break;
                     /*case 'o':
-                        //AudioFileFormat format = AudioSystem.getAudioFileFormat(player.getCurrent().getDataSource());
+                        //AudioFileFormat format = DigitalAudioSystem.getAudioFileFormat(player.getCurrent().getDataSource());
                         AudioFormat format = player.getCurrent().getDecodedStream().getFormat();
                         Iterator<Map.Entry<String, Object>> it = format.properties().entrySet().iterator();
                         System.out.println("AudioFileFormat Properties!");

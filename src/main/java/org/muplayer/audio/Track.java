@@ -65,9 +65,8 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
             /*else if (trackName.endsWith(SPEEX))
                 result = new SpeexTrack(fSound);*/
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException | InvalidAudioFrameException e) {
-            Logger.getLogger(Track.class,
-                    e.getClass().getSimpleName(), e.getMessage()).error();
-            System.out.println("error en getTrack");
+            /*Logger.getLogger(Track.class,
+                    e.getClass().getSimpleName(), e.getMessage()).error();*/
         }
 
         return result;
@@ -331,6 +330,8 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
                 suspend();
             resetStream();
             state = STOPPED;
+            secsSeeked = 0;
+
         }
     }
 
@@ -360,14 +361,20 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         trackStream.skip(seek);
     }
 
+    @Override
     public void gotoSecond(double second) throws
             IOException, LineUnavailableException, UnsupportedAudioFileException {
         double progress = getProgress();
         if (second >= progress) {
+            int duration = (int) getDuration();
+            if (second > duration)
+                second = duration;
             int gt = (int) Math.round(second-getProgress());
             seek(gt);
         }
         else if (second < progress) {
+            if (second < 0)
+                second = 0;
             stopTrack();
             seek(second);
             resumeTrack();

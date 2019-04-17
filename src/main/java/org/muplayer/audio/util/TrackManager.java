@@ -36,9 +36,9 @@ public class TrackManager {
             }
             // Por si no tiene formato en el nombre
             else {
-                AudioFileFormat fileFormat = AudioSystem.getAudioFileFormat(source);
+                AudioFileFormat fileFormat = DigitalAudioSystem.getAudioFileFormat(source);
                 // Es ogg, aac o mp3
-                if (AudioSystem.isConversionSupported(
+                if (DigitalAudioSystem.isConversionSupported(
                         AudioFormat.Encoding.PCM_SIGNED, fileFormat.getFormat())) {
                     // no es mp3
                     if (DecodeManager.isVorbis(source))

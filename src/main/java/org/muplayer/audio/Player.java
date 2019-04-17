@@ -8,6 +8,9 @@ import org.jaudiotagger.tag.TagException;
 import org.muplayer.audio.interfaces.PlayerControls;
 import org.muplayer.audio.interfaces.PlayerListener;
 import org.muplayer.audio.model.TrackInfo;
+import org.muplayer.audio.util.PlayerInfo;
+import org.muplayer.system.AudioUtil;
+import org.muplayer.system.LineUtil;
 import org.muplayer.system.TrackStates;
 import org.muplayer.thread.PlayerHandler;
 import org.muplayer.thread.ThreadManager;
@@ -41,15 +44,21 @@ public class Player extends Thread implements PlayerControls {
     private volatile float currentVolume;
     private volatile boolean on;
 
-    public static float DEFAULT_VOLUME = 85.0f;
+    public static final float DEFAULT_VOLUME = AudioUtil.convertLineRangeToVolRange(AudioUtil.MiDDLE_VOL);
 
-    public Player() throws FileNotFoundException {
-        this((File) null);
+    public Player() {
+        try {
+            instancePlayer(null);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public Player(File rootFolder) throws FileNotFoundException {
-        disableLogging();
+        instancePlayer(rootFolder);
+    }
 
+    private void instancePlayer(File rootFolder) throws FileNotFoundException {
         this.rootFolder = rootFolder;
         listSoundPaths = new ArrayList<>();
         listFolderPaths = new ArrayList<>();
@@ -67,6 +76,7 @@ public class Player extends Thread implements PlayerControls {
             setName("ThreadPlayer "+getId());
         }
         trackIndex = -1;
+        disableLogging();
     }
 
     public Player(String folderPath) throws FileNotFoundException {
@@ -422,15 +432,16 @@ public class Player extends Thread implements PlayerControls {
     // sino rescatar de los que sean no mas
     public synchronized ArrayList<AudioTag> getTrackTags() {
         ArrayList<AudioTag> listTags = new ArrayList<>();
-        AudioTag tag;
+        ArrayList<TrackInfo> listInfos = getTracksInfo();
 
-        for (int i = 0; i < listSoundPaths.size(); i++) {
+        AudioTag tag;
+        for (int i = 0; i < listInfos.size(); i++) {
             try {
                 tag = new AudioTag(listSoundPaths.get(i));
                 if (tag.isValidFile())
                     listTags.add(tag);
-            } catch (ReadOnlyFileException | IOException |
-                    InvalidAudioFrameException | TagException | CannotReadException e) {
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return listTags;
@@ -438,8 +449,13 @@ public class Player extends Thread implements PlayerControls {
 
     public synchronized ArrayList<TrackInfo> getTracksInfo() {
         ArrayList<TrackInfo> listInfo = new ArrayList<>();
-        listSoundPaths.stream()
-                .forEach(path->listInfo.add(Track.getTrack(path)));
+        Track track;
+
+        for (int i = 0; i < listSoundPaths.size(); i++) {
+            track = Track.getTrack(listSoundPaths.get(i));
+            if (track != null)
+                listInfo.add(track);
+        }
         return listInfo;
     }
 
@@ -481,6 +497,10 @@ public class Player extends Thread implements PlayerControls {
             loadTracks(rootFolder);
             sortTracks();
         }
+    }
+
+    public PlayerInfo getInfo() {
+        return new PlayerInfo(this);
     }
 
     public synchronized Track getCurrent() {
@@ -561,11 +581,6 @@ public class Player extends Thread implements PlayerControls {
                     listSoundPaths.add(sound.getPath());
             };
             listSounds.stream().forEach(consumer);
-            /*if (hasSounds()) {
-                suspend();
-                sortTracks();
-                resume();
-            }*/
         }
     }
 
@@ -820,6 +835,17 @@ public class Player extends Thread implements PlayerControls {
     }
 
     @Override
+    public synchronized void gotoSecond(double second) {
+        if (current != null) {
+            try {
+                current.gotoSecond(second);
+            } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
     public synchronized float getGain() {
         return current == null ? currentVolume : current.getGain();
     }
@@ -830,6 +856,16 @@ public class Player extends Thread implements PlayerControls {
         currentVolume = volume;
         if (current != null)
             current.setGain(volume);
+    }
+
+    @Override
+    public float getSystemVolume() {
+        return LineUtil.getFormattedMasterVolume();
+    }
+
+    @Override
+    public void setSystemVolume(float volume) {
+        LineUtil.setFormattedMasterVolume(volume);
     }
 
     @Override
@@ -851,6 +887,10 @@ public class Player extends Thread implements PlayerControls {
 
     public double getProgress() {
         return current == null ? 0 : current.getProgress();
+    }
+
+    public String getFormattedProgress() {
+        return current == null ? "00:00" : current.getFormattedProgress();
     }
 
     @Override

@@ -11,8 +11,11 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: org.aucom:aucom:0.10.1" level="project" />
-    <orderEntry type="library" name="Maven: org.bytebuffer:bytebuffer:0.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-slf4j-impl:2.11.2" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.11.2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.logging.log4j:log4j-core:2.11.2" level="project" />
+    <orderEntry type="library" name="Maven: org.aucom:aucom:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.gitlab.OrangePlayerProject:orangelogger:0.4" level="project" />
     <orderEntry type="library" name="Maven: com.gitlab.audiolibs:jaad:0.8.5" level="project" />
     <orderEntry type="library" name="Maven: com.gitlab.audiolibs:tritonus-jorbis:0.3.7" level="project" />
@@ -24,6 +27,7 @@
     <orderEntry type="library" name="Maven: junit:junit:3.8.2" level="project" />
     <orderEntry type="library" name="Maven: org.jflac:jflac-codec:1.5.2" level="project" />
     <orderEntry type="library" name="Maven: org.jline:jline:3.6.2" level="project" />
+    <orderEntry type="library" name="Maven: org.bytebuffer:bytebuffer:0.2" level="project" />
   </component>
   <component name="POM File Configuration" pomFile="" />
 </module>
