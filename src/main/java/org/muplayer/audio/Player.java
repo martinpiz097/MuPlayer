@@ -1,12 +1,11 @@
 package org.muplayer.audio;
 
 import org.aucom.sound.Speaker;
-import org.jaudiotagger.audio.exceptions.CannotReadException;
-import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
-import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
-import org.jaudiotagger.tag.TagException;
+import org.muplayer.audio.info.AudioTag;
+import org.muplayer.audio.info.SongData;
 import org.muplayer.audio.interfaces.PlayerControls;
 import org.muplayer.audio.interfaces.PlayerListener;
+import org.muplayer.audio.model.SeekOption;
 import org.muplayer.audio.model.TrackInfo;
 import org.muplayer.audio.util.PlayerInfo;
 import org.muplayer.system.AudioUtil;
@@ -449,12 +448,17 @@ public class Player extends Thread implements PlayerControls {
 
     public synchronized ArrayList<TrackInfo> getTracksInfo() {
         ArrayList<TrackInfo> listInfo = new ArrayList<>();
-        Track track;
+        AudioTag tag;
 
         for (int i = 0; i < listSoundPaths.size(); i++) {
-            track = Track.getTrack(listSoundPaths.get(i));
-            if (track != null)
-                listInfo.add(track);
+            try {
+                tag = new AudioTag(listSoundPaths.get(i));
+                if (tag.isValidFile())
+                    listInfo.add(new SongData(tag));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         }
         return listInfo;
     }

@@ -1,7 +1,7 @@
 package org.muplayer.main;
 
 import org.muplayer.audio.Player;
-import org.muplayer.audio.SeekOption;
+import org.muplayer.audio.model.SeekOption;
 import org.muplayer.audio.Track;
 import org.muplayer.system.SysInfo;
 import org.orangelogger.sys.Logger;

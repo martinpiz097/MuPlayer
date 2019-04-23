@@ -263,3 +263,5 @@
 - 1.3.1-RC
     - Se corrige error en getTracksInfo
     
+- 1.4-RC
+    - Se corrige metodo getTracksInfo

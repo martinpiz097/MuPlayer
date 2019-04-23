@@ -28,6 +28,10 @@ public class AudioInfo {
         header = audioFile.getAudioHeader();
     }
 
+    public File getDataSource() {
+        return audioFile.getFile();
+    }
+
     public String getTag(FieldKey tag) {
         return fileTag.getFirst(tag);
     }

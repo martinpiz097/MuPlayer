@@ -7,6 +7,7 @@ import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.TagException;
 import org.muplayer.audio.formats.*;
+import org.muplayer.audio.info.AudioTag;
 import org.muplayer.audio.interfaces.MusicControls;
 import org.muplayer.audio.model.TrackInfo;
 import org.muplayer.audio.util.Time;
