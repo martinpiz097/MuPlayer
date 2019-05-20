@@ -59,7 +59,7 @@ public class SongData implements TrackInfo {
     @Override
     public byte[] getCoverData() {
         Artwork cover = info.getCover();
-        return cover == null ? cover.getBinaryData() : null;
+        return cover == null ? null : cover.getBinaryData();
     }
 
     @Override

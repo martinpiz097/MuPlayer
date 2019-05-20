@@ -744,8 +744,11 @@ public class Player extends Thread implements PlayerControls {
             current.kill();
             String soundPath = listSoundPaths.get(index);
             Track track = Track.getTrack(soundPath);
-            current = track;
-            startThreadTrack();
+            if (track != null) {
+                current = track;
+                startThreadTrack();
+                trackIndex = index;
+            }
         }
     }
 
