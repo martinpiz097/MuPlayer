@@ -153,6 +153,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.audioutil</groupId>
+            <artifactId>sun-audio</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.gitlab.OrangePlayerProject</groupId>
             <artifactId>orangelogger</artifactId>
             <version>0.4</version>
