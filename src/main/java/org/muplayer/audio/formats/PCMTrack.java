@@ -53,8 +53,6 @@ public class PCMTrack extends Track {
                 audioReader = new WaveFileReader();
                 break;
             case AIFF:
-                audioReader = new AiffFileReader();
-                break;
             case AIFC:
                 audioReader = new AiffFileReader();
                 break;

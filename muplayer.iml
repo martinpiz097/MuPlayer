@@ -16,6 +16,7 @@
     <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.11.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.logging.log4j:log4j-core:2.11.2" level="project" />
     <orderEntry type="library" name="Maven: org.aucom:aucom:1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.audioutil:sun-audio:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.gitlab.OrangePlayerProject:orangelogger:0.4" level="project" />
     <orderEntry type="library" name="Maven: com.gitlab.audiolibs:jaad:0.8.5" level="project" />
     <orderEntry type="library" name="Maven: com.gitlab.audiolibs:tritonus-jorbis:0.3.7" level="project" />

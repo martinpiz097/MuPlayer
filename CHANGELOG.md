@@ -268,3 +268,6 @@
 
 - 1.3.3-RC
     - Se corrige error al reproducir por indice
+    
+- 1.3.4-RC
+    - Correcciones menores
