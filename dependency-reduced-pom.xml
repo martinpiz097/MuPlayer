@@ -10,7 +10,7 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <source>1.8</source>
-          <target>11</target>
+          <target>1.8</target>
           <fork>true</fork>
           <meminitial>32m</meminitial>
           <maxmem>128m</maxmem>
@@ -62,6 +62,11 @@
       <id>clojars</id>
       <name>Clojars repository</name>
       <url>https://clojars.org/repo</url>
+    </repository>
+    <repository>
+      <id>jahia</id>
+      <name>Jahia Repository</name>
+      <url>http://maven.jahia.org/maven2/</url>
     </repository>
     <repository>
       <id>jitpack.io</id>

@@ -271,3 +271,6 @@
     
 - 1.3.4-RC
     - Correcciones menores
+    
+- 1.3.5-RC
+    - Corregido comando goto en consolePlayer

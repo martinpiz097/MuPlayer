@@ -283,10 +283,8 @@ public class ConsolePlayer extends Thread {
                             Number gotoSec = cmd.getOptionAsNumber(0);
                             if (gotoSec == null)
                                 Logger.getLogger(this, "Go to value incorrect").rawError();
-                            else {
-                                player.seek(gotoSec.doubleValue());
-                                Logger.getLogger(this, "Right Goto command").rawWarning();
-                            }
+                            else
+                                player.gotoSecond(gotoSec.doubleValue());
                         }
                     break;
                 case ConsoleOrder.SOUNDCOUNT:
