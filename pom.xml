@@ -115,6 +115,11 @@
             <url>https://clojars.org/repo</url>
         </repository>
         <repository>
+            <id>jahia</id>
+            <name>Jahia Repository</name>
+            <url>http://maven.jahia.org/maven2/</url>
+        </repository>
+        <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
@@ -153,10 +158,11 @@
         </dependency>
 
         <dependency>
-            <groupId>org.audioutil</groupId>
-            <artifactId>sun-audio</artifactId>
-            <version>1.0</version>
+            <groupId>com.sun</groupId>
+            <artifactId>tools</artifactId>
+            <version>1.5.0</version>
         </dependency>
+
 
         <dependency>
             <groupId>com.gitlab.OrangePlayerProject</groupId>
