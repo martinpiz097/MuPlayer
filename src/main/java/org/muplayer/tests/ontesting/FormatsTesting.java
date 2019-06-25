@@ -2,6 +2,7 @@ package org.muplayer.tests.ontesting;
 
 import org.jflac.sound.spi.FlacAudioFileReader;
 import org.jflac.sound.spi.FlacFormatConversionProvider;
+import org.muplayer.audio.Player;
 import org.muplayer.audio.info.AudioTag;
 import org.muplayer.audio.Track;
 import org.muplayer.audio.formats.FlacTrack;
@@ -29,6 +30,7 @@ import static org.muplayer.tests.TestingKeys.TESTINGPATH;
 public class FormatsTesting {
 
     private static TestingManager manager;
+    private static final File TEST_FOLDER = new File("audio");
 
     static {
         try {
@@ -39,10 +41,13 @@ public class FormatsTesting {
     }
 
     public static void main(String[] args) throws Exception {
-        //execM4ASeekTest();
-        //execOggTagTest();
-        executeFormatTest();
-        //executeSongTesting(args[0]);
+        execTest("ogg");
+    }
+
+    private static void execTest(String format) throws FileNotFoundException {
+        File formatFolder = new File(TEST_FOLDER, format);
+        ConsolePlayer player = new ConsolePlayer(formatFolder);
+        player.start();
     }
 
     private static void executeSongTesting(String path) {

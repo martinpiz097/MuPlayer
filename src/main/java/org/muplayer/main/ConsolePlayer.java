@@ -361,6 +361,26 @@ public class ConsolePlayer extends Thread {
                     }
                     break;
 
+                case ConsoleOrder.TITLE:
+                    current = player.getCurrent();
+                    if (current == null)
+                        Logger.getLogger(this, "Current track unavailable").rawError();
+                    else {
+                        Logger.getLogger(this, current.getTitle()).rawWarning();
+
+                    }
+                    break;
+
+                case ConsoleOrder.NAME:
+                    current = player.getCurrent();
+                    if (current == null)
+                        Logger.getLogger(this, "Current track unavailable").rawError();
+                    else {
+                        Logger.getLogger(this, current.getDataSource().getName()).rawWarning();
+
+                    }
+                    break;
+
                 case ConsoleOrder.HELP1:
                     printHelp();
                     break;

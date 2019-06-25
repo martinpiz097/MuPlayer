@@ -274,3 +274,7 @@
     
 - 1.3.5-RC
     - Corregido comando goto en consolePlayer
+
+- 1.4-RC
+    - Se agregan comandos title y name
+    - Se corrige parcialmente goto en ogg

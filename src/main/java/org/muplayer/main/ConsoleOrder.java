@@ -38,6 +38,8 @@ public class ConsoleOrder {
     public static final String CLEAR1 = "clear";
     public static final String CLEAR2 = "cls";
     public static final String FORMAT = "format";
+    public static final String TITLE = "title";
+    public static final String NAME = "name";
     public static final String HELP1 = "h";
     public static final String HELP2 = "help";
     public static final String SYSTEM1 = "system";
@@ -83,6 +85,8 @@ public class ConsoleOrder {
         HELP_MAP.put(HELP1, "Despliega el menú de ayuda de comandos");
         HELP_MAP.put(HELP2, "Despliega el menú de ayuda de comandos");
         HELP_MAP.put(FORMAT, "Obtiene el formato de audio de la canción");
+        HELP_MAP.put(TITLE, "Obtiene el titulo de la canción");
+        HELP_MAP.put(NAME, "Obtiene el nombre del archivo de la canción");
         HELP_MAP.put(SYSTEM1, "Ejecuta comandos del sistema");
         HELP_MAP.put(SYSTEM2, "Ejecuta comandos del sistema");
     }
