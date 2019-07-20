@@ -278,3 +278,6 @@
 - 1.4-RC
     - Se agregan comandos title y name
     - Se corrige parcialmente goto en ogg
+
+- 1.4.1-RC
+    - Correccion de carga de listeners, ahora se ejecutan en paralelo
