@@ -281,3 +281,8 @@
 
 - 1.4.1-RC
     - Correccion de carga de listeners, ahora se ejecutan en paralelo
+
+- 1.4.2-RC
+    - Se agrega nombre a ListenerRunner
+    - Metodo isActive agregado
+    - Metodo getTracksTag optimizado

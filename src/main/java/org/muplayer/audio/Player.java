@@ -10,6 +10,7 @@ import org.muplayer.audio.model.TrackInfo;
 import org.muplayer.audio.util.PlayerInfo;
 import org.muplayer.system.AudioUtil;
 import org.muplayer.system.LineUtil;
+import org.muplayer.system.ListenersNames;
 import org.muplayer.system.TrackStates;
 import org.muplayer.thread.PlayerHandler;
 import org.muplayer.thread.ThreadManager;
@@ -215,7 +216,7 @@ public class Player extends Thread implements PlayerControls {
     private void loadListenerMethod(String methodName, Track track) {
         if (listListeners.isEmpty())
             return;
-        new Thread(() -> {
+        Thread tListenerRunner = new Thread(() -> {
             switch (methodName) {
                 case ONSONGCHANGE:
                     listListeners.parallelStream()
@@ -250,7 +251,9 @@ public class Player extends Thread implements PlayerControls {
                             .forEach(list-> list.onShutdown());
                     break;
             }
-        }).start();
+        });
+        tListenerRunner.setName("ListenerRunner "+tListenerRunner.getId());
+        tListenerRunner.start();
     }
 
     private synchronized void freezePlayer() {
@@ -316,6 +319,10 @@ public class Player extends Thread implements PlayerControls {
 
     public synchronized boolean hasSounds() {
         return !listSoundPaths.isEmpty();
+    }
+
+    public boolean isActive() {
+        return isAlive() && hasSounds();
     }
 
     public boolean existsFolder(String folderPath) {
@@ -412,10 +419,9 @@ public class Player extends Thread implements PlayerControls {
     // sino rescatar de los que sean no mas
     public synchronized ArrayList<AudioTag> getTrackTags() {
         ArrayList<AudioTag> listTags = new ArrayList<>();
-        ArrayList<TrackInfo> listInfos = getTracksInfo();
 
         AudioTag tag;
-        for (int i = 0; i < listInfos.size(); i++) {
+        for (int i = 0; i < getSongsCount(); i++) {
             try {
                 tag = new AudioTag(listSoundPaths.get(i));
                 if (tag.isValidFile())
@@ -729,6 +735,7 @@ public class Player extends Thread implements PlayerControls {
                 current = track;
                 startThreadTrack();
                 trackIndex = index;
+                loadListenerMethod(ONPLAYED, current);
             }
         }
     }
@@ -749,10 +756,9 @@ public class Player extends Thread implements PlayerControls {
             trackIndex = indexOf;
             if (current != null)
                 current.kill();
-            //Logger.getLogger(this, "SelectedTrack: "+track.getName()).rawWarning();
             current = Track.getTrack(track);
-            //Logger.getLogger(this, "Current: "+current.getTitle()).rawWarning();
             startThreadTrack();
+            loadListenerMethod(ONPLAYED, current);
         }
     }
 
@@ -776,6 +782,7 @@ public class Player extends Thread implements PlayerControls {
                 current.kill();
             current = Track.getTrack(song);
             startThreadTrack();
+            loadListenerMethod(ONPLAYED, current);
         }
     }
 
