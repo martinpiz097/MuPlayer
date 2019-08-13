@@ -4,13 +4,19 @@
   <groupId>org.orangeplayer</groupId>
   <artifactId>muplayer</artifactId>
   <name>muplayer</name>
-  <version>1.4.2</version>
+  <version>1.5</version>
   <developers>
     <developer>
       <name>Martin Pizarro Ascui</name>
       <email>martinpiz097@gmail.com</email>
     </developer>
   </developers>
+  <licenses>
+    <license>
+      <name>Apache 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+  </licenses>
   <build>
     <plugins>
       <plugin>
@@ -21,6 +27,7 @@
           <fork>true</fork>
           <meminitial>32m</meminitial>
           <maxmem>128m</maxmem>
+          <optimize>true</optimize>
         </configuration>
       </plugin>
       <plugin>

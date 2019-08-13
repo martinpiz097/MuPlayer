@@ -10,7 +10,6 @@ import org.muplayer.audio.model.TrackInfo;
 import org.muplayer.audio.util.PlayerInfo;
 import org.muplayer.system.AudioUtil;
 import org.muplayer.system.LineUtil;
-import org.muplayer.system.ListenersNames;
 import org.muplayer.system.TrackStates;
 import org.muplayer.thread.PlayerHandler;
 import org.muplayer.thread.ThreadManager;
@@ -38,7 +37,7 @@ public class Player extends Thread implements PlayerControls {
 
     private volatile ArrayList<String> listSoundPaths;
     private volatile ArrayList<String> listFolderPaths;
-    private volatile LinkedList<PlayerListener> listListeners;
+    private volatile ArrayList<PlayerListener> listListeners;
 
     private volatile int trackIndex;
     private volatile float currentVolume;
@@ -62,7 +61,7 @@ public class Player extends Thread implements PlayerControls {
         this.rootFolder = rootFolder;
         listSoundPaths = new ArrayList<>();
         listFolderPaths = new ArrayList<>();
-        listListeners = new LinkedList<>();
+        listListeners = new ArrayList<>();
         currentVolume = DEFAULT_VOLUME;
         on = false;
 
@@ -201,9 +200,8 @@ public class Player extends Thread implements PlayerControls {
 
     private String getThreadName() {
         final String trackName = current.getDataSource().getName();
-        final int strLimit = trackName.length() < 10 ? trackName.length() : 10;
-        return new StringBuilder()
-                .append("ThreadTrack: ")
+        final int strLimit = Math.min(trackName.length(), 10);
+        return new StringBuilder("ThreadTrack: ")
                 .append(trackName, 0, strLimit).toString();
     }
 
@@ -213,42 +211,46 @@ public class Player extends Thread implements PlayerControls {
         current.start();
     }
 
-    private void loadListenerMethod(String methodName, Track track) {
+    public void loadListenerMethod(String methodName, Track track) {
         if (listListeners.isEmpty())
             return;
         Thread tListenerRunner = new Thread(() -> {
             switch (methodName) {
                 case ONSONGCHANGE:
                     listListeners.parallelStream()
-                            .forEach(list-> list.onSongChange(track));
+                            .forEach(listener-> listener.onSongChange(track));
                     break;
                 case ONPLAYED:
                     listListeners.parallelStream()
-                            .forEach(list-> list.onPlayed(track));
+                            .forEach(listener-> listener.onPlayed(track));
+                    break;
+                case ONPLAYING:
+                    listListeners.parallelStream()
+                            .forEach(listener-> listener.onPlaying(track));
                     break;
                 case ONRESUMED:
                     listListeners.parallelStream()
-                            .forEach(list-> list.onResumed(track));
+                            .forEach(listener-> listener.onResumed(track));
                     break;
                 case ONPAUSED:
                     listListeners.parallelStream()
-                            .forEach(list-> list.onPaused(track));
+                            .forEach(listener-> listener.onPaused(track));
                     break;
                 case ONSTARTED:
                     listListeners.parallelStream()
-                            .forEach(list-> list.onStarted());
+                            .forEach(PlayerListener::onStarted);
                     break;
                 case ONSTOPPED:
                     listListeners.parallelStream()
-                            .forEach(list-> list.onStopped(track));
+                            .forEach(listener-> listener.onStopped(track));
                     break;
                 case ONSEEKED:
                     listListeners.parallelStream()
-                            .forEach(list-> list.onSeeked(track));
+                            .forEach(listener-> listener.onSeeked(track));
                     break;
                 case ONSHUTDOWN:
                     listListeners.parallelStream()
-                            .forEach(list-> list.onShutdown());
+                            .forEach(PlayerListener::onShutdown);
                     break;
             }
         });
@@ -288,8 +290,7 @@ public class Player extends Thread implements PlayerControls {
         //System.out.println("FirstFound: "+fileTrack.getPath());
         if (fileTrack == null)
             return null;
-        return fileTrack == null ? null :
-                (Track.isValidTrack(fileTrack)?Track.getTrack(fileTrack):null);
+        return Track.isValidTrack(fileTrack)?Track.getTrack(fileTrack):null;
     }
 
     private void startPlaying() {
@@ -377,7 +378,7 @@ public class Player extends Thread implements PlayerControls {
         int folderSize = listFolderPaths.size();
         for (int i = 0; i < folderSize; i++) {
             int finalI = i;
-            if (!listSoundPaths.parallelStream().anyMatch(sp->
+            if (listSoundPaths.parallelStream().noneMatch(sp->
                     new File(sp).getParent().equals(listFolderPaths.get(finalI)))) {
                 listFolderPaths.remove(i);
                 folderSize--;
@@ -454,7 +455,7 @@ public class Player extends Thread implements PlayerControls {
         listListeners.add(listener);
     }
 
-    public synchronized LinkedList<PlayerListener> getListeners() {
+    public synchronized ArrayList<PlayerListener> getListeners() {
         return listListeners;
     }
 
@@ -496,6 +497,18 @@ public class Player extends Thread implements PlayerControls {
 
     public synchronized Track getCurrent() {
         return current;
+    }
+
+    public synchronized TrackInfo getNext() {
+        int songsCount = getSongsCount();
+        int nextIndex = trackIndex == -1 ? 0 : (trackIndex == songsCount-1 ? 0 : trackIndex+1);
+        return Track.getTrack(listSoundPaths.get(nextIndex));
+    }
+
+    public synchronized TrackInfo getPrevious() {
+        int songsCount = getSongsCount();
+        int prevIndex = trackIndex == -1 ? 0 : (trackIndex == 0 ? songsCount-1 : trackIndex-1);
+        return Track.getTrack(listSoundPaths.get(prevIndex));
     }
 
     public synchronized Speaker getTrackSpeaker() {

@@ -13,6 +13,8 @@ import org.muplayer.audio.model.TrackInfo;
 import org.muplayer.audio.util.Time;
 import org.muplayer.audio.util.TimeFormatter;
 import org.muplayer.system.AudioUtil;
+import org.muplayer.system.ListenersNames;
+import org.muplayer.thread.TPlayingTrack;
 import org.orangelogger.sys.Logger;
 import org.muplayer.thread.PlayerHandler;
 
@@ -595,6 +597,9 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         //logger.setMsg(getSongInfo());
         //logger.rawInfo();
 
+        TPlayingTrack threadPlaying = new TPlayingTrack(this);
+        threadPlaying.start();
+
         while (!isFinished() && !isKilled() && isValidTrack()) {
             try {
                 while (isPlaying())
@@ -611,6 +616,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
                             trackLine.playAudio(audioBuffer);
                         else
                             Logger.getLogger(this, "TrackLineNull").info();
+
                     } catch (IndexOutOfBoundsException e) {
                         finish();
                     }
@@ -630,7 +636,5 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         if (isFinished() && isPlayerLinked && PlayerHandler.hasInstance())
             PlayerHandler.getPlayer().playNext();
     }
-
-
 }
 

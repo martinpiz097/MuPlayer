@@ -12,5 +12,6 @@
 - Mostrar cancion carpeta siguiente segun comando
 - Listar hacia el lado detectando linea mas larga
 - Ver si se puede cambiar el tamaño del buffer a 512
-- Comando para mostrar cancion siguiente y anterior (ln lp)
-- opcion && para ejecutar mas de un comando a la vez
+
+- Comando add + rutacarpeta para agregar mas canciones a la lista
+- Comando delf para eliminar carpeta de la lista

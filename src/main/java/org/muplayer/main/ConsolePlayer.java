@@ -1,6 +1,7 @@
 package org.muplayer.main;
 
 import org.muplayer.audio.Player;
+import org.muplayer.audio.interfaces.PlayerListener;
 import org.muplayer.audio.model.SeekOption;
 import org.muplayer.audio.Track;
 import org.muplayer.system.SysInfo;
@@ -157,10 +158,6 @@ public class ConsolePlayer extends Thread {
                     break;
 
                 case ConsoleOrder.LIST1:
-                    if (player != null)
-                        player.printTracks();
-                    break;
-
                 case ConsoleOrder.LIST2:
                     if (player != null)
                         player.printTracks();
@@ -219,13 +216,6 @@ public class ConsolePlayer extends Thread {
                     break;
 
                 case ConsoleOrder.EXIT:
-                    if (player != null) {
-                        player.shutdown();
-                        player = null;
-                    }
-                    on = false;
-                    break;
-
                 case ConsoleOrder.QUIT:
                     if (player != null) {
                         player.shutdown();
@@ -341,9 +331,6 @@ public class ConsolePlayer extends Thread {
                     break;
 
                 case ConsoleOrder.CLEAR1:
-                    clearConsole();
-                    break;
-
                 case ConsoleOrder.CLEAR2:
                     clearConsole();
                     break;
@@ -382,21 +369,24 @@ public class ConsolePlayer extends Thread {
                     break;
 
                 case ConsoleOrder.HELP1:
-                    printHelp();
-                    break;
-
                 case ConsoleOrder.HELP2:
                     printHelp();
                     break;
 
                 case ConsoleOrder.SYSTEM1:
+                case ConsoleOrder.SYSTEM2:
                     if (cmd.hasOptions())
                         execSysCommand(cmd.getOptionAt(0));
                     break;
 
-                case ConsoleOrder.SYSTEM2:
-                    if (cmd.hasOptions())
-                        execSysCommand(cmd.getOptionAt(0));
+                case ConsoleOrder.LIST_NEXT:
+                    Track next = (Track) player.getNext();
+                    System.out.println(next.getSongInfo());
+                    break;
+
+                case ConsoleOrder.LIST_PREV:
+                    Track prev = (Track) player.getPrevious();
+                    System.out.println(prev.getSongInfo());
                     break;
 
                 default:
@@ -494,7 +484,7 @@ public class ConsolePlayer extends Thread {
             cmd = scanner.nextLine().trim();
             if (cmd.contains(CMD_DIVISOR))
                 Arrays.stream(cmd.split(CMD_DIVISOR))
-                        .forEach(this::execCommand);
+                        .forEach(cmdDiv->execCommand(cmdDiv.trim()));
             else
                 execCommand(cmd);
         }

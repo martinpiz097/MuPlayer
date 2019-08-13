@@ -6,7 +6,7 @@
 
     <groupId>org.orangeplayer</groupId>
     <artifactId>muplayer</artifactId>
-    <version>1.4.2</version>
+    <version>1.5</version>
     <packaging>jar</packaging>
 
     <name>muplayer</name>
@@ -26,6 +26,13 @@
         </developer>
     </developers>
 
+    <licenses>
+        <license>
+            <name>Apache 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
     <build>
         <plugins>
             <plugin>
@@ -37,6 +44,7 @@
                     <fork>true</fork>
                     <meminitial>32m</meminitial>
                     <maxmem>128m</maxmem>
+                    <optimize>true</optimize>
                 </configuration>
             </plugin>
 
@@ -171,7 +179,6 @@
             <version>1.5.0</version>
         </dependency>
 
-
         <dependency>
             <groupId>com.gitlab.OrangePlayerProject</groupId>
             <artifactId>orangelogger</artifactId>
@@ -211,13 +218,13 @@
         <dependency>
             <groupId>com.googlecode.soundlibs</groupId>
             <artifactId>mp3spi</artifactId>
-            <version>1.9.5-1</version>
+            <version>1.9.5.4</version>
         </dependency>
 
         <dependency>
             <groupId>com.googlecode.soundlibs</groupId>
             <artifactId>tritonus-share</artifactId>
-            <version>0.3.7-1</version>
+            <version>0.3.7.4</version>
         </dependency>
 
         <dependency>
@@ -235,7 +242,7 @@
         <dependency>
             <groupId>org.jline</groupId>
             <artifactId>jline</artifactId>
-            <version>3.6.2</version>
+            <version>3.12.1</version>
         </dependency>
 
         <dependency>

@@ -1,5 +1,8 @@
 package org.muplayer.main;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.Socket;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -44,6 +47,10 @@ public class ConsoleOrder {
     public static final String HELP2 = "help";
     public static final String SYSTEM1 = "system";
     public static final String SYSTEM2 = "sys";
+
+    public static final String LIST_NEXT = "ln";
+    public static final String LIST_PREV = "lp";
+
     public static final Map<String, String> HELP_MAP;
 
     static {
@@ -89,5 +96,18 @@ public class ConsoleOrder {
         HELP_MAP.put(NAME, "Obtiene el nombre del archivo de la canción");
         HELP_MAP.put(SYSTEM1, "Ejecuta comandos del sistema");
         HELP_MAP.put(SYSTEM2, "Ejecuta comandos del sistema");
+
+        HELP_MAP.put(LIST_NEXT, "Muestra información de la canción siguiente");
+        HELP_MAP.put(LIST_PREV, "Muestra información de la canción anterior");
+    }
+
+    public static void main(String[] args) throws IOException {
+        Socket socket = new Socket("localhost", 80);
+        InputStream in = socket.getInputStream();
+        socket.getOutputStream().write("a".getBytes());
+        int r;
+        while ((r = in.read()) != -1) {
+            System.out.print((char)r);
+        }
     }
 }

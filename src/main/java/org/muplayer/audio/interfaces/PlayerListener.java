@@ -5,6 +5,7 @@ import org.muplayer.audio.Track;
 public interface PlayerListener {
     public void onSongChange(Track newTrack);
     public void onPlayed(Track track);
+    public void onPlaying(Track track);
     public void onResumed(Track track);
     public void onPaused(Track track);
     public void onStarted();

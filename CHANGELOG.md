@@ -286,3 +286,11 @@
     - Se agrega nombre a ListenerRunner
     - Metodo isActive agregado
     - Metodo getTracksTag optimizado
+    
+- 1.5-RC
+    - Se actualizan versiones de dependencias
+    - Se agrega metodo onPlaying a PlayerListener
+    - Se agregan comandos ln y lp para mostrar la cancion siguiente
+	y anterior respectivamente en ConsolePlayer
+    - Mejoras pequeñas aplicadas
+	
