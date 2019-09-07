@@ -2,7 +2,6 @@ package org.muplayer.tests.ontesting;
 
 import org.jflac.sound.spi.FlacAudioFileReader;
 import org.jflac.sound.spi.FlacFormatConversionProvider;
-import org.muplayer.audio.Player;
 import org.muplayer.audio.info.AudioTag;
 import org.muplayer.audio.Track;
 import org.muplayer.audio.formats.FlacTrack;
@@ -30,10 +29,15 @@ import static org.muplayer.tests.TestingKeys.TESTINGPATH;
 public class FormatsTesting {
 
     private static TestingManager manager;
-    private static final File TEST_FOLDER = new File("audio");
+    private static File TEST_FOLDER;
 
     static {
         try {
+            TEST_FOLDER = new File("audio");
+            if (TEST_FOLDER.exists())
+                TEST_FOLDER = TEST_FOLDER.getCanonicalFile();
+            else
+                TEST_FOLDER = new File("muplayer/audio").getCanonicalFile();
             manager = new TestingManager();
         } catch (IOException e) {
             e.printStackTrace();
@@ -41,10 +45,15 @@ public class FormatsTesting {
     }
 
     public static void main(String[] args) throws Exception {
-        execTest("ogg");
+        execTest("mp3");
     }
 
     private static void execTest(String format) throws FileNotFoundException {
+        try {
+            System.out.println("TestFolderPath: "+TEST_FOLDER.getCanonicalPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         File formatFolder = new File(TEST_FOLDER, format);
         ConsolePlayer player = new ConsolePlayer(formatFolder);
         player.start();

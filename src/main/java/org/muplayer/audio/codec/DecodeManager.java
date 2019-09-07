@@ -41,11 +41,21 @@ public class DecodeManager {
         Logger.getLogger(DecodeManager.class, "FrameSize: "+baseFormat.getFrameSize())
                 .info();
         */
+
+        /*System.out.println("BaseSampleRate: "+baseFormat.getSampleRate());
+        System.out.println("BaseSampleSize: "+baseFormat.getSampleSizeInBits());
+        System.out.println("BaseChannels: "+baseFormat.getChannels());
+        System.out.println("BaseEncoding: "+baseFormat.getEncoding().toString());
+        System.out.println("BaseFrameRate: "+baseFormat.getFrameRate());
+        System.out.println("BaseFrameSize: "+baseFormat.getFrameSize());*/
+
+        /*return new AudioFormat(baseFormat.getSampleRate(), 16, baseFormat.getChannels(),
+                true, baseFormat.isBigEndian());*/
         return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
                 baseFormat.getSampleRate(),
                 16,
                 baseFormat.getChannels(),
-                baseFormat.getChannels() * 2,
+                baseFormat.getChannels()*2,
                 baseFormat.getSampleRate(),
                 baseFormat.isBigEndian());
     }

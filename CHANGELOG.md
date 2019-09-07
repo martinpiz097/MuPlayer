@@ -294,3 +294,5 @@
 	y anterior respectivamente en ConsolePlayer
     - Mejoras pequeñas aplicadas
 	
+- 1.5.1-RC
+    - Se muestra con color distintivo carpeta de la cancion actual en ConsolePlayer

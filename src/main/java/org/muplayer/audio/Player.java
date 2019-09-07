@@ -670,9 +670,22 @@ public class Player extends Thread implements PlayerControls {
         else
             Logger.getLogger(this, "Folders in "+rootFolder.getName()).rawInfo();
         Logger.getLogger(this, "------------------------------").rawInfo();
-        for (int i = 0; i < getFoldersCount(); i++)
-            Logger.getLogger(this, "Folder "+(i+1)+": "
-                    +new File(listFolderPaths.get(i)).getName()).rawInfo();
+
+        File currentTrackFile = getCurrent().getDataSource();
+        File folder;
+
+        for (int i = 0; i < getFoldersCount(); i++) {
+            folder = new File(listFolderPaths.get(i));
+            if (folder.getPath().equals(currentTrackFile.getParentFile().getPath())) {
+                Logger.getLogger(this, "Folder "+(i+1)+": "
+                        +folder.getName()).rawWarning();
+            }
+            else {
+                Logger.getLogger(this, "Folder "+(i+1)+": "
+                        +folder.getName()).rawInfo();
+            }
+
+        }
         Logger.getLogger(this, "------------------------------").rawInfo();
     }
 

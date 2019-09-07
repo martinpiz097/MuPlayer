@@ -1,4 +1,6 @@
-package org.muplayer.main;
+package org.muplayer.system;
+
+import org.muplayer.system.Command;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;

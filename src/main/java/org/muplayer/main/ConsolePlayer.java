@@ -1,9 +1,9 @@
 package org.muplayer.main;
 
 import org.muplayer.audio.Player;
-import org.muplayer.audio.interfaces.PlayerListener;
 import org.muplayer.audio.model.SeekOption;
 import org.muplayer.audio.Track;
+import org.muplayer.system.CommandInterpreter;
 import org.muplayer.system.SysInfo;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
@@ -376,7 +376,7 @@ public class ConsolePlayer extends Thread {
                 case ConsoleOrder.SYSTEM1:
                 case ConsoleOrder.SYSTEM2:
                     if (cmd.hasOptions())
-                        execSysCommand(cmd.getOptionAt(0));
+                        execSysCommand(cmd.getOptionsAsString());
                     break;
 
                 case ConsoleOrder.LIST_NEXT:
