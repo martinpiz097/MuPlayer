@@ -1,4 +1,4 @@
-/*package org.muplayer.audio.formats;
+package org.muplayer.audio.formats;
 
 import org.muplayer.audio.Track;
 import org.muplayer.audio.codec.DecodeManager;
@@ -35,10 +35,8 @@ public class SpeexTrack extends Track {
         if (trackStream != null)
             trackStream.close();
         AudioFormat targetFormat = DecodeManager.getPcmFormatByMpeg(soundAis.getFormat());
-        trackStream = new Speex2PcmAudioInputStream(soundAis, targetFormat, dataSource.length());
-        //trackStream = provider.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, soundAis);
+        //trackStream = new Speex2PcmAudioInputStream(soundAis, targetFormat, dataSource.length());
+        trackStream = provider.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, soundAis);
     }
 
 }
-
-*/

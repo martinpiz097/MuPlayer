@@ -48,8 +48,10 @@ public class ConsoleOrder {
     public static final String SYSTEM1 = "system";
     public static final String SYSTEM2 = "sys";
 
-    public static final String LIST_NEXT = "ln";
-    public static final String LIST_PREV = "lp";
+    public static final String SHOW_NEXT = "sn";
+    public static final String SHOW_PREV = "sp";
+
+    public static final String PLAY_FOLDER = "pf";
 
     public static final Map<String, String> HELP_MAP;
 
@@ -97,8 +99,10 @@ public class ConsoleOrder {
         HELP_MAP.put(SYSTEM1, "Ejecuta comandos del sistema");
         HELP_MAP.put(SYSTEM2, "Ejecuta comandos del sistema");
 
-        HELP_MAP.put(LIST_NEXT, "Muestra información de la canción siguiente");
-        HELP_MAP.put(LIST_PREV, "Muestra información de la canción anterior");
+        HELP_MAP.put(SHOW_NEXT, "Muestra información de la canción siguiente");
+        HELP_MAP.put(SHOW_PREV, "Muestra información de la canción anterior");
+
+        HELP_MAP.put(PLAY_FOLDER, "Reproduce una carpeta según el índice entregado");
     }
 
     public static void main(String[] args) throws IOException {

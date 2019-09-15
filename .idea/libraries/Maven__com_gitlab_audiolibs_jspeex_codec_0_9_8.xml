@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.gitlab.audiolibs:jspeex-codec:0.9.8">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/gitlab/audiolibs/jspeex-codec/0.9.8/jspeex-codec-0.9.8.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/gitlab/audiolibs/jspeex-codec/0.9.8/jspeex-codec-0.9.8-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/gitlab/audiolibs/jspeex-codec/0.9.8/jspeex-codec-0.9.8-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

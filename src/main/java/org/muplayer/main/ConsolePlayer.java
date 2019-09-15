@@ -43,8 +43,13 @@ public class ConsolePlayer extends Thread {
         this(new File(folder));
     }
 
+    private boolean isPlayerOn() {
+        return player != null &&
+                player.isAlive();
+    }
+
     private void execSysCommand(String cmd) {
-        Process process = null;
+        Process process;
         try {
             process = Runtime.getRuntime().exec(cmd);
             process.waitFor();
@@ -80,13 +85,11 @@ public class ConsolePlayer extends Thread {
 
                     break;
                 case ConsoleOrder.ISSTARTED:
-                    if (player != null)
-                        Logger.getLogger(this, player.isPlaying() ? "Is playing" : "Is not playing").rawWarning();
+                    Logger.getLogger(this, isPlayerOn() ? "Is playing" : "Is not playing").rawWarning();
                     break;
 
-
                 case ConsoleOrder.PLAY:
-                    if (player != null)
+                    if (isPlayerOn())
                         if (cmd.hasOptions()) {
                             Number playIndex = cmd.getOptionAsNumber(0);
                             if (playIndex != null &&
@@ -97,22 +100,22 @@ public class ConsolePlayer extends Thread {
                     break;
 
                 case ConsoleOrder.PAUSE:
-                    if (player != null)
+                    if (isPlayerOn())
                         player.pause();
                     break;
 
                 case ConsoleOrder.STOP:
-                    if (player != null)
+                    if (isPlayerOn())
                         player.stopTrack();
                     break;
 
                 case ConsoleOrder.RESUME:
-                    if (player != null)
+                    if (isPlayerOn())
                         player.resumeTrack();
                     break;
 
                 case ConsoleOrder.NEXT:
-                    if (player != null)
+                    if (isPlayerOn())
                         if (cmd.hasOptions()) {
                             Number jumps = cmd.getOptionAsNumber(0);
                             if (jumps == null)
@@ -124,7 +127,7 @@ public class ConsolePlayer extends Thread {
                     break;
 
                 case ConsoleOrder.PREV:
-                    if (player != null)
+                    if (isPlayerOn())
                         if (cmd.hasOptions()) {
                             Number jumps = cmd.getOptionAsNumber(0);
                             if (jumps == null)
@@ -148,12 +151,12 @@ public class ConsolePlayer extends Thread {
                     break;*/
 
                 case ConsoleOrder.MUTE:
-                    if (player != null)
+                    if (isPlayerOn())
                         player.mute();
                     break;
 
                 case ConsoleOrder.UNMUTE:
-                    if (player != null)
+                    if (isPlayerOn())
                         player.unmute();
                     break;
 
@@ -164,12 +167,12 @@ public class ConsolePlayer extends Thread {
                     break;
 
                 case ConsoleOrder.LISTCURRENTFOLDER:
-                    if (player != null)
+                    if (isPlayerOn())
                         player.printFolderTracks();
                     break;
 
                 case ConsoleOrder.LISTFOLDERS:
-                    if (player != null)
+                    if (isPlayerOn())
                         player.printFolders();
                     break;
 
@@ -209,7 +212,7 @@ public class ConsolePlayer extends Thread {
                     break;
 
                 case ConsoleOrder.SHUTDOWN:
-                    if (player != null) {
+                    if (isPlayerOn()) {
                         player.shutdown();
                         player = null;
                     }
@@ -217,7 +220,7 @@ public class ConsolePlayer extends Thread {
 
                 case ConsoleOrder.EXIT:
                 case ConsoleOrder.QUIT:
-                    if (player != null) {
+                    if (isPlayerOn()) {
                         player.shutdown();
                         player = null;
                     }
@@ -225,7 +228,7 @@ public class ConsolePlayer extends Thread {
                     break;
 
                 case ConsoleOrder.SEEK:
-                    if (player != null)
+                    if (isPlayerOn())
                         if (cmd.hasOptions()) {
                             Number seekSec = cmd.getOptionAsNumber(0);
                             if (seekSec == null)
@@ -237,7 +240,7 @@ public class ConsolePlayer extends Thread {
                         }
                     break;
                 case ConsoleOrder.SEEKFLD:
-                    if (player != null)
+                    if (isPlayerOn())
                         if (cmd.hasOptions()) {
                             String optionParam = cmd.getOptionAt(0);
                             SeekOption option = optionParam.equals("next") ? SeekOption.NEXT
@@ -379,14 +382,29 @@ public class ConsolePlayer extends Thread {
                         execSysCommand(cmd.getOptionsAsString());
                     break;
 
-                case ConsoleOrder.LIST_NEXT:
-                    Track next = (Track) player.getNext();
-                    System.out.println(next.getSongInfo());
+                case ConsoleOrder.SHOW_NEXT:
+                    if (isPlayerOn()) {
+                        Track next = (Track) player.getNext();
+                        System.out.println(next.getSongInfo());
+                    }
                     break;
 
-                case ConsoleOrder.LIST_PREV:
-                    Track prev = (Track) player.getPrevious();
-                    System.out.println(prev.getSongInfo());
+                case ConsoleOrder.SHOW_PREV:
+                    if (isPlayerOn()) {
+                        Track prev = (Track) player.getPrevious();
+                        System.out.println(prev.getSongInfo());
+                    }
+                    break;
+
+                case ConsoleOrder.PLAY_FOLDER:
+                    if (isPlayerOn()) {
+                        if (cmd.hasOptions()) {
+                            Number fldIndex = cmd.getOptionAsNumber(0);
+                            if (fldIndex != null) {
+                                player.playFolder(fldIndex.intValue()-1);
+                            }
+                        }
+                    }
                     break;
 
                 default:

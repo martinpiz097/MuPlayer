@@ -9,13 +9,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-public class MusicPlayer extends ConsolePlayer {
+public class TestPlayer extends ConsolePlayer {
 
-    public MusicPlayer(File rootFolder) throws FileNotFoundException {
+    public TestPlayer(File rootFolder) throws FileNotFoundException {
         super(rootFolder);
     }
 
-    public MusicPlayer(String folder) throws FileNotFoundException {
+    public TestPlayer(String folder) throws FileNotFoundException {
         super(folder);
     }
 
@@ -164,7 +164,7 @@ public class MusicPlayer extends ConsolePlayer {
 
 
             } catch(Exception e) {
-                Logger.getLogger(MusicPlayer.class, e.getClass().getSimpleName(), e.getMessage()).error();
+                Logger.getLogger(TestPlayer.class, e.getClass().getSimpleName(), e.getMessage()).error();
                 //e.printStackTrace();
             }
         }
@@ -177,13 +177,13 @@ public class MusicPlayer extends ConsolePlayer {
                 //"/home/martin/AudioTesting/music/"
                 //"/home/martin/AudioTesting/test/mix"
                 ;
-        MusicPlayer musicPlayer = null;
+        TestPlayer testPlayer = null;
         try {
-            musicPlayer = new MusicPlayer(fPath);
+            testPlayer = new TestPlayer(fPath);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        musicPlayer.start();
+        testPlayer.start();
 
     }
 }

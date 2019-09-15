@@ -30,7 +30,7 @@ public class PCMTrack extends Track {
                 *format.getChannels()*format.getSampleRate();
         long fLen = dataSource.length();
         System.out.println("BCM: "+bcm);
-        System.out.println("FLen: "+fLen);
+        System.out.println("FL  en: "+fLen);
         return (long) (fLen / bcm);
     }
 

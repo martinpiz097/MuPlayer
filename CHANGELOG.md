@@ -297,3 +297,8 @@
 - 1.5.1-RC
     - Se muestra con color distintivo carpeta de la cancion actual en ConsolePlayer
     - Codigo reordenado
+
+- 1.6-RC
+    - Optimizaciones y correcciones menores
+    - Al cambiar de cancion ahora se silencia la actual para no demorar la siguiente reproduccion
+    - Nuevo comando en ConsolePlayer que permite reproducir carpeta por indice: pf
