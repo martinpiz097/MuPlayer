@@ -218,50 +218,10 @@ public class Player extends Thread implements PlayerControls {
     }
 
     public void loadListenerMethod(String methodName, Track track) {
-        if (listListeners.isEmpty())
-            return;
-        Thread tListenerRunner = new Thread(() -> {
-            switch (methodName) {
-                case ONSONGCHANGE:
-                    listListeners.parallelStream()
-                            .forEach(listener-> listener.onSongChange(track));
-                    break;
-                case ONPLAYED:
-                    listListeners.parallelStream()
-                            .forEach(listener-> listener.onPlayed(track));
-                    break;
-                case ONPLAYING:
-                    listListeners.parallelStream()
-                            .forEach(listener-> listener.onPlaying(track));
-                    break;
-                case ONRESUMED:
-                    listListeners.parallelStream()
-                            .forEach(listener-> listener.onResumed(track));
-                    break;
-                case ONPAUSED:
-                    listListeners.parallelStream()
-                            .forEach(listener-> listener.onPaused(track));
-                    break;
-                case ONSTARTED:
-                    listListeners.parallelStream()
-                            .forEach(PlayerListener::onStarted);
-                    break;
-                case ONSTOPPED:
-                    listListeners.parallelStream()
-                            .forEach(listener-> listener.onStopped(track));
-                    break;
-                case ONSEEKED:
-                    listListeners.parallelStream()
-                            .forEach(listener-> listener.onSeeked(track));
-                    break;
-                case ONSHUTDOWN:
-                    listListeners.parallelStream()
-                            .forEach(PlayerListener::onShutdown);
-                    break;
-            }
-        });
-        tListenerRunner.setName("ListenerRunner "+tListenerRunner.getId());
-        tListenerRunner.start();
+        if (!listListeners.isEmpty()) {
+            Thread tListenerRunner = new ListenerRunner(listListeners, methodName, track);
+            tListenerRunner.start();
+        }
     }
 
     private synchronized void freezePlayer() {

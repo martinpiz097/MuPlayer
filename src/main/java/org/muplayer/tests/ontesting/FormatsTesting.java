@@ -2,6 +2,7 @@ package org.muplayer.tests.ontesting;
 
 import org.jflac.sound.spi.FlacAudioFileReader;
 import org.jflac.sound.spi.FlacFormatConversionProvider;
+import org.muplayer.audio.Player;
 import org.muplayer.audio.info.AudioTag;
 import org.muplayer.audio.Track;
 import org.muplayer.audio.formats.FlacTrack;
@@ -9,6 +10,7 @@ import org.muplayer.audio.formats.M4ATrack;
 import org.muplayer.audio.formats.OGGTrack;
 import org.muplayer.audio.formats.PCMTrack;
 import org.muplayer.audio.interfaces.MusicControls;
+import org.muplayer.audio.interfaces.PlayerListener;
 import org.muplayer.audio.util.TrackHandler;
 import org.muplayer.main.ConsoleOrder;
 import org.muplayer.main.ConsolePlayer;
@@ -45,7 +47,61 @@ public class FormatsTesting {
     }
 
     public static void main(String[] args) throws Exception {
-        execTest("mp3");
+        execTest("m4a");
+    }
+
+    public static void configListeners(Player player) {
+        player.addPlayerListener(new PlayerListener() {
+            @Override
+            public void onSongChange(Track newTrack) {
+                Logger.getLogger(FormatsTesting.class,
+                        "Song changed: "+newTrack.getTitle()).rawWarning();
+            }
+
+            @Override
+            public void onPlayed(Track track) {
+                Logger.getLogger(FormatsTesting.class,
+                        "Played: "+track.getTitle()).rawWarning();
+            }
+
+            @Override
+            public void onPlaying(Track track) {
+            }
+
+            @Override
+            public void onResumed(Track track) {
+                Logger.getLogger(FormatsTesting.class,
+                        "Resumed: "+track.getTitle()).rawWarning();
+            }
+
+            @Override
+            public void onPaused(Track track) {
+                Logger.getLogger(FormatsTesting.class,
+                        "Paused: "+track.getTitle()).rawWarning();
+            }
+
+            @Override
+            public void onStarted() {
+                Logger.getLogger(FormatsTesting.class, "Started").rawWarning();
+            }
+
+            @Override
+            public void onStopped(Track track) {
+                Logger.getLogger(FormatsTesting.class,
+                        "Stopped: "+track.getTitle()).rawWarning();
+            }
+
+            @Override
+            public void onSeeked(Track track) {
+                Logger.getLogger(FormatsTesting.class,
+                        "Seeked: "+track.getTitle()).rawWarning();
+            }
+
+            @Override
+            public void onShutdown() {
+                Logger.getLogger(FormatsTesting.class, "Shutdown").rawWarning();
+            }
+        });
     }
 
     private static void execTest(String format) throws FileNotFoundException {

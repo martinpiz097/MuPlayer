@@ -3,13 +3,13 @@ package org.muplayer.audio.interfaces;
 import org.muplayer.audio.Track;
 
 public interface PlayerListener {
-    public void onSongChange(Track newTrack);
-    public void onPlayed(Track track);
-    public void onPlaying(Track track);
-    public void onResumed(Track track);
-    public void onPaused(Track track);
-    public void onStarted();
-    public void onStopped(Track track);
-    public void onSeeked(Track track);
-    public void onShutdown();
+    void onSongChange(Track newTrack);
+    void onPlayed(Track track);
+    void onPlaying(Track track);
+    void onResumed(Track track);
+    void onPaused(Track track);
+    void onStarted();
+    void onStopped(Track track);
+    void onSeeked(Track track);
+    void onShutdown();
 }

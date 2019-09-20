@@ -1,10 +1,12 @@
 package org.muplayer.main;
 
 import org.muplayer.audio.Player;
+import org.muplayer.audio.interfaces.PlayerListener;
 import org.muplayer.audio.model.SeekOption;
 import org.muplayer.audio.Track;
 import org.muplayer.system.CommandInterpreter;
 import org.muplayer.system.SysInfo;
+import org.muplayer.tests.ontesting.FormatsTesting;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
 
@@ -62,6 +64,14 @@ public class ConsolePlayer extends Thread {
         }
     }
 
+    protected void showSongInfo(Track current) {
+        current = player.getCurrent();
+        if (current == null)
+            Logger.getLogger(this, "Current track unavailable").rawError();
+        else
+            Logger.getLogger(this, current.getSongInfo()).rawWarning();
+    }
+
     protected void initInterpreter() {
         interpreter = cmd -> {
             final String cmdOrder = cmd.getOrder();
@@ -82,7 +92,9 @@ public class ConsolePlayer extends Thread {
                             Logger.getLogger(this, "Folder not exists").rawError();
                     } else if (!player.isAlive())
                         player.start();
-
+                    if (player.getCurrent() != null) {
+                        showSongInfo(player.getCurrent());
+                    }
                     break;
                 case ConsoleOrder.ISSTARTED:
                     Logger.getLogger(this, isPlayerOn() ? "Is playing" : "Is not playing").rawWarning();
@@ -95,6 +107,7 @@ public class ConsolePlayer extends Thread {
                             if (playIndex != null &&
                                     playIndex.intValue() > 0 && playIndex.intValue() <= player.getSongsCount())
                                 player.play(playIndex.intValue() - 1);
+                            showSongInfo(player.getCurrent());
                         } else
                             player.play();
                     break;
@@ -124,10 +137,11 @@ public class ConsolePlayer extends Thread {
                                 player.jumpTrack(jumps.intValue(), SeekOption.NEXT);
                         } else
                             player.playNext();
+                        showSongInfo(player.getCurrent());
                     break;
 
                 case ConsoleOrder.PREV:
-                    if (isPlayerOn())
+                    if (isPlayerOn()) {
                         if (cmd.hasOptions()) {
                             Number jumps = cmd.getOptionAsNumber(0);
                             if (jumps == null)
@@ -136,19 +150,9 @@ public class ConsolePlayer extends Thread {
                                 player.jumpTrack(jumps.intValue(), SeekOption.PREV);
                         } else
                             player.playPrevious();
-                    break;
-
-                /*case ConsoleOrder.JUMP:
-                    if (cmd.hasOptions()) {
-                        Number jump = cmd.getOptionAsNumber(0);
-                        if (jump == null)
-                            Logger.getLogger(this, "Jump value incorrect").rawError();
-                        else {
-                            player.jumpTrack(jump.intValue(), SeekOption.NEXT);
-                            Logger.getLogger(this, "Jumped").rawInfo();
-                        }
+                        showSongInfo(player.getCurrent());
                     }
-                    break;*/
+                    break;
 
                 case ConsoleOrder.MUTE:
                     if (isPlayerOn())
@@ -240,7 +244,7 @@ public class ConsolePlayer extends Thread {
                         }
                     break;
                 case ConsoleOrder.SEEKFLD:
-                    if (isPlayerOn())
+                    if (isPlayerOn()) {
                         if (cmd.hasOptions()) {
                             String optionParam = cmd.getOptionAt(0);
                             SeekOption option = optionParam.equals("next") ? SeekOption.NEXT
@@ -264,6 +268,8 @@ public class ConsolePlayer extends Thread {
 
                         } else
                             player.seekFolder(SeekOption.NEXT);
+                        showSongInfo(player.getCurrent());
+                    }
                     break;
 
                 case ConsoleOrder.RELOAD:
@@ -312,11 +318,7 @@ public class ConsolePlayer extends Thread {
                     break;
 
                 case ConsoleOrder.GETINFO:
-                    current = player.getCurrent();
-                    if (current == null)
-                        Logger.getLogger(this, "Current track unavailable").rawError();
-                    else
-                        Logger.getLogger(this, current.getSongInfo()).rawWarning();
+                    showSongInfo(player.getCurrent());
                     break;
 
                 case ConsoleOrder.GETPROGRESS:
@@ -462,13 +464,54 @@ public class ConsolePlayer extends Thread {
         Logger.getLogger(this, sbHelp.toString()).rawWarning();
     }
 
-    /*protected void startPlayer() {
-        try {
-            interpreter.interprate(new Command(ConsoleOrder.START));
-        } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
-            e.printStackTrace();
-        }
-    }*/
+    protected void configListener() {
+        player.addPlayerListener(new PlayerListener() {
+            @Override
+            public void onSongChange(Track newTrack) {
+                showSongInfo(newTrack);
+            }
+
+            @Override
+            public void onPlayed(Track track) {
+
+            }
+
+            @Override
+            public void onPlaying(Track track) {
+
+            }
+
+            @Override
+            public void onResumed(Track track) {
+
+            }
+
+            @Override
+            public void onPaused(Track track) {
+
+            }
+
+            @Override
+            public void onStarted() {
+
+            }
+
+            @Override
+            public void onStopped(Track track) {
+
+            }
+
+            @Override
+            public void onSeeked(Track track) {
+
+            }
+
+            @Override
+            public void onShutdown() {
+
+            }
+        });
+    }
 
     protected void printHeader() {
         FileOutputStream stdout = SystemUtil.getStdout();
@@ -479,6 +522,10 @@ public class ConsolePlayer extends Thread {
         } catch (IOException e) {
             Logger.getLogger(this, e.getClass().getSimpleName(), e.getMessage()).error();
         }
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 
     public void execCommand(String strCmd) {

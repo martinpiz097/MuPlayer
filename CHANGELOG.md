@@ -302,3 +302,7 @@
     - Optimizaciones y correcciones menores
     - Al cambiar de cancion ahora se silencia la actual para no demorar la siguiente reproduccion
     - Nuevo comando en ConsolePlayer que permite reproducir carpeta por indice: pf
+
+- 1.6.1-RC ACTUAL
+    - ListenerRunner se separa a una clase aparte
+    - Se agrega un listener a ConsolePlayer

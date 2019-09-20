@@ -77,6 +77,7 @@ public class AudioDataInputStream extends InputStream {
 
     @Override
     public synchronized void mark(int readlimit) {
+        System.out.println("Mark: "+readlimit);
         if (!isClosed)
             readed = readlimit;
     }

@@ -7,13 +7,14 @@ import net.sourceforge.jaad.mp4.api.AudioTrack;
 import net.sourceforge.jaad.mp4.api.Frame;
 import net.sourceforge.jaad.mp4.api.Movie;
 import net.sourceforge.jaad.spi.javasound.AACAudioFileReader;
+import org.bytebuffer.ByteBuffer;
 import org.muplayer.audio.Track;
+import org.muplayer.audio.formats.io.AudioDataInputStream;
+import org.muplayer.audio.formats.io.AudioDataOutputStream;
+import org.muplayer.audio.info.AudioTag;
 import org.orangelogger.sys.Logger;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.*;
 import java.io.*;
 import java.util.List;
 
@@ -84,6 +85,7 @@ public class M4ATrack extends Track {
         return (AudioTrack) tracks.get(0);
     }
 
+    // para el caso de los m4a con contenedor quicktime
     private AudioInputStream decodeM4A(File inputFile) {
         try {
             final RandomAccessFile randomAccess = new RandomAccessFile(inputFile, "r");
@@ -103,12 +105,16 @@ public class M4ATrack extends Track {
                     track.getSampleSize(), track.getChannelCount(),
                     true, true);
 
+            //OutputStream outputStream = new AudioDataOutputStream();
+            //InputStream inputStream = new AudioDataInputStream((AudioDataOutputStream) outputStream);
+
             Frame frame;
             while (track.hasMoreFrames()) {
                 try {
                     frame = track.readNextFrame();
                     dec.decodeFrame(frame.getData(), buffer);
                     baos.write(buffer.getData());
+                    //outputStream.write(buffer.getData());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -118,9 +124,10 @@ public class M4ATrack extends Track {
                 return null;
 
             return new AudioInputStream(new ByteArrayInputStream(audioData), decFormat, audioData.length);
-
+            //return AudioSystem.getAudioInputStream(decFormat, AudioSystem.getAudioInputStream(inputFile));
         } catch (Exception e){
-            Logger.getLogger(this, "Exception", e.getMessage()).error();
+            Logger.getLogger(this, "Exception", e).error();
+            e.printStackTrace();
             return null;
         }
     }

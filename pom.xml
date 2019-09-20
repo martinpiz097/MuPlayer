@@ -6,7 +6,7 @@
 
     <groupId>org.orangeplayer</groupId>
     <artifactId>muplayer</artifactId>
-    <version>1.6</version>
+    <version>1.6.1</version>
     <packaging>jar</packaging>
 
     <name>muplayer</name>
@@ -139,6 +139,10 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+        <repository>
+            <id>Spring Lib Release Repository</id>
+            <url>https://repo.spring.io/libs-release/</url>
+        </repository>
 
         <!--<repository>
             <id>in-project</id>
@@ -185,9 +189,8 @@
             <version>0.4.1</version>
         </dependency>
 
-
         <dependency>
-            <groupId>com.gitlab.audiolibs</groupId>
+            <groupId>net.sourceforge.jaadec</groupId>
             <artifactId>jaad</artifactId>
             <version>0.8.5</version>
         </dependency>

@@ -549,6 +549,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         sbTabs.append('\n');
 
         return sbTabs.toString();
+        //return "\n".concat(sbTabs.toString());
     }
 
     public void getLineInfo() {
