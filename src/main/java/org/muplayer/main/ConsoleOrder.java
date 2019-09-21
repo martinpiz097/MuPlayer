@@ -52,6 +52,7 @@ public class ConsoleOrder {
     public static final String SHOW_PREV = "sp";
 
     public static final String PLAY_FOLDER = "pf";
+    public static final String LOAD = "load";
 
     public static final Map<String, String> HELP_MAP;
 
@@ -103,15 +104,7 @@ public class ConsoleOrder {
         HELP_MAP.put(SHOW_PREV, "Muestra información de la canción anterior");
 
         HELP_MAP.put(PLAY_FOLDER, "Reproduce una carpeta según el índice entregado");
+        HELP_MAP.put(LOAD, "Reinicia reproductor cargando la carpeta segun la ruta indicada");
     }
 
-    public static void main(String[] args) throws IOException {
-        Socket socket = new Socket("localhost", 80);
-        InputStream in = socket.getInputStream();
-        socket.getOutputStream().write("a".getBytes());
-        int r;
-        while ((r = in.read()) != -1) {
-            System.out.print((char)r);
-        }
-    }
 }

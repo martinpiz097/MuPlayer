@@ -50,60 +50,6 @@ public class FormatsTesting {
         execTest("m4a");
     }
 
-    public static void configListeners(Player player) {
-        player.addPlayerListener(new PlayerListener() {
-            @Override
-            public void onSongChange(Track newTrack) {
-                Logger.getLogger(FormatsTesting.class,
-                        "Song changed: "+newTrack.getTitle()).rawWarning();
-            }
-
-            @Override
-            public void onPlayed(Track track) {
-                Logger.getLogger(FormatsTesting.class,
-                        "Played: "+track.getTitle()).rawWarning();
-            }
-
-            @Override
-            public void onPlaying(Track track) {
-            }
-
-            @Override
-            public void onResumed(Track track) {
-                Logger.getLogger(FormatsTesting.class,
-                        "Resumed: "+track.getTitle()).rawWarning();
-            }
-
-            @Override
-            public void onPaused(Track track) {
-                Logger.getLogger(FormatsTesting.class,
-                        "Paused: "+track.getTitle()).rawWarning();
-            }
-
-            @Override
-            public void onStarted() {
-                Logger.getLogger(FormatsTesting.class, "Started").rawWarning();
-            }
-
-            @Override
-            public void onStopped(Track track) {
-                Logger.getLogger(FormatsTesting.class,
-                        "Stopped: "+track.getTitle()).rawWarning();
-            }
-
-            @Override
-            public void onSeeked(Track track) {
-                Logger.getLogger(FormatsTesting.class,
-                        "Seeked: "+track.getTitle()).rawWarning();
-            }
-
-            @Override
-            public void onShutdown() {
-                Logger.getLogger(FormatsTesting.class, "Shutdown").rawWarning();
-            }
-        });
-    }
-
     private static void execTest(String format) throws FileNotFoundException {
         try {
             System.out.println("TestFolderPath: "+TEST_FOLDER.getCanonicalPath());
