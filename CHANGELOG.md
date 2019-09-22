@@ -310,3 +310,6 @@
 - 1.7-RC
     - Se separa interpreter como objeto aparte para ser reutilizado en proyecto externo
     - Se agrega comando load en ConsolePlayer para reiniciar el reproductor cargando otra carpeta
+
+- 1.7.1-RC
+    - Correccion tipo hotfix en PlayerHandler

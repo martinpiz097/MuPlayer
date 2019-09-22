@@ -20,7 +20,7 @@ public class PlayerHandler {
     }
 
     public static synchronized Player getPlayer() {
-        return handler.player;
+        return handler == null ? null : handler.player;
     }
 
     private PlayerHandler(Player player) {

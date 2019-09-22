@@ -46,7 +46,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     public static final int BUFFSIZE = 4096;
 
-    public static Track getTrack(File fSound){
+    public static Track getTrack(File fSound) {
         if (!fSound.exists())
             return null;
         Track result = null;

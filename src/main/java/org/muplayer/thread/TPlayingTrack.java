@@ -1,5 +1,6 @@
 package org.muplayer.thread;
 
+import org.muplayer.audio.Player;
 import org.muplayer.audio.Track;
 import org.muplayer.system.ListenersNames;
 
@@ -17,9 +18,13 @@ public class TPlayingTrack extends Thread {
 
     @Override
     public void run() {
+        Player player;
         while (!track.isFinished() && !track.isKilled() && track.isValidTrack()) {
             try {
-                PlayerHandler.getPlayer().loadListenerMethod(ListenersNames.ONPLAYING, track);
+                player = PlayerHandler.getPlayer();
+                if (player != null) {
+                    player.loadListenerMethod(ListenersNames.ONPLAYING, track);
+                }
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
