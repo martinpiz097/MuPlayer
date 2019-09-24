@@ -5,6 +5,8 @@ import org.jaudiotagger.audio.mp3.MP3AudioHeader;
 import org.jflac.sound.spi.FlacAudioFileReader;
 import org.jflac.sound.spi.FlacFormatConversionProvider;
 import org.muplayer.audio.Track;
+import org.muplayer.audio.codec.DecodeManager;
+import org.muplayer.system.AudioUtil;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -12,6 +14,7 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class FlacTrack extends Track {
 
@@ -27,6 +30,10 @@ public class FlacTrack extends Track {
 
     public FlacTrack(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this(new File(trackPath));
+    }
+
+    public FlacTrack(InputStream inputStream) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        super(inputStream);
     }
 
     @Override
@@ -51,7 +58,7 @@ public class FlacTrack extends Track {
         }*/
         try {
             audioReader = new FlacAudioFileReader();
-            AudioInputStream flacAis = audioReader.getAudioInputStream(dataSource);
+            AudioInputStream flacAis = AudioUtil.instanceStream(audioReader, source);
             /*FlacDecoder flacDecoder = new FlacDecoder(dataSource);
             if (flacDecoder.isFlac()) {
                 StreamInfo info = flacDecoder.getFlacInfo();
@@ -74,16 +81,9 @@ public class FlacTrack extends Track {
             }*/
 
             AudioFormat format = flacAis.getFormat();
-            AudioFormat decodedFormat = new AudioFormat(
-                    AudioFormat.Encoding.PCM_SIGNED, format.getSampleRate(),
-                    format.getSampleSizeInBits(), format.getChannels(),
-                    format.getChannels() * 2, format.getSampleRate(),
-                    format.isBigEndian());
-
+            AudioFormat decodedFormat = DecodeManager.getPcmFormatByFlac(format);
             trackStream = new FlacFormatConversionProvider().
                     getAudioInputStream(decodedFormat, flacAis);
-
-
         } catch (UnsupportedAudioFileException | IOException e) {
             e.printStackTrace();
         }

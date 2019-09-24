@@ -27,7 +27,7 @@ public class AudioDataInputStream extends InputStream {
         this(outputStream.getByteBuffer());
     }
 
-    public ByteBuffer getByteBuffer() {
+    public synchronized ByteBuffer getByteBuffer() {
         return byteBuffer;
     }
 
@@ -37,7 +37,7 @@ public class AudioDataInputStream extends InputStream {
     }
 
     @Override
-    public int read(byte[] b, int off, int len) throws IOException {
+    public synchronized int read(byte[] b, int off, int len) throws IOException {
         if (isClosed)
             return -1;
         else {
@@ -56,7 +56,7 @@ public class AudioDataInputStream extends InputStream {
     }
 
     @Override
-    public long skip(long n) throws IOException {
+    public synchronized long skip(long n) throws IOException {
        if (isClosed)
            return 0;
        else {
@@ -66,12 +66,12 @@ public class AudioDataInputStream extends InputStream {
     }
 
     @Override
-    public int available() throws IOException {
+    public synchronized int available() throws IOException {
         return (int) (byteBuffer.size()-readed);
     }
 
     @Override
-    public void close() throws IOException {
+    public synchronized void close() throws IOException {
         isClosed = true;
     }
 
@@ -93,7 +93,7 @@ public class AudioDataInputStream extends InputStream {
     }
 
     @Override
-    public int read() throws IOException {
+    public synchronized int read() throws IOException {
         return isClosed ? -1 : byteBuffer.get((int) readed++);
     }
 

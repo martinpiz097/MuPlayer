@@ -5,6 +5,7 @@ import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.mp3.MP3AudioHeader;
 import org.muplayer.audio.Track;
 import org.muplayer.audio.codec.DecodeManager;
+import org.muplayer.system.AudioUtil;
 import org.orangelogger.sys.Logger;
 
 import javax.sound.sampled.AudioFormat;
@@ -13,6 +14,8 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 public class MP3Track extends Track {
 
@@ -61,11 +64,15 @@ public class MP3Track extends Track {
         this(new File(trackPath));
     }
 
+    public MP3Track(InputStream inputStream) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        super(inputStream);
+    }
+
     @Override
     protected void loadAudioStream() throws IOException, UnsupportedAudioFileException {
         // Ver si se escucha mejor en ogg utilizando la logica de mp3
         audioReader = new MpegAudioFileReader();
-        AudioInputStream soundAis = audioReader.getAudioInputStream(dataSource);
+        AudioInputStream soundAis = AudioUtil.instanceStream(audioReader, source);
         AudioFormat baseFormat = soundAis.getFormat();
         if (trackStream != null)
             trackStream.close();

@@ -4,10 +4,12 @@ import com.sun.media.sound.AiffFileReader;
 import com.sun.media.sound.AuFileReader;
 import com.sun.media.sound.WaveFileReader;
 import org.muplayer.audio.Track;
+import org.muplayer.system.AudioUtil;
 
 import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 import static org.muplayer.audio.util.AudioExtensions.*;
 
@@ -19,6 +21,10 @@ public class PCMTrack extends Track {
 
     public PCMTrack(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         super(trackPath);
+    }
+
+    public PCMTrack(InputStream inputStream) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        super(inputStream);
     }
 
     /*@Override
@@ -60,7 +66,7 @@ public class PCMTrack extends Track {
                 audioReader = new AuFileReader();
                 break;
         }
-        trackStream = audioReader.getAudioInputStream(dataSource);
+        trackStream = AudioUtil.instanceStream(audioReader, source);
     }
 
 }

@@ -313,3 +313,8 @@
 
 - 1.7.1-RC
     - Correccion tipo hotfix en PlayerHandler
+
+- 1.8-RC
+    - Soporte inicial para carga de Tracks desde InputStream, habra errores al cargar informacion de cancion
+    - En el inicio del modo consola se muestra la version actual de MuPlayer
+    - Se mejora velocidad de reproduccion, ya no se escucha acelerado

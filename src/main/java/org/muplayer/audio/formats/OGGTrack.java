@@ -3,13 +3,16 @@ package org.muplayer.audio.formats;
 import org.aucom.sound.Speaker;
 import org.muplayer.audio.Track;
 import org.muplayer.audio.codec.DecodeManager;
+import org.muplayer.system.AudioUtil;
 import org.tritonus.sampled.file.jorbis.JorbisAudioFileReader;
 
 import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class OGGTrack extends Track {
 
@@ -27,15 +30,14 @@ public class OGGTrack extends Track {
         this(new File(trackPath));
     }
 
-    private AudioInputStream createAudioStream() throws IOException, UnsupportedAudioFileException {
-        audioReader = new JorbisAudioFileReader();
-        AudioInputStream soundAis = audioReader.getAudioInputStream(dataSource);
-        return DecodeManager.decodeToPcm(soundAis);
+    public OGGTrack(InputStream inputStream) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        super(inputStream);
     }
 
-    @Override
-    protected void loadAudioStream() throws IOException, UnsupportedAudioFileException {
-        trackStream = createAudioStream();
+    private AudioInputStream createAudioStream() throws IOException, UnsupportedAudioFileException {
+        audioReader = new JorbisAudioFileReader();
+        AudioInputStream soundAis = AudioUtil.instanceStream(audioReader, source);
+        return DecodeManager.decodeToPcm(soundAis);
     }
 
     private Speaker createLine() throws LineUnavailableException {
@@ -45,6 +47,12 @@ public class OGGTrack extends Track {
         return line;
     }
 
+    @Override
+    protected void loadAudioStream() throws IOException, UnsupportedAudioFileException {
+        trackStream = createAudioStream();
+    }
+
+    @Override
     protected void initLine() throws LineUnavailableException {
         // Se deja el if porque puede que no se pueda leer el archivo
         // por n razones

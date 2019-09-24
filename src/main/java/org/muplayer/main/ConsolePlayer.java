@@ -3,15 +3,15 @@ package org.muplayer.main;
 import org.muplayer.audio.Player;
 import org.muplayer.audio.Track;
 import org.muplayer.audio.interfaces.PlayerListener;
+import org.muplayer.system.SysInfo;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Scanner;
 
 public class ConsolePlayer extends Thread {
@@ -109,7 +109,12 @@ public class ConsolePlayer extends Thread {
 
     @Override
     public void run() {
-        Logger.getLogger(this, "MuPlayer started...").rawInfo();
+        if (SysInfo.VERSION == null) {
+            Logger.getLogger(this, "MuPlayer started...").rawInfo();
+        }
+        else {
+            Logger.getLogger(this, "MuPlayer v"+SysInfo.VERSION+" started...").rawInfo();
+        }
         interpreter.setOn(true);
 
         while (interpreter.isOn()) {

@@ -47,7 +47,8 @@ public class DecodeManager {
         System.out.println("BaseChannels: "+baseFormat.getChannels());
         System.out.println("BaseEncoding: "+baseFormat.getEncoding().toString());
         System.out.println("BaseFrameRate: "+baseFormat.getFrameRate());
-        System.out.println("BaseFrameSize: "+baseFormat.getFrameSize());*/
+        System.out.println("BaseFrameSize: "+baseFormat.getFrameSize());
+        System.out.println("-----------------------------");*/
 
         /*return new AudioFormat(baseFormat.getSampleRate(), 16, baseFormat.getChannels(),
                 true, baseFormat.isBigEndian());*/
@@ -56,7 +57,17 @@ public class DecodeManager {
                 16,
                 baseFormat.getChannels(),
                 baseFormat.getChannels()*2,
+                baseFormat.getFrameRate()*1000,
+                baseFormat.isBigEndian());
+    }
+
+    public static AudioFormat getPcmFormatByFlac(AudioFormat baseFormat) {
+        return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
                 baseFormat.getSampleRate(),
+                baseFormat.getSampleSizeInBits(),
+                baseFormat.getChannels(),
+                baseFormat.getChannels()*2,
+                baseFormat.getFrameRate()*1000,
                 baseFormat.isBigEndian());
     }
 

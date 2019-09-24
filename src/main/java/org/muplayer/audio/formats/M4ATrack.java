@@ -12,6 +12,7 @@ import org.muplayer.audio.Track;
 import org.muplayer.audio.formats.io.AudioDataInputStream;
 import org.muplayer.audio.formats.io.AudioDataOutputStream;
 import org.muplayer.audio.info.AudioTag;
+import org.muplayer.system.AudioUtil;
 import org.orangelogger.sys.Logger;
 
 import javax.sound.sampled.*;
@@ -31,6 +32,10 @@ public class M4ATrack extends Track {
         this(new File(trackPath));
     }
 
+    public M4ATrack(InputStream inputStream) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        super(inputStream);
+    }
+
     @Override
     protected void loadAudioStream() {
         try {
@@ -41,7 +46,7 @@ public class M4ATrack extends Track {
             Logger.getLogger(this, "File not supported!").rawError();
             e.printStackTrace();
         } catch (IOException e) {
-            trackStream = decodeM4A(dataSource);
+            trackStream = decodeM4A(source);
             isAac = false;
         }
         // Probar despues transformando a PCM
@@ -52,7 +57,7 @@ public class M4ATrack extends Track {
 
     private void decodeAAC() throws IOException, UnsupportedAudioFileException {
         audioReader = new AACAudioFileReader();
-        trackStream = audioReader.getAudioInputStream(dataSource);
+        trackStream = AudioUtil.instanceStream(audioReader, source);
         // Para leer progreso en segundos de vorbis(posible opcion)
         //OggInfoReader info = new OggInfoReader();
         //FlacStreamReader streamReader = new FlacStreamReader();
@@ -73,8 +78,16 @@ public class M4ATrack extends Track {
         return new M4AAudioInputStream(inputFile, new AudioDataInputStream(), track);
     }*/
 
-    private AudioTrack getM4ATrack(RandomAccessFile randomAccess) throws IOException, UnsupportedAudioFileException {
-        final MP4Container cont = new MP4Container(randomAccess);
+    private AudioTrack getM4ATrack(Object source) throws IOException, UnsupportedAudioFileException {
+        final MP4Container cont;
+
+        if (source instanceof RandomAccessFile) {
+            cont = new MP4Container((RandomAccessFile) source);
+        }
+        else {
+            cont = new MP4Container((InputStream) source);
+        }
+
         final Movie movie = cont.getMovie();
         final List<net.sourceforge.jaad.mp4.api.Track> tracks =
                 movie.getTracks(AudioTrack.AudioCodec.AAC);
@@ -86,10 +99,17 @@ public class M4ATrack extends Track {
     }
 
     // para el caso de los m4a con contenedor quicktime
-    private AudioInputStream decodeM4A(File inputFile) {
+    private AudioInputStream decodeM4A(Object source) {
         try {
-            final RandomAccessFile randomAccess = new RandomAccessFile(inputFile, "r");
-            final AudioTrack track = getM4ATrack(randomAccess);
+            final AudioTrack track;
+            if (source instanceof File) {
+                final RandomAccessFile randomAccess = new RandomAccessFile((File) source, "r");
+                track = getM4ATrack(randomAccess);
+            }
+            else {
+                track = getM4ATrack(source);
+            }
+
             final Decoder dec = new Decoder(track.getDecoderSpecificInfo());
 
             /*m4aStream = new M4AInputStream(track, dec, randomAccess);

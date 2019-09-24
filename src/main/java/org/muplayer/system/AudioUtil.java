@@ -1,7 +1,13 @@
 package org.muplayer.system;
 
+import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.spi.AudioFileReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 import static org.muplayer.audio.util.AudioExtensions.SUPPORTEDEXTENSIONS;
 
@@ -47,6 +53,18 @@ public class AudioUtil {
         return convertLineRangeToVolRange(volume, control.getMinimum(), control.getMaximum());
     }
 
+    public static AudioInputStream instanceStream(AudioFileReader audioReader, Object source) throws IOException, UnsupportedAudioFileException {
+        if (source instanceof URL) {
+            return audioReader.getAudioInputStream((URL) source);
+        }
+        else if (source instanceof InputStream) {
+            return audioReader.getAudioInputStream((InputStream) source);
+        }
+        else {
+            return audioReader.getAudioInputStream((File) source);
+        }
+    }
+
     public static boolean isSupported(File track) {
         final String trackName = track.getName();
         boolean isSupported = false;
@@ -58,12 +76,6 @@ public class AudioUtil {
             }
         }
         return isSupported;
-    }
-
-    public static void main(String[] args) {
-        float lineVol = convertVolRangeToLineRange(100);
-        System.out.println(lineVol);
-        System.out.println(convertLineRangeToVolRange(lineVol));
     }
 
 }

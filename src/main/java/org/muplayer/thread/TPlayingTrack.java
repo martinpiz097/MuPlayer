@@ -10,10 +10,11 @@ public class TPlayingTrack extends Thread {
     public TPlayingTrack(Track track) {
         this.track = track;
         String title = track.getTitle();
-        if (title.length() > 10)
-            title = title.substring(0, 10);
-
-        setName("threadPlaying: "+title);
+        if (title != null) {
+            if (title.length() > 10)
+                title = title.substring(0, 10);
+            setName("threadPlaying: " + title);
+        }
     }
 
     @Override

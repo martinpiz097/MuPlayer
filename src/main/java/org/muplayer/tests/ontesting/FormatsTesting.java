@@ -47,7 +47,19 @@ public class FormatsTesting {
     }
 
     public static void main(String[] args) throws Exception {
-        execTest("m4a");
+        execTest();
+    }
+
+    private static void execTest() throws FileNotFoundException {
+        Scanner scan = new Scanner(System.in);
+        System.out.print("Format to Scan: ");
+        String format;
+
+        do {
+            format = scan.nextLine();
+        } while (format == null || format.isEmpty());
+
+        execTest(format);
     }
 
     private static void execTest(String format) throws FileNotFoundException {

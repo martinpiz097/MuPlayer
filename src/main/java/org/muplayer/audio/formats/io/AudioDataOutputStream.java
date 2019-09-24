@@ -31,7 +31,7 @@ public class AudioDataOutputStream extends OutputStream {
     }
 
     @Override
-    public void write(byte[] b, int off, int len) throws IOException {
+    public synchronized void write(byte[] b, int off, int len) throws IOException {
         if (isClosed)
             throw new IOException("Stream closed!");
         else
@@ -44,13 +44,13 @@ public class AudioDataOutputStream extends OutputStream {
     }
 
     @Override
-    public void close() throws IOException {
+    public synchronized void close() throws IOException {
         isClosed = true;
         //byteBuffer.clear();
     }
 
     @Override
-    public void write(int b) throws IOException {
+    public synchronized void write(int b) throws IOException {
         if (isClosed)
             throw new IOException("Stream closed!");
         else
