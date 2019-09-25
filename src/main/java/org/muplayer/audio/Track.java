@@ -4,6 +4,8 @@ import org.aucom.sound.Speaker;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.audio.ogg.util.OggCRCFactory;
+import org.jaudiotagger.audio.ogg.util.OggInfoReader;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.TagException;
 import org.muplayer.audio.formats.*;
@@ -54,6 +56,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
             return null;
         Track result = null;
         final String trackName = fSound.getName();
+
         try {
             if (trackName.endsWith(MPEG))
                 result = new MP3Track(fSound);
@@ -82,7 +85,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     }
 
     public static Track getTrack(InputStream inputStream) {
-        Track result = null;
+        Track result;
 
         try {
             result = new MP3Track(inputStream);
@@ -247,11 +250,10 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     }
 
     // Posible motivo de error para mas adelante
-    protected int getBuffLen() {
+    /*protected int getBuffLen() {
         long frameLen = trackStream == null ? BUFFSIZE : trackStream.getFrameLength();
-        //Logger.getLogger(this, "FrameLenght: "+frameLen).rawInfo();
         return frameLen > 0 ? (int) (frameLen / 1024) : BUFFSIZE;
-    }
+    }*/
 
     public boolean isValidTrack() {
         return trackStream != null && trackLine != null;
@@ -411,12 +413,14 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
             throws IOException {
         if (seconds == 0)
             return;
+
         secsSeeked+=seconds;
         AudioFormat audioFormat = getAudioFormat();
         float frameRate = audioFormat.getFrameRate();
         int frameSize = audioFormat.getFrameSize();
         double framesToSeek = frameRate*seconds;
         long seek = Math.round(framesToSeek*frameSize);
+
         trackStream.skip(seek);
     }
 
@@ -645,16 +649,10 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     @Override
     public void run() {
-        boolean isPlayerLinked = PlayerHandler.hasInstance();
-        byte[] audioBuffer = new byte[4096];
+        final boolean isPlayerLinked = PlayerHandler.hasInstance();
+        final byte[] audioBuffer = new byte[4096];
         int read;
         play();
-        long ti = Time.getInstance().getTime();
-
-        //Logger logger = Logger.getLogger(this, null);
-        //logger.setMsg("Starting Track "+getTitle()+"...");
-        //logger.setMsg(getSongInfo());
-        //logger.rawInfo();
 
         TPlayingTrack threadPlaying = new TPlayingTrack(this);
         threadPlaying.start();
@@ -671,11 +669,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
                             finish();
                             break;
                         }
-                        if (trackLine != null)
-                            trackLine.playAudio(audioBuffer);
-                        else
-                            Logger.getLogger(this, "TrackLineNull").info();
-
+                        trackLine.playAudio(audioBuffer);
                     } catch (IndexOutOfBoundsException e) {
                         finish();
                     }
@@ -689,9 +683,6 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
                 break;
             }
         }
-        //Logger.getLogger(this,
-        //        "FinalProgress/Duration: "+getProgress()+"/"+getDuration()).info();
-        //Logger.getLogger(this, "Track "+getTitle()+" completed!").rawWarning();
         if (isFinished() && isPlayerLinked && PlayerHandler.hasInstance())
             PlayerHandler.getPlayer().playNext();
     }

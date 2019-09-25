@@ -36,26 +36,23 @@ public class MP3Track extends Track {
         audioSize = dataSource.length() - audioStartByte;
         frameCount = audioHeader.getNumberOfFrames();
         frameSize = audioSize / frameCount;
-        //System.out.println("MP3FrameSize: "+frameSize);
-        //System.out.println("TrackFrameSize: "+getAudioFormat().getFrameSize());
 
         frameDurationInSec = (audioHeader.getPreciseTrackLength() / (double) frameCount);
-        /*System.out.println("AISFrameSize: "+trackStream.getFormat().getFrameSize());
-        System.out.println("FrameSize: "+frameSize);
-        System.out.println("FrameLenght: "+trackStream.getFrameLength());
-        System.out.println("FrameDuration: "+frameDurationInSec);*/
-        /*System.out.println("StartByte: "+audioStartByte);
-        System.out.println("Mp3StartByte: "+audioHeader.getMp3StartByte());
-        System.out.println("AudioSize: "+audioSize);
-        System.out.println("AudioSize2: "+frameSize*frameCount);
-        System.out.println("FrameCount: "+frameCount);
-        System.out.println("FrameSize: "+frameSize);
-        System.out.println("FrameDuration: "+frameDurationInSec);
-        System.out.println("TrackLenght: "+audioHeader.getTrackLength());
-        System.out.println("PreciseTrackLenght: "+audioHeader.getPreciseTrackLength());
-        System.out.println("AudioDataLenght: "+audioHeader.getAudioDataLength());
-        System.out.println("LenghtAsString: "+audioHeader.getTrackLengthAsString());*/
-
+        System.out.println("AudioHeader: FrameSize: "+frameSize);
+        System.out.println("AudioHeader: FrameCount: "+frameCount);
+        System.out.println("AudioHeader: AudioSize: "+frameSize*frameCount);
+        System.out.println("AudioHeader: FrameDuration: "+frameDurationInSec);
+        System.out.println("AudioHeader: FrameDurationXframeCount: "+frameDurationInSec*frameCount);
+        System.out.println("AudioHeader: StartByte: "+audioStartByte);
+        System.out.println("AudioHeader: Mp3StartByte: "+audioHeader.getMp3StartByte());
+        System.out.println("AudioHeader: TrackLenght: "+audioHeader.getTrackLength());
+        System.out.println("AudioHeader: PreciseTrackLenght: "+audioHeader.getPreciseTrackLength());
+        System.out.println("AudioHeader: AudioDataLenght: "+audioHeader.getTrackLengthAsString());
+        System.out.println("AudioHeader: LenghtAsString: "+audioHeader.getTrackLengthAsString());
+        System.out.println("AudioInputStream: FrameLenght: "+trackStream.getFrameLength());
+        System.out.println("AudioInputStream: FrameSize: "+trackStream.getFormat().getFrameSize());
+        System.out.println("File: AudioSize: "+audioSize);
+        System.out.println("----------------------------------------");
     }
 
     public MP3Track(String trackPath)
@@ -81,7 +78,9 @@ public class MP3Track extends Track {
 
     private long getBytesToSeek(double sec) {
         double frameNeeded = sec / frameDurationInSec;
-        return (long) (frameNeeded*frameSize);
+        long toSkip = Math.round(frameNeeded * frameSize);
+        System.out.println("ToSkip: "+toSkip);
+        return toSkip;
     }
 
     @Override
@@ -94,9 +93,9 @@ public class MP3Track extends Track {
         long skip = -2;
         try {
             skip = trackStream.skip(bytesToSeek);
+            System.out.println("Skipped: "+skip+"/BytesToSkip: "+bytesToSeek);
         } catch (ArrayIndexOutOfBoundsException e) {
             Logger.getLogger(this, e.getClass().getSimpleName(), e.getMessage()).error();
-            System.out.println("Skipped: "+skip+"/BytesToSkip: "+bytesToSeek);
         }
     }
 

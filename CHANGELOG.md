@@ -318,3 +318,8 @@
     - Soporte inicial para carga de Tracks desde InputStream, habra errores al cargar informacion de cancion
     - En el inicio del modo consola se muestra la version actual de MuPlayer
     - Se mejora velocidad de reproduccion, ya no se escucha acelerado
+
+- 1.8.1-RC ACTUAL
+    - Cambios menores en comandos prog y d
+    - Cambios menores en seek mp3
+    - Optimizaciones menores en clase Track

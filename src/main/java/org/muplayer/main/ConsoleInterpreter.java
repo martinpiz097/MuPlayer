@@ -350,7 +350,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
                 break;
             case ConsoleOrder.DURATION:
                 if (player != null) {
-                    Logger.getLogger(this, player.getCurrent().getFormattedDuration()).info();
+                    Logger.getLogger(this, player.getCurrent().getFormattedDuration()).rawInfo();
                 }
                 break;
             case ConsoleOrder.GETCOVER:
@@ -381,12 +381,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
                 if (current == null)
                     Logger.getLogger(this, "Current track unavailable").rawError();
                 else {
-                    if (cmd.hasOptions()) {
-                        if (cmd.getOptionAt(0).equals("h"))
-                            Logger.getLogger(this, current.getFormattedProgress()).rawWarning();
-                    }
-                    else
-                        Logger.getLogger(this, current.getProgress()).rawWarning();
+                    Logger.getLogger(this, current.getFormattedProgress()).rawWarning();
                 }
                 break;
 
