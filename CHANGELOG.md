@@ -332,3 +332,6 @@
     - Se agrega la opcion de manejar una carpeta padre por defecto configurandola en un archivo llamado config.properties, 
     la variable debe llamarse root_folder.
     - En el comando pf ahora se muestra la cancion actual reproducida
+
+- 1.9.1
+    - Se corrige error con nueva funcionalidad que reemplaza a PlayerHandler

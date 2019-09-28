@@ -165,7 +165,7 @@ public class Player extends Thread implements PlayerControls {
             else
                 currentIndex++;
             for (int i = currentIndex; i < listSoundPaths.size(); i++) {
-                next = Track.getTrack(listSoundPaths.get(i));
+                next = Track.getTrack(listSoundPaths.get(i), this);
                 // Este if es por si existen archivos que no fuesen sonidos
                 // en las carpetas
                 if (next != null && next.isValidTrack()) {
@@ -183,7 +183,7 @@ public class Player extends Thread implements PlayerControls {
                 currentIndex--;
 
             for (int i = currentIndex; i >= 0; i--) {
-                next = Track.getTrack(listSoundPaths.get(i));
+                next = Track.getTrack(listSoundPaths.get(i), this);
                 if (next != null) {
                     trackIndex = i;
                     break;
@@ -253,7 +253,7 @@ public class Player extends Thread implements PlayerControls {
 
         if (fileTrack == null)
             return null;
-        return Track.isValidTrack(fileTrack)?Track.getTrack(fileTrack):null;
+        return Track.isValidTrack(fileTrack)?Track.getTrack(fileTrack, this):null;
     }
 
     private int moveToFolder(String folderPath) {
@@ -449,13 +449,13 @@ public class Player extends Thread implements PlayerControls {
     public synchronized TrackInfo getNext() {
         int songsCount = getSongsCount();
         int nextIndex = trackIndex == -1 ? 0 : (trackIndex == songsCount-1 ? 0 : trackIndex+1);
-        return Track.getTrack(listSoundPaths.get(nextIndex));
+        return Track.getTrack(listSoundPaths.get(nextIndex), this);
     }
 
     public synchronized TrackInfo getPrevious() {
         int songsCount = getSongsCount();
         int prevIndex = trackIndex == -1 ? 0 : (trackIndex == 0 ? songsCount-1 : trackIndex-1);
-        return Track.getTrack(listSoundPaths.get(prevIndex));
+        return Track.getTrack(listSoundPaths.get(prevIndex), this);
     }
 
     public synchronized Speaker getTrackSpeaker() {
@@ -504,7 +504,7 @@ public class Player extends Thread implements PlayerControls {
         if (isPlaying())
             current.finish();
         else if (isAlive()) {
-            current = Track.getTrack(sound);
+            current = Track.getTrack(sound, this);
             startThreadTrack();
         }
         else
@@ -706,7 +706,7 @@ public class Player extends Thread implements PlayerControls {
         if (current != null) {
             current.kill();
             String soundPath = listSoundPaths.get(index);
-            Track track = Track.getTrack(soundPath);
+            Track track = Track.getTrack(soundPath, this);
             if (track != null) {
                 current = track;
                 startThreadTrack();
@@ -732,7 +732,7 @@ public class Player extends Thread implements PlayerControls {
             trackIndex = indexOf;
             if (current != null)
                 current.kill();
-            current = Track.getTrack(track);
+            current = Track.getTrack(track, this);
             startThreadTrack();
             loadListenerMethod(ONPLAYED, current);
         }
@@ -756,7 +756,7 @@ public class Player extends Thread implements PlayerControls {
             trackIndex = indexOf;
             if (current != null)
                 current.kill();
-            current = Track.getTrack(song);
+            current = Track.getTrack(song, this);
             startThreadTrack();
             loadListenerMethod(ONPLAYED, current);
         }
