@@ -4,20 +4,18 @@ import org.aucom.sound.Speaker;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
-import org.jaudiotagger.audio.ogg.util.OggCRCFactory;
-import org.jaudiotagger.audio.ogg.util.OggInfoReader;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.TagException;
 import org.muplayer.audio.formats.*;
 import org.muplayer.audio.info.AudioTag;
 import org.muplayer.audio.interfaces.MusicControls;
+import org.muplayer.audio.interfaces.PlayerControls;
 import org.muplayer.audio.model.TrackInfo;
-import org.muplayer.audio.util.Time;
 import org.muplayer.audio.util.TimeFormatter;
 import org.muplayer.system.AudioUtil;
 import org.muplayer.thread.TPlayingTrack;
+import org.muplayer.thread.TaskRunner;
 import org.orangelogger.sys.Logger;
-import org.muplayer.thread.PlayerHandler;
 
 import javax.sound.sampled.*;
 import javax.sound.sampled.spi.AudioFileReader;
@@ -46,12 +44,26 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     protected Object source;
 
+    protected final PlayerControls player;
+
     //protected ByteBuffer playingBuffer;
     //protected TrackState state;
 
     public static final int BUFFSIZE = 4096;
 
     public static Track getTrack(File fSound) {
+        return getTrack(fSound, null);
+    }
+
+    public static Track getTrack(String trackPath) {
+        return getTrack(new File(trackPath));
+    }
+
+    public static Track getTrack(InputStream inputStream) {
+        return getTrack(inputStream, null);
+    }
+
+    static Track getTrack(File fSound, PlayerControls player) {
         if (!fSound.exists())
             return null;
         Track result = null;
@@ -80,11 +92,11 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         return result;
     }
 
-    public static Track getTrack(String trackPath) {
+    static Track getTrack(String trackPath, PlayerControls player) {
         return getTrack(new File(trackPath));
     }
 
-    public static Track getTrack(InputStream inputStream) {
+    static Track getTrack(InputStream inputStream, PlayerControls player) {
         Track result;
 
         try {
@@ -139,32 +151,47 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     protected Track(File dataSource)
             throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        this(dataSource, null);
+    }
+
+    protected Track(InputStream inputStream) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        this(inputStream, null);
+    }
+
+    protected Track(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        this(new File(trackPath), null);
+    }
+
+    protected Track(File dataSource, PlayerControls player)
+            throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this.dataSource = dataSource;
         this.source = dataSource;
         state = STOPPED;
         secsSeeked = 0;
         volume = Player.DEFAULT_VOLUME;
         initAll();
+        this.player = player;
         try {
-           if (isValidTrack())
-               tagInfo = new AudioTag(dataSource);
+            if (isValidTrack())
+                tagInfo = new AudioTag(dataSource);
         } catch (TagException | ReadOnlyFileException | InvalidAudioFrameException | CannotReadException e) {
             Logger.getLogger(this, e.getClass().getSimpleName(), e.getMessage()).error();
         }
         setPriority(MAX_PRIORITY);
     }
 
-    protected Track(InputStream inputStream) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    protected Track(InputStream inputStream, PlayerControls player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         this.source = inputStream;
         state = STOPPED;
         secsSeeked = 0;
         volume = Player.DEFAULT_VOLUME;
         initAll();
+        this.player = player;
         setPriority(MAX_PRIORITY);
     }
 
-    protected Track(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        this(new File(trackPath));
+    protected Track(String trackPath, PlayerControls player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        this(new File(trackPath), player);
     }
 
     // Ver opcion de usar archivo temporal y leer desde ahi
@@ -259,9 +286,9 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         return trackStream != null && trackLine != null;
     }
 
-    public boolean hasPlayerAssociated() {
+    /*public boolean hasPlayerAssociated() {
         return PlayerHandler.hasInstance();
-    }
+    }*/
 
     public double getBytesPerSecond() {
         return bytesPerSecond;
@@ -302,6 +329,10 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
             default:
                 return "Unknown";
         }
+    }
+
+    public PlayerControls getPlayer() {
+        return player;
     }
 
     public File getDataSource() {
@@ -649,13 +680,12 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     @Override
     public void run() {
-        final boolean isPlayerLinked = PlayerHandler.hasInstance();
+        //final boolean isPlayerLinked = PlayerHandler.hasInstance();
         final byte[] audioBuffer = new byte[4096];
         int read;
         play();
 
-        TPlayingTrack threadPlaying = new TPlayingTrack(this);
-        threadPlaying.start();
+        TaskRunner.execute(new TPlayingTrack(this));
 
         while (!isFinished() && !isKilled() && isValidTrack()) {
             try {
@@ -683,8 +713,8 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
                 break;
             }
         }
-        if (isFinished() && isPlayerLinked && PlayerHandler.hasInstance())
-            PlayerHandler.getPlayer().playNext();
+        if (isFinished() && player != null)
+            player.playNext();
     }
 }
 

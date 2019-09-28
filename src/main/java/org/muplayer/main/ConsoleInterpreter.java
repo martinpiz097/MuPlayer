@@ -100,12 +100,11 @@ public class ConsoleInterpreter implements CommandInterpreter {
         Logger.getLogger(this, sbHelp.toString()).rawWarning();
     }
 
-    public void showSongInfo(Track current) {
-        current = player.getCurrent();
-        if (current == null)
+    public void showSongInfo(Track track) {
+        if (track == null)
             Logger.getLogger(this, "Current track unavailable").rawError();
         else
-            Logger.getLogger(this, current.getSongInfo()).rawWarning();
+            Logger.getLogger(this, track.getSongInfo()).rawWarning();
     }
 
     public void preInterprate(String cmd) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
@@ -311,8 +310,9 @@ public class ConsoleInterpreter implements CommandInterpreter {
                         else {
                             if (jumps == null && option == null)
                                 Logger.getLogger(this, "Option value incorrect").rawError();
-                            else if (jumps == null)
+                            else if (jumps == null) {
                                 player.seekFolder(option);
+                            }
                             else if (jumps.intValue() < 0)
                                 Logger.getLogger(this, "Jumps value incorrect").rawError();
                             else {
@@ -454,6 +454,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
                         Number fldIndex = cmd.getOptionAsNumber(0);
                         if (fldIndex != null) {
                             player.playFolder(fldIndex.intValue()-1);
+                            showSongInfo(player.getCurrent());
                         }
                     }
                 }

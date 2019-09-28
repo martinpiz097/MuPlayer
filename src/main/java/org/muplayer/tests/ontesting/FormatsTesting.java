@@ -15,6 +15,7 @@ import org.muplayer.audio.util.TrackHandler;
 import org.muplayer.main.ConsoleOrder;
 import org.muplayer.main.ConsolePlayer;
 import org.muplayer.tests.TestingManager;
+import org.muplayer.thread.TaskRunner;
 import org.orangelogger.sys.Logger;
 
 import javax.sound.sampled.AudioFormat;
@@ -70,7 +71,7 @@ public class FormatsTesting {
         }
         File formatFolder = new File(TEST_FOLDER, format);
         ConsolePlayer player = new ConsolePlayer(formatFolder);
-        player.start();
+        TaskRunner.execute(player);
     }
 
     private static void executeSongTesting(String path) {
@@ -98,7 +99,7 @@ public class FormatsTesting {
                     folderTesting = null;
                 }
             }
-            player.start();
+            TaskRunner.execute(player);
             player.execCommand(ConsoleOrder.START);
     }
 
@@ -191,7 +192,6 @@ public class FormatsTesting {
             }
 
         }
-
     }
 
     public static void execM4ASeekTest() throws Exception {

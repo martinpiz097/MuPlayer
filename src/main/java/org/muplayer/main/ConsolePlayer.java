@@ -3,7 +3,10 @@ package org.muplayer.main;
 import org.muplayer.audio.Player;
 import org.muplayer.audio.Track;
 import org.muplayer.audio.interfaces.PlayerListener;
+import org.muplayer.system.AppInfo;
+import org.muplayer.system.AppKey;
 import org.muplayer.system.SysInfo;
+import org.muplayer.thread.TaskRunner;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
 
@@ -14,7 +17,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Scanner;
 
-public class ConsolePlayer extends Thread {
+public class ConsolePlayer implements Runnable {
     protected volatile Player player;
     protected volatile ConsoleInterpreter interpreter;
 
@@ -28,7 +31,6 @@ public class ConsolePlayer extends Thread {
         interpreter = new ConsoleInterpreter(player);
         this.playerFolder = rootFolder;
         scanner = new Scanner(System.in);
-        setName("ConsolePlayer");
     }
 
     public ConsolePlayer(String folder) throws FileNotFoundException {
@@ -121,14 +123,25 @@ public class ConsolePlayer extends Thread {
             printHeader();
             execCommand(scanner.nextLine().trim());
         }
+
+        System.exit(0);
     }
 
     public static void main(String[] args) {
         try {
-            if (args.length == 0)
-                new ConsolePlayer("/home/martin/Escritorio/Música").start();
+            if (args.length == 0) {
+                final String defaultRootPath = AppInfo.getInstance().get(AppKey.DEFAULT_ROOT_FOLDER);
+                if (defaultRootPath == null) {
+                    throw new NullPointerException("Property 'root_folder' must be configured.\n" +
+                            "Please create a file called config.properties in project path if you want " +
+                            "load an folder path automatically and set the property with your music path");
+                }
+                else {
+                    TaskRunner.execute(new ConsolePlayer(defaultRootPath));
+                }
+            }
             else
-                new ConsolePlayer(args[0]).start();
+                TaskRunner.execute(new ConsolePlayer(args[0]));
         } catch (Exception e) {
             e.printStackTrace();
             //Logger.getLogger(ConsolePlayer.class, e.getClass().getSimpleName(), e.getMessage()).error();

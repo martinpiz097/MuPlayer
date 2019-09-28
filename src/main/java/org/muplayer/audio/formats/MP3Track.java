@@ -5,6 +5,7 @@ import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.mp3.MP3AudioHeader;
 import org.muplayer.audio.Track;
 import org.muplayer.audio.codec.DecodeManager;
+import org.muplayer.audio.interfaces.PlayerControls;
 import org.muplayer.system.AudioUtil;
 import org.orangelogger.sys.Logger;
 
@@ -15,7 +16,6 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 
 public class MP3Track extends Track {
 
@@ -30,15 +30,29 @@ public class MP3Track extends Track {
 
     public MP3Track(File ftrack) throws IOException,
             UnsupportedAudioFileException, LineUnavailableException, InvalidAudioFrameException {
-        super(ftrack);
-        audioHeader = new MP3AudioHeader(ftrack);
+        this(ftrack, null);
+    }
+
+    public MP3Track(String trackPath)
+            throws UnsupportedAudioFileException, IOException,
+            LineUnavailableException, InvalidAudioFrameException {
+        this(trackPath, null);
+    }
+
+    public MP3Track(InputStream inputStream) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        this(inputStream, null);
+    }
+
+    MP3Track(File dataSource, PlayerControls player) throws LineUnavailableException, IOException, UnsupportedAudioFileException, InvalidAudioFrameException {
+        super(dataSource, player);
+        audioHeader = new MP3AudioHeader(dataSource);
         audioStartByte = audioHeader.getMp3StartByte();
         audioSize = dataSource.length() - audioStartByte;
         frameCount = audioHeader.getNumberOfFrames();
         frameSize = audioSize / frameCount;
 
         frameDurationInSec = (audioHeader.getPreciseTrackLength() / (double) frameCount);
-        System.out.println("AudioHeader: FrameSize: "+frameSize);
+        /*System.out.println("AudioHeader: FrameSize: "+frameSize);
         System.out.println("AudioHeader: FrameCount: "+frameCount);
         System.out.println("AudioHeader: AudioSize: "+frameSize*frameCount);
         System.out.println("AudioHeader: FrameDuration: "+frameDurationInSec);
@@ -52,17 +66,16 @@ public class MP3Track extends Track {
         System.out.println("AudioInputStream: FrameLenght: "+trackStream.getFrameLength());
         System.out.println("AudioInputStream: FrameSize: "+trackStream.getFormat().getFrameSize());
         System.out.println("File: AudioSize: "+audioSize);
-        System.out.println("----------------------------------------");
+        System.out.println("----------------------------------------");*/
     }
 
-    public MP3Track(String trackPath)
-            throws UnsupportedAudioFileException, IOException,
-            LineUnavailableException, InvalidAudioFrameException {
-        this(new File(trackPath));
+    MP3Track(InputStream inputStream, PlayerControls player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        super(inputStream, player);
     }
 
-    public MP3Track(InputStream inputStream) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-        super(inputStream);
+    MP3Track(String trackPath, PlayerControls player) throws LineUnavailableException, IOException,
+            UnsupportedAudioFileException, InvalidAudioFrameException {
+        this(new File(trackPath), player);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package org.muplayer.thread;
+/*package org.muplayer.thread;
 
 import org.muplayer.audio.Player;
 
@@ -33,3 +33,4 @@ public class PlayerHandler {
     }
 
 }
+*/

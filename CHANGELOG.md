@@ -319,7 +319,16 @@
     - En el inicio del modo consola se muestra la version actual de MuPlayer
     - Se mejora velocidad de reproduccion, ya no se escucha acelerado
 
-- 1.8.1-RC ACTUAL
+- 1.8.1-RC
     - Cambios menores en comandos prog y d
     - Cambios menores en seek mp3
     - Optimizaciones menores en clase Track
+
+- 1.9-RC
+    - Coreccion en comando exit en ConsolePlayer
+    - Se agrega clase TaskRunner para la ejecucion de hilos
+    - Se elimina PlayerHandler, ahora se puede utilizar mas de un reproductor a la vez y las Track pueden o no pertenecer a un objeto
+    reproductor Player
+    - Se agrega la opcion de manejar una carpeta padre por defecto configurandola en un archivo llamado config.properties, 
+    la variable debe llamarse root_folder.
+    - En el comando pf ahora se muestra la cancion actual reproducida

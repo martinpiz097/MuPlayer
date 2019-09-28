@@ -11,10 +11,9 @@ public class SysInfo {
             (OSNAME.contains("mac") || OSNAME.contains("osx"));
 
     public static final boolean ISUNIX = ISLINUX || ISMAC;
-
     public static final String USERNAME = System.getProperty("user.name");
-
     public static final String VERSION;
+    public static final String CONFIG_FILE_NAME = "config.properties";
 
     static {
         VERSION = readVersion();

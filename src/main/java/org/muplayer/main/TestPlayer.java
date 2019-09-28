@@ -2,6 +2,7 @@ package org.muplayer.main;
 
 import org.muplayer.audio.model.SeekOption;
 import org.muplayer.audio.Track;
+import org.muplayer.thread.TaskRunner;
 import org.orangelogger.sys.Logger;
 
 import javax.sound.sampled.SourceDataLine;
@@ -183,7 +184,6 @@ public class TestPlayer extends ConsolePlayer {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        testPlayer.start();
-
+        TaskRunner.execute(testPlayer);
     }
 }

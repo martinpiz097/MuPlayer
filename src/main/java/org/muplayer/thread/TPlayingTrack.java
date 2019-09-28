@@ -2,9 +2,10 @@ package org.muplayer.thread;
 
 import org.muplayer.audio.Player;
 import org.muplayer.audio.Track;
+import org.muplayer.audio.interfaces.PlayerControls;
 import org.muplayer.system.ListenersNames;
 
-public class TPlayingTrack extends Thread {
+public class TPlayingTrack implements Runnable {
     private final Track track;
 
     public TPlayingTrack(Track track) {
@@ -13,7 +14,6 @@ public class TPlayingTrack extends Thread {
         if (title != null) {
             if (title.length() > 10)
                 title = title.substring(0, 10);
-            setName("threadPlaying: " + title);
         }
     }
 
@@ -21,12 +21,12 @@ public class TPlayingTrack extends Thread {
 
     @Override
     public void run() {
-        Player player;
+        PlayerControls player;
         while (!track.isFinished() && !track.isKilled() && track.isValidTrack()) {
             try {
-                player = PlayerHandler.getPlayer();
-                if (player != null) {
-                    player.loadListenerMethod(ListenersNames.ONPLAYING, track);
+                player = track.getPlayer();
+                if (player != null && player instanceof Player) {
+                    ((Player) player).loadListenerMethod(ListenersNames.ONPLAYING, track);
                 }
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

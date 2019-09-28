@@ -11,7 +11,8 @@ import org.muplayer.audio.util.PlayerInfo;
 import org.muplayer.system.AudioUtil;
 import org.muplayer.system.LineUtil;
 import org.muplayer.system.TrackStates;
-import org.muplayer.thread.PlayerHandler;
+import org.muplayer.thread.ListenerRunner;
+import org.muplayer.thread.TaskRunner;
 import org.muplayer.thread.ThreadManager;
 import org.orangelogger.sys.Logger;
 
@@ -73,7 +74,7 @@ public class Player extends Thread implements PlayerControls {
     private void checkRootFolder() throws FileNotFoundException {
         if(rootFolder != null) {
             if (!rootFolder.exists())
-                throw new FileNotFoundException();
+                throw new FileNotFoundException(rootFolder.getPath());
             else {
                 loadTracks(rootFolder);
                 sortTracks();
@@ -219,8 +220,7 @@ public class Player extends Thread implements PlayerControls {
 
     public void loadListenerMethod(String methodName, Track track) {
         if (!listListeners.isEmpty()) {
-            Thread tListenerRunner = new ListenerRunner(listListeners, methodName, track);
-            tListenerRunner.start();
+            TaskRunner.execute(new ListenerRunner(listListeners, methodName, track));
         }
     }
 
@@ -915,7 +915,7 @@ public class Player extends Thread implements PlayerControls {
 
     @Override
     public synchronized void run() {
-        PlayerHandler.setInstance(this);
+        //PlayerHandler.setInstance(this);
         loadListenerMethod(ONSTARTED, null);
         on = true;
         startPlaying();
