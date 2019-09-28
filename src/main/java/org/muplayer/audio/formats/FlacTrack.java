@@ -8,6 +8,7 @@ import org.jflac.sound.spi.FlacAudioFileReader;
 import org.jflac.sound.spi.FlacFormatConversionProvider;
 import org.muplayer.audio.Track;
 import org.muplayer.audio.codec.DecodeManager;
+import org.muplayer.audio.interfaces.PlayerControls;
 import org.muplayer.system.AudioUtil;
 
 import javax.sound.sampled.AudioFormat;
@@ -36,6 +37,18 @@ public class FlacTrack extends Track {
 
     public FlacTrack(InputStream inputStream) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         super(inputStream);
+    }
+
+    public FlacTrack(File dataSource, PlayerControls player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        super(dataSource, player);
+    }
+
+    public FlacTrack(InputStream inputStream, PlayerControls player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        super(inputStream, player);
+    }
+
+    public FlacTrack(String trackPath, PlayerControls player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        super(trackPath, player);
     }
 
     @Override

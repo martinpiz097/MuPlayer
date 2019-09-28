@@ -43,7 +43,7 @@ public class MP3Track extends Track {
         this(inputStream, null);
     }
 
-    MP3Track(File dataSource, PlayerControls player) throws LineUnavailableException, IOException, UnsupportedAudioFileException, InvalidAudioFrameException {
+    public MP3Track(File dataSource, PlayerControls player) throws LineUnavailableException, IOException, UnsupportedAudioFileException, InvalidAudioFrameException {
         super(dataSource, player);
         audioHeader = new MP3AudioHeader(dataSource);
         audioStartByte = audioHeader.getMp3StartByte();
@@ -69,11 +69,11 @@ public class MP3Track extends Track {
         System.out.println("----------------------------------------");*/
     }
 
-    MP3Track(InputStream inputStream, PlayerControls player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    public MP3Track(InputStream inputStream, PlayerControls player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         super(inputStream, player);
     }
 
-    MP3Track(String trackPath, PlayerControls player) throws LineUnavailableException, IOException,
+    public MP3Track(String trackPath, PlayerControls player) throws LineUnavailableException, IOException,
             UnsupportedAudioFileException, InvalidAudioFrameException {
         this(new File(trackPath), player);
     }
@@ -92,7 +92,7 @@ public class MP3Track extends Track {
     private long getBytesToSeek(double sec) {
         double frameNeeded = sec / frameDurationInSec;
         long toSkip = Math.round(frameNeeded * frameSize);
-        System.out.println("ToSkip: "+toSkip);
+        //System.out.println("ToSkip: "+toSkip);
         return toSkip;
     }
 
@@ -106,7 +106,7 @@ public class MP3Track extends Track {
         long skip = -2;
         try {
             skip = trackStream.skip(bytesToSeek);
-            System.out.println("Skipped: "+skip+"/BytesToSkip: "+bytesToSeek);
+            //System.out.println("Skipped: "+skip+"/BytesToSkip: "+bytesToSeek);
         } catch (ArrayIndexOutOfBoundsException e) {
             Logger.getLogger(this, e.getClass().getSimpleName(), e.getMessage()).error();
         }

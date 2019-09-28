@@ -293,7 +293,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
                             Logger.getLogger(this, "Seek value incorrect").rawError();
                         else {
                             player.seek(seekSec.doubleValue());
-                            Logger.getLogger(this, "Seeked").rawWarning();
+                            //Logger.getLogger(this, "Seeked").rawWarning();
                         }
                     }
                 break;
@@ -317,7 +317,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
                                 Logger.getLogger(this, "Jumps value incorrect").rawError();
                             else {
                                 player.seekFolder(option, jumps.intValue());
-                                Logger.getLogger(this, "Seeked").rawWarning();
+                                //Logger.getLogger(this, "Seeked").rawWarning();
                             }
                         }
 

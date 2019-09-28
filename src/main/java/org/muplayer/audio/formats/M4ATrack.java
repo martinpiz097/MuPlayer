@@ -12,6 +12,7 @@ import org.muplayer.audio.Track;
 import org.muplayer.audio.formats.io.AudioDataInputStream;
 import org.muplayer.audio.formats.io.AudioDataOutputStream;
 import org.muplayer.audio.info.AudioTag;
+import org.muplayer.audio.interfaces.PlayerControls;
 import org.muplayer.system.AudioUtil;
 import org.orangelogger.sys.Logger;
 
@@ -34,6 +35,18 @@ public class M4ATrack extends Track {
 
     public M4ATrack(InputStream inputStream) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         super(inputStream);
+    }
+
+    public M4ATrack(File dataSource, PlayerControls player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        super(dataSource, player);
+    }
+
+    public M4ATrack(InputStream inputStream, PlayerControls player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        super(inputStream, player);
+    }
+
+    public M4ATrack(String trackPath, PlayerControls player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        super(trackPath, player);
     }
 
     @Override

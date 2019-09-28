@@ -3,6 +3,7 @@ package org.muplayer.audio.formats;
 import org.aucom.sound.Speaker;
 import org.muplayer.audio.Track;
 import org.muplayer.audio.codec.DecodeManager;
+import org.muplayer.audio.interfaces.PlayerControls;
 import org.muplayer.system.AudioUtil;
 import org.tritonus.sampled.file.jorbis.JorbisAudioFileReader;
 
@@ -32,6 +33,18 @@ public class OGGTrack extends Track {
 
     public OGGTrack(InputStream inputStream) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         super(inputStream);
+    }
+
+    public OGGTrack(File dataSource, PlayerControls player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        super(dataSource, player);
+    }
+
+    public OGGTrack(InputStream inputStream, PlayerControls player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        super(inputStream, player);
+    }
+
+    public OGGTrack(String trackPath, PlayerControls player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        super(trackPath, player);
     }
 
     private AudioInputStream createAudioStream() throws IOException, UnsupportedAudioFileException {

@@ -335,3 +335,6 @@
 
 - 1.9.1
     - Se corrige error con nueva funcionalidad que reemplaza a PlayerHandler
+
+- 1.9.2
+    - Correccion de errores y eliminacion de mensajes de debug innecesarios

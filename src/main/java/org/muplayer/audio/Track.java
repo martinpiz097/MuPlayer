@@ -71,17 +71,17 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
         try {
             if (trackName.endsWith(MPEG))
-                result = new MP3Track(fSound);
+                result = new MP3Track(fSound, player);
             else if (trackName.endsWith(OGG))
-                result = new OGGTrack(fSound);
+                result = new OGGTrack(fSound, player);
             else if (trackName.endsWith(FLAC))
-                result = new FlacTrack(fSound);
+                result = new FlacTrack(fSound, player);
             else if (trackName.endsWith(WAVE) || trackName.endsWith(AU)
                     || trackName.endsWith(SND) || trackName.endsWith(AIFF)
                     || trackName.endsWith(AIFC))
-                result = new PCMTrack(fSound);
+                result = new PCMTrack(fSound, player);
             else if (trackName.endsWith(M4A) || trackName.endsWith(AAC))
-                result = new M4ATrack(fSound);
+                result = new M4ATrack(fSound, player);
             /*else if (trackName.endsWith(SPEEX))
                 result = new SpeexTrack(fSound);*/
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException | InvalidAudioFrameException e) {
@@ -93,21 +93,21 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     }
 
     static Track getTrack(String trackPath, PlayerControls player) {
-        return getTrack(new File(trackPath));
+        return getTrack(new File(trackPath), player);
     }
 
     static Track getTrack(InputStream inputStream, PlayerControls player) {
         Track result;
 
         try {
-            result = new MP3Track(inputStream);
+            result = new MP3Track(inputStream, player);
         } catch (Exception e) {
             result = null;
         }
 
         if (result == null) {
             try {
-                result = new OGGTrack(inputStream);
+                result = new OGGTrack(inputStream, player);
             } catch (Exception e) {
                 result = null;
             }
@@ -115,7 +115,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
         if (result == null) {
             try {
-                result = new PCMTrack(inputStream);
+                result = new PCMTrack(inputStream, player);
             } catch (Exception e) {
                 result = null;
             }
@@ -123,7 +123,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
         if (result == null) {
             try {
-                result = new FlacTrack(inputStream);
+                result = new FlacTrack(inputStream, player);
             } catch (Exception e) {
                 result = null;
             }
@@ -131,7 +131,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
         if (result == null) {
             try {
-                result = new M4ATrack(inputStream);
+                result = new M4ATrack(inputStream, player);
             } catch (Exception e) {
                 result = null;
             }
