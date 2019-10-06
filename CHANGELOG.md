@@ -338,3 +338,6 @@
 
 - 1.9.2
     - Correccion de errores y eliminacion de mensajes de debug innecesarios
+
+- 1.9.3
+    - Fix AudioDataInputStream and AudioDataOutputStream

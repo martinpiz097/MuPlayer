@@ -5,6 +5,7 @@ import org.bytebuffer.ByteBuffer;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 public class AudioDataInputStream extends InputStream {
 
@@ -38,6 +39,7 @@ public class AudioDataInputStream extends InputStream {
 
     @Override
     public synchronized int read(byte[] b, int off, int len) throws IOException {
+        Objects.requireNonNull(b);
         if (isClosed)
             return -1;
         else {
@@ -49,8 +51,6 @@ public class AudioDataInputStream extends InputStream {
 
             for (int i = 0; i < len; i++)
                 b[i+off] = (byte) read();
-
-            readed+=len;
             return len;
         }
     }
@@ -60,8 +60,7 @@ public class AudioDataInputStream extends InputStream {
        if (isClosed)
            return 0;
        else {
-           readed += n;
-           return readed;
+           return super.skip(n);
        }
     }
 

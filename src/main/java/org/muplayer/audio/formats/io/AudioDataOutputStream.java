@@ -8,7 +8,6 @@ import java.io.OutputStream;
 public class AudioDataOutputStream extends OutputStream {
 
     private ByteBuffer byteBuffer;
-
     private boolean isClosed;
 
     public AudioDataOutputStream() {
@@ -40,11 +39,11 @@ public class AudioDataOutputStream extends OutputStream {
     }
 
     @Override
-    public void flush() throws IOException {
+    public void flush() {
     }
 
     @Override
-    public synchronized void close() throws IOException {
+    public synchronized void close() {
         isClosed = true;
         //byteBuffer.clear();
     }
