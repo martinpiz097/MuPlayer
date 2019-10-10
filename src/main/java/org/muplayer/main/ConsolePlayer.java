@@ -133,8 +133,8 @@ public class ConsolePlayer implements Runnable {
                 final String defaultRootPath = AppInfo.getInstance().get(AppKey.DEFAULT_ROOT_FOLDER);
                 if (defaultRootPath == null) {
                     throw new NullPointerException("Property 'root_folder' must be configured.\n" +
-                            "Please create a file called config.properties in project path if you want " +
-                            "load an folder path automatically and set the property with your music path");
+                            "If you want to load a folder path automatically, create a file called config.properties in " +
+                            "the path of the jar file and set the root_folder property indicating the path of your music folder");
                 }
                 else {
                     TaskRunner.execute(new ConsolePlayer(defaultRootPath));

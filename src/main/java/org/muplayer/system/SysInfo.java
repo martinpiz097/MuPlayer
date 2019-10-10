@@ -1,7 +1,9 @@
 package org.muplayer.system;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 
 public class SysInfo {
     public static final String OSNAME = System.getProperty("os.name").toLowerCase();
@@ -14,9 +16,11 @@ public class SysInfo {
     public static final String USERNAME = System.getProperty("user.name");
     public static final String VERSION;
     public static final String CONFIG_FILE_NAME = "config.properties";
+    public static String CONFIG_FILE_PATH;
 
     static {
         VERSION = readVersion();
+        CONFIG_FILE_PATH = readConfigPath();
     }
 
     private static String readVersion() {
@@ -31,6 +35,22 @@ public class SysInfo {
             }
             return sbVersion.toString();
         } catch (IOException e) {
+            return null;
+        }
+    }
+
+    private static String readConfigPath() {
+        File jarPath = new File(SysInfo.class.getProtectionDomain().getCodeSource().getLocation().getFile());
+        File configFile = new File(jarPath.getParent(), CONFIG_FILE_NAME);
+        try {
+            if (configFile.exists()) {
+                return configFile.getCanonicalPath();
+            }
+            else {
+                return CONFIG_FILE_NAME;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
             return null;
         }
     }

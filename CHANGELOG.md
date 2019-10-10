@@ -341,3 +341,6 @@
 
 - 1.9.3
     - Fix AudioDataInputStream and AudioDataOutputStream
+
+- 1.9.4
+    - Se corrige forma de acceder al archivo config.properties, ahora si se accede al jar desde otra carpeta se lee correctamente

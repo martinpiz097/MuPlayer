@@ -1,8 +1,10 @@
 package org.muplayer.system;
 
 import java.io.*;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 public class AppInfo {
@@ -18,7 +20,18 @@ public class AppInfo {
     }
 
     private AppInfo() {
-        fileProps = new File(SysInfo.CONFIG_FILE_NAME);
+        /*try {
+            System.out.println(new File(".").getCanonicalPath());
+            System.out.println(new File("").getCanonicalPath());
+            System.out.println(System.getProperty("user.dir"));
+            System.out.println(Paths.get("").toAbsolutePath());
+            System.out.println(Paths.get(".").toAbsolutePath());
+            URL location = getClass().getProtectionDomain().getCodeSource().getLocation();
+            System.out.println(location.getFile());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
+        fileProps = new File(SysInfo.CONFIG_FILE_PATH);
         props = new Properties();
 
         if (!fileProps.exists()) {
