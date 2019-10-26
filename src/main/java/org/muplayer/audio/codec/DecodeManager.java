@@ -67,7 +67,8 @@ public class DecodeManager {
                 baseFormat.getSampleSizeInBits(),
                 baseFormat.getChannels(),
                 baseFormat.getChannels()*2,
-                baseFormat.getFrameRate()*1000,
+                //baseFormat.getFrameRate() == -1.0 ? baseFormat.getSampleRate() : baseFormat.getSampleRate() * 1000,
+                baseFormat.getSampleRate(),
                 baseFormat.isBigEndian());
     }
 

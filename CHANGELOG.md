@@ -344,3 +344,12 @@
 
 - 1.9.4
     - Se corrige forma de acceder al archivo config.properties, ahora si se accede al jar desde otra carpeta se lee correctamente
+
+- 2.0
+    - Se puede obtener informacion de bitrate de la cancion directamente desde interfaz TrackInfo
+    - Se corrige error de congelamiento cuando se inserta el comando info y no existen canciones
+    - Correccion de error accidental al decodificar flac
+    - Ahora es posible obtener un listado de artistas y albums desde la clase Player
+    - Nuevos comandos para listar artistas y albums en ConsolePlayer(consulte comando 'h')
+    - Se ordenan algunas clases
+    - El menu de ayuda es guardado en un archivo help.properties completamente editable

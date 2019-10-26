@@ -565,88 +565,21 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         return getProperty(FieldKey.ENCODER);
     }
 
+    @Override
+    public String getBitrate() {
+        if (tagInfo != null && tagInfo.getHeader() != null) {
+            return tagInfo.getHeader().getBitRate();
+        }
+        else {
+            return "Unknown";
+        }
+    }
+
     public String getFormat() {
         return trackStream.getFormat().toString();
     }
 
-    // Testing
-    public String getSongInfo() {
-        StringBuilder sbInfo = new StringBuilder();
-        String title = getTitle();
-        String album = getAlbum();
-        String artist = getArtist();
-        String date = getDate();
-        String duration = getDurationAsString();
-        String hasCover = hasCover()?"Si":"No";
-        String encoder = getEncoder();
-
-        StringBuilder sbTabs = new StringBuilder();
-        String currentLine = "Song: "+title;
-        int biggerLenght = currentLine.length();
-        sbInfo.append(currentLine).append('\n');
-
-        if (album != null) {
-            sbTabs.append("    ");
-            currentLine = sbTabs.toString()+"Album: "+album;
-            if (biggerLenght < currentLine.length())
-                biggerLenght = currentLine.length();
-            sbInfo.append(currentLine).append('\n');
-        }
-
-        if (artist != null) {
-            sbTabs.append("    ");
-            currentLine = sbTabs.toString()+"Artist: "+artist;
-            if (biggerLenght < currentLine.length())
-                biggerLenght = currentLine.length();
-            sbInfo.append(currentLine).append('\n');
-        }
-
-        if (date != null) {
-            sbTabs.append("    ");
-            currentLine = sbTabs.toString()+"Date: "+date;
-            if (biggerLenght < currentLine.length())
-                biggerLenght = currentLine.length();
-            sbInfo.append(currentLine).append('\n');
-        }
-
-        if (duration != null) {
-            sbTabs.append("    ");
-            currentLine = sbTabs.toString()+"Duration: "+duration;
-            if (biggerLenght < currentLine.length())
-                biggerLenght = currentLine.length();
-            sbInfo.append(currentLine).append('\n');
-        }
-
-        if (hasCover != null) {
-            sbTabs.append("    ");
-            currentLine = sbTabs.toString()+"Has Cover: "+hasCover;
-            if (biggerLenght < currentLine.length())
-                biggerLenght = currentLine.length();
-            sbInfo.append(currentLine).append('\n');
-        }
-
-        if (encoder != null) {
-            sbTabs.append("    ");
-            currentLine = sbTabs.toString()+"Encoder: "+encoder;
-            if (biggerLenght < currentLine.length())
-                biggerLenght = currentLine.length();
-            sbInfo.append(currentLine).append('\n');
-        }
-        sbTabs.delete(0, sbTabs.length());
-
-        for (int i = 0; i < biggerLenght; i++)
-            sbTabs.append('-');
-        sbTabs.append('\n').append(sbInfo.toString());
-
-        for (int i = 0; i < biggerLenght; i++)
-            sbTabs.append('-');
-        sbTabs.append('\n');
-
-        return sbTabs.toString();
-        //return "\n".concat(sbTabs.toString());
-    }
-
-    public void getLineInfo() {
+        public void getLineInfo() {
         SourceDataLine driver = trackLine.getDriver();
         System.out.println("Soporte de controles en line");
         System.out.println("---------------");
@@ -699,7 +632,8 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
                             finish();
                             break;
                         }
-                        trackLine.playAudio(audioBuffer);
+                        if (trackLine != null)
+                            trackLine.playAudio(audioBuffer);
                     } catch (IndexOutOfBoundsException e) {
                         finish();
                     }

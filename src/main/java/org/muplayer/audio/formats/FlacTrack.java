@@ -23,12 +23,6 @@ public class FlacTrack extends Track {
 
     public FlacTrack(File ftrack) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         super(ftrack);
-        /*MP3AudioHeader audioHeader = null;
-        try {
-            audioHeader = new MP3AudioHeader(dataSource);
-        } catch (InvalidAudioFrameException e) {
-            e.printStackTrace();
-        }*/
     }
 
     public FlacTrack(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {

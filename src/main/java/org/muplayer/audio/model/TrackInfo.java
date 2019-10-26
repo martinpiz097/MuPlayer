@@ -23,5 +23,5 @@ public interface TrackInfo {
     }
 
     String getEncoder();
-
+    String getBitrate();
 }

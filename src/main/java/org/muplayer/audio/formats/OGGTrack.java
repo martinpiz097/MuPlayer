@@ -1,6 +1,8 @@
 package org.muplayer.audio.formats;
 
 import org.aucom.sound.Speaker;
+import org.jaudiotagger.audio.AudioHeader;
+import org.jaudiotagger.tag.TagField;
 import org.muplayer.audio.Track;
 import org.muplayer.audio.codec.DecodeManager;
 import org.muplayer.audio.interfaces.PlayerControls;
@@ -14,6 +16,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 
 public class OGGTrack extends Track {
 
@@ -86,9 +89,22 @@ public class OGGTrack extends Track {
 
     @Override
     public void seek(double seconds) throws IOException {
-        pause();
-        super.seek(seconds);
-        resumeTrack();
+        /*AudioHeader header = tagInfo.getHeader();
+        System.out.println("Channels: "+header.getChannels());
+        System.out.println("Format: "+header.getFormat());
+        System.out.println("SampleRate: "+header.getSampleRate());
+        System.out.println("BitRate: "+header.getBitRate());
+        System.out.println("Encoding: "+header.getEncodingType());
+        System.out.println("TrackLenght: "+header.getTrackLength());
+        System.out.println("BitRateAsNumber: "+header.getBitRateAsNumber());
+        System.out.println("SampleRateAsNumber: "+header.getSampleRateAsNumber());*/
+        if (isMute)
+            super.seek(seconds);
+        else {
+            mute();
+            super.seek(seconds);
+            unmute();
+        }
     }
 
     @Override

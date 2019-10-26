@@ -2,10 +2,10 @@ package org.muplayer.main;
 
 import org.muplayer.audio.Player;
 import org.muplayer.audio.Track;
+import org.muplayer.audio.model.Album;
+import org.muplayer.audio.model.Artist;
 import org.muplayer.audio.model.SeekOption;
-import org.muplayer.system.Command;
-import org.muplayer.system.CommandInterpreter;
-import org.muplayer.system.SysInfo;
+import org.muplayer.system.*;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
 
@@ -17,10 +17,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static java.nio.file.StandardOpenOption.WRITE;
-import static org.muplayer.main.ConsoleOrder.HELP_MAP;
 
 public class ConsoleInterpreter implements CommandInterpreter {
     private Player player;
@@ -79,18 +80,20 @@ public class ConsoleInterpreter implements CommandInterpreter {
     }
 
     protected void printHelp() {
-        Map<String, String> helpMap = HELP_MAP;
+        HelpManager helpManager = HelpManager.getInstance();
+        helpManager.setCacheMode(true);
+        Set<String> propertyNames = helpManager.getPropertyNames();
 
-        Iterator<Map.Entry<String, String>> it = helpMap.entrySet().iterator();
-        Map.Entry<String, String> entry;
+        Iterator<String> it = propertyNames.iterator();
+        String key;
         StringBuilder sbHelp = new StringBuilder();
         int count = 1;
         while (it.hasNext()) {
-            entry = it.next();
+            key = it.next();
             sbHelp.append(count).append(") ")
-                    .append(entry.getKey())
+                    .append(key)
                     .append(": ")
-                    .append(entry.getValue())
+                    .append(helpManager.getProperty(key))
                     .append('\n');
             count++;
         }
@@ -98,13 +101,14 @@ public class ConsoleInterpreter implements CommandInterpreter {
         Logger.getLogger(this, "Help Info").rawWarning();
         Logger.getLogger(this, "---------").rawWarning();
         Logger.getLogger(this, sbHelp.toString()).rawWarning();
+        helpManager.setCacheMode(false);
     }
 
     public void showSongInfo(Track track) {
         if (track == null)
             Logger.getLogger(this, "Current track unavailable").rawError();
         else
-            Logger.getLogger(this, track.getSongInfo()).rawWarning();
+            Logger.getLogger(this, TrackUtil.getSongInfo(track)).rawWarning();
     }
 
     public void preInterprate(String cmd) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
@@ -373,7 +377,12 @@ public class ConsoleInterpreter implements CommandInterpreter {
                 break;
 
             case ConsoleOrder.GETINFO:
-                showSongInfo(player.getCurrent());
+                if (player.hasSounds() && player.getCurrent() != null) {
+                    showSongInfo(player.getCurrent());
+                }
+                else {
+                    Logger.getLogger(this, "No song available").rawWarning();
+                }
                 break;
 
             case ConsoleOrder.GETPROGRESS:
@@ -437,14 +446,14 @@ public class ConsoleInterpreter implements CommandInterpreter {
             case ConsoleOrder.SHOW_NEXT:
                 if (isPlayerOn()) {
                     Track next = (Track) player.getNext();
-                    System.out.println(next.getSongInfo());
+                    System.out.println(TrackUtil.getSongInfo(next));
                 }
                 break;
 
             case ConsoleOrder.SHOW_PREV:
                 if (isPlayerOn()) {
                     Track prev = (Track) player.getPrevious();
-                    System.out.println(prev.getSongInfo());
+                    System.out.println(TrackUtil.getSongInfo(prev));
                 }
                 break;
 
@@ -484,6 +493,34 @@ public class ConsoleInterpreter implements CommandInterpreter {
                     else {
                         Logger.getLogger(this, "Folder not exists").rawError();
                     }
+                }
+                break;
+
+            case ConsoleOrder.LIST_ARTISTS:
+                if (player.isActive()) {
+                    List<Artist> listArtists = player.getArtists();
+                    for(Artist artist : listArtists) {
+                        Logger.getLogger(this, artist.getName()).rawInfo();
+                    }
+                    Logger.getLogger(this, "------------------------------").rawInfo();
+                    Logger.getLogger(this, "Total: "+listArtists.size()).rawInfo();
+                }
+                else {
+                    Logger.getLogger(this, "The player is not active").rawWarning();
+                }
+                break;
+
+            case ConsoleOrder.LIST_ALBUMS:
+                if (player.isActive()) {
+                    List<Album> listAlbums = player.getAlbums();
+                    for(Album album : listAlbums) {
+                        Logger.getLogger(this, album.getName()).rawInfo();
+                    }
+                    Logger.getLogger(this, "------------------------------").rawInfo();
+                    Logger.getLogger(this, "Total: "+listAlbums.size()).rawInfo();
+                }
+                else {
+                    Logger.getLogger(this, "The player is not active").rawWarning();
                 }
                 break;
 

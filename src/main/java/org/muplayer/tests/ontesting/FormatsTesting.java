@@ -11,9 +11,13 @@ import org.muplayer.audio.formats.OGGTrack;
 import org.muplayer.audio.formats.PCMTrack;
 import org.muplayer.audio.interfaces.MusicControls;
 import org.muplayer.audio.interfaces.PlayerListener;
+import org.muplayer.audio.model.Album;
+import org.muplayer.audio.model.Artist;
+import org.muplayer.audio.model.TrackInfo;
 import org.muplayer.audio.util.TrackHandler;
 import org.muplayer.main.ConsoleOrder;
 import org.muplayer.main.ConsolePlayer;
+import org.muplayer.system.TrackUtil;
 import org.muplayer.tests.TestingManager;
 import org.muplayer.thread.TaskRunner;
 import org.orangelogger.sys.Logger;
@@ -25,7 +29,10 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Scanner;
+import java.util.Set;
 
 import static org.muplayer.tests.TestingKeys.TESTINGPATH;
 
@@ -48,7 +55,44 @@ public class FormatsTesting {
     }
 
     public static void main(String[] args) throws Exception {
-        execTest();
+        //execTest();
+        //execConsolePlayerTest(new File("/home/martin/Escritorio/Música"));
+        //execArtistsTest();
+        execAlbumsTest();
+    }
+
+    private static void execArtistsTest() throws FileNotFoundException {
+        Player player = new Player(new File("/home/martin/Escritorio/Música"));
+        player.start();
+        player.mute();
+        Collection<Artist> artists = player.getArtists();
+        artists.forEach(artist -> {
+            System.out.println("Artista: " + artist.getName());
+            Set<TrackInfo> tracksSet = artist.getTracksSet();
+            System.out.println("\t".concat("Songs: "+ tracksSet.size()));
+            for(TrackInfo track : tracksSet) {
+                System.out.println("\t".concat("Song: "+track.getTitle()));
+            }
+        });
+    }
+
+    private static void execAlbumsTest() throws FileNotFoundException {
+        Player player = new Player(new File("/home/martin/Escritorio/Música"));
+        player.start();
+        player.mute();
+        Collection<Album> artists = player.getAlbums();
+        artists.forEach(album -> {
+            System.out.println("Album: " + album.getName());
+            Set<TrackInfo> tracksSet = album.getTracksSet();
+            System.out.println("\t".concat("Songs: "+ tracksSet.size()));
+            for(TrackInfo track : tracksSet) {
+                System.out.println("\t".concat("Song: "+track.getTitle()));
+            }
+        });
+    }
+
+    private static void execConsolePlayerTest(File folder) throws FileNotFoundException {
+        TaskRunner.execute(new ConsolePlayer(folder));
     }
 
     private static void execTest() throws FileNotFoundException {
@@ -160,7 +204,7 @@ public class FormatsTesting {
         MusicControls controls = new TrackHandler(track);
         controls.play();
 
-        String infoSong = track.getSongInfo();
+        String infoSong = TrackUtil.getSongInfo(track);
         System.out.println(infoSong);
     }
 

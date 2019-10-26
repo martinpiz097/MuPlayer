@@ -7,16 +7,15 @@ import net.sourceforge.jaad.mp4.api.AudioTrack;
 import net.sourceforge.jaad.mp4.api.Frame;
 import net.sourceforge.jaad.mp4.api.Movie;
 import net.sourceforge.jaad.spi.javasound.AACAudioFileReader;
-import org.bytebuffer.ByteBuffer;
 import org.muplayer.audio.Track;
-import org.muplayer.audio.formats.io.AudioDataInputStream;
-import org.muplayer.audio.formats.io.AudioDataOutputStream;
-import org.muplayer.audio.info.AudioTag;
 import org.muplayer.audio.interfaces.PlayerControls;
 import org.muplayer.system.AudioUtil;
 import org.orangelogger.sys.Logger;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
 import java.util.List;
 
@@ -55,6 +54,7 @@ public class M4ATrack extends Track {
             // Es aac
             decodeAAC();
             isAac = true;
+            //new AudioTranslatorStream()
         } catch (UnsupportedAudioFileException e) {
             Logger.getLogger(this, "File not supported!").rawError();
             e.printStackTrace();

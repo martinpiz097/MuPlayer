@@ -73,6 +73,11 @@ public class SongData implements TrackInfo {
     }
 
     @Override
+    public String getBitrate() {
+        return info.getHeader().getBitRate();
+    }
+
+    @Override
     public String toString() {
         return "SongData: "+getTitle();
     }

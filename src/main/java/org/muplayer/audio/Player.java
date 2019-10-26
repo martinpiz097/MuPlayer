@@ -5,6 +5,8 @@ import org.muplayer.audio.info.AudioTag;
 import org.muplayer.audio.info.SongData;
 import org.muplayer.audio.interfaces.PlayerControls;
 import org.muplayer.audio.interfaces.PlayerListener;
+import org.muplayer.audio.model.Album;
+import org.muplayer.audio.model.Artist;
 import org.muplayer.audio.model.SeekOption;
 import org.muplayer.audio.model.TrackInfo;
 import org.muplayer.audio.util.PlayerInfo;
@@ -15,6 +17,7 @@ import org.muplayer.thread.ListenerRunner;
 import org.muplayer.thread.TaskRunner;
 import org.muplayer.thread.ThreadManager;
 import org.orangelogger.sys.Logger;
+import org.tritonus.share.ArraySet;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
@@ -22,9 +25,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -295,7 +296,7 @@ public class Player extends Thread implements PlayerControls {
         }
     }
 
-    public synchronized boolean hasSounds() {
+    public boolean hasSounds() {
         return !listSoundPaths.isEmpty();
     }
 
@@ -399,6 +400,58 @@ public class Player extends Thread implements PlayerControls {
 
         }
         return listInfo;
+    }
+
+    public synchronized List<Artist> getArtists() {
+        List<TrackInfo> listTracks = getTracksInfo();
+        List<Artist> listArtists = new ArrayList<>();
+
+        listTracks.parallelStream()
+                .forEach(track->{
+                    String art = track.getArtist();
+                    if (art == null)
+                        art = "Unknown";
+                    synchronized (listArtists) {
+                        String finalArt = art;
+                        Artist artist = listArtists.parallelStream()
+                                .filter(a->a.getName().equalsIgnoreCase(finalArt)).findFirst().orElse(null);
+
+                        if (artist == null) {
+                            artist = new Artist();
+                            artist.setName(finalArt);
+                            listArtists.add(artist);
+                        }
+                        artist.addTrack(track);
+                    }
+                });
+        listArtists.sort(Comparator.comparing(Artist::getName));
+        return listArtists;
+    }
+
+    public synchronized List<Album> getAlbums() {
+        List<TrackInfo> listTracks = getTracksInfo();
+        List<Album> listAlbums = new ArrayList<>();
+
+        listTracks.parallelStream()
+                .forEach(track->{
+                    String alb = track.getAlbum();
+                    if (alb == null)
+                        alb = "Unknown";
+                    synchronized (listAlbums) {
+                        String finalAlb = alb;
+                        Album album = listAlbums.parallelStream()
+                                .filter(a->a.getName().equalsIgnoreCase(finalAlb)).findFirst().orElse(null);
+
+                        if (album == null) {
+                            album = new Album();
+                            album.setName(finalAlb);
+                            listAlbums.add(album);
+                        }
+                        album.addTrack(track);
+                    }
+                });
+        listAlbums.sort(Comparator.comparing(Album::getName));
+        return listAlbums;
     }
 
     public synchronized void addPlayerListener(PlayerListener listener) {
@@ -639,7 +692,7 @@ public class Player extends Thread implements PlayerControls {
         Logger.getLogger(this, "------------------------------").rawInfo();
     }
 
-    public synchronized int getSongsCount() {
+    public int getSongsCount() {
         return listSoundPaths.size();
     }
 

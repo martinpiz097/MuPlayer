@@ -53,8 +53,10 @@ public class ConsoleOrder {
 
     public static final String PLAY_FOLDER = "pf";
     public static final String LOAD = "load";
+    public static final String LIST_ARTISTS = "arts";
+    public static final String LIST_ALBUMS = "albs";
 
-    public static final Map<String, String> HELP_MAP;
+    /*public static final Map<String, String> HELP_MAP;
 
     static {
         HELP_MAP = new TreeMap<>();
@@ -105,6 +107,8 @@ public class ConsoleOrder {
 
         HELP_MAP.put(PLAY_FOLDER, "Reproduce una carpeta según el índice entregado");
         HELP_MAP.put(LOAD, "Reinicia reproductor cargando la carpeta segun la ruta indicada");
-    }
+        HELP_MAP.put(LIST_ARTISTS, "Lista todos los artistas con sus respectivas canciones");
+        HELP_MAP.put(LIST_ALBUMS, "Lista todos los álbums con sus respectivas canciones");
+    }*/
 
 }
