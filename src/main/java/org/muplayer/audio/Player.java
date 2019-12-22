@@ -584,7 +584,7 @@ public class Player extends Thread implements PlayerControls {
                 else if (Track.isValidTrack(sound))
                     listSoundPaths.add(sound.getPath());
             };
-            listSounds.stream().forEach(consumer);
+            listSounds.forEach(consumer);
         }
     }
 
