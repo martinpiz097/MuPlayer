@@ -17,7 +17,6 @@ import org.muplayer.thread.ListenerRunner;
 import org.muplayer.thread.TaskRunner;
 import org.muplayer.thread.ThreadManager;
 import org.orangelogger.sys.Logger;
-import org.tritonus.share.ArraySet;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
@@ -25,7 +24,9 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -43,6 +44,7 @@ public class Player extends Thread implements PlayerControls {
     private volatile int trackIndex;
     private volatile float currentVolume;
     private volatile boolean on;
+    private volatile boolean isMute;
 
     public static final float DEFAULT_VOLUME = AudioUtil.convertLineRangeToVolRange(AudioUtil.MiDDLE_VOL);
 
@@ -65,6 +67,7 @@ public class Player extends Thread implements PlayerControls {
         listListeners = new ArrayList<>();
         currentVolume = DEFAULT_VOLUME;
         on = false;
+        isMute = false;
 
         checkRootFolder();
         setName("ThreadPlayer "+getId());
@@ -214,7 +217,12 @@ public class Player extends Thread implements PlayerControls {
     private void startThreadTrack() {
         if (current != null) {
             current.setName(getThreadName());
-            current.setGain(currentVolume);
+            if (isMute) {
+                current.setGain(0);
+            }
+            else {
+                current.setGain(currentVolume);
+            }
             current.start();
         }
     }
@@ -543,7 +551,8 @@ public class Player extends Thread implements PlayerControls {
 
     @Override
     public synchronized boolean isMute() {
-        return current == null || current.isMute();
+        //return current != null && current.isMute();
+        return isMute;
     }
 
     @Override
@@ -879,6 +888,7 @@ public class Player extends Thread implements PlayerControls {
         currentVolume = volume;
         if (current != null)
             current.setGain(volume);
+        isMute = currentVolume == 0;
     }
 
     @Override
@@ -893,12 +903,14 @@ public class Player extends Thread implements PlayerControls {
 
     @Override
     public synchronized void mute() {
+        isMute = true;
         if (current != null)
             current.mute();
     }
 
     @Override
     public synchronized void unmute() {
+        isMute = false;
         if (current != null) {
             current.setGain(currentVolume);
         }
