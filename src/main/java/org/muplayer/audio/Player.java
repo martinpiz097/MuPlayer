@@ -893,7 +893,6 @@ public class Player extends Thread implements PlayerControls {
 
     @Override
     public synchronized void mute() {
-        currentVolume = 0;
         if (current != null)
             current.mute();
     }
@@ -901,11 +900,10 @@ public class Player extends Thread implements PlayerControls {
     @Override
     public synchronized void unmute() {
         if (current != null) {
-            current.unmute();
-            currentVolume = current.getGain();
+            current.setGain(currentVolume);
         }
         else
-            currentVolume = DEFAULT_VOLUME;
+            currentVolume = 100;
     }
 
     public double getProgress() {
