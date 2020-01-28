@@ -28,7 +28,6 @@ public class SysInfo {
             StringBuilder sbVersion = new StringBuilder();
 
             int read;
-
             while ((read = inputStream.read()) != -1) {
                 sbVersion.append((char)read);
             }
