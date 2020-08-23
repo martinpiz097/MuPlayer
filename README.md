@@ -21,7 +21,7 @@ Music player library in pure Java.
             <dependency>
                 <groupId>org.orangeplayer</groupId>
                 <artifactId>muplayer</artifactId>
-                <version>1.9</version>
+                <version>2.0.2</version>
             </dependency>
     Gradle:
         Add the repository:
@@ -33,7 +33,7 @@ Music player library in pure Java.
             }
         Then add the dependency:
             dependencies {
-                implementation 'org.orangeplayer:muplayer:1.9'
+                implementation 'org.orangeplayer:muplayer:2.0.2'
             }
 # ------------------------------------------------------------------------------------
 
@@ -58,7 +58,7 @@ Music player library in pure Java.
             <dependency>
                 <groupId>org.orangeplayer</groupId>
                 <artifactId>muplayer</artifactId>
-                <version>1.4.2</version>
+                <version>2.0.2</version>
             </dependency>
     Gradle:
         Añade el repositorio:
@@ -70,6 +70,6 @@ Music player library in pure Java.
             }
         Luego añade la dependencia:
             dependencies {
-                implementation 'org.orangeplayer:muplayer:1.4.2'
+                implementation 'org.orangeplayer:muplayer:2.0.2'
             }
     
