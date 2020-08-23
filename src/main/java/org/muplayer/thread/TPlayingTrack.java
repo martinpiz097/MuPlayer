@@ -11,13 +11,9 @@ public class TPlayingTrack implements Runnable {
     public TPlayingTrack(Track track) {
         this.track = track;
         String title = track.getTitle();
-        if (title != null) {
-            if (title.length() > 10)
-                title = title.substring(0, 10);
-        }
+        if (title != null && title.length() > 10)
+            title = title.substring(0, 10);
     }
-
-
 
     @Override
     public void run() {
@@ -25,7 +21,7 @@ public class TPlayingTrack implements Runnable {
         while (!track.isFinished() && !track.isKilled() && track.isValidTrack()) {
             try {
                 player = track.getPlayer();
-                if (player != null && player instanceof Player) {
+                if (player instanceof Player) {
                     ((Player) player).loadListenerMethod(ListenersNames.ONPLAYING, track);
                 }
                 Thread.sleep(1000);

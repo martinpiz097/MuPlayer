@@ -1,6 +1,10 @@
 package org.muplayer.audio;
 
 import org.aucom.sound.Speaker;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.tag.TagException;
 import org.muplayer.audio.info.AudioTag;
 import org.muplayer.audio.info.SongData;
 import org.muplayer.audio.interfaces.PlayerControls;
@@ -25,8 +29,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -104,10 +111,8 @@ public class Player extends Thread implements PlayerControls {
         File[] fldFiles = folder.listFiles();
         File f;
         if (fldFiles != null) {
-
             // se analiza carpeta y se agregan sonidos recursivamente
             boolean hasTracks = false;
-
             String filePath;
             for (int i = 0; i < fldFiles.length; i++) {
                 f = fldFiles[i];
@@ -201,11 +206,6 @@ public class Player extends Thread implements PlayerControls {
         current = getTrackBy(trackIndex, param);
     }
 
-    /*private void finishTrack(Track current) {
-        if (current != null && !current.isFinished())
-            current.finish();
-    }*/
-
     private String getThreadName() {
         final String trackName = current.getDataSource().getName();
         final int strLimit = Math.min(trackName.length(), 10);
@@ -217,20 +217,14 @@ public class Player extends Thread implements PlayerControls {
     private void startThreadTrack() {
         if (current != null) {
             current.setName(getThreadName());
-            if (isMute) {
-                current.setGain(0);
-            }
-            else {
-                current.setGain(currentVolume);
-            }
+            current.setGain(isMute ? 0 : currentVolume);
             current.start();
         }
     }
 
     public void loadListenerMethod(String methodName, Track track) {
-        if (!listListeners.isEmpty()) {
+        if (!listListeners.isEmpty())
             TaskRunner.execute(new ListenerRunner(listListeners, methodName, track));
-        }
     }
 
     private synchronized void freezePlayer() {
@@ -250,19 +244,14 @@ public class Player extends Thread implements PlayerControls {
     // este ya debe haber sido validado por indexOf para saber
     // si existe o no en la ruta padre
     private Track findFirstIn(String folderPath) {
-        File parentFile = new File(folderPath);
-        List<File> listSounds = getListSounds();
-
-        File fileTrack = null;
-        for (int i = 0; i < listSounds.size(); i++) {
-            fileTrack = listSounds.get(i);
-            if (fileTrack.getParentFile().equals(parentFile))
-                break;
-        }
-
-        if (fileTrack == null)
-            return null;
-        return Track.isValidTrack(fileTrack)?Track.getTrack(fileTrack, this):null;
+        final File parentFile = new File(folderPath);
+        final List<File> listSounds = getListSounds();
+        final File fileTrack = listSounds.stream()
+                .filter(file -> file.getParentFile().equals(parentFile))
+                .findFirst().orElse(null);
+        return fileTrack != null && Track.isValidTrack(fileTrack)
+                ? Track.getTrack(fileTrack, this)
+                : null;
     }
 
     private int moveToFolder(String folderPath) {
@@ -378,41 +367,38 @@ public class Player extends Thread implements PlayerControls {
     // Se supone que todos los tracks serian validos
     // sino rescatar de los que sean no mas
     public synchronized List<AudioTag> getTrackTags() {
-        List<AudioTag> listTags = new ArrayList<>();
+        final List<AudioTag> listTags = new ArrayList<>();
 
-        AudioTag tag;
-        for (int i = 0; i < getSongsCount(); i++) {
+        // probar con map cunado se retornan nulls
+        listSoundPaths.forEach(soundPath -> {
             try {
-                tag = new AudioTag(listSoundPaths.get(i));
+                AudioTag tag = new AudioTag(soundPath);
                 if (tag.isValidFile())
                     listTags.add(tag);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+        });
         return listTags;
     }
 
     public synchronized List<TrackInfo> getTracksInfo() {
-        List<TrackInfo> listInfo = new ArrayList<>();
-        AudioTag tag;
-
-        for (int i = 0; i < listSoundPaths.size(); i++) {
+        final List<TrackInfo> listInfo = new ArrayList<>();
+        listSoundPaths.forEach(soundPath->{
             try {
-                tag = new AudioTag(listSoundPaths.get(i));
+                AudioTag tag = new AudioTag(soundPath);
                 if (tag.isValidFile())
                     listInfo.add(new SongData(tag));
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-        }
+        });
         return listInfo;
     }
 
     public synchronized List<Artist> getArtists() {
-        List<TrackInfo> listTracks = getTracksInfo();
-        List<Artist> listArtists = new ArrayList<>();
+        final List<TrackInfo> listTracks = getTracksInfo();
+        final List<Artist> listArtists = new ArrayList<>();
 
         listTracks.parallelStream()
                 .forEach(track->{
@@ -471,9 +457,7 @@ public class Player extends Thread implements PlayerControls {
     }
 
     public synchronized void removePlayerListener(PlayerListener reference) {
-        for (int i = 0; i < listListeners.size(); i++)
-            if (listListeners.get(i).equals(reference))
-                listListeners.remove(i);
+        listListeners.removeIf(listener->listener.equals(reference));
     }
 
     public synchronized void removeAllListeners() {
@@ -767,8 +751,8 @@ public class Player extends Thread implements PlayerControls {
             return;
         if (current != null) {
             current.kill();
-            String soundPath = listSoundPaths.get(index);
-            Track track = Track.getTrack(soundPath, this);
+            final String soundPath = listSoundPaths.get(index);
+            final Track track = Track.getTrack(soundPath, this);
             if (track != null) {
                 current = track;
                 startThreadTrack();

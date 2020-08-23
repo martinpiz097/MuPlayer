@@ -357,3 +357,5 @@
 - 2.0.1
     - Correccion de errores para sileciar y quitar silencio al reproductor
     
+- 2.0.2
+    - Se aplican pequeñas optimizaciones de código

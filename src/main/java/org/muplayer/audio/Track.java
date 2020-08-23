@@ -11,6 +11,7 @@ import org.muplayer.audio.info.AudioTag;
 import org.muplayer.audio.interfaces.MusicControls;
 import org.muplayer.audio.interfaces.PlayerControls;
 import org.muplayer.audio.model.TrackInfo;
+import org.muplayer.audio.util.AudioExtensions;
 import org.muplayer.audio.util.TimeFormatter;
 import org.muplayer.system.AudioUtil;
 import org.muplayer.thread.TPlayingTrack;
@@ -67,23 +68,30 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         if (!fSound.exists())
             return null;
         Track result = null;
-        final String trackName = fSound.getName();
+        final String formatName = AudioExtensions.getFormatName(fSound.getName());
 
         try {
-            if (trackName.endsWith(MPEG))
-                result = new MP3Track(fSound, player);
-            else if (trackName.endsWith(OGG))
-                result = new OGGTrack(fSound, player);
-            else if (trackName.endsWith(FLAC))
-                result = new FlacTrack(fSound, player);
-            else if (trackName.endsWith(WAVE) || trackName.endsWith(AU)
-                    || trackName.endsWith(SND) || trackName.endsWith(AIFF)
-                    || trackName.endsWith(AIFC))
-                result = new PCMTrack(fSound, player);
-            else if (trackName.endsWith(M4A) || trackName.endsWith(AAC))
-                result = new M4ATrack(fSound, player);
-            /*else if (trackName.endsWith(SPEEX))
-                result = new SpeexTrack(fSound);*/
+            switch (formatName) {
+                case MPEG:
+                    result = new MP3Track(fSound, player);
+                    break;
+
+                case OGG:
+                    result = new OGGTrack(fSound, player);
+                    break;
+
+                case FLAC:
+                    result = new FlacTrack(fSound, player);
+                    break;
+
+                case WAVE: case AU: case SND: case AIFF: case AIFC:
+                    result = new PCMTrack(fSound, player);
+                    break;
+
+                case M4A:
+                    result = new M4ATrack(fSound, player);
+                    break;
+            }
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException | InvalidAudioFrameException e) {
             /*Logger.getLogger(Track.class,
                     e.getClass().getSimpleName(), e.getMessage()).error();*/
@@ -613,13 +621,11 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     @Override
     public void run() {
-        //final boolean isPlayerLinked = PlayerHandler.hasInstance();
         final byte[] audioBuffer = new byte[4096];
         int read;
         play();
 
         TaskRunner.execute(new TPlayingTrack(this));
-
         while (!isFinished() && !isKilled() && isValidTrack()) {
             try {
                 while (isPlaying())
