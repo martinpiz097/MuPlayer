@@ -354,5 +354,6 @@
     - Se ordenan algunas clases
     - El menu de ayuda es guardado en un archivo help.properties completamente editable
 
-- 2.1
+- 2.0.1
     - Correccion de errores para sileciar y quitar silencio al reproductor
+    
