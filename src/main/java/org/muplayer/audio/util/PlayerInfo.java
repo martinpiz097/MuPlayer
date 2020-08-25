@@ -7,10 +7,10 @@ import java.io.File;
 import java.text.DecimalFormat;
 
 public class PlayerInfo {
-    private Track current;
-    private File trackFolder;
-    private File rootFolder;
-    private float gain;
+    private final Track current;
+    private final File trackFolder;
+    private final File rootFolder;
+    private final float gain;
 
     private int songsCount;
     private int foldersCount;

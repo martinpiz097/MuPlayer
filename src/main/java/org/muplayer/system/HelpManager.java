@@ -4,10 +4,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Map;
+import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
-import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import static org.muplayer.main.ConsoleOrder.*;
 
@@ -148,7 +148,7 @@ public class HelpManager {
 
     // revisa si se han hecho cambios, si esta propiedad existe y tiene texto valido se deja tal cual
     private void checkProperty(String key, String defaultValue) {
-        String property = properties.getProperty(key);
+        final String property = properties.getProperty(key);
         if (property == null || property.isEmpty()) {
             properties.setProperty(key, defaultValue);
         }
@@ -196,15 +196,17 @@ public class HelpManager {
     }
 
     public Set<String> getPropertyNames() {
-        if (cacheMode) {
-            return properties.stringPropertyNames();
-        }
+        Set<String> stringsPropNames;
+        if (cacheMode)
+            stringsPropNames = properties.stringPropertyNames();
         else {
             loadData();
-            Set<String> strings = properties.stringPropertyNames();
+            stringsPropNames = properties.stringPropertyNames();
             properties = null;
-            return strings;
         }
+
+        return stringsPropNames.stream().sorted()
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
 }

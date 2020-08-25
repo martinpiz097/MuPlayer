@@ -1,7 +1,6 @@
 package org.muplayer.audio.util;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class Time {
@@ -12,9 +11,7 @@ public class Time {
         return time;
     }
 
-    public Time() {
-
-    }
+    private Time() {}
 
     private Calendar getCalendar() {
         return new GregorianCalendar();
@@ -25,11 +22,7 @@ public class Time {
     }*/
 
     public long getTime() {
-        //Calendar cal = getCalendar();
-        //cal.get(Calendar.MILLISECOND);
-        return new Date().getTime();
+        return new GregorianCalendar().getTimeInMillis();
     }
-
-
 
 }

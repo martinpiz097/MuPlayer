@@ -18,7 +18,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static java.nio.file.StandardOpenOption.WRITE;
@@ -80,22 +79,22 @@ public class ConsoleInterpreter implements CommandInterpreter {
     }
 
     protected void printHelp() {
-        HelpManager helpManager = HelpManager.getInstance();
+        final HelpManager helpManager = HelpManager.getInstance();
         helpManager.setCacheMode(true);
-        Set<String> propertyNames = helpManager.getPropertyNames();
+        final Set<String> propertyNames = helpManager.getPropertyNames();
 
-        Iterator<String> it = propertyNames.iterator();
+        final Iterator<String> it = propertyNames.iterator();
+        final StringBuilder sbHelp = new StringBuilder();
+
         String key;
-        StringBuilder sbHelp = new StringBuilder();
         int count = 1;
         while (it.hasNext()) {
             key = it.next();
-            sbHelp.append(count).append(") ")
+            sbHelp.append(count++).append(") ")
                     .append(key)
                     .append(": ")
                     .append(helpManager.getProperty(key))
                     .append('\n');
-            count++;
         }
         Logger.getLogger(this, "---------").rawWarning();
         Logger.getLogger(this, "Help Info").rawWarning();

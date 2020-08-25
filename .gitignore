@@ -3,3 +3,4 @@ compileandtest.sh
 testing.sh
 audio/
 dependency-reduced-pom.xml
+.idea/

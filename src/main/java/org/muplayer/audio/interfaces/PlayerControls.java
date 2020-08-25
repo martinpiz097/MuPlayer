@@ -4,16 +4,16 @@ import java.io.File;
 import java.util.List;
 
 public interface PlayerControls extends MusicControls {
-    public void open(File sound);
-    public void open(List<File> listSounds);
-    public void addMusic(List<File> listSounds);
-    public void addMusic(File musicFolder);
-    public void play(File track);
-    public void play(String trackName);
-    public void playNext();
-    public void playPrevious();
-    public void shutdown();
+    void open(File sound);
+    void open(List<File> listSounds);
+    void addMusic(List<File> listSounds);
+    void addMusic(File musicFolder);
+    void play(File track);
+    void play(String trackName);
+    void playNext();
+    void playPrevious();
+    void shutdown();
 
-    public float getSystemVolume();
-    public void setSystemVolume(float volume);
+    float getSystemVolume();
+    void setSystemVolume(float volume);
 }

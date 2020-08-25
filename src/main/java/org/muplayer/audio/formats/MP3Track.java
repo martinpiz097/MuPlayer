@@ -92,7 +92,6 @@ public class MP3Track extends Track {
     private long getBytesToSeek(double sec) {
         double frameNeeded = sec / frameDurationInSec;
         long toSkip = Math.round(frameNeeded * frameSize);
-        //System.out.println("ToSkip: "+toSkip);
         return toSkip;
     }
 
@@ -103,9 +102,9 @@ public class MP3Track extends Track {
             return;
         secsSeeked+=seconds;
         long bytesToSeek = getBytesToSeek(seconds);
-        long skip = -2;
+        //long skip = -2;
         try {
-            skip = trackStream.skip(bytesToSeek);
+            trackStream.skip(bytesToSeek);
             //System.out.println("Skipped: "+skip+"/BytesToSkip: "+bytesToSeek);
         } catch (ArrayIndexOutOfBoundsException e) {
             Logger.getLogger(this, e.getClass().getSimpleName(), e.getMessage()).error();

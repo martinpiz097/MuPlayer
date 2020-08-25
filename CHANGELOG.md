@@ -359,3 +359,7 @@
     
 - 2.0.2
     - Se aplican pequeñas optimizaciones de código
+
+- X
+    - Pequeñas mejoras y optimizaciones de código
+    - Se ordena menu help por orden alfabetico

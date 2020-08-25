@@ -17,10 +17,10 @@ import java.io.*;
  * @author kc7bfi
  */
 public class FlacDecoder implements PCMProcessor {
-    private WavWriter wav;
+    private final WavWriter wav;
+    private final FileInputStream inputFile;
+    private final ByteArrayOutputStream outStream;
     private AudioInputStream decodedAis;
-    private FileInputStream inputFile;
-    private ByteArrayOutputStream outStream;
     private ByteArrayInputStream audioIn;
     private StreamInfo flacInfo;
 

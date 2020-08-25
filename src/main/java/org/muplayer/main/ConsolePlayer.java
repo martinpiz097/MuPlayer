@@ -1,8 +1,6 @@
 package org.muplayer.main;
 
 import org.muplayer.audio.Player;
-import org.muplayer.audio.Track;
-import org.muplayer.audio.interfaces.PlayerListener;
 import org.muplayer.system.AppInfo;
 import org.muplayer.system.AppKey;
 import org.muplayer.system.SysInfo;
@@ -12,9 +10,10 @@ import org.orangelogger.sys.SystemUtil;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class ConsolePlayer implements Runnable {
@@ -37,7 +36,7 @@ public class ConsolePlayer implements Runnable {
         this(new File(folder));
     }
 
-    protected void configListener() {
+    /*protected void configListener() {
         player.addPlayerListener(new PlayerListener() {
             @Override
             public void onSongChange(Track newTrack) {
@@ -84,7 +83,7 @@ public class ConsolePlayer implements Runnable {
 
             }
         });
-    }
+    }*/
 
     protected void printHeader() {
         FileOutputStream stdout = SystemUtil.getStdout();

@@ -1,6 +1,7 @@
 package org.muplayer.audio.util;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.muplayer.system.SysInfo.ISMAC;
 import static org.muplayer.system.SysInfo.ISUNIX;
@@ -22,7 +23,7 @@ public class AudioExtensions {
     public static String[] SUPPORTEDEXTENSIONS = {};
 
     static {
-        ArrayList<String> listSupportedFormats = new ArrayList<>();
+        final List<String> listSupportedFormats = new ArrayList<>();
         listSupportedFormats.add(MPEG);
         listSupportedFormats.add(OGG);
         listSupportedFormats.add(AAC);
@@ -46,7 +47,7 @@ public class AudioExtensions {
 
     public static String getFormatName(String fileName) {
         final String[] split = fileName.trim().split("\\.");
-        return split != null && split.length > 0
+        return split.length > 0
                 ? split[split.length-1]
                 : "";
     }

@@ -50,7 +50,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     //protected ByteBuffer playingBuffer;
     //protected TrackState state;
 
-    public static final int BUFFSIZE = 4096;
+    //public static final int BUFFSIZE = 4096;
 
     public static Track getTrack(File fSound) {
         return getTrack(fSound, null);

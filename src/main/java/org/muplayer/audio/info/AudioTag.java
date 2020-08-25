@@ -17,10 +17,10 @@ import java.io.IOException;
 import java.util.Iterator;
 
 public class AudioTag {
-    private File fileSource;
-    private AudioFile audioFile;
-    private Tag tagReader;
-    private AudioHeader header;
+    private final File fileSource;
+    private final AudioFile audioFile;
+    private final Tag tagReader;
+    private final AudioHeader header;
 
     public AudioTag(File sound)
             throws TagException, ReadOnlyFileException,

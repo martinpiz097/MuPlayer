@@ -74,7 +74,7 @@ public class DecodeManager {
 
     public static AudioInputStream decodeToPcm(
             AudioFormat baseFormat, AudioInputStream encodedAis) {
-        AudioFormat decodedFormat = getPcmFormatByMpeg(baseFormat);
+        final AudioFormat decodedFormat = getPcmFormatByMpeg(baseFormat);
         // Es preferible realizar la comprobacion aca y en java interno
         // que tener una excepcion
         if (AudioSystem.isConversionSupported(decodedFormat, baseFormat))

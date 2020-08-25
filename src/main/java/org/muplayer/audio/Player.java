@@ -1,10 +1,6 @@
 package org.muplayer.audio;
 
 import org.aucom.sound.Speaker;
-import org.jaudiotagger.audio.exceptions.CannotReadException;
-import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
-import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
-import org.jaudiotagger.tag.TagException;
 import org.muplayer.audio.info.AudioTag;
 import org.muplayer.audio.info.SongData;
 import org.muplayer.audio.interfaces.PlayerControls;
@@ -29,11 +25,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -44,9 +37,9 @@ public class Player extends Thread implements PlayerControls {
     private volatile File rootFolder;
     private volatile Track current;
 
-    private volatile List<String> listSoundPaths;
-    private volatile List<String> listFolderPaths;
-    private volatile List<PlayerListener> listListeners;
+    private final List<String> listSoundPaths;
+    private final List<String> listFolderPaths;
+    private final List<PlayerListener> listListeners;
 
     private volatile int trackIndex;
     private volatile float currentVolume;
@@ -55,19 +48,11 @@ public class Player extends Thread implements PlayerControls {
 
     public static final float DEFAULT_VOLUME = AudioUtil.convertLineRangeToVolRange(AudioUtil.MiDDLE_VOL);
 
-    public Player() {
-        try {
-            instancePlayer(null);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+    public Player() throws FileNotFoundException {
+        this((File) null);
     }
 
     public Player(File rootFolder) throws FileNotFoundException {
-        instancePlayer(rootFolder);
-    }
-
-    private void instancePlayer(File rootFolder) throws FileNotFoundException {
         this.rootFolder = rootFolder;
         listSoundPaths = new ArrayList<>();
         listFolderPaths = new ArrayList<>();
@@ -114,6 +99,7 @@ public class Player extends Thread implements PlayerControls {
             // se analiza carpeta y se agregan sonidos recursivamente
             boolean hasTracks = false;
             String filePath;
+
             for (int i = 0; i < fldFiles.length; i++) {
                 f = fldFiles[i];
                 if (f.isDirectory())
@@ -142,7 +128,7 @@ public class Player extends Thread implements PlayerControls {
     }
 
     private void loadTracks(List<File> listFiles) {
-        listFiles.stream().forEach(f->{
+        listFiles.forEach(f->{
             if (f.isDirectory())
                 loadTracks(f);
             else
@@ -151,19 +137,14 @@ public class Player extends Thread implements PlayerControls {
     }
 
     private void sortTracks() {
-        listSoundPaths.sort(Comparator.naturalOrder());
-        listFolderPaths.sort(Comparator.naturalOrder());
+        final Comparator<String> comparator = Comparator.naturalOrder();
+        listSoundPaths.sort(comparator);
+        listFolderPaths.sort(comparator);
     }
 
     private int getFolderIndex() {
         String currentParent = current != null ? current.getDataSource().getParent() : null;
-        if (currentParent != null) {
-            for (int i = 0; i < listFolderPaths.size(); i++) {
-                if (listFolderPaths.get(i).equals(currentParent))
-                    return i;
-            }
-        }
-        return -1;
+        return currentParent != null ? listFolderPaths.indexOf(currentParent) : -1;
     }
 
     private Track getTrackBy(int currentIndex, SeekOption param) {
