@@ -360,6 +360,6 @@
 - 2.0.2
     - Se aplican pequeñas optimizaciones de código
 
-- X
+- 2.0.3
     - Pequeñas mejoras y optimizaciones de código
     - Se ordena menu help por orden alfabetico
