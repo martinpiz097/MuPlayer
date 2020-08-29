@@ -15,6 +15,7 @@ import org.muplayer.audio.trackstates.*;
 import org.muplayer.audio.util.AudioExtensions;
 import org.muplayer.audio.util.TimeFormatter;
 import org.muplayer.system.AudioUtil;
+import org.muplayer.thread.TPlayingTrack;
 import org.orangelogger.sys.Logger;
 
 import javax.sound.sampled.*;
@@ -40,6 +41,8 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     protected volatile double bytesPerSecond;
     protected volatile float volume;
     protected volatile boolean isMute;
+
+    protected volatile TPlayingTrack playingTrack;
 
     protected Object source;
 
@@ -282,6 +285,12 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         return ((double)trackLine.getDriver().getMicrosecondPosition()) / 1000000;
     }
 
+    public void setSecsSeeked(double secsSeeked) {
+        this.secsSeeked = secsSeeked;
+    }
+
+
+
     // Posible motivo de error para mas adelante
     /*protected int getBuffLen() {
         long frameLen = trackStream == null ? BUFFSIZE : trackStream.getFrameLength();
@@ -316,6 +325,14 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         return stateCode;
     }*/
 
+    public TPlayingTrack getPlayingTrack() {
+        return playingTrack;
+    }
+
+    public void setPlayingTrack(TPlayingTrack playingTrack) {
+        this.playingTrack = playingTrack;
+    }
+
     public TrackState getTrackState() {
         return state;
     }
@@ -348,10 +365,6 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     // Ir a un segundo especifico de la cancion
     // inhabiliado si aplico freeze al pausar
 
-
-    public void setSecsSeeked(double secsSeeked) {
-        this.secsSeeked = secsSeeked;
-    }
 
     public AudioFileFormat getFileFormat() throws IOException, UnsupportedAudioFileException {
         return audioReader == null ? null : audioReader.getAudioFileFormat(dataSource);
@@ -411,11 +424,9 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     }
 
     @Override
-    public synchronized void stopTrack()
-            throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-        if (isAlive() && (isPlaying() || isPaused())) {
+    public synchronized void stopTrack() {
+        if (isAlive() && (isPlaying() || isPaused()))
             state = new StoppedState(this);
-        }
     }
 
     @Override
@@ -603,25 +614,8 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     @Override
     public void run() {
         state = new StartedState(this);
-
-        /*new Thread(() -> {
-            try {
-                while (!isFinished() && !isKilled()) {
-                    System.out.print("Track "+getTitle()+" with ");
-                    System.out.println("State: "+getStateToString());
-                    Thread.sleep(3000);
-                }
-
-                System.out.print("Track "+getTitle()+" with ");
-                System.out.println("State: "+getStateToString());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();*/
-
-        while (state.canTrackContinue()) {
+        while (state.canTrackContinue())
             state.execute();
-        }
     }
 }
 

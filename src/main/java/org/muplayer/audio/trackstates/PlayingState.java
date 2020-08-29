@@ -10,9 +10,9 @@ import java.io.IOException;
 
 // Testing
 public class PlayingState extends TrackState {
-
-    private Speaker trackLine;
+    private final Speaker trackLine;
     private final short BUFF_SIZE = 4096;
+    private final byte[] audioBuffer = new byte[BUFF_SIZE];
 
     public PlayingState(Track track) {
         super(track);
@@ -21,10 +21,14 @@ public class PlayingState extends TrackState {
 
     @Override
     public void handle() {
-        final byte[] audioBuffer = new byte[BUFF_SIZE];
         int read;
 
-        TaskRunner.execute(new TPlayingTrack(track));
+        final TPlayingTrack trackThread = track.getPlayingTrack();
+        if (trackThread == null || !trackThread.hasTrack(track)) {
+            final TPlayingTrack tPlayingTrack = new TPlayingTrack(track);
+            track.setPlayingTrack(tPlayingTrack);
+            TaskRunner.execute(tPlayingTrack);
+        }
 
         // cambiar por canExecuteState
         while (track.isPlaying()) {
@@ -35,13 +39,11 @@ public class PlayingState extends TrackState {
                     track.finish();
                 if (trackLine != null)
                     trackLine.playAudio(audioBuffer);
-            } catch (IOException |
-                    IndexOutOfBoundsException | IllegalArgumentException e) {
+            } catch (IOException | IndexOutOfBoundsException | IllegalArgumentException e) {
                 track.finish();
                 Logger.getLogger(this, e.getMessage()).error();
             }
         }
-        //finish();
     }
 
 }
