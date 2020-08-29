@@ -34,10 +34,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     protected volatile AudioTag tagInfo;
 
     protected volatile TrackState state;
-    //protected volatile int available;
     protected volatile double secsSeeked;
-    //protected volatile double currentTime;
-    //protected volatile long readedBytes;
     protected volatile double bytesPerSecond;
     protected volatile float volume;
     protected volatile boolean isMute;
@@ -47,11 +44,6 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     protected Object source;
 
     protected final PlayerControls player;
-
-    //protected ByteBuffer playingBuffer;
-    //protected TrackState state;
-
-    //public static final int BUFFSIZE = 4096;
 
     public static Track getTrack(File fSound) {
         return getTrack(fSound, null);
@@ -154,9 +146,11 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     }
 
     public static boolean isValidTrack(File track) {
-        boolean isSupported = AudioUtil.isSupported(track);
-        return isSupported /*&& getTrack(track).isValidTrack()*/;
+        return AudioUtil.isSupported(track) /*&& getTrack(track).isValidTrack()*/;
     }
+
+    // Ir a un segundo especifico de la cancion
+    // inhabiliado si aplico freeze al pausar
 
     protected Track(File dataSource)
             throws LineUnavailableException, IOException, UnsupportedAudioFileException {
@@ -289,8 +283,6 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         this.secsSeeked = secsSeeked;
     }
 
-
-
     // Posible motivo de error para mas adelante
     /*protected int getBuffLen() {
         long frameLen = trackStream == null ? BUFFSIZE : trackStream.getFrameLength();
@@ -300,10 +292,6 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     public boolean isValidTrack() {
         return trackStream != null && trackLine != null;
     }
-
-    /*public boolean hasPlayerAssociated() {
-        return PlayerHandler.hasInstance();
-    }*/
 
     public double getBytesPerSecond() {
         return bytesPerSecond;
@@ -320,10 +308,6 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     public synchronized Speaker getTrackLine() {
         return trackLine;
     }
-
-    /*public TrackStates getState() {
-        return stateCode;
-    }*/
 
     public TPlayingTrack getPlayingTrack() {
         return playingTrack;
@@ -361,10 +345,6 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     public synchronized String getFormattedProgress() {
         return TimeFormatter.format((long) getProgress());
     }
-
-    // Ir a un segundo especifico de la cancion
-    // inhabiliado si aplico freeze al pausar
-
 
     public AudioFileFormat getFileFormat() throws IOException, UnsupportedAudioFileException {
         return audioReader == null ? null : audioReader.getAudioFileFormat(dataSource);

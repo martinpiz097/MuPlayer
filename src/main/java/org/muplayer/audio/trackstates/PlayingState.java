@@ -19,31 +19,31 @@ public class PlayingState extends TrackState {
         trackLine = track.getTrackLine();
     }
 
+    private boolean canPlay() {
+        return track.isPlaying() && trackLine != null;
+    }
+
     @Override
     public void handle() {
-        int read;
+        TPlayingTrack trackThread = track.getPlayingTrack();
 
-        final TPlayingTrack trackThread = track.getPlayingTrack();
         if (trackThread == null || !trackThread.hasTrack(track)) {
-            final TPlayingTrack tPlayingTrack = new TPlayingTrack(track);
+            TPlayingTrack tPlayingTrack = new TPlayingTrack(track);
             track.setPlayingTrack(tPlayingTrack);
             TaskRunner.execute(tPlayingTrack);
         }
 
-        // cambiar por canExecuteState
-        while (track.isPlaying()) {
+        int read = 0;
+        while (canPlay() && read != -1) {
             try {
                 read = track.getDecodedStream().read(audioBuffer);
-
-                if (read == -1)
-                    track.finish();
-                if (trackLine != null)
-                    trackLine.playAudio(audioBuffer);
+                trackLine.playAudio(audioBuffer);
             } catch (IOException | IndexOutOfBoundsException | IllegalArgumentException e) {
                 track.finish();
                 Logger.getLogger(this, e.getMessage()).error();
             }
         }
+        track.finish();
     }
 
 }
