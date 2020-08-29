@@ -363,3 +363,6 @@
 - 2.0.3
     - Pequeñas mejoras y optimizaciones de código
     - Se ordena menu help por orden alfabetico
+    
+- 2.1
+    - Se implementa patrón de diseño State para los estados de Track
