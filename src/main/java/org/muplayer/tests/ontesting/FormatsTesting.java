@@ -1,16 +1,17 @@
 package org.muplayer.tests.ontesting;
 
+import org.aucom.sound.AudioQuality;
+import org.aucom.sound.Speaker;
 import org.jflac.sound.spi.FlacAudioFileReader;
 import org.jflac.sound.spi.FlacFormatConversionProvider;
 import org.muplayer.audio.Player;
-import org.muplayer.audio.info.AudioTag;
 import org.muplayer.audio.Track;
 import org.muplayer.audio.formats.FlacTrack;
 import org.muplayer.audio.formats.M4ATrack;
 import org.muplayer.audio.formats.OGGTrack;
 import org.muplayer.audio.formats.PCMTrack;
+import org.muplayer.audio.info.AudioTag;
 import org.muplayer.audio.interfaces.MusicControls;
-import org.muplayer.audio.interfaces.PlayerListener;
 import org.muplayer.audio.model.Album;
 import org.muplayer.audio.model.Artist;
 import org.muplayer.audio.model.TrackInfo;
@@ -30,7 +31,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -58,7 +58,14 @@ public class FormatsTesting {
         //execTest();
         //execConsolePlayerTest(new File("/home/martin/Escritorio/Música"));
         //execArtistsTest();
-        execAlbumsTest();
+        //execAlbumsTest();
+        execSpeakerTest();
+    }
+
+    private static void execSpeakerTest() throws LineUnavailableException {
+        final Speaker speaker = new Speaker(AudioQuality.NORMAL);
+        speaker.open();
+        System.out.println(speaker.getDriver());
     }
 
     private static void execArtistsTest() throws FileNotFoundException {
@@ -131,20 +138,20 @@ public class FormatsTesting {
         String folderName;
         File folderTesting = null;
         ConsolePlayer player = null;
-            while (folderTesting == null || !folderTesting.exists()) {
-                try {
-                    System.out.println("Format to test: "+((folderName = scan.nextLine())));
-                    if (folderName.equals("music"))
-                        folderTesting = new File("/home/martin/Escritorio/Archivos/Música");
-                    else
-                        folderTesting = new File(manager.getProperty(TESTINGPATH), folderName);
-                    player = new ConsolePlayer(folderTesting);
-                } catch (FileNotFoundException e) {
-                    folderTesting = null;
-                }
+        while (folderTesting == null || !folderTesting.exists()) {
+            try {
+                System.out.println("Format to test: "+((folderName = scan.nextLine())));
+                if (folderName.equals("music"))
+                    folderTesting = new File("/home/martin/Escritorio/Archivos/Música");
+                else
+                    folderTesting = new File(manager.getProperty(TESTINGPATH), folderName);
+                player = new ConsolePlayer(folderTesting);
+            } catch (FileNotFoundException e) {
+                folderTesting = null;
             }
-            TaskRunner.execute(player);
-            player.execCommand(ConsoleOrder.START);
+        }
+        TaskRunner.execute(player);
+        player.execCommand(ConsoleOrder.START);
     }
 
     private static void execBytesTest() throws IOException, UnsupportedAudioFileException {
