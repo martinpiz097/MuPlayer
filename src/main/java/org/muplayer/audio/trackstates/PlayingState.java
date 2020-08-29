@@ -1,58 +1,62 @@
-/*package org.muplayer.audio.trackstates;
+package org.muplayer.audio.trackstates;
 
 import org.aucom.sound.Speaker;
 import org.muplayer.audio.Track;
+import org.muplayer.thread.TPlayingTrack;
+import org.muplayer.thread.TaskRunner;
 import org.orangelogger.sys.Logger;
-import org.muplayer.thread.ThreadManager;
 
 import java.io.IOException;
 
 // Testing
 public class PlayingState extends TrackState {
 
-    private Track track;
     private Speaker trackLine;
-
-    private int read;
-    private int readedBytes;
-    private byte[] audioBuffer;
-    private int secsSeeked;
-    private long ti;
+    private final short BUFF_SIZE = 4096;
 
     public PlayingState(Track track) {
-        this.track = track;
+        super(track);
         trackLine = track.getTrackLine();
-        audioBuffer = new byte[4096];
-        secsSeeked = 0;
     }
 
     @Override
     public void handle() {
-        while (track.isPlaying()) {
+        final byte[] audioBuffer = new byte[BUFF_SIZE];
+        int read;
+
+        TaskRunner.execute(new TPlayingTrack(track));
+        while (track.isValidTrack()) {
             try {
-                read = track.getDecodedStream().read(audioBuffer);
-                readedBytes+=read;
-                if (ThreadManager.hasOneSecond(ti)) {
-                    //secsSeeked=(getSecondsByBytes(readedBytes));
-                    secsSeeked++;
-                    ti = System.currentTimeMillis();
-                }
-                if (read == -1) {
-                    track.finish();
-                    break;
-                }
-                else if (trackLine != null)
-                    trackLine.playAudio(audioBuffer);
-                else
-                    Logger.getLogger(this, "TrackLineNull").info();
-            } catch (IndexOutOfBoundsException e) {
-                track.finish();
-                break;
-            } catch (IOException e) {
+                while (track.isPlaying())
+                    try {
+                        if (track.isPaused())
+                            break;
+                        read = track.getDecodedStream().read(audioBuffer);
+
+                        if (read == -1) {
+                            track.finish();
+                            finish();
+                            break;
+                        }
+                        if (trackLine != null)
+                            trackLine.playAudio(audioBuffer);
+                    } catch (IndexOutOfBoundsException e) {
+                        finish();
+                        track.finish();
+                    }
+                Thread.sleep(50);
+            } catch (IOException |
+                    InterruptedException e) {
                 e.printStackTrace();
+            } catch(IllegalArgumentException e) {
+                finish();
+                track.finish();
+                Logger.getLogger(this, e.getMessage()).error();
+                break;
             }
         }
+
+        finish();
     }
 
 }
-*/

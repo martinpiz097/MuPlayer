@@ -11,11 +11,10 @@ import org.muplayer.audio.info.AudioTag;
 import org.muplayer.audio.interfaces.MusicControls;
 import org.muplayer.audio.interfaces.PlayerControls;
 import org.muplayer.audio.model.TrackInfo;
+import org.muplayer.audio.trackstates.*;
 import org.muplayer.audio.util.AudioExtensions;
 import org.muplayer.audio.util.TimeFormatter;
 import org.muplayer.system.AudioUtil;
-import org.muplayer.thread.TPlayingTrack;
-import org.muplayer.thread.TaskRunner;
 import org.orangelogger.sys.Logger;
 
 import javax.sound.sampled.*;
@@ -25,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import static org.muplayer.audio.util.AudioExtensions.*;
-import static org.muplayer.system.TrackStates.*;
 
 public abstract class Track extends Thread implements MusicControls, TrackInfo {
     protected volatile File dataSource;
@@ -34,7 +32,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     protected volatile AudioFileReader audioReader;
     protected volatile AudioTag tagInfo;
 
-    protected volatile byte state;
+    protected volatile TrackState state;
     //protected volatile int available;
     protected volatile double secsSeeked;
     //protected volatile double currentTime;
@@ -174,7 +172,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
             throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this.dataSource = dataSource;
         this.source = dataSource;
-        state = STOPPED;
+        state = new StoppedState(this);
         secsSeeked = 0;
         volume = Player.DEFAULT_VOLUME;
         initAll();
@@ -190,7 +188,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     protected Track(InputStream inputStream, PlayerControls player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         this.source = inputStream;
-        state = STOPPED;
+        state = new StoppedState(this);
         secsSeeked = 0;
         volume = Player.DEFAULT_VOLUME;
         initAll();
@@ -318,25 +316,12 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         return stateCode;
     }*/
 
-    public byte getTrackState() {
+    public TrackState getTrackState() {
         return state;
     }
 
     public String getStateToString() {
-        switch (state) {
-            case PLAYING:
-                return "Playing";
-            case PAUSED:
-                return "Paused";
-            case STOPPED:
-                return "Stopped";
-            case FINISHED:
-                return "Finished";
-            case KILLED:
-                return "Killed";
-            default:
-                return "Unknown";
-        }
+        return state.getName();
     }
 
     public PlayerControls getPlayer() {
@@ -363,6 +348,11 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     // Ir a un segundo especifico de la cancion
     // inhabiliado si aplico freeze al pausar
 
+
+    public void setSecsSeeked(double secsSeeked) {
+        this.secsSeeked = secsSeeked;
+    }
+
     public AudioFileFormat getFileFormat() throws IOException, UnsupportedAudioFileException {
         return audioReader == null ? null : audioReader.getAudioFileFormat(dataSource);
     }
@@ -373,26 +363,26 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     @Override
     public synchronized boolean isPlaying() {
-        return state == PLAYING;
+        return state instanceof PlayingState;
     }
 
     @Override
     public synchronized boolean isPaused() {
-        return state == PAUSED;
+        return state instanceof PausedState;
     }
 
     @Override
     public synchronized boolean isStopped() {
-        return state == STOPPED;
+        return state instanceof StoppedState;
     }
 
     @Override
     public synchronized boolean isFinished() {
-        return state == FINISHED;
+        return state instanceof FinishedState;
     }
 
     public synchronized boolean isKilled() {
-        return state == KILLED;
+        return state instanceof KilledState;
     }
 
     @Override
@@ -403,15 +393,13 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     @Override
     public void play() {
         if (isAlive())
-            state = PLAYING;
+            state = new PlayingState(this);
     }
 
     @Override
     public void pause() {
-        if (isPlaying()) {
-            suspend();
-            state = PAUSED;
-        }
+        if (isPlaying())
+            state = new PausedState(this);
     }
 
     @Override
@@ -428,21 +416,18 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         if (isAlive() && (isPlaying() || isPaused())) {
             if (isPlaying())
                 suspend();
-            resetStream();
-            state = STOPPED;
-            secsSeeked = 0;
-
+            state = new StoppedState(this);
         }
     }
 
     @Override
     public void finish() {
-        state = FINISHED;
+        state = new FinishedState(this);
         closeAllStreams();
     }
 
     void kill() {
-        state = KILLED;
+        state = new KilledState(this);
         closeAllStreams();
     }
 
@@ -587,7 +572,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         return trackStream.getFormat().toString();
     }
 
-        public void getLineInfo() {
+    public void getLineInfo() {
         SourceDataLine driver = trackLine.getDriver();
         System.out.println("Soporte de controles en line");
         System.out.println("---------------");
@@ -621,40 +606,15 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     @Override
     public void run() {
-        final byte[] audioBuffer = new byte[4096];
-        int read;
-        play();
-
-        TaskRunner.execute(new TPlayingTrack(this));
-        while (!isFinished() && !isKilled() && isValidTrack()) {
+        state.handle();
+        while (state.canTrackContinue()) {
+            state.handle();
             try {
-                while (isPlaying())
-                    try {
-                        if (isPaused())
-                            break;
-                        read = trackStream.read(audioBuffer);
-
-                        if (read == -1) {
-                            finish();
-                            break;
-                        }
-                        if (trackLine != null)
-                            trackLine.playAudio(audioBuffer);
-                    } catch (IndexOutOfBoundsException e) {
-                        finish();
-                    }
-                Thread.sleep(50);
-            } catch (IOException |
-                    InterruptedException e) {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
                 e.printStackTrace();
-            } catch(IllegalArgumentException e) {
-                finish();
-                Logger.getLogger(this, e.getMessage()).error();
-                break;
             }
         }
-        if (isFinished() && player != null)
-            player.playNext();
     }
 }
 

@@ -1,6 +1,5 @@
-/*package org.muplayer.audio.trackstates;
+package org.muplayer.audio.trackstates;
 
-import org.aucom.sound.Speaker;
 import org.muplayer.audio.Track;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -9,12 +8,8 @@ import java.io.IOException;
 
 public class StoppedState extends TrackState {
 
-    private Track track;
-    private Speaker trackLine;
-
     public StoppedState(Track track) {
-        this.track = track;
-        trackLine = track.getTrackLine();
+        super(track);
     }
 
     private void resetStream() throws IOException, LineUnavailableException, UnsupportedAudioFileException {
@@ -24,11 +19,10 @@ public class StoppedState extends TrackState {
     @Override
     public void handle() {
         try {
-            resetStream();
-            while (track.isStopped()) {}
+            track.resetStream();
+            track.setSecsSeeked(0);
         } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
             e.printStackTrace();
         }
     }
 }
-*/

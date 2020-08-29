@@ -1,26 +1,15 @@
-/*package org.muplayer.audio.trackstates;
+package org.muplayer.audio.trackstates;
 
-import org.aucom.sound.Speaker;
 import org.muplayer.audio.Track;
-import org.orangelogger.sys.Logger;
-
-import javax.sound.sampled.AudioInputStream;
 
 public class KilledState extends TrackState {
 
-    private Track track;
-    private AudioInputStream decodedStream;
-    private Speaker trackLine;
-
     public KilledState(Track track) {
-        this.track = track;
-        decodedStream = track.getDecodedStream();
-        trackLine = track.getTrackLine();
+        super(track);
     }
 
     @Override
     public void handle() {
-        Logger.getLogger(this, "Track completed!").info();
-        track.closeAllStreams();
+        finish();
     }
-}*/
+}

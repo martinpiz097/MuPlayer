@@ -1,32 +1,20 @@
-/*package org.muplayer.audio.trackstates;
+package org.muplayer.audio.trackstates;
 
-import org.aucom.sound.Speaker;
 import org.muplayer.audio.Track;
-import org.orangelogger.sys.Logger;
-import org.muplayer.thread.PlayerHandler;
-
-import javax.sound.sampled.AudioInputStream;
+import org.muplayer.audio.interfaces.PlayerControls;
 
 public class FinishedState extends TrackState {
 
-    private Track track;
-    private AudioInputStream decodedStream;
-    private Speaker trackLine;
+    private final PlayerControls player;
 
     public FinishedState(Track track) {
-        this.track = track;
-        decodedStream = track.getDecodedStream();
-        trackLine = track.getTrackLine();
+        super(track);
+        player = track.getPlayer();
     }
 
     @Override
     public void handle() {
-        Logger.getLogger(this, "Track completed!").info();
-        if (PlayerHandler.hasInstance() && track.isPlayerLinked()) {
-            //Logger.getLogger(this, "Entra a if isfinished").error();
-            track.closeAllStreams();
-            PlayerHandler.getPlayer().startPlaying();
-        }
+        if (player != null)
+            player.playNext();
     }
 }
-*/

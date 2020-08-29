@@ -9,10 +9,11 @@ import org.muplayer.audio.model.Album;
 import org.muplayer.audio.model.Artist;
 import org.muplayer.audio.model.SeekOption;
 import org.muplayer.audio.model.TrackInfo;
+import org.muplayer.audio.trackstates.TrackState;
+import org.muplayer.audio.trackstates.UnknownState;
 import org.muplayer.audio.util.PlayerInfo;
 import org.muplayer.system.AudioUtil;
 import org.muplayer.system.LineUtil;
-import org.muplayer.system.TrackStates;
 import org.muplayer.thread.ListenerRunner;
 import org.muplayer.thread.TaskRunner;
 import org.muplayer.thread.ThreadManager;
@@ -298,8 +299,8 @@ public class Player extends Thread implements PlayerControls {
         return existsFolder(child.getParent());
     }
 
-    public byte getCurrentTrackState() {
-        return current == null ? TrackStates.UNKNOWN : current.getTrackState();
+    public TrackState getCurrentTrackState() {
+        return current == null ? new UnknownState(current) : current.getTrackState();
     }
 
     public String getCurrentTrackStateToString() {
