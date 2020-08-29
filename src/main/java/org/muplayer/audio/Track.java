@@ -405,8 +405,8 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     @Override
     public void resumeTrack() {
         if (isAlive() && (isPaused() || isStopped())) {
-            resume();
             play();
+            resume();
         }
     }
 
@@ -414,8 +414,6 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     public synchronized void stopTrack()
             throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         if (isAlive() && (isPlaying() || isPaused())) {
-            if (isPlaying())
-                suspend();
             state = new StoppedState(this);
         }
     }
@@ -423,12 +421,10 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     @Override
     public void finish() {
         state = new FinishedState(this);
-        closeAllStreams();
     }
 
-    void kill() {
+    public void kill() {
         state = new KilledState(this);
-        closeAllStreams();
     }
 
     // en este caso pasan a ser seconds
@@ -606,14 +602,25 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     @Override
     public void run() {
-        state.handle();
-        while (state.canTrackContinue()) {
-            state.handle();
+        state = new StartedState(this);
+
+        /*new Thread(() -> {
             try {
-                Thread.sleep(10);
+                while (!isFinished() && !isKilled()) {
+                    System.out.print("Track "+getTitle()+" with ");
+                    System.out.println("State: "+getStateToString());
+                    Thread.sleep(3000);
+                }
+
+                System.out.print("Track "+getTitle()+" with ");
+                System.out.println("State: "+getStateToString());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }).start();*/
+
+        while (state.canTrackContinue()) {
+            state.execute();
         }
     }
 }

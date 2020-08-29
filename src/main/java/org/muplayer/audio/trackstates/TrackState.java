@@ -7,6 +7,7 @@ public abstract class TrackState {
 
     protected final Track track;
     protected volatile boolean canTrackContinue;
+    protected volatile Runnable preTask;
 
     public TrackState(Track track) {
         this.track = track;
@@ -17,12 +18,25 @@ public abstract class TrackState {
         return canTrackContinue;
     }
 
+    public Runnable getPreTask() {
+        return preTask;
+    }
+
+    public void setPreTask(Runnable preTask) {
+        this.preTask = preTask;
+    }
+
     public String getName() {
         final String className = getClass().getSimpleName();
         return className.replace("State", "").trim();
     }
+    public void execute() {
+        if (preTask != null)
+            preTask.run();
+        handle();
+    }
     public abstract void handle();
-    public void finish() {
+    public synchronized void finish() {
         canTrackContinue = false;
     }
 }

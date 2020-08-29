@@ -14,6 +14,7 @@ public class FinishedState extends TrackState {
 
     @Override
     public void handle() {
+        track.closeAllStreams();
         if (player != null)
             player.playNext();
     }

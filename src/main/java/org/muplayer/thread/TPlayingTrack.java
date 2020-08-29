@@ -21,9 +21,8 @@ public class TPlayingTrack implements Runnable {
         while (!track.isFinished() && !track.isKilled() && track.isValidTrack()) {
             try {
                 player = track.getPlayer();
-                if (player instanceof Player) {
+                if (player instanceof Player)
                     ((Player) player).loadListenerMethod(ListenersNames.ONPLAYING, track);
-                }
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();

@@ -10,6 +10,7 @@ public class KilledState extends TrackState {
 
     @Override
     public void handle() {
+        track.closeAllStreams();
         finish();
     }
 }
