@@ -366,3 +366,6 @@
     
 - 2.1
     - Se implementa patrón de diseño State para los estados de Track
+
+- 2.1.1
+    - Optimizaciones y correcciones de errores menores
