@@ -85,8 +85,8 @@ public class FlacTrack extends Track {
                 System.out.println("AIS Can't be cast to Flac2PcmAudioInputStream");
             }*/
 
-            AudioFormat format = flacAis.getFormat();
-            AudioFormat decodedFormat = DecodeManager.getPcmFormatByFlac(format);
+            final AudioFormat format = flacAis.getFormat();
+            final AudioFormat decodedFormat = DecodeManager.getPcmFormatByFlac(format);
             trackStream = new FlacFormatConversionProvider().
                     getAudioInputStream(decodedFormat, flacAis);
         } catch (UnsupportedAudioFileException | IOException e) {

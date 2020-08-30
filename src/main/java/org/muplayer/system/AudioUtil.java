@@ -54,15 +54,12 @@ public class AudioUtil {
     }
 
     public static AudioInputStream instanceStream(AudioFileReader audioReader, Object source) throws IOException, UnsupportedAudioFileException {
-        if (source instanceof URL) {
+        if (source instanceof URL)
             return audioReader.getAudioInputStream((URL) source);
-        }
-        else if (source instanceof InputStream) {
+        else if (source instanceof InputStream)
             return audioReader.getAudioInputStream((InputStream) source);
-        }
-        else {
+        else
             return audioReader.getAudioInputStream((File) source);
-        }
     }
 
     public static boolean isSupported(File track) {

@@ -82,8 +82,8 @@ public class MP3Track extends Track {
     protected void loadAudioStream() throws IOException, UnsupportedAudioFileException {
         // Ver si se escucha mejor en ogg utilizando la logica de mp3
         audioReader = new MpegAudioFileReader();
-        AudioInputStream soundAis = AudioUtil.instanceStream(audioReader, source);
-        AudioFormat baseFormat = soundAis.getFormat();
+        final AudioInputStream soundAis = AudioUtil.instanceStream(audioReader, source);
+        final AudioFormat baseFormat = soundAis.getFormat();
         if (trackStream != null)
             trackStream.close();
         trackStream = DecodeManager.decodeToPcm(baseFormat, soundAis);

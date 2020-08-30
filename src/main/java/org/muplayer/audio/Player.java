@@ -144,7 +144,7 @@ public class Player extends Thread implements PlayerControls {
     }
 
     private int getFolderIndex() {
-        String currentParent = current != null ? current.getDataSource().getParent() : null;
+        final String currentParent = current != null ? current.getDataSource().getParent() : null;
         return currentParent != null ? listFolderPaths.indexOf(currentParent) : -1;
     }
 
@@ -944,7 +944,6 @@ public class Player extends Thread implements PlayerControls {
 
     @Override
     public synchronized void run() {
-        //PlayerHandler.setInstance(this);
         loadListenerMethod(ONSTARTED, null);
         on = true;
         startPlaying();
