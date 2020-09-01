@@ -243,6 +243,7 @@ public class Player extends Thread implements PlayerControls {
         File fileTrack;
         int trackIndex = -1;
 
+        // idea para electrolist -> Indexof con predicate
         for (int i = 0; i < listSounds.size(); i++) {
             fileTrack = listSounds.get(i);
             if (fileTrack.getParentFile().equals(parentFile)) {
@@ -257,12 +258,6 @@ public class Player extends Thread implements PlayerControls {
     private void startPlaying() {
         waitForSongs();
         playNext();
-    }
-
-    private void muteCurrent() {
-        if (current != null) {
-            current.mute();
-        }
     }
 
     private void playFolderSongs(String fldPath) {
@@ -351,10 +346,17 @@ public class Player extends Thread implements PlayerControls {
     public synchronized List<AudioTag> getTrackTags() {
         final List<AudioTag> listTags = new ArrayList<>();
 
-        // probar con map cunado se retornan nulls
+        /*listSoundPaths.stream().map(soundPath -> {
+            try {
+                return new AudioTag(soundPath);
+            } catch (ReadOnlyFileException e) {
+                return null;
+            }
+        }).filter(Objects::nonNull).forEach(listTags::add);*/
+
         listSoundPaths.forEach(soundPath -> {
             try {
-                AudioTag tag = new AudioTag(soundPath);
+                final AudioTag tag = new AudioTag(soundPath);
                 if (tag.isValidFile())
                     listTags.add(tag);
             } catch (Exception e) {
@@ -405,8 +407,8 @@ public class Player extends Thread implements PlayerControls {
     }
 
     public synchronized List<Album> getAlbums() {
-        List<TrackInfo> listTracks = getTracksInfo();
-        List<Album> listAlbums = new ArrayList<>();
+        final List<TrackInfo> listTracks = getTracksInfo();
+        final List<Album> listAlbums = new ArrayList<>();
 
         listTracks.parallelStream()
                 .forEach(track->{
@@ -447,21 +449,17 @@ public class Player extends Thread implements PlayerControls {
     }
 
     public synchronized void reloadTracks() {
-        listSoundPaths.clear();
-
         if (rootFolder != null) {
-            int currentIndex = trackIndex;
+            final int currentIndex = trackIndex;
 
             listSoundPaths.clear();
             listFolderPaths.clear();
-
             loadTracks(rootFolder);
             sortTracks();
 
-            int songCount = getSongsCount();
-            if (songCount > currentIndex) {
+            final int songCount = getSongsCount();
+            if (songCount > currentIndex)
                 trackIndex = currentIndex;
-            }
         }
     }
 
@@ -474,14 +472,14 @@ public class Player extends Thread implements PlayerControls {
     }
 
     public synchronized TrackInfo getNext() {
-        int songsCount = getSongsCount();
-        int nextIndex = trackIndex == -1 ? 0 : (trackIndex == songsCount-1 ? 0 : trackIndex+1);
+        final int songsCount = getSongsCount();
+        final int nextIndex = trackIndex == -1 ? 0 : (trackIndex == songsCount-1 ? 0 : trackIndex+1);
         return Track.getTrack(listSoundPaths.get(nextIndex), this);
     }
 
     public synchronized TrackInfo getPrevious() {
-        int songsCount = getSongsCount();
-        int prevIndex = trackIndex == -1 ? 0 : (trackIndex == 0 ? songsCount-1 : trackIndex-1);
+        final int songsCount = getSongsCount();
+        final int prevIndex = trackIndex == -1 ? 0 : (trackIndex == 0 ? songsCount-1 : trackIndex-1);
         return Track.getTrack(listSoundPaths.get(prevIndex), this);
     }
 
@@ -541,7 +539,7 @@ public class Player extends Thread implements PlayerControls {
 
     @Override
     public synchronized void open(List<File> listSounds) {
-        if (!listSounds.parallelStream().anyMatch(fileSound->Track.isValidTrack(fileSound)))
+        if (listSounds.parallelStream().noneMatch(fileSound->Track.isValidTrack(fileSound)))
             return;
 
         listSoundPaths.clear();
@@ -748,7 +746,7 @@ public class Player extends Thread implements PlayerControls {
     // (is alive)
     @Override
     public synchronized void play(File track) {
-        int indexOf = listSoundPaths.indexOf(track.getPath());
+        final int indexOf = listSoundPaths.indexOf(track.getPath());
         if (indexOf == -1) {
             if (Track.isValidTrack(track)) {
                 listSoundPaths.add(track.getPath());
@@ -877,9 +875,8 @@ public class Player extends Thread implements PlayerControls {
     @Override
     public synchronized void unmute() {
         isMute = false;
-        if (current != null) {
+        if (current != null)
             current.setGain(currentVolume);
-        }
         else
             currentVolume = 100;
     }
@@ -897,7 +894,6 @@ public class Player extends Thread implements PlayerControls {
         if (current != null)
             current.kill();
         getNextTrack(SeekOption.NEXT);
-        muteCurrent();
         startThreadTrack();
         loadListenerMethod(ONSONGCHANGE, current);
     }
@@ -907,7 +903,6 @@ public class Player extends Thread implements PlayerControls {
         if (current != null)
             current.kill();
         getNextTrack(SeekOption.PREV);
-        muteCurrent();
         startThreadTrack();
         loadListenerMethod(ONSONGCHANGE, current);
     }

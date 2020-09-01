@@ -1,11 +1,8 @@
 package org.muplayer.audio;
 
 import org.aucom.sound.Speaker;
-import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
-import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
-import org.jaudiotagger.tag.TagException;
 import org.muplayer.audio.formats.*;
 import org.muplayer.audio.info.AudioTag;
 import org.muplayer.audio.interfaces.MusicControls;
@@ -16,7 +13,6 @@ import org.muplayer.audio.util.AudioExtensions;
 import org.muplayer.audio.util.TimeFormatter;
 import org.muplayer.system.AudioUtil;
 import org.muplayer.thread.TPlayingTrack;
-import org.muplayer.thread.ThreadManager;
 import org.orangelogger.sys.Logger;
 
 import javax.sound.sampled.*;
@@ -41,9 +37,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     protected volatile boolean isMute;
 
     protected volatile TPlayingTrack playingTrack;
-
     protected Object source;
-
     protected final PlayerControls player;
 
     public static Track getTrack(File fSound) {
@@ -169,18 +163,14 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     protected Track(File dataSource, PlayerControls player)
             throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this.dataSource = dataSource;
+        //this.source = new BufferedInputStream(new FileInputStream(dataSource), (int) dataSource.length());
         this.source = dataSource;
         state = new StoppedState(this);
         secsSeeked = 0;
         volume = Player.DEFAULT_VOLUME;
         initAll();
         this.player = player;
-        try {
-            if (isValidTrack())
-                tagInfo = new AudioTag(dataSource);
-        } catch (TagException | ReadOnlyFileException | InvalidAudioFrameException | CannotReadException e) {
-            Logger.getLogger(this, e.getClass().getSimpleName(), e.getMessage()).error();
-        }
+        tagInfo = loadTagInfo(dataSource);
         setPriority(MAX_PRIORITY);
     }
 
@@ -273,6 +263,15 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         System.out.println("SecToBytes: "+secToBytes);
         return secToBytes;
     }*/
+
+    protected AudioTag loadTagInfo(File dataSource) {
+        try {
+            return isValidTrack() ? new AudioTag(dataSource) : null;
+        } catch (Exception e) {
+            Logger.getLogger(this, e.getClass().getSimpleName(), e.getMessage()).error();
+            return null;
+        }
+    }
 
     protected double getSecondsPosition() {
         if (trackLine == null)
@@ -427,11 +426,11 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
             return;
 
         secsSeeked+=seconds;
-        AudioFormat audioFormat = getAudioFormat();
-        float frameRate = audioFormat.getFrameRate();
-        int frameSize = audioFormat.getFrameSize();
-        double framesToSeek = frameRate*seconds;
-        long seek = Math.round(framesToSeek*frameSize);
+        final AudioFormat audioFormat = getAudioFormat();
+        final float frameRate = audioFormat.getFrameRate();
+        final int frameSize = audioFormat.getFrameSize();
+        final double framesToSeek = frameRate*seconds;
+        final long seek = Math.round(framesToSeek*frameSize);
 
         trackStream.skip(seek);
     }
@@ -439,12 +438,12 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     @Override
     public void gotoSecond(double second) throws
             IOException, LineUnavailableException, UnsupportedAudioFileException {
-        double progress = getProgress();
+        final double progress = getProgress();
         if (second >= progress) {
-            int duration = (int) getDuration();
+            final int duration = (int) getDuration();
             if (second > duration)
                 second = duration;
-            int gt = (int) Math.round(second-getProgress());
+            final int gt = (int) Math.round(second-getProgress());
             seek(gt);
         }
         else if (second < progress) {
@@ -501,16 +500,12 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     @Override
     public String getProperty(FieldKey key) {
-        if (tagInfo == null) {
-            //System.out.println("Solicitando "+key.name()+" nulo");
-            return null;
-        }
-        return tagInfo.getTag(key);
+        return tagInfo != null ? tagInfo.getTag(key) : null;
     }
 
     @Override
     public String getTitle() {
-        String titleProper = getProperty(FieldKey.TITLE);
+        final String titleProper = getProperty(FieldKey.TITLE);
 
         return (titleProper == null || titleProper.isEmpty())
                 && dataSource != null ? dataSource.getName() : titleProper;
@@ -548,12 +543,9 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     @Override
     public String getBitrate() {
-        if (tagInfo != null && tagInfo.getHeader() != null) {
-            return tagInfo.getHeader().getBitRate();
-        }
-        else {
-            return "Unknown";
-        }
+        return tagInfo != null && tagInfo.getHeader() != null
+                ? tagInfo.getHeader().getBitRate()
+                : "Unknown";
     }
 
     public String getFormat() {
@@ -561,7 +553,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     }
 
     public void getLineInfo() {
-        SourceDataLine driver = trackLine.getDriver();
+        final SourceDataLine driver = trackLine.getDriver();
         System.out.println("Soporte de controles en line");
         System.out.println("---------------");
         System.out.println("Pan: "+
