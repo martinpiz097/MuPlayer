@@ -47,7 +47,9 @@ public class PlayingState extends TrackState {
                     track.finish();
         } catch (IOException | IndexOutOfBoundsException | IllegalArgumentException e) {
             track.finish();
-            Logger.getLogger(this, e.getMessage()).error();
+            e.printStackTrace();
+            final String exClassName = e.getClass().getSimpleName();
+            Logger.getLogger(this, exClassName.concat(" in track "+track.getTitle())).error();
         }
     }
 

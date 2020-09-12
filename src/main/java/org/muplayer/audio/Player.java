@@ -256,6 +256,7 @@ public class Player extends Thread implements PlayerControls {
     }
 
     private void startPlaying() {
+        on = true;
         waitForSongs();
         playNext();
     }
@@ -539,13 +540,12 @@ public class Player extends Thread implements PlayerControls {
 
     @Override
     public synchronized void open(List<File> listSounds) {
-        if (listSounds.parallelStream().noneMatch(fileSound->Track.isValidTrack(fileSound)))
-            return;
-
-        listSoundPaths.clear();
-        listFolderPaths.clear();
-        loadTracks(listSounds);
-        sortTracks();
+        if (listSounds.parallelStream().anyMatch(Track::isValidTrack)) {
+            listSoundPaths.clear();
+            listFolderPaths.clear();
+            loadTracks(listSounds);
+            sortTracks();
+        }
     }
 
     @Override
@@ -805,8 +805,7 @@ public class Player extends Thread implements PlayerControls {
     }
 
     @Override
-    public synchronized void stopTrack()
-            throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    public synchronized void stopTrack() throws Exception {
         if (current != null) {
             current.stopTrack();
             loadListenerMethod(ONSTOPPED, current);
@@ -911,8 +910,7 @@ public class Player extends Thread implements PlayerControls {
         if (current != null)
             current.kill();
 
-        int fldIndex = listFolderPaths.indexOf(path);
-        if (fldIndex != -1)
+        if (listFolderPaths.contains(path))
             playFolderSongs(path);
     }
 
@@ -931,7 +929,6 @@ public class Player extends Thread implements PlayerControls {
     @Override
     public synchronized void shutdown() {
         on = false;
-        // Se usa kill porque con finish se cambia la cancion
         shutdownCurrent();
         this.interrupt();
         loadListenerMethod(ONSHUTDOWN, null);
@@ -940,7 +937,6 @@ public class Player extends Thread implements PlayerControls {
     @Override
     public synchronized void run() {
         loadListenerMethod(ONSTARTED, null);
-        on = true;
         startPlaying();
         freezePlayer();
     }

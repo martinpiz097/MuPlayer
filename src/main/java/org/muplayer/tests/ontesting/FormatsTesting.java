@@ -55,11 +55,11 @@ public class FormatsTesting {
     }
 
     public static void main(String[] args) throws Exception {
-        //execTest();
+        execTest();
         //execConsolePlayerTest(new File("/home/martin/Escritorio/Música"));
         //execArtistsTest();
         //execAlbumsTest();
-        execSpeakerTest();
+        //execSpeakerTest();
     }
 
     private static void execSpeakerTest() throws LineUnavailableException {

@@ -369,3 +369,6 @@
 
 - 2.1.1
     - Optimizaciones y correcciones de errores menores
+
+- X
+    - Se aplican algunas mejoras de codigo y limpiezas menores

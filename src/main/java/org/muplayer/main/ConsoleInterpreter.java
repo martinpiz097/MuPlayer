@@ -175,8 +175,13 @@ public class ConsoleInterpreter implements CommandInterpreter {
                 break;
 
             case ConsoleOrder.STOP:
-                if (isPlayerOn())
-                    player.stopTrack();
+                if (isPlayerOn()) {
+                    try {
+                        player.stopTrack();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
                 break;
 
             case ConsoleOrder.RESUME:

@@ -1,0 +1,17 @@
+1 fotograma mp3 dura 26 ms
+tamaño de tramas(frame size) proporcional a tasa de bits(bitrate)
+1152 samples por frame
+
+framesize = 144 * bitrate / (SampleRate + Padding) -> Tamaño total por cada frame
+
+el bitrate debe ser transformado a bps
+
+Sample rate esta relacionado con el archivo decodificado
+Padding es la data extra necesaria para completar el frame cuando faltan bytes
+
+Cada frame header tiene 32 bits -> 8 bytes
+
+-----------------------------------------
+1 fotograma -> 26 ms
+framesize = 144 * bitrate / (SampleRate + Padding) -> Tamaño total por cada frame
+Cada frame header tiene 32 bits -> 4 bytes
