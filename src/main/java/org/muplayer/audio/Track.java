@@ -337,6 +337,9 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         return tagInfo;
     }
 
+    protected abstract double convertSecondsToBytes(Number seconds);
+    protected abstract double convertBytesToSeconds(Number bytes);
+
     @Override
     public synchronized double getProgress() {
         return getSecondsPosition()+secsSeeked;
@@ -422,17 +425,26 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     @Override
     public void seek(double seconds)
             throws IOException {
-        if (seconds == 0)
-            return;
+        if (seconds > 0) {
+            secsSeeked+=seconds;
+            final long seek = Math.round(convertSecondsToBytes(seconds));
+            System.out.println("Skip -> FrameSize: "+trackStream.getFormat().getFrameSize());
+            long skip = trackStream.skip(seek);
 
-        secsSeeked+=seconds;
-        final AudioFormat audioFormat = getAudioFormat();
-        final float frameRate = audioFormat.getFrameRate();
-        final int frameSize = audioFormat.getFrameSize();
-        final double framesToSeek = frameRate*seconds;
-        final long seek = Math.round(framesToSeek*frameSize);
+            // se deben sumar los segundos que realmente se saltaron
+            // o saltar bytes hasta completar esos segundos
+            // se deben crear metodos de conversion entre segundos y bytes
+            // en la superclase los que deberian ser sobreescritos en la subclase
+        }
 
-        trackStream.skip(seek);
+        else if (seconds < 0) {
+            try {
+                gotoSecond(getProgress() + seconds);
+            } catch (LineUnavailableException | UnsupportedAudioFileException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     @Override

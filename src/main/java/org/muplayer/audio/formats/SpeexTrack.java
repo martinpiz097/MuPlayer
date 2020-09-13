@@ -1,9 +1,7 @@
 package org.muplayer.audio.formats;
 
 import org.muplayer.audio.Track;
-import org.muplayer.audio.codec.DecodeManager;
 import org.muplayer.system.AudioUtil;
-import org.xiph.speex.spi.Speex2PcmAudioInputStream;
 import org.xiph.speex.spi.SpeexAudioFileReader;
 import org.xiph.speex.spi.SpeexFormatConvertionProvider;
 
@@ -45,4 +43,18 @@ public class SpeexTrack extends Track {
         trackStream = provider.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, soundAis);
     }
 
+    @Override
+    protected double convertSecondsToBytes(Number seconds) {
+        final AudioFormat audioFormat = getAudioFormat();
+        final float frameRate = audioFormat.getFrameRate();
+        final int frameSize = audioFormat.getFrameSize();
+        final double framesToSeek = frameRate*seconds.doubleValue();
+        return framesToSeek*frameSize;
+    }
+
+    @Override
+    protected double convertBytesToSeconds(Number bytes) {
+        final AudioFormat audioFormat = getAudioFormat();
+        return bytes.doubleValue() / audioFormat.getFrameSize() / audioFormat.getFrameRate();
+    }
 }

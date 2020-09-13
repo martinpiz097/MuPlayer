@@ -1,22 +1,19 @@
 package org.muplayer.audio.formats;
 
 import org.aucom.sound.Speaker;
-import org.jaudiotagger.audio.AudioHeader;
-import org.jaudiotagger.tag.TagField;
 import org.muplayer.audio.Track;
 import org.muplayer.audio.codec.DecodeManager;
 import org.muplayer.audio.interfaces.PlayerControls;
 import org.muplayer.system.AudioUtil;
 import org.tritonus.sampled.file.jorbis.JorbisAudioFileReader;
 
+import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 
 public class OGGTrack extends Track {
 
@@ -85,6 +82,21 @@ public class OGGTrack extends Track {
         }
         else
             System.out.println("TrackStream & TrackLine null");
+    }
+
+    @Override
+    protected double convertSecondsToBytes(Number seconds) {
+        final AudioFormat audioFormat = getAudioFormat();
+        final float frameRate = audioFormat.getFrameRate();
+        final int frameSize = audioFormat.getFrameSize();
+        final double framesToSeek = frameRate*seconds.doubleValue();
+        return framesToSeek*frameSize;
+    }
+
+    @Override
+    protected double convertBytesToSeconds(Number bytes) {
+        final AudioFormat audioFormat = getAudioFormat();
+        return bytes.doubleValue() / audioFormat.getFrameSize() / audioFormat.getFrameRate();
     }
 
     @Override

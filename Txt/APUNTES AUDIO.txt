@@ -9,8 +9,6 @@ el bitrate debe ser transformado a bps
 Sample rate esta relacionado con el archivo decodificado
 Padding es la data extra necesaria para completar el frame cuando faltan bytes
 
-Cada frame header tiene 32 bits -> 8 bytes
-
 -----------------------------------------
 1 fotograma -> 26 ms
 framesize = 144 * bitrate / (SampleRate + Padding) -> Tamaño total por cada frame

@@ -82,4 +82,18 @@ public class PCMTrack extends Track {
         trackStream = AudioUtil.instanceStream(audioReader, source);
     }
 
+    @Override
+    protected double convertSecondsToBytes(Number seconds) {
+        final AudioFormat audioFormat = getAudioFormat();
+        final float frameRate = audioFormat.getFrameRate();
+        final int frameSize = audioFormat.getFrameSize();
+        final double framesToSeek = frameRate*seconds.doubleValue();
+        return framesToSeek*frameSize;
+    }
+
+    @Override
+    protected double convertBytesToSeconds(Number bytes) {
+        final AudioFormat audioFormat = getAudioFormat();
+        return bytes.doubleValue() / audioFormat.getFrameSize() / audioFormat.getFrameRate();
+    }
 }

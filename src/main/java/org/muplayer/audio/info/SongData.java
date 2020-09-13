@@ -12,6 +12,8 @@ public class SongData implements TrackInfo {
         this.info = tag;
     }
 
+
+
     @Override
     public boolean hasCover() {
         return info.hasCover();

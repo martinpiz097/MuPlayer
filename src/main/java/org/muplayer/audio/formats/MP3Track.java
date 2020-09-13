@@ -46,13 +46,26 @@ public class MP3Track extends Track {
     public MP3Track(File dataSource, PlayerControls player) throws LineUnavailableException, IOException, UnsupportedAudioFileException, InvalidAudioFrameException {
         super(dataSource, player);
         audioHeader = new MP3AudioHeader(dataSource);
+
         audioStartByte = audioHeader.getMp3StartByte();
         audioSize = dataSource.length() - audioStartByte;
         frameCount = audioHeader.getNumberOfFrames();
         frameSize = audioSize / frameCount;
 
         frameDurationInSec = (audioHeader.getPreciseTrackLength() / (double) frameCount);
-        /*System.out.println("AudioHeader: FrameSize: "+frameSize);
+        System.out.println("AudioFormat: FrameSize: "+getDecodedStream().getFormat().getFrameSize());
+        System.out.println("AudioFormat: FrameRate: "+getDecodedStream().getFormat().getFrameRate());
+        System.out.println("AudioFormat: SampleRate: "+getDecodedStream().getFormat().getSampleRate());
+        System.out.println("AudioFormat: SampleSizeInBits: "+
+                getDecodedStream().getFormat().getSampleSizeInBits());
+
+        System.out.println("AudioInputStream: FrameLenght: "+trackStream.getFrameLength());
+        System.out.println("AudioInputStream: FrameSize: "+trackStream.getFormat().getFrameSize());
+        System.out.println("File: AudioSize: "+audioSize);
+
+        System.out.println("------------------------------------------");
+        System.out.println("AudioHeader: NumberOfFrames: "+audioHeader.getNumberOfFrames());
+        System.out.println("AudioHeader: FrameSize: "+frameSize);
         System.out.println("AudioHeader: FrameCount: "+frameCount);
         System.out.println("AudioHeader: AudioSize: "+frameSize*frameCount);
         System.out.println("AudioHeader: FrameDuration: "+frameDurationInSec);
@@ -63,10 +76,8 @@ public class MP3Track extends Track {
         System.out.println("AudioHeader: PreciseTrackLenght: "+audioHeader.getPreciseTrackLength());
         System.out.println("AudioHeader: AudioDataLenght: "+audioHeader.getTrackLengthAsString());
         System.out.println("AudioHeader: LenghtAsString: "+audioHeader.getTrackLengthAsString());
-        System.out.println("AudioInputStream: FrameLenght: "+trackStream.getFrameLength());
-        System.out.println("AudioInputStream: FrameSize: "+trackStream.getFormat().getFrameSize());
-        System.out.println("File: AudioSize: "+audioSize);
-        System.out.println("----------------------------------------");*/
+
+        System.out.println("----------------------------------------");
     }
 
     public MP3Track(InputStream inputStream, PlayerControls player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
@@ -89,23 +100,38 @@ public class MP3Track extends Track {
         trackStream = DecodeManager.decodeToPcm(baseFormat, soundAis);
     }
 
-    private long getBytesToSeek(double sec) {
-        final double frameNeeded = sec / frameDurationInSec;
-        return Math.round(frameNeeded * frameSize);
+    @Override
+    protected double convertSecondsToBytes(Number seconds) {
+        final double frameNeeded = seconds.doubleValue() / frameDurationInSec;
+        return frameNeeded * frameSize;
+    }
+
+    @Override
+    protected double convertBytesToSeconds(Number bytes) {
+        return (bytes.doubleValue() / frameSize) * frameDurationInSec;
     }
 
     @Override
     public void seek(double seconds)
             throws IOException {
-        if (seconds == 0)
-            return;
-        secsSeeked+=seconds;
-        final long bytesToSeek = getBytesToSeek(seconds);
-        //long skip = -2;
-        try {
-            trackStream.skip(bytesToSeek);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            Logger.getLogger(this, e.getClass().getSimpleName(), e.getMessage()).error();
+        if (seconds > 0) {
+            secsSeeked+=seconds;
+            final long bytesToSeek = Math.round(convertSecondsToBytes(seconds));
+            //long skip = -2;
+            try {
+                System.out.println("Skip -> FrameSize: "+trackStream.getFormat().getFrameSize());
+                trackStream.skip(bytesToSeek);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                final String exClassName = e.getClass().getSimpleName();
+                Logger.getLogger(this, exClassName.concat(" on seeking "+getTitle())).error();
+            }
+        }
+        else if (seconds < 0) {
+            try {
+                gotoSecond(getProgress() + seconds);
+            } catch (LineUnavailableException | UnsupportedAudioFileException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -1,1 +1,4 @@
 seek hacia atras usando gotosec
+
+Agregar comandos para ver info de muplayer como su version, canciones cargadas, formatos soportados, etc
+Agregar comando para agragar canciones de carpeta determinada

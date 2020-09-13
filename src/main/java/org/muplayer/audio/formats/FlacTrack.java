@@ -95,16 +95,27 @@ public class FlacTrack extends Track {
     }
 
     @Override
+    protected double convertSecondsToBytes(Number seconds) {
+        final AudioFormat audioFormat = getAudioFormat();
+        final float frameRate = audioFormat.getFrameRate();
+        final int frameSize = audioFormat.getFrameSize();
+        final double framesToSeek = frameRate*seconds.doubleValue();
+        return framesToSeek*frameSize;
+    }
+
+    @Override
+    protected double convertBytesToSeconds(Number bytes) {
+        final AudioFormat audioFormat = getAudioFormat();
+        return bytes.doubleValue() / audioFormat.getFrameSize() / audioFormat.getFrameRate();
+    }
+
+    @Override
     public void seek(double seconds) throws IOException {
         if (seconds == 0)
             return;
         secsSeeked+=seconds;
-        AudioFormat audioFormat = getAudioFormat();
-        float frameRate = audioFormat.getFrameRate();
-        int frameSize = audioFormat.getFrameSize();
-        double framesToSeek = frameRate*seconds;
-        long seek = Math.round(framesToSeek*frameSize);
-        trackStream.read(new byte[(int) seek]);
+        final int bytesToSeek = (int) Math.round(convertSecondsToBytes(seconds));
+        trackStream.read(new byte[bytesToSeek]);
     }
 
 }
