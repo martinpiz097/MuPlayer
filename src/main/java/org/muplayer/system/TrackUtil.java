@@ -8,17 +8,17 @@ public class TrackUtil {
     }
 
     public static String getSongInfo(Track track) {
-        StringBuilder sbInfo = new StringBuilder();
-        String title = track.getTitle();
-        String album = track.getAlbum();
-        String artist = track.getArtist();
-        String date = track.getDate();
-        String duration = track.getDurationAsString();
-        String hasCover = track.hasCover()?"Si":"No";
-        String encoder = track.getEncoder();
-        String bitrate = track.getBitrate();
+        final StringBuilder sbInfo = new StringBuilder();
+        final String title = track.getTitle();
+        final String album = track.getAlbum();
+        final String artist = track.getArtist();
+        final String date = track.getDate();
+        final String duration = track.getDurationAsString();
+        final String hasCover = track.hasCover()?"Si":"No";
+        final String encoder = track.getEncoder();
+        final String bitrate = track.getBitrate();
 
-        StringBuilder sbTabs = new StringBuilder();
+        final StringBuilder sbTabs = new StringBuilder();
         String currentLine = "Song: "+title;
         int biggerLenght = currentLine.length();
         sbInfo.append(currentLine).append('\n');
@@ -55,13 +55,11 @@ public class TrackUtil {
             sbInfo.append(currentLine).append('\n');
         }
 
-        if (hasCover != null) {
-            sbTabs.append("    ");
-            currentLine = sbTabs.toString()+"Has Cover: "+hasCover;
-            if (biggerLenght < currentLine.length())
-                biggerLenght = currentLine.length();
-            sbInfo.append(currentLine).append('\n');
-        }
+        sbTabs.append("    ");
+        currentLine = sbTabs.toString()+"Has Cover: "+hasCover;
+        if (biggerLenght < currentLine.length())
+            biggerLenght = currentLine.length();
+        sbInfo.append(currentLine).append('\n');
 
         if (encoder != null) {
             sbTabs.append("    ");

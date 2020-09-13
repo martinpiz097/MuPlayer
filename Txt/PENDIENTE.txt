@@ -1,0 +1,2 @@
+Probar conversiones en FlacTrack
+Revisar seek en Flac y el por que lo deje distinto

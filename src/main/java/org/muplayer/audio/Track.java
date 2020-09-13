@@ -428,9 +428,13 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         if (seconds > 0) {
             final long bytesToSeek = Math.round(convertSecondsToBytes(seconds));
             final long skip = trackStream.skip(bytesToSeek);
+            final double skippedSeconds = convertBytesToSeconds(skip);
 
+            System.out.println("Seconds: "+seconds);
+            System.out.println("SkippedSeconds: "+skippedSeconds);
+            System.out.println("-------------------");
             if (skip > 0)
-                secsSeeked+=convertBytesToSeconds(skip);
+                secsSeeked+=skippedSeconds;
 
             // se deben sumar los segundos que realmente se saltaron
             // o saltar bytes hasta completar esos segundos

@@ -131,10 +131,10 @@ public class M4ATrack extends Track {
                     true, true);
             return new AudioInputStream(m4aStream, decFormat, inputFile.length());
             */
-            SampleBuffer buffer = new SampleBuffer();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            final SampleBuffer buffer = new SampleBuffer();
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-            AudioFormat decFormat = new AudioFormat(track.getSampleRate(),
+            final AudioFormat decFormat = new AudioFormat(track.getSampleRate(),
                     track.getSampleSize(), track.getChannelCount(),
                     true, true);
 
@@ -152,10 +152,7 @@ public class M4ATrack extends Track {
                     e.printStackTrace();
                 }
             }
-            byte[] audioData = baos.toByteArray();
-            if (audioData == null)
-                return null;
-
+            final byte[] audioData = baos.toByteArray();
             return new AudioInputStream(new ByteArrayInputStream(audioData), decFormat, audioData.length);
             //return AudioSystem.getAudioInputStream(decFormat, AudioSystem.getAudioInputStream(inputFile));
         } catch (Exception e){
