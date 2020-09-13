@@ -7,7 +7,6 @@ import org.muplayer.audio.Track;
 import org.muplayer.audio.codec.DecodeManager;
 import org.muplayer.audio.interfaces.PlayerControls;
 import org.muplayer.system.AudioUtil;
-import org.orangelogger.sys.Logger;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -109,30 +108,6 @@ public class MP3Track extends Track {
     @Override
     protected double convertBytesToSeconds(Number bytes) {
         return (bytes.doubleValue() / frameSize) * frameDurationInSec;
-    }
-
-    @Override
-    public void seek(double seconds)
-            throws IOException {
-        if (seconds > 0) {
-            secsSeeked+=seconds;
-            final long bytesToSeek = Math.round(convertSecondsToBytes(seconds));
-            //long skip = -2;
-            try {
-                System.out.println("Skip -> FrameSize: "+trackStream.getFormat().getFrameSize());
-                trackStream.skip(bytesToSeek);
-            } catch (ArrayIndexOutOfBoundsException e) {
-                final String exClassName = e.getClass().getSimpleName();
-                Logger.getLogger(this, exClassName.concat(" on seeking "+getTitle())).error();
-            }
-        }
-        else if (seconds < 0) {
-            try {
-                gotoSecond(getProgress() + seconds);
-            } catch (LineUnavailableException | UnsupportedAudioFileException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     // bytesLeidos -> bytesTotales

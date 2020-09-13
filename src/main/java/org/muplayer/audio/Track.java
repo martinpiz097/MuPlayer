@@ -426,15 +426,14 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     public void seek(double seconds)
             throws IOException {
         if (seconds > 0) {
-            secsSeeked+=seconds;
-            final long seek = Math.round(convertSecondsToBytes(seconds));
-            System.out.println("Skip -> FrameSize: "+trackStream.getFormat().getFrameSize());
-            long skip = trackStream.skip(seek);
+            final long bytesToSeek = Math.round(convertSecondsToBytes(seconds));
+            final long skip = trackStream.skip(bytesToSeek);
+
+            if (skip > 0)
+                secsSeeked+=convertBytesToSeconds(skip);
 
             // se deben sumar los segundos que realmente se saltaron
             // o saltar bytes hasta completar esos segundos
-            // se deben crear metodos de conversion entre segundos y bytes
-            // en la superclase los que deberian ser sobreescritos en la subclase
         }
 
         else if (seconds < 0) {

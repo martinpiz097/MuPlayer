@@ -372,3 +372,4 @@
 
 - X
     - Se aplican algunas mejoras de codigo y limpiezas menores
+    - Nuevos metodos de conversion entre bytes y segundos sobreescrito por cada subclase de Track

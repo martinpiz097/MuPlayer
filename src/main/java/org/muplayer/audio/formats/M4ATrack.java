@@ -191,6 +191,7 @@ public class M4ATrack extends Track {
             super.seek(seconds);
     }
 
+    @Override
     public void gotoSecond(double second) throws
             IOException, LineUnavailableException, UnsupportedAudioFileException {
         double progress = getProgress();
