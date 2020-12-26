@@ -54,6 +54,99 @@ public class ConsoleInterpreter implements CommandInterpreter {
         }
     }
 
+    private void printTracks() {
+        final File rootFolder = player.getRootFolder();
+        final List<String> listSoundPaths = player.getListSoundPaths();
+        final Track current = player.getCurrent();
+
+        Logger.getLogger(this, "------------------------------").rawInfo();
+        if (rootFolder == null)
+            Logger.getLogger(this, "Music in folder").rawInfo();
+        else
+            Logger.getLogger(this, "Music in folder "+rootFolder.getName()).rawInfo();
+        Logger.getLogger(this, "------------------------------").rawInfo();
+
+        if (rootFolder != null) {
+            File fileTrack;
+            for (int i = 0; i < player.getSongsCount(); i++) {
+                fileTrack = new File(listSoundPaths.get(i));
+                if (current != null && fileTrack.getPath().equals(current.getDataSource().getPath()))
+                    Logger.getLogger(this, "Track "+(i+1)+": "
+                            +fileTrack.getName()).rawWarning();
+                else
+                    Logger.getLogger(this, "Track "+(i+1)+": "
+                            +fileTrack.getName()).rawInfo();
+            }
+            Logger.getLogger(this, "------------------------------").rawInfo();
+        }
+    }
+
+    private synchronized void printFolderTracks() {
+        final List<String> listSoundPaths = player.getListSoundPaths();
+        final Track current = player.getCurrent();
+        final int songsCount = player.getSongsCount();
+
+        File parentFolder = current == null ? null : current.getDataSource().getParentFile();
+        Logger.getLogger(this, "------------------------------").rawInfo();
+
+        if (parentFolder == null)
+            Logger.getLogger(this, "Music in current folder").rawInfo();
+        else
+            Logger.getLogger(this, "Music in folder "+parentFolder.getName()).rawInfo();
+        Logger.getLogger(this, "------------------------------").rawInfo();
+
+        if (parentFolder != null) {
+            File fileTrack;
+            File currentFile = current.getDataSource();
+
+            for (int i = 0; i < songsCount; i++) {
+                fileTrack = new File(listSoundPaths.get(i));
+                if (fileTrack.getParentFile().equals(parentFolder)) {
+                    if (fileTrack.getPath().equals(currentFile.getPath()))
+                        Logger.getLogger(this, "Track "+(i+1)+": "
+                                +fileTrack.getName()).rawWarning();
+                    else
+                        Logger.getLogger(this, "Track "+(i+1)+": "
+                                +fileTrack.getName()).rawInfo();
+                }
+            }
+            Logger.getLogger(this, "------------------------------").rawInfo();
+        }
+    }
+
+    private synchronized void printFolders() {
+        final File rootFolder = player.getRootFolder();
+        final List<String> listFolderPaths = player.getListFolderPaths();
+        final Track current = player.getCurrent();
+
+        Logger.getLogger(this, "------------------------------").rawInfo();
+        if (rootFolder == null)
+            Logger.getLogger(this, "Folders").rawInfo();
+        else
+            Logger.getLogger(this, "Folders in "+rootFolder.getName()).rawInfo();
+        Logger.getLogger(this, "------------------------------").rawInfo();
+
+        if (current == null)
+            return;
+
+        File currentTrackFile = current.getDataSource();
+        File folder;
+
+        for (int i = 0; i < player.getFoldersCount(); i++) {
+            folder = new File(listFolderPaths.get(i));
+            if (folder.getPath().equals(currentTrackFile.getParentFile().getPath())) {
+                Logger.getLogger(this, "Folder "+(i+1)+": "
+                        +folder.getName()).rawWarning();
+            }
+            else {
+                Logger.getLogger(this, "Folder "+(i+1)+": "
+                        +folder.getName()).rawInfo();
+            }
+
+        }
+        Logger.getLogger(this, "------------------------------").rawInfo();
+    }
+
     protected void printStreamOut(InputStream cmdStream) throws IOException {
         int read;
         FileOutputStream stdout = SystemUtil.getStdout();
@@ -229,17 +322,17 @@ public class ConsoleInterpreter implements CommandInterpreter {
             case ConsoleOrder.LIST1:
             case ConsoleOrder.LIST2:
                 if (player != null)
-                    player.printTracks();
+                    printTracks();
                 break;
 
             case ConsoleOrder.LISTCURRENTFOLDER:
                 if (isPlayerOn())
-                    player.printFolderTracks();
+                    printFolderTracks();
                 break;
 
             case ConsoleOrder.LISTFOLDERS:
                 if (isPlayerOn())
-                    player.printFolders();
+                    printFolders();
                 break;
 
             case ConsoleOrder.GETGAIN:

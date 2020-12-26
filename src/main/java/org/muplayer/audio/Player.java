@@ -25,8 +25,9 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -55,9 +56,9 @@ public class Player extends Thread implements PlayerControls {
 
     public Player(File rootFolder) throws FileNotFoundException {
         this.rootFolder = rootFolder;
-        listSoundPaths = new ArrayList<>();
-        listFolderPaths = new ArrayList<>();
-        listListeners = new ArrayList<>();
+        listSoundPaths = new LinkedList<>();
+        listFolderPaths = new LinkedList<>();
+        listListeners = new LinkedList<>();
         currentVolume = DEFAULT_VOLUME;
         on = false;
         isMute = false;
@@ -237,8 +238,8 @@ public class Player extends Thread implements PlayerControls {
     }
 
     private int moveToFolder(String folderPath) {
-        File parentFile = new File(folderPath);
-        List<File> listSounds = getListSounds();
+        final File parentFile = new File(folderPath);
+        final List<File> listSounds = getListSounds();
 
         File fileTrack;
         int trackIndex = -1;
@@ -263,8 +264,7 @@ public class Player extends Thread implements PlayerControls {
 
     private void playFolderSongs(String fldPath) {
         for (int i = 0; i < listSoundPaths.size(); i++) {
-            if (new File(listSoundPaths.get(i))
-                    .getParent().equals(fldPath)) {
+            if (new File(listSoundPaths.get(i)).getParent().equals(fldPath)) {
                 play(i);
                 break;
             }
@@ -337,15 +337,13 @@ public class Player extends Thread implements PlayerControls {
     }
 
     public synchronized List<File> getListSounds() {
-        return listSoundPaths.stream()
-                        .map(File::new)
-                        .collect(Collectors.toList());
+        return listSoundPaths.stream().map(File::new).collect(Collectors.toList());
     }
 
     // Se supone que todos los tracks serian validos
     // sino rescatar de los que sean no mas
     public synchronized List<AudioTag> getTrackTags() {
-        final List<AudioTag> listTags = new ArrayList<>();
+        final List<AudioTag> listTags = new LinkedList<>();
 
         /*listSoundPaths.stream().map(soundPath -> {
             try {
@@ -368,7 +366,7 @@ public class Player extends Thread implements PlayerControls {
     }
 
     public synchronized List<TrackInfo> getTracksInfo() {
-        final List<TrackInfo> listInfo = new ArrayList<>();
+        final List<TrackInfo> listInfo = new LinkedList<>();
         listSoundPaths.forEach(soundPath->{
             try {
                 AudioTag tag = new AudioTag(soundPath);
@@ -383,7 +381,7 @@ public class Player extends Thread implements PlayerControls {
 
     public synchronized List<Artist> getArtists() {
         final List<TrackInfo> listTracks = getTracksInfo();
-        final List<Artist> listArtists = new ArrayList<>();
+        final List<Artist> listArtists = new LinkedList<>();
 
         listTracks.parallelStream()
                 .forEach(track->{
@@ -409,7 +407,7 @@ public class Player extends Thread implements PlayerControls {
 
     public synchronized List<Album> getAlbums() {
         final List<TrackInfo> listTracks = getTracksInfo();
-        final List<Album> listAlbums = new ArrayList<>();
+        final List<Album> listAlbums = new LinkedList<>();
 
         listTracks.parallelStream()
                 .forEach(track->{
@@ -452,7 +450,6 @@ public class Player extends Thread implements PlayerControls {
     public synchronized void reloadTracks() {
         if (rootFolder != null) {
             final int currentIndex = trackIndex;
-
             listSoundPaths.clear();
             listFolderPaths.clear();
             loadTracks(rootFolder);
@@ -584,87 +581,6 @@ public class Player extends Thread implements PlayerControls {
         }
     }
 
-    public synchronized void printTracks() {
-        Logger.getLogger(this, "------------------------------").rawInfo();
-        if (rootFolder == null)
-            Logger.getLogger(this, "Music in folder").rawInfo();
-        else
-            Logger.getLogger(this, "Music in folder "+rootFolder.getName()).rawInfo();
-        Logger.getLogger(this, "------------------------------").rawInfo();
-
-        if (rootFolder != null) {
-            File fileTrack;
-            for (int i = 0; i < getSongsCount(); i++) {
-                fileTrack = new File(listSoundPaths.get(i));
-                if (current != null && fileTrack.getPath().equals(current.getDataSource().getPath()))
-                    Logger.getLogger(this, "Track "+(i+1)+": "
-                            +fileTrack.getName()).rawWarning();
-                else
-                    Logger.getLogger(this, "Track "+(i+1)+": "
-                            +fileTrack.getName()).rawInfo();
-            }
-            Logger.getLogger(this, "------------------------------").rawInfo();
-        }
-    }
-
-    public synchronized void printFolderTracks() {
-        File parentFolder = current == null ? null : current.getDataSource().getParentFile();
-        Logger.getLogger(this, "------------------------------").rawInfo();
-
-        if (parentFolder == null)
-            Logger.getLogger(this, "Music in current folder").rawInfo();
-        else
-            Logger.getLogger(this, "Music in folder "+parentFolder.getName()).rawInfo();
-        Logger.getLogger(this, "------------------------------").rawInfo();
-
-        if (parentFolder != null) {
-            File fileTrack;
-            File currentFile = current.getDataSource();
-
-            for (int i = 0; i < getSongsCount(); i++) {
-                fileTrack = new File(listSoundPaths.get(i));
-                if (fileTrack.getParentFile().equals(parentFolder)) {
-                    if (fileTrack.getPath().equals(currentFile.getPath()))
-                        Logger.getLogger(this, "Track "+(i+1)+": "
-                                +fileTrack.getName()).rawWarning();
-                    else
-                        Logger.getLogger(this, "Track "+(i+1)+": "
-                                +fileTrack.getName()).rawInfo();
-                }
-            }
-            Logger.getLogger(this, "------------------------------").rawInfo();
-        }
-    }
-
-    public synchronized void printFolders() {
-        Logger.getLogger(this, "------------------------------").rawInfo();
-        if (rootFolder == null)
-            Logger.getLogger(this, "Folders").rawInfo();
-        else
-            Logger.getLogger(this, "Folders in "+rootFolder.getName()).rawInfo();
-        Logger.getLogger(this, "------------------------------").rawInfo();
-
-        if (getCurrent() == null)
-            return;
-
-        File currentTrackFile = getCurrent().getDataSource();
-        File folder;
-
-        for (int i = 0; i < getFoldersCount(); i++) {
-            folder = new File(listFolderPaths.get(i));
-            if (folder.getPath().equals(currentTrackFile.getParentFile().getPath())) {
-                Logger.getLogger(this, "Folder "+(i+1)+": "
-                        +folder.getName()).rawWarning();
-            }
-            else {
-                Logger.getLogger(this, "Folder "+(i+1)+": "
-                        +folder.getName()).rawInfo();
-            }
-
-        }
-        Logger.getLogger(this, "------------------------------").rawInfo();
-    }
-
     public int getSongsCount() {
         return listSoundPaths.size();
     }
@@ -675,9 +591,6 @@ public class Player extends Thread implements PlayerControls {
 
     public synchronized void seekFolder(SeekOption option, int jumps) {
         int folderIndex = getFolderIndex();
-        //Logger.getLogger(this, "Current FolderIndex en seekFolder: "+ folderIndex).rawInfo();
-        //Logger.getLogger(this, "Jumps: "+ jumps).rawInfo();
-        //Logger.getLogger(this, "Current Parent en seekFolder: "+ current.getDataSource().getParent()).rawInfo();
         if (folderIndex != -1) {
             int newFolderIndex;
             String parentToFind;
@@ -701,7 +614,6 @@ public class Player extends Thread implements PlayerControls {
             }
 
             next = findFirstIn(parentToFind);
-            //System.out.println("NextSeek: "+(next==null?"Null":next.getTitle()));
             if (next != null) {
                 try {
                     trackIndex = listSoundPaths.indexOf(next.getDataSource().getCanonicalPath());

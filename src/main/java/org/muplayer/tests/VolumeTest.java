@@ -6,7 +6,7 @@ import org.muplayer.system.AudioUtil;
 import org.muplayer.system.LineUtil;
 
 import javax.sound.sampled.*;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -127,8 +127,8 @@ public class VolumeTest {
         // at controls
         inLine.open();
         System.out.println("\t\tAvailable controls:");
-        ArrayList<Control> ctrls =
-                new ArrayList<>(
+        LinkedList<Control> ctrls =
+                new LinkedList<>(
                         Arrays.asList(
                                 inLine.getControls()));
         for (Control ctrl: ctrls) {
@@ -138,8 +138,8 @@ public class VolumeTest {
                     CompoundControl) {
                 CompoundControl cc =
                         ((CompoundControl) ctrl);
-                ArrayList<Control> ictrls =
-                        new ArrayList<Control>(
+                LinkedList<Control> ictrls =
+                        new LinkedList<Control>(
                                 Arrays.asList(
                                         cc.getMemberControls()));
                 for(Control ictrl : ictrls)
@@ -159,8 +159,8 @@ public class VolumeTest {
         System.out.println("\t" +
                 mixerInfo.getDescription());
         System.out.println("Source Line Supported:");
-        ArrayList<Line.Info> srcInfos =
-                new ArrayList<>(
+        LinkedList<Line.Info> srcInfos =
+                new LinkedList<>(
                         Arrays.asList(
                                 mixer.getSourceLineInfo()));
         for (Line.Info srcInfo:
@@ -174,9 +174,9 @@ public class VolumeTest {
                     srcInfo));
         } // of for Line.Info
         System.out.println("Target Line Supported:");
-        ArrayList<Line.Info>
+        LinkedList<Line.Info>
                 targetInfos =
-                new ArrayList<>(
+                new LinkedList<>(
                         Arrays.asList(
                                 mixer.getTargetLineInfo()));
         for (Line.Info targetInfo:
@@ -297,9 +297,9 @@ public class VolumeTest {
             showMixers();
         }
         public static void showMixers() {
-            ArrayList<Mixer.Info>
+            LinkedList<Mixer.Info>
                     mixInfos =
-                    new ArrayList<Mixer.Info>(
+                    new LinkedList<Mixer.Info>(
                             Arrays.asList(
                                     AudioSystem.getMixerInfo(
                                     )));

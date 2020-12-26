@@ -1,6 +1,6 @@
 package org.muplayer.audio.util;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.muplayer.system.SysInfo.ISMAC;
@@ -23,7 +23,7 @@ public class AudioExtensions {
     public static String[] SUPPORTEDEXTENSIONS = {};
 
     static {
-        final List<String> listSupportedFormats = new ArrayList<>();
+        final List<String> listSupportedFormats = new LinkedList<>();
         listSupportedFormats.add(MPEG);
         listSupportedFormats.add(OGG);
         listSupportedFormats.add(AAC);

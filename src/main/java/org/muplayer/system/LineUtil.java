@@ -19,7 +19,7 @@ package org.muplayer.system;
 import javax.sound.sampled.*;
 import javax.sound.sampled.Control.Type;
 import javax.sound.sampled.Mixer.Info;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -151,7 +151,7 @@ public class LineUtil {
     }
 
     private static List<Line> getAvailableLines(Mixer mixer, Line.Info[] lineInfos) {
-        List<Line> lines = new ArrayList<>(lineInfos.length);
+        List<Line> lines = new LinkedList<>(lineInfos.length);
         for (Line.Info lineInfo : lineInfos) {
             Line line;
             line = getLineIfAvailable(mixer, lineInfo);

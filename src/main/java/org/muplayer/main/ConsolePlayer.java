@@ -36,54 +36,7 @@ public class ConsolePlayer implements Runnable {
         this(new File(folder));
     }
 
-    /*protected void configListener() {
-        player.addPlayerListener(new PlayerListener() {
-            @Override
-            public void onSongChange(Track newTrack) {
-                interpreter.showSongInfo(newTrack);
-            }
 
-            @Override
-            public void onPlayed(Track track) {
-
-            }
-
-            @Override
-            public void onPlaying(Track track) {
-
-            }
-
-            @Override
-            public void onResumed(Track track) {
-
-            }
-
-            @Override
-            public void onPaused(Track track) {
-
-            }
-
-            @Override
-            public void onStarted() {
-
-            }
-
-            @Override
-            public void onStopped(Track track) {
-
-            }
-
-            @Override
-            public void onSeeked(Track track) {
-
-            }
-
-            @Override
-            public void onShutdown() {
-
-            }
-        });
-    }*/
 
     protected void printHeader() {
         FileOutputStream stdout = SystemUtil.getStdout();

@@ -12,8 +12,8 @@ public class PlayerInfo {
     private final File rootFolder;
     private final float gain;
 
-    private int songsCount;
-    private int foldersCount;
+    private final int songsCount;
+    private final int foldersCount;
 
     public PlayerInfo(Player player) {
         this.current = player.getCurrent();
