@@ -12,10 +12,9 @@ import java.util.stream.Collectors;
 import static org.muplayer.main.ConsoleOrder.*;
 
 public class HelpManager {
-    private File fileProps;
+    private final File fileProps;
     private Properties properties;
     private boolean cacheMode;
-
 
     private static final HelpManager instance = new HelpManager();
 

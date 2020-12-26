@@ -17,11 +17,11 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class ConsolePlayer implements Runnable {
-    protected volatile Player player;
-    protected volatile ConsoleInterpreter interpreter;
+    protected final Player player;
+    protected final ConsoleInterpreter interpreter;
 
-    protected volatile File playerFolder;
-    protected volatile Scanner scanner;
+    protected final File playerFolder;
+    protected final Scanner scanner;
 
     protected static final String LINEHEADER = "[MuPlayer]> ";
 
@@ -36,10 +36,8 @@ public class ConsolePlayer implements Runnable {
         this(new File(folder));
     }
 
-
-
     protected void printHeader() {
-        FileOutputStream stdout = SystemUtil.getStdout();
+        final FileOutputStream stdout = SystemUtil.getStdout();
         try {
             stdout.write(Logger.getLogger(this, LINEHEADER)
                     .getColoredMsg(Logger.INFOCOLOR).getBytes());

@@ -19,7 +19,7 @@ package org.muplayer.system;
 import javax.sound.sampled.*;
 import javax.sound.sampled.Control.Type;
 import javax.sound.sampled.Mixer.Info;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -151,11 +151,14 @@ public class LineUtil {
     }
 
     private static List<Line> getAvailableLines(Mixer mixer, Line.Info[] lineInfos) {
-        List<Line> lines = new LinkedList<>(lineInfos.length);
-        for (Line.Info lineInfo : lineInfos) {
-            Line line;
+        List<Line> lines = new LinkedList<>();
+        Line.Info lineInfo;
+        Line line;
+        for (int i = 0; i < lineInfos.length; i++) {
+            lineInfo = lineInfos[i];
             line = getLineIfAvailable(mixer, lineInfo);
-            if (line != null) lines.add(line);
+            if (line != null)
+                lines.add(line);
         }
         return lines;
     }
@@ -227,8 +230,8 @@ public class LineUtil {
 
     public static String toString(Mixer mixer) {
         if (mixer == null) return null;
-        StringBuilder sb = new StringBuilder();
-        Info info = mixer.getMixerInfo();
+        final StringBuilder sb = new StringBuilder();
+        final Info info = mixer.getMixerInfo();
         sb.append(info.getName());
         sb.append(" (").append(info.getDescription()).append(")");
         sb.append(mixer.isOpen() ? " [open]" : " [closed]");
