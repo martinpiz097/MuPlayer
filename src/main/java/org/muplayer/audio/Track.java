@@ -430,9 +430,6 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
             final long skip = trackStream.skip(bytesToSeek);
             final double skippedSeconds = convertBytesToSeconds(skip);
 
-            System.out.println("Seconds: "+seconds);
-            System.out.println("SkippedSeconds: "+skippedSeconds);
-            System.out.println("-------------------");
             if (skip > 0)
                 secsSeeked+=skippedSeconds;
 
