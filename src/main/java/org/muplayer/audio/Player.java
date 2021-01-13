@@ -12,12 +12,12 @@ import org.muplayer.audio.model.TrackInfo;
 import org.muplayer.audio.trackstates.TrackState;
 import org.muplayer.audio.trackstates.UnknownState;
 import org.muplayer.audio.util.PlayerInfo;
+import org.muplayer.system.AudioHardware;
 import org.muplayer.system.AudioUtil;
 import org.muplayer.system.LineUtil;
 import org.muplayer.thread.ListenerRunner;
 import org.muplayer.thread.TaskRunner;
 import org.muplayer.thread.ThreadManager;
-import org.orangelogger.sys.Logger;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
@@ -25,6 +25,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Comparator;
 import java.util.List;
@@ -532,15 +533,15 @@ public class Player extends Thread implements PlayerControls {
     }
 
     @Override
-    public synchronized void addMusic(List<File> listSounds) {
-        if (!listSounds.isEmpty()) {
+    public synchronized void addMusic(Collection<File> soundCollection) {
+        if (!soundCollection.isEmpty()) {
             final Consumer<File> consumer = sound->{
                 if (sound.isDirectory())
                     loadTracks(sound);
                 else if (Track.isValidTrack(sound))
                     listSoundPaths.add(sound.getPath());
             };
-            listSounds.forEach(consumer);
+            soundCollection.forEach(consumer);
         }
     }
 
@@ -557,7 +558,7 @@ public class Player extends Thread implements PlayerControls {
         else if (Track.isValidTrack(musicFolder)) {
             listSoundPaths.add(musicFolder.getPath());
             final String parentPath = musicFolder.getParent();
-            if (!listFolderPaths.parallelStream().anyMatch(sp->parentPath.equals(sp)))
+            if (listFolderPaths.parallelStream().noneMatch(parentPath::equals))
                 listFolderPaths.add(parentPath);
         }
     }
@@ -579,10 +580,8 @@ public class Player extends Thread implements PlayerControls {
 
             if (option == SeekOption.NEXT) {
                 newFolderIndex = folderIndex+jumps;
-                if (newFolderIndex >= getFoldersCount())
-                    parentToFind = listFolderPaths.get(0);
-                else
-                    parentToFind = listFolderPaths.get(newFolderIndex);
+                parentToFind = listFolderPaths.get(newFolderIndex >= getFoldersCount()
+                        ? 0 : newFolderIndex);
             }
             else {
                 newFolderIndex = folderIndex - jumps;
@@ -711,7 +710,7 @@ public class Player extends Thread implements PlayerControls {
         if (current != null) {
             try {
                 current.seek(seconds);
-                loadListenerMethod(ONSEEKED, current);
+                loadListenerMethod(ONGOTOSECOND, current);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -723,6 +722,7 @@ public class Player extends Thread implements PlayerControls {
         if (current != null) {
             try {
                 current.gotoSecond(second);
+                loadListenerMethod(ONGOTOSECOND, current);
             } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
                 e.printStackTrace();
             }

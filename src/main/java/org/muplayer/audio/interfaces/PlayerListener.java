@@ -11,5 +11,6 @@ public interface PlayerListener {
     void onStarted();
     void onStopped(Track track);
     void onSeeked(Track track);
+    void onGotosecond(Track track);
     void onShutdown();
 }

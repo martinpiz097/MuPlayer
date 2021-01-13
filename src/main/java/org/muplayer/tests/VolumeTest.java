@@ -2,8 +2,8 @@ package org.muplayer.tests;
 
 import org.aucom.sound.AudioQuality;
 import org.muplayer.audio.Player;
+import org.muplayer.system.AudioHardware;
 import org.muplayer.system.AudioUtil;
-import org.muplayer.system.LineUtil;
 
 import javax.sound.sampled.*;
 import java.util.LinkedList;
@@ -20,10 +20,10 @@ public class VolumeTest {
 
         System.out.println(new Player("/home/martin/Escritorio/").getInfo().toString());
 
-        System.out.println(LineUtil.getMasterOutputVolume());
-        Line masterLine = LineUtil.getMasterOutputLine();
+        System.out.println(AudioHardware.getMasterOutputVolume());
+        Line masterLine = AudioHardware.getMasterOutputLine();
         masterLine.open();
-        FloatControl volume = LineUtil.getVolumeControl(masterLine);
+        FloatControl volume = AudioHardware.getVolumeControl(masterLine);
 
         float vol;
 

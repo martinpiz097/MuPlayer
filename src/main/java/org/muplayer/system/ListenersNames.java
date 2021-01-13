@@ -10,4 +10,5 @@ public class ListenersNames {
     public static final String ONPAUSED = "onPaused";
     public static final String ONSTOPPED = "onStopped";
     public static final String ONSEEKED = "onSeeked";
+    public static final String ONGOTOSECOND = "onGotosecond";
 }

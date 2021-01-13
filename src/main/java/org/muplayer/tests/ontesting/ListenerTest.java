@@ -53,6 +53,11 @@ public class ListenerTest {
             }
 
             @Override
+            public void onGotosecond(Track track) {
+
+            }
+
+            @Override
             public void onShutdown() {
 
             }
