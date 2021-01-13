@@ -374,3 +374,6 @@
     - Se aplican algunas mejoras de codigo y limpiezas menores
     - Nuevos metodos de conversion entre bytes y segundos sobreescrito por cada subclase de Track
 	- Se corrige gotoSec implementando un nuevo TrackState
+	
+- 2.2.1
+	- Menores correcciones de codigo
