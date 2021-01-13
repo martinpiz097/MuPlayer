@@ -53,7 +53,7 @@ public class VolumeTest {
 
     }
 
-    private static Port getPortLine(Mixer portMixer) {
+    public static Port getPortLine(Mixer portMixer) {
         Port port = null;
         Line[] lines = portMixer.getSourceLines();
 
@@ -73,7 +73,7 @@ public class VolumeTest {
         return port;
     }
 
-    private static void setCtrl(
+    public static void setCtrl(
             Control ctl) {
         if(ctl.getType().toString(
         ).equals("Select")) {
@@ -92,7 +92,7 @@ public class VolumeTest {
         }
     }
 
-    private static void setRecControlValue(Port inPort)
+    public static void setRecControlValue(Port inPort)
             throws Exception {
         inPort.open();
         Control [] controls =
@@ -122,15 +122,15 @@ public class VolumeTest {
         setRecControlValue(recPort);
     }
 
-    private static void showControls(
+    public static void showControls(
             Line inLine) throws Exception {
         // must open the line to get
         // at controls
         inLine.open();
         System.out.println("\t\tAvailable controls:");
-        List<Control> ctrls = new LinkedList<>(
-                        Arrays.asList(inLine.getControls()));
-        for (Control ctrl: ctrls) {
+        final List<Control> ctrls = new LinkedList<>(Arrays.asList(inLine.getControls()));
+
+        for (Control ctrl : ctrls) {
             System.out.println( "\t\t\t" +
                     ctrl.toString());
             if (ctrl instanceof
@@ -156,32 +156,43 @@ public class VolumeTest {
         System.out.println("\t" +
                 mixerInfo.getDescription());
         System.out.println("Source Line Supported:");
-        List<Line.Info> srcInfos = new LinkedList<>(
+
+        final List<Line.Info> srcInfos = new LinkedList<>(
                         Arrays.asList(mixer.getSourceLineInfo()));
         for (Line.Info srcInfo:
                 srcInfos) {
-            Port.Info pi =
-                    (Port.Info) srcInfo;
-            System.out.println("\t" + pi.getName() +
-    			", " + (pi.isSource()?
-    			"source" : "target"));
-            showControls(mixer.getLine(
-                    srcInfo));
+            if (srcInfo instanceof Port.Info) {
+                Port.Info pi =
+                        (Port.Info) srcInfo;
+                System.out.println("\t" + pi.getName() +
+                        ", " + (pi.isSource()?
+                        "source" : "target"));
+                showControls(mixer.getLine(
+                        srcInfo));
+            }
+            else if (srcInfo instanceof DataLine.Info) {
+                DataLine.Info info = (DataLine.Info) srcInfo;
+                System.out.println("\t" + info.toString());
+            }
         } // of for Line.Info
         System.out.println("Target Line Supported:");
-        List<Line.Info> targetInfos = new LinkedList<>(
+        final List<Line.Info> targetInfos = new LinkedList<>(
                         Arrays.asList(mixer.getTargetLineInfo()));
 
-        for (Line.Info targetInfo:
-                targetInfos) {
-            Port.Info pi =
-                    (Port.Info) targetInfo;
-            System.out.println("\t" + pi.getName()
-                    + ", " +
-                    (pi.isSource()?
-    			"source" : "target"));
-            showControls(mixer.getLine(
-                    targetInfo));
+        for (Line.Info targetInfo : targetInfos) {
+            if (targetInfo instanceof Port.Info) {
+                Port.Info pi =
+                        (Port.Info) targetInfo;
+                System.out.println("\t" + pi.getName() +
+                        ", " + (pi.isSource()?
+                        "source" : "target"));
+                showControls(mixer.getLine(
+                        targetInfo));
+            }
+            else if (targetInfo instanceof DataLine.Info) {
+                DataLine.Info info = (DataLine.Info) targetInfo;
+                System.out.println("\t" + info.toString());
+            }
         }
         System.out.println("---------------------------");
     } // of if

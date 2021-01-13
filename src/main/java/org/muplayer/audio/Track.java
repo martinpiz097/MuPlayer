@@ -11,6 +11,7 @@ import org.muplayer.audio.model.TrackInfo;
 import org.muplayer.audio.trackstates.*;
 import org.muplayer.audio.util.AudioExtensions;
 import org.muplayer.audio.util.TimeFormatter;
+import org.muplayer.system.AudioHardware;
 import org.muplayer.system.AudioUtil;
 import org.muplayer.thread.TPlayingTrack;
 import org.orangelogger.sys.Logger;
@@ -20,6 +21,7 @@ import javax.sound.sampled.spi.AudioFileReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import static org.muplayer.audio.util.AudioExtensions.*;
 
@@ -210,6 +212,9 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
                 trackLine.close();
             }
             try {
+                /*List<Mixer> mixers = AudioHardware.getAllMixers();
+                Mixer selectedMixer = mixers.get(1);
+                System.out.println("Selected mixer: "+selectedMixer.getMixerInfo().toString());*/
                 trackLine = new Speaker(trackStream.getFormat());
                 trackLine.open();
                 setGain(volume);

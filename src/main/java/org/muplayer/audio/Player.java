@@ -94,7 +94,7 @@ public class Player extends Thread implements PlayerControls {
     // haciendo de la revision en tiempo de ejecucion
 
     private void loadTracks(File folder) {
-        File[] fldFiles = folder.listFiles();
+        final File[] fldFiles = folder.listFiles();
         File f;
         if (fldFiles != null) {
             // se analiza carpeta y se agregan sonidos recursivamente
@@ -151,10 +151,8 @@ public class Player extends Thread implements PlayerControls {
     private Track getTrackBy(int currentIndex, SeekOption param) {
         Track next = null;
         if (param == SeekOption.NEXT) {
-            if (currentIndex == getSongsCount()-1 || currentIndex < 0)
-                currentIndex = 0;
-            else
-                currentIndex++;
+            currentIndex = currentIndex == getSongsCount()-1 || currentIndex < 0 ? 0 : currentIndex++;
+
             for (int i = currentIndex; i < listSoundPaths.size(); i++) {
                 next = Track.getTrack(listSoundPaths.get(i), this);
                 // Este if es por si existen archivos que no fuesen sonidos
@@ -168,10 +166,7 @@ public class Player extends Thread implements PlayerControls {
         }
 
         else {
-            if (currentIndex == 0)
-                currentIndex = getSongsCount()-1;
-            else
-                currentIndex--;
+            currentIndex = currentIndex == 0 ? getSongsCount()-1 : currentIndex--;
 
             for (int i = currentIndex; i >= 0; i--) {
                 next = Track.getTrack(listSoundPaths.get(i), this);
@@ -343,15 +338,6 @@ public class Player extends Thread implements PlayerControls {
     // sino rescatar de los que sean no mas
     public synchronized List<AudioTag> getTrackTags() {
         final List<AudioTag> listTags = new LinkedList<>();
-
-        /*listSoundPaths.stream().map(soundPath -> {
-            try {
-                return new AudioTag(soundPath);
-            } catch (ReadOnlyFileException e) {
-                return null;
-            }
-        }).filter(Objects::nonNull).forEach(listTags::add);*/
-
         listSoundPaths.forEach(soundPath -> {
             try {
                 final AudioTag tag = new AudioTag(soundPath);
@@ -390,7 +376,8 @@ public class Player extends Thread implements PlayerControls {
                     synchronized (listArtists) {
                         String finalArt = art;
                         Artist artist = listArtists.parallelStream()
-                                .filter(a->a.getName().equalsIgnoreCase(finalArt)).findFirst().orElse(null);
+                                .filter(a->a.getName().equalsIgnoreCase(finalArt))
+                                .findFirst().orElse(null);
 
                         if (artist == null) {
                             artist = new Artist();
@@ -566,11 +553,6 @@ public class Player extends Thread implements PlayerControls {
             loadTracks(musicFolder);
             if (validSort)
                 sortTracks();
-            /*if (hasSounds()) {
-                suspend();
-                sortTracks();
-                resume();
-            }*/
         }
         else if (Track.isValidTrack(musicFolder)) {
             listSoundPaths.add(musicFolder.getPath());
@@ -589,7 +571,7 @@ public class Player extends Thread implements PlayerControls {
     }
 
     public synchronized void seekFolder(SeekOption option, int jumps) {
-        int folderIndex = getFolderIndex();
+        final int folderIndex = getFolderIndex();
         if (folderIndex != -1) {
             int newFolderIndex;
             String parentToFind;
@@ -604,12 +586,8 @@ public class Player extends Thread implements PlayerControls {
             }
             else {
                 newFolderIndex = folderIndex - jumps;
-                //Logger.getLogger(this, "SeekPrevFolder", "NewFolderIndex: "+newFolderIndex)
-                //        .info();
-                if (newFolderIndex < 0)
-                    parentToFind = listFolderPaths.get(listFolderPaths.size()-1);
-                else
-                    parentToFind  = listFolderPaths.get(newFolderIndex);
+                parentToFind = listFolderPaths.get(newFolderIndex < 0
+                        ? listFolderPaths.size()-1 : newFolderIndex);
             }
 
             next = findFirstIn(parentToFind);
@@ -824,11 +802,6 @@ public class Player extends Thread implements PlayerControls {
         if (listFolderPaths.contains(path))
             playFolderSongs(path);
     }
-
-    /*public void playFolder(int index) {
-        if (index > -1 && index > listFolderPaths.size())
-            playFolderSongs(listFolderPaths.get(index));
-    }*/
 
     public void playFolder(int index) {
         if (index < getFoldersCount()) {

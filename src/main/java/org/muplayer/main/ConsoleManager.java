@@ -5,7 +5,7 @@ import java.util.List;
 
 public class ConsoleManager {
     private String currentCmd;
-    private List<String> listCommands;
+    private final List<String> listCommands;
 
     public ConsoleManager() {
         currentCmd = null;
