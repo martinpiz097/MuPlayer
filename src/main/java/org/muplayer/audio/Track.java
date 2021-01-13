@@ -458,13 +458,8 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
             final int gt = (int) Math.round(second-getProgress());
             seek(gt);
         }
-        else if (second < progress) {
-            if (second < 0)
-                second = 0;
-            stopTrack();
-            seek(second);
-            resumeTrack();
-        }
+        else
+            state = new ReverberatedState(this, second);
     }
 
     @Override

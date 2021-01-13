@@ -19,7 +19,6 @@ package org.muplayer.system;
 import javax.sound.sampled.*;
 import javax.sound.sampled.Control.Type;
 import javax.sound.sampled.Mixer.Info;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -133,9 +132,9 @@ public class LineUtil {
         return null;
     }
 
-    public static LinkedList<Mixer> getMixers() {
+    public static List<Mixer> getMixers() {
         Info[] infos = AudioSystem.getMixerInfo();
-        LinkedList<Mixer> mixers = new LinkedList<>();
+        List<Mixer> mixers = new LinkedList<>();
         for (int i = 0; i < infos.length; i++)
             mixers.add(AudioSystem.getMixer(infos[i]));
 

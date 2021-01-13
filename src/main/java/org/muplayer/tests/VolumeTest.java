@@ -8,6 +8,7 @@ import org.muplayer.system.LineUtil;
 import javax.sound.sampled.*;
 import java.util.LinkedList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class VolumeTest {
@@ -127,10 +128,8 @@ public class VolumeTest {
         // at controls
         inLine.open();
         System.out.println("\t\tAvailable controls:");
-        LinkedList<Control> ctrls =
-                new LinkedList<>(
-                        Arrays.asList(
-                                inLine.getControls()));
+        List<Control> ctrls = new LinkedList<>(
+                        Arrays.asList(inLine.getControls()));
         for (Control ctrl: ctrls) {
             System.out.println( "\t\t\t" +
                     ctrl.toString());
@@ -138,10 +137,8 @@ public class VolumeTest {
                     CompoundControl) {
                 CompoundControl cc =
                         ((CompoundControl) ctrl);
-                LinkedList<Control> ictrls =
-                        new LinkedList<Control>(
-                                Arrays.asList(
-                                        cc.getMemberControls()));
+                List<Control> ictrls = new LinkedList<>(
+                                Arrays.asList(cc.getMemberControls()));
                 for(Control ictrl : ictrls)
                     System.out.println("\t\t\t\t" +
                             ictrl.toString());
@@ -159,10 +156,8 @@ public class VolumeTest {
         System.out.println("\t" +
                 mixerInfo.getDescription());
         System.out.println("Source Line Supported:");
-        LinkedList<Line.Info> srcInfos =
-                new LinkedList<>(
-                        Arrays.asList(
-                                mixer.getSourceLineInfo()));
+        List<Line.Info> srcInfos = new LinkedList<>(
+                        Arrays.asList(mixer.getSourceLineInfo()));
         for (Line.Info srcInfo:
                 srcInfos) {
             Port.Info pi =
@@ -174,11 +169,9 @@ public class VolumeTest {
                     srcInfo));
         } // of for Line.Info
         System.out.println("Target Line Supported:");
-        LinkedList<Line.Info>
-                targetInfos =
-                new LinkedList<>(
-                        Arrays.asList(
-                                mixer.getTargetLineInfo()));
+        List<Line.Info> targetInfos = new LinkedList<>(
+                        Arrays.asList(mixer.getTargetLineInfo()));
+
         for (Line.Info targetInfo:
                 targetInfos) {
             Port.Info pi =
@@ -297,22 +290,12 @@ public class VolumeTest {
             showMixers();
         }
         public static void showMixers() {
-            LinkedList<Mixer.Info>
-                    mixInfos =
-                    new LinkedList<Mixer.Info>(
-                            Arrays.asList(
-                                    AudioSystem.getMixerInfo(
-                                    )));
-            Line.Info sourceDLInfo =
-                    new Line.Info(
-                            SourceDataLine.class);
-            Line.Info targetDLInfo =
-                    new Line.Info(
-                            TargetDataLine.class);
-            Line.Info clipInfo =
-                    new Line.Info(Clip.class);
-            Line.Info portInfo =
-                    new Line.Info(Port.class);
+            List<Mixer.Info> mixInfos = new LinkedList<>(
+                            Arrays.asList(AudioSystem.getMixerInfo()));
+            Line.Info sourceDLInfo = new Line.Info(SourceDataLine.class);
+            Line.Info targetDLInfo = new Line.Info(TargetDataLine.class);
+            Line.Info clipInfo = new Line.Info(Clip.class);
+            Line.Info portInfo = new Line.Info(Port.class);
             String support;
             for (Mixer.Info mixInfo:
                     mixInfos) {

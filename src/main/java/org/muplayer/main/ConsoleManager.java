@@ -1,10 +1,11 @@
 package org.muplayer.main;
 
 import java.util.LinkedList;
+import java.util.List;
 
 public class ConsoleManager {
     private String currentCmd;
-    private LinkedList<String> listCommands;
+    private List<String> listCommands;
 
     public ConsoleManager() {
         currentCmd = null;
@@ -19,7 +20,7 @@ public class ConsoleManager {
         this.currentCmd = currentCmd;
     }
 
-    public LinkedList<String> getListCommands() {
+    public List<String> getListCommands() {
         return listCommands;
     }
 

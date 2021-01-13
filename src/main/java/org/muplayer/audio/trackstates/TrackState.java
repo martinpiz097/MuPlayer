@@ -30,11 +30,13 @@ public abstract class TrackState {
         final String className = getClass().getSimpleName();
         return className.replace("State", "").trim();
     }
+
     public void execute() {
         if (preTask != null)
             preTask.run();
         handle();
     }
+
     public abstract void handle();
     public synchronized void finish() {
         canTrackContinue = false;
