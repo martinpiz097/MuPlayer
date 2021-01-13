@@ -19,8 +19,8 @@ public class TPlayingTrack implements Runnable {
 
     public boolean hasTrack(Track track) {
         try {
-            String dataSourcePath = this.track.getDataSource().getCanonicalPath();
-            String anotherSourcePath = track.getDataSource().getCanonicalPath();
+            final String dataSourcePath = this.track.getDataSource().getCanonicalPath();
+            final String anotherSourcePath = track.getDataSource().getCanonicalPath();
             return dataSourcePath.equals(anotherSourcePath);
         } catch (IOException e) {
             return true;

@@ -12,8 +12,6 @@ public class SongData implements TrackInfo {
         this.info = tag;
     }
 
-
-
     @Override
     public boolean hasCover() {
         return info.hasCover();
@@ -60,7 +58,7 @@ public class SongData implements TrackInfo {
 
     @Override
     public byte[] getCoverData() {
-        Artwork cover = info.getCover();
+        final Artwork cover = info.getCover();
         return cover == null ? null : cover.getBinaryData();
     }
 

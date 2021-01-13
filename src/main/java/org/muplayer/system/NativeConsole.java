@@ -27,7 +27,6 @@ public class NativeConsole {
         return terminal;
     }
 
-
     public NonBlockingReader getReader() {
         return reader;
     }

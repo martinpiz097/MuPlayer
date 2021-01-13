@@ -32,7 +32,7 @@ public class FlacDecoder implements PCMProcessor {
 
     public boolean isFlac() {
         try {
-            FLACDecoder decoder = new FLACDecoder(inputFile);
+            final FLACDecoder decoder = new FLACDecoder(inputFile);
             decoder.addPCMProcessor(this);
             decoder.decode();
 

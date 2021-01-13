@@ -377,3 +377,6 @@
 	
 - 2.2.1
 	- Menores correcciones de codigo
+	
+- X
+	- Mejoras de codigo
