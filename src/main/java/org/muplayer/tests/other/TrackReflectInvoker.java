@@ -2,7 +2,7 @@ package org.muplayer.tests.other;
 
 /*public class TrackReflectInvoker {
     private static final Class<Track> trackClass;
-    private static final LinkedList<Class> listTrackClasses;
+    private static final List<Class> listTrackClasses;
 
     static {
         trackClass = Track.class;

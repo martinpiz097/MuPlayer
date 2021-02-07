@@ -34,7 +34,6 @@ public class VolumeTest {
             else if (vol < 0)
                 vol = 0f;
             volume.setValue(AudioUtil.convertVolRangeToLineRange(vol, volume));
-
         }
 
 
