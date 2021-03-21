@@ -150,34 +150,34 @@ public class Player extends Thread implements PlayerControls {
     }
 
     private Track getTrackBy(int currentIndex, SeekOption param) {
-        Track next = null;
+        Track nextTrack = null;
+        int nextIndex;
         if (param == SeekOption.NEXT) {
-            currentIndex = currentIndex == getSongsCount()-1 || currentIndex < 0 ? 0 : currentIndex++;
+            nextIndex = currentIndex == getSongsCount()-1 || currentIndex < 0 ? 0 : currentIndex+1;
 
-            for (int i = currentIndex; i < listSoundPaths.size(); i++) {
-                next = Track.getTrack(listSoundPaths.get(i), this);
+            for (int i = nextIndex; i < listSoundPaths.size(); i++) {
+                nextTrack = Track.getTrack(listSoundPaths.get(i), this);
                 // Este if es por si existen archivos que no fuesen sonidos
                 // en las carpetas
-                if (next != null && next.isValidTrack()) {
+                if (nextTrack != null && nextTrack.isValidTrack()) {
                     trackIndex = i;
                     break;
                 }
             }
-            return next;
         }
 
         else {
-            currentIndex = currentIndex == 0 ? getSongsCount()-1 : currentIndex--;
+            nextIndex = currentIndex == 0 ? getSongsCount()-1 : currentIndex-1;
 
-            for (int i = currentIndex; i >= 0; i--) {
-                next = Track.getTrack(listSoundPaths.get(i), this);
-                if (next != null) {
+            for (int i = nextIndex; i >= 0; i--) {
+                nextTrack = Track.getTrack(listSoundPaths.get(i), this);
+                if (nextTrack != null) {
                     trackIndex = i;
                     break;
                 }
             }
-            return next;
         }
+        return nextTrack;
     }
 
     private void getNextTrack(SeekOption param) {
