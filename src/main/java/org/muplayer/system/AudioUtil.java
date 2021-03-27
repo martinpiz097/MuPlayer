@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Path;
 
 import static org.muplayer.audio.util.AudioExtensions.SUPPORTEDEXTENSIONS;
 
@@ -73,6 +74,10 @@ public class AudioUtil {
             }
         }
         return isSupported;
+    }
+
+    public static boolean isSupported(Path track) {
+        return isSupported(track.toFile());
     }
 
 }

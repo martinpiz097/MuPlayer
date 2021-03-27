@@ -21,6 +21,7 @@ import javax.sound.sampled.spi.AudioFileReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.List;
 
 import static org.muplayer.audio.util.AudioExtensions.*;
@@ -143,6 +144,10 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     }
 
     public static boolean isValidTrack(File track) {
+        return AudioUtil.isSupported(track) /*&& getTrack(track).isValidTrack()*/;
+    }
+
+    public static boolean isValidTrack(Path track) {
         return AudioUtil.isSupported(track) /*&& getTrack(track).isValidTrack()*/;
     }
 

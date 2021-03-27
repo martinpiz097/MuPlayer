@@ -12,7 +12,7 @@ import org.muplayer.audio.model.TrackInfo;
 import org.muplayer.audio.trackstates.TrackState;
 import org.muplayer.audio.trackstates.UnknownState;
 import org.muplayer.audio.util.PlayerInfo;
-import org.muplayer.system.AudioHardware;
+import org.muplayer.exception.MuPlayerException;
 import org.muplayer.system.AudioUtil;
 import org.muplayer.system.LineUtil;
 import org.muplayer.thread.ListenerRunner;
@@ -25,6 +25,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Comparator;
@@ -95,8 +96,13 @@ public class Player extends Thread implements PlayerControls {
     // haciendo de la revision en tiempo de ejecucion
 
     private void loadTracks(File folder) {
+        if (!Files.isReadable(folder.toPath()))
+            throw new MuPlayerException("folder is not readable");
+
+        //Files.list(folder.toPath()).forEach(path->{});
         final File[] fldFiles = folder.listFiles();
         File f;
+
         if (fldFiles != null) {
             // se analiza carpeta y se agregan sonidos recursivamente
             boolean hasTracks = false;
@@ -180,7 +186,7 @@ public class Player extends Thread implements PlayerControls {
         return nextTrack;
     }
 
-    private void getNextTrack(SeekOption param) {
+    private void setCurrentTrack(SeekOption param) {
         current = getTrackBy(trackIndex, param);
     }
 
@@ -215,7 +221,13 @@ public class Player extends Thread implements PlayerControls {
     }
 
     private void waitForSongs() {
-        while (on && getSongsCount() == 0);
+        while (on && getSongsCount() == 0) {
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     // Se supone que para buscar una cancion a traves de la ruta del padre
@@ -232,7 +244,7 @@ public class Player extends Thread implements PlayerControls {
                 : null;
     }
 
-    private int moveToFolder(String folderPath) {
+    private int seekToFolder(String folderPath) {
         final File parentFile = new File(folderPath);
         final List<File> listSounds = getListSounds();
 
@@ -524,10 +536,14 @@ public class Player extends Thread implements PlayerControls {
 
     @Override
     public synchronized void open(List<File> listSounds) {
-        if (listSounds.parallelStream().anyMatch(Track::isValidTrack)) {
+        final List<File> listValidSounds = listSounds.parallelStream()
+                .filter(Track::isValidTrack)
+                .collect(Collectors.toList());
+
+        if (!listValidSounds.isEmpty()) {
             listSoundPaths.clear();
             listFolderPaths.clear();
-            loadTracks(listSounds);
+            loadTracks(listValidSounds);
             sortTracks();
         }
     }
@@ -781,7 +797,7 @@ public class Player extends Thread implements PlayerControls {
     public synchronized void playNext() {
         if (current != null)
             current.kill();
-        getNextTrack(SeekOption.NEXT);
+        setCurrentTrack(SeekOption.NEXT);
         startThreadTrack();
         loadListenerMethod(ONSONGCHANGE, current);
     }
@@ -790,7 +806,7 @@ public class Player extends Thread implements PlayerControls {
     public synchronized void playPrevious() {
         if (current != null)
             current.kill();
-        getNextTrack(SeekOption.PREV);
+        setCurrentTrack(SeekOption.PREV);
         startThreadTrack();
         loadListenerMethod(ONSONGCHANGE, current);
     }
@@ -805,7 +821,7 @@ public class Player extends Thread implements PlayerControls {
 
     public void playFolder(int index) {
         if (index < getFoldersCount()) {
-            trackIndex = moveToFolder(listFolderPaths.get(index));
+            trackIndex = seekToFolder(listFolderPaths.get(index));
             playNext();
         }
     }
