@@ -29,7 +29,7 @@ public class NativeConsole {
         reader = terminal.reader();
         writer = terminal.writer();
 
-        new NonBlockingInputStream()
+        //new NonBlockingInputStream()
     }
 
     public char readChar() throws IOException {
