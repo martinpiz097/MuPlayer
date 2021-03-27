@@ -1,5 +1,7 @@
 package org.muplayer.audio.info;
 
+import lombok.Data;
+import lombok.Getter;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
@@ -16,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
+@Data
 public class AudioTag {
     private final File fileSource;
     private final AudioFile audioFile;
@@ -43,18 +46,6 @@ public class AudioTag {
 
     public boolean hasCover() {
         return isValidFile() && getCover() != null;
-    }
-
-    public File getFileSource() {
-        return fileSource;
-    }
-
-    public Tag getTagReader() {
-        return tagReader;
-    }
-
-    public AudioHeader getHeader() {
-        return header;
     }
 
     public Iterator<TagField> getTags() {

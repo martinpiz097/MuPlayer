@@ -3,7 +3,7 @@ package org.muplayer.audio;
 import org.aucom.sound.Speaker;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.tag.FieldKey;
-import org.muplayer.audio.formats.*;
+import org.muplayer.audio.format.*;
 import org.muplayer.audio.info.AudioTag;
 import org.muplayer.audio.interfaces.MusicControls;
 import org.muplayer.audio.interfaces.PlayerControls;
@@ -11,7 +11,6 @@ import org.muplayer.audio.model.TrackInfo;
 import org.muplayer.audio.trackstates.*;
 import org.muplayer.audio.util.AudioExtensions;
 import org.muplayer.audio.util.TimeFormatter;
-import org.muplayer.system.AudioHardware;
 import org.muplayer.system.AudioUtil;
 import org.muplayer.thread.TPlayingTrack;
 import org.orangelogger.sys.Logger;
@@ -22,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.List;
 
 import static org.muplayer.audio.util.AudioExtensions.*;
 
@@ -181,6 +179,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         setPriority(MAX_PRIORITY);
     }
 
+    // ojo con los mp3
     protected Track(InputStream inputStream, PlayerControls player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         this.source = inputStream;
         state = new StoppedState(this);
@@ -208,20 +207,21 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         initAll();
     }
 
+    protected Speaker createLine() throws LineUnavailableException {
+        final Speaker line = new Speaker(trackStream.getFormat());
+        line.open();
+        setGain(volume);
+        return line;
+    }
+
     protected void initLine() throws LineUnavailableException {
-        // Se deja el if porque puede que no se pueda leer el archivo
-        // por n razones
         if (trackStream != null) {
             if (trackLine != null) {
                 trackLine.stop();
                 trackLine.close();
             }
             try {
-                /*List<Mixer> mixers = AudioHardware.getAllMixers();
-                Mixer selectedMixer = mixers.get(1);
-                System.out.println("Selected mixer: "+selectedMixer.getMixerInfo().toString());*/
-                trackLine = new Speaker(trackStream.getFormat());
-                trackLine.open();
+                this.trackLine = createLine();
                 setGain(volume);
             } catch (IllegalArgumentException e1) {
                 System.err.println("Error: "+e1.getMessage());
@@ -433,7 +433,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     // en este caso pasan a ser seconds
     @Override
-    public void seek(double seconds)
+    public synchronized void seek(double seconds)
             throws IOException {
         if (seconds > 0) {
             final long bytesToSeek = Math.round(convertSecondsToBytes(seconds));

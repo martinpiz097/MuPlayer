@@ -1,6 +1,6 @@
 package org.muplayer.tests.other;
 
-import org.muplayer.audio.formats.OGGTrack;
+import org.muplayer.audio.format.OGGTrack;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;

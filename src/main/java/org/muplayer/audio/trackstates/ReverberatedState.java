@@ -8,11 +8,11 @@ import java.io.IOException;
 
 public class ReverberatedState extends TrackState {
 
-    private final double second;
+    private final double seekSeconds;
 
-    public ReverberatedState(Track track, double second) {
+    public ReverberatedState(Track track, double seekSeconds) {
         super(track);
-        this.second = second;
+        this.seekSeconds = seekSeconds;
     }
 
     @Override
@@ -20,7 +20,7 @@ public class ReverberatedState extends TrackState {
         try {
             track.resetStream();
             track.setSecsSeeked(0);
-            track.seek(Math.max(second, 0));
+            track.seek(Math.max(seekSeconds, 0));
             track.play();
         } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
             e.printStackTrace();

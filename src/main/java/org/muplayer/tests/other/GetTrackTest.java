@@ -3,10 +3,10 @@ package org.muplayer.tests.other;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.muplayer.audio.Track;
 import org.muplayer.audio.codec.DecodeManager;
-import org.muplayer.audio.formats.FlacTrack;
-import org.muplayer.audio.formats.MP3Track;
-import org.muplayer.audio.formats.OGGTrack;
-import org.muplayer.audio.formats.PCMTrack;
+import org.muplayer.audio.format.FlacTrack;
+import org.muplayer.audio.format.MP3Track;
+import org.muplayer.audio.format.OGGTrack;
+import org.muplayer.audio.format.PCMTrack;
 
 import javax.sound.sampled.*;
 import java.io.File;

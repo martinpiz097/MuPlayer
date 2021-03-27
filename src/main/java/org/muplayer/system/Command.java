@@ -35,10 +35,10 @@ public class Command {
     }
 
     public Number getOptionAsNumber(int index) {
-        String option = getOptionAt(index);
+        final String option = getOptionAt(index);
         try {
-            return option==null ? null : Double.parseDouble(option);
-        }catch (NumberFormatException e){
+            return option == null ? null : Double.parseDouble(option);
+        } catch (NumberFormatException e){
             return null;
         }
     }

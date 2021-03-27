@@ -16,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -557,8 +558,8 @@ public class ConsoleInterpreter implements CommandInterpreter {
             case ConsoleOrder.PLAY_FOLDER:
                 if (isPlayerOn()) {
                     if (cmd.hasOptions()) {
-                        Number fldIndex = cmd.getOptionAsNumber(0);
-                        if (fldIndex != null) {
+                        final Number fldIndex = cmd.getOptionAsNumber(0);
+                        if (fldIndex != null && fldIndex.intValue() > 0) {
                             player.playFolder(fldIndex.intValue()-1);
                             showSongInfo(player.getCurrent());
                         }
