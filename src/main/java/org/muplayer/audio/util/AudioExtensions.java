@@ -1,16 +1,14 @@
 package org.muplayer.audio.util;
 
-import java.util.LinkedList;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
-
-import static org.muplayer.system.SysInfo.ISMAC;
-import static org.muplayer.system.SysInfo.ISUNIX;
 
 public class AudioExtensions {
     public static final String MPEG = "mp3";
     public static final String OGG = "ogg";
     public static final String AAC = "aac";
-    public static final String AC3 = "ac3";
+    //public static final String AC3 = "ac3";
     public static final String FLAC = "flac";
     public static final String WAVE = "wav";
     public static final String M4A = "m4a";
@@ -18,31 +16,24 @@ public class AudioExtensions {
     public static final String AIFC = "aifc";
     public static final String AU = "au";
     public static final String SND = "snd";
-    //public static final String SPEEX = ".spx";
+    public static final String SPEEX = "spx";
 
-    public static String[] SUPPORTEDEXTENSIONS = {};
+    public static final List<String> SUPPORTED_EXTENSIONS_LIST = new ArrayList<>();
 
     static {
-        final List<String> listSupportedFormats = new LinkedList<>();
-        listSupportedFormats.add(MPEG);
-        listSupportedFormats.add(OGG);
-        listSupportedFormats.add(AAC);
-        listSupportedFormats.add(AC3);
-        listSupportedFormats.add(FLAC);
-        listSupportedFormats.add(WAVE);
-        listSupportedFormats.add(M4A);
-        listSupportedFormats.add(SND);
-        if (ISUNIX)
-            listSupportedFormats.add(AU);
-        if (ISMAC) {
-            listSupportedFormats.add(AIFF);
-            listSupportedFormats.add(AIFC);
+        final Field[] fields = AudioExtensions.class.getFields();
+
+        Field field;
+        for (int i = 0; i < fields.length; i++) {
+            field = fields[i];
+            if (field.getType().equals(String.class)) {
+                try {
+                    SUPPORTED_EXTENSIONS_LIST.add(field.get(null).toString());
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
         }
-        //listSupportedFormats.add(SPEEX);
-        int supportedSize = listSupportedFormats.size();
-        SUPPORTEDEXTENSIONS = new String[supportedSize];
-        for (int i = 0; i < supportedSize; i++)
-            SUPPORTEDEXTENSIONS[i] = listSupportedFormats.get(i);
     }
 
     public static String getFormatName(String fileName) {

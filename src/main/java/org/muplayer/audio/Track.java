@@ -53,32 +53,36 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         return getTrack(inputStream, null);
     }
 
-    static Track getTrack(File fSound, PlayerControls player) {
-        if (!fSound.exists())
+    static Track getTrack(File dataSource, PlayerControls player) {
+        if (!dataSource.exists())
             return null;
         Track result = null;
-        final String formatName = AudioExtensions.getFormatName(fSound.getName());
+        final String formatName = AudioExtensions.getFormatName(dataSource.getName());
 
         try {
             switch (formatName) {
                 case MPEG:
-                    result = new MP3Track(fSound, player);
+                    result = new MP3Track(dataSource, player);
                     break;
 
                 case OGG:
-                    result = new OGGTrack(fSound, player);
+                    result = new OGGTrack(dataSource, player);
                     break;
 
                 case FLAC:
-                    result = new FlacTrack(fSound, player);
+                    result = new FlacTrack(dataSource, player);
                     break;
 
                 case WAVE: case AU: case SND: case AIFF: case AIFC:
-                    result = new PCMTrack(fSound, player);
+                    result = new PCMTrack(dataSource, player);
                     break;
 
-                case M4A:
-                    result = new M4ATrack(fSound, player);
+                case M4A: case AAC:
+                    result = new M4ATrack(dataSource, player);
+                    break;
+
+                case SPEEX:
+                    result = new SpeexTrack(dataSource, player);
                     break;
             }
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException | InvalidAudioFrameException e) {
@@ -278,7 +282,6 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         try {
             return isValidTrack() ? new AudioTag(dataSource) : null;
         } catch (Exception e) {
-            Logger.getLogger(this, e.getClass().getSimpleName(), e.getMessage()).error();
             return null;
         }
     }
@@ -507,7 +510,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     @Override
     public boolean hasCover() {
-        return tagInfo.getCover() != null;
+        return tagInfo != null && tagInfo.getCover() != null;
     }
 
     @Override
@@ -524,7 +527,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     public String getTitle() {
         final String titleProper = getProperty(FieldKey.TITLE);
 
-        return (titleProper == null || titleProper.isEmpty())
+        return (titleProper == null || titleProper.trim().isEmpty())
                 && dataSource != null ? dataSource.getName() : titleProper;
     }
 
@@ -550,7 +553,12 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     @Override
     public long getDuration() {
-        return tagInfo.getDuration();
+        if (tagInfo != null)
+            return tagInfo.getDuration();
+        else {
+         //   audioReader.getAudioFileFormat(dataSource).properties()
+            return 0;
+        }
     }
 
     @Override

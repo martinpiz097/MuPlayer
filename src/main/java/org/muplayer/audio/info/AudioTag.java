@@ -71,7 +71,7 @@ public class AudioTag {
     }
 
     public Artwork getCover() {
-        return tagReader.getFirstArtwork();
+        return tagReader != null ? tagReader.getFirstArtwork() : null;
     }
 
     public byte[] getCoverData() {

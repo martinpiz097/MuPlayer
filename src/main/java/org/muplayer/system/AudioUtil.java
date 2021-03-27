@@ -10,7 +10,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Path;
 
-import static org.muplayer.audio.util.AudioExtensions.SUPPORTEDEXTENSIONS;
+import static org.muplayer.audio.util.AudioExtensions.SUPPORTED_EXTENSIONS_LIST;
 
 public class AudioUtil {
 
@@ -65,15 +65,12 @@ public class AudioUtil {
 
     public static boolean isSupported(File track) {
         final String trackName = track.getName();
-        boolean isSupported = false;
 
-        for (int i = 0; i < SUPPORTEDEXTENSIONS.length; i++) {
-            if (trackName.endsWith(SUPPORTEDEXTENSIONS[i])) {
-                isSupported = true;
-                break;
-            }
+        for (String extension : SUPPORTED_EXTENSIONS_LIST) {
+            if (trackName.endsWith(extension))
+                return true;
         }
-        return isSupported;
+        return false;
     }
 
     public static boolean isSupported(Path track) {
