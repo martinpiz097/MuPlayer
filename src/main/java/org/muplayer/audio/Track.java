@@ -56,7 +56,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     private static Track getTrackFromClass(String formatClass, File dataSource, PlayerControls player) {
         try {
             final Constructor<? extends Track> constructor
-                    = getTrackClassConstructor(formatClass, dataSource.getClass(), player.getClass());
+                    = getTrackClassConstructor(formatClass, dataSource.getClass(), PlayerControls.class);
             return constructor != null ? constructor.newInstance(dataSource, player) : null;
         } catch (Exception e) {
             return null;
@@ -66,7 +66,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     private static Track getTrackFromClass(String formatClass, InputStream dataSource, PlayerControls player) {
         try {
             final Constructor<? extends Track> constructor
-                    = getTrackClassConstructor(formatClass, dataSource.getClass(), player.getClass());
+                    = getTrackClassConstructor(formatClass, dataSource.getClass(), PlayerControls.class);
             return constructor != null ? constructor.newInstance(dataSource, player) : null;
         } catch (Exception e) {
             return null;
