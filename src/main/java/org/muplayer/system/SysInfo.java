@@ -17,6 +17,8 @@ public class SysInfo {
     public static final String CONFIG_FILE_NAME = "config.properties";
     public static String CONFIG_FILE_PATH;
 
+    public static final String AUDIO_SUPPORT_FILE_NAME = "audio-support.properties";
+
     static {
         VERSION = readVersion();
         CONFIG_FILE_PATH = readConfigPath();

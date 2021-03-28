@@ -1,5 +1,8 @@
 package org.muplayer.system;
 
+import org.muplayer.audio.AudioSupportManager;
+import org.muplayer.audio.util.AudioExtensions;
+
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -9,8 +12,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Path;
-
-import static org.muplayer.audio.util.AudioExtensions.SUPPORTED_EXTENSIONS_LIST;
 
 public class AudioUtil {
 
@@ -28,14 +29,14 @@ public class AudioUtil {
         float volScale = 1 / (DEFAULT_VOL_RANGE / volRange);
 
         float result = (volume * volScale)+minLineVol;
-        return result < minLineVol ? minLineVol : (result > maxLineVol ? maxLineVol : result);
+        return result < minLineVol ? minLineVol : (Math.min(result, maxLineVol));
     }
     private static float convertLineRangeToVolRange(float volume, float minLineVol, float maxLineVol) {
         float volRange = maxLineVol-minLineVol;
         float volScale = 1 / (DEFAULT_VOL_RANGE / volRange);
 
         float result = (volume - minLineVol) / volScale;
-        return result < DEFAULT_MIN_VOL ? DEFAULT_MIN_VOL : (result > DEFAULT_MAX_VOL ? DEFAULT_MAX_VOL : result);
+        return result < DEFAULT_MIN_VOL ? DEFAULT_MIN_VOL : (Math.min(result, DEFAULT_MAX_VOL));
     }
 
     public static float convertVolRangeToLineRange(float volume) {
@@ -64,13 +65,8 @@ public class AudioUtil {
     }
 
     public static boolean isSupported(File track) {
-        final String trackName = track.getName();
-
-        for (String extension : SUPPORTED_EXTENSIONS_LIST) {
-            if (trackName.endsWith(extension))
-                return true;
-        }
-        return false;
+        final String formatName = AudioExtensions.getFormatName(track.getName());
+        return AudioSupportManager.getInstance().getProperty(formatName) != null;
     }
 
     public static boolean isSupported(Path track) {

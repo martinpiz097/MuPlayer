@@ -1,7 +1,6 @@
 package org.muplayer.audio;
 
 import org.aucom.sound.Speaker;
-import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.tag.FieldKey;
 import org.muplayer.audio.format.*;
 import org.muplayer.audio.info.AudioTag;
@@ -13,16 +12,17 @@ import org.muplayer.audio.util.AudioExtensions;
 import org.muplayer.audio.util.TimeFormatter;
 import org.muplayer.system.AudioUtil;
 import org.muplayer.thread.TPlayingTrack;
-import org.orangelogger.sys.Logger;
 
 import javax.sound.sampled.*;
 import javax.sound.sampled.spi.AudioFileReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.nio.file.Path;
-
-import static org.muplayer.audio.util.AudioExtensions.*;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 public abstract class Track extends Thread implements MusicControls, TrackInfo {
     protected volatile File dataSource;
@@ -41,6 +41,38 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     protected Object source;
     protected final PlayerControls player;
 
+    protected final AudioSupportManager audioSupportManager = AudioSupportManager.getInstance();
+
+    private static Constructor<? extends Track> getTrackClassConstructor(String formatClass, Class<?>... paramsClasses) {
+        final Class<? extends Track> trackClass;
+        try {
+            trackClass = (Class<? extends Track>) Class.forName(formatClass);
+            return trackClass.getConstructor(paramsClasses);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private static Track getTrackFromClass(String formatClass, File dataSource, PlayerControls player) {
+        try {
+            final Constructor<? extends Track> constructor
+                    = getTrackClassConstructor(formatClass, dataSource.getClass(), player.getClass());
+            return constructor != null ? constructor.newInstance(dataSource, player) : null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private static Track getTrackFromClass(String formatClass, InputStream dataSource, PlayerControls player) {
+        try {
+            final Constructor<? extends Track> constructor
+                    = getTrackClassConstructor(formatClass, dataSource.getClass(), player.getClass());
+            return constructor != null ? constructor.newInstance(dataSource, player) : null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public static Track getTrack(File fSound) {
         return getTrack(fSound, null);
     }
@@ -58,38 +90,18 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
             return null;
         Track result = null;
         final String formatName = AudioExtensions.getFormatName(dataSource.getName());
+        final AudioSupportManager supportManager = AudioSupportManager.getInstance();
+        final String formatClass = supportManager.getProperty(formatName);
 
-        try {
-            switch (formatName) {
-                case MPEG:
-                    result = new MP3Track(dataSource, player);
-                    break;
-
-                case OGG:
-                    result = new OGGTrack(dataSource, player);
-                    break;
-
-                case FLAC:
-                    result = new FlacTrack(dataSource, player);
-                    break;
-
-                case WAVE: case AU: case SND: case AIFF: case AIFC:
-                    result = new PCMTrack(dataSource, player);
-                    break;
-
-                case M4A: case AAC:
-                    result = new M4ATrack(dataSource, player);
-                    break;
-
-                case SPEEX:
-                    result = new SpeexTrack(dataSource, player);
-                    break;
+        if (formatClass != null)
+            result = getTrackFromClass(formatClass, dataSource, player);
+        else {
+            try {
+                throw new UnsupportedAudioFileException(formatName);
+            } catch (UnsupportedAudioFileException e) {
+                e.printStackTrace();
             }
-        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException | InvalidAudioFrameException e) {
-            /*Logger.getLogger(Track.class,
-                    e.getClass().getSimpleName(), e.getMessage()).error();*/
         }
-
         return result;
     }
 
@@ -98,47 +110,14 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     }
 
     static Track getTrack(InputStream inputStream, PlayerControls player) {
-        Track result;
+        final AudioSupportManager supportManager = AudioSupportManager.getInstance();
+        final Set<String> propertyNames = supportManager.getPropertyNames();
 
-        try {
-            result = new MP3Track(inputStream, player);
-        } catch (Exception e) {
-            result = null;
-        }
-
-        if (result == null) {
-            try {
-                result = new OGGTrack(inputStream, player);
-            } catch (Exception e) {
-                result = null;
-            }
-        }
-
-        if (result == null) {
-            try {
-                result = new PCMTrack(inputStream, player);
-            } catch (Exception e) {
-                result = null;
-            }
-        }
-
-        if (result == null) {
-            try {
-                result = new FlacTrack(inputStream, player);
-            } catch (Exception e) {
-                result = null;
-            }
-        }
-
-        if (result == null) {
-            try {
-                result = new M4ATrack(inputStream, player);
-            } catch (Exception e) {
-                result = null;
-            }
-        }
-
-        return result;
+        final Optional<Track> optionalTrack = propertyNames.stream()
+                .map(propName -> getTrackFromClass(supportManager.getProperty(propName), inputStream, player))
+                .filter(Objects::nonNull)
+                .findFirst();
+        return optionalTrack.orElse(null);
     }
 
     public static boolean isValidTrack(String trackPath) {
