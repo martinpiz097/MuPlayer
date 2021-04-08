@@ -1,6 +1,6 @@
 target/
 compileandtest.sh
 testing.sh
-audio/
+test/
 dependency-reduced-pom.xml
 .idea/
