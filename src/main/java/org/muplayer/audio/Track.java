@@ -96,6 +96,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         if (formatClass != null)
             result = getTrackFromClass(formatClass, dataSource, player);
         else {
+            // eso deberia irse por un throw
             try {
                 throw new UnsupportedAudioFileException(formatName);
             } catch (UnsupportedAudioFileException e) {
@@ -156,7 +157,6 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         state = new StoppedState(this);
         secsSeeked = 0;
         volume = Player.DEFAULT_VOLUME;
-        initAll();
         this.player = player;
         tagInfo = loadTagInfo(dataSource);
         setPriority(MAX_PRIORITY);
@@ -168,7 +168,6 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         state = new StoppedState(this);
         secsSeeked = 0;
         volume = Player.DEFAULT_VOLUME;
-        initAll();
         this.player = player;
         setPriority(MAX_PRIORITY);
     }
@@ -217,7 +216,6 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     protected void initAll() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         loadAudioStream();
         initLine();
-
     }
 
     protected void closeLine() {
@@ -283,6 +281,13 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     public boolean isValidTrack() {
         return trackStream != null && trackLine != null;
+    }
+
+    public void validateTrack() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
+        if (!isValidTrack()) {
+            initAll();
+            closeAllStreams();
+        }
     }
 
     public double getBytesPerSecond() {
@@ -590,9 +595,14 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     @Override
     public void run() {
-        state = new StartedState(this);
-        while (state.canTrackContinue())
-            state.execute();
+        try {
+            initAll();
+            state = new StartedState(this);
+            while (state.canTrackContinue())
+                state.execute();
+        } catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
+            e.printStackTrace();
+        }
     }
 }
 
