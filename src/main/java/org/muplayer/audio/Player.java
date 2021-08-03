@@ -198,7 +198,7 @@ public class Player extends Thread implements PlayerControls {
     }
 
     // ojo aqui con los errores que puedan suceder
-    private void startThreadTrack() {
+    private void startTrackThread() {
         if (current != null) {
             current.setName(getThreadName());
             current.setGain(isMute ? 0 : currentVolume);
@@ -528,7 +528,7 @@ public class Player extends Thread implements PlayerControls {
             current.finish();
         else if (isAlive()) {
             current = Track.getTrack(sound, this);
-            startThreadTrack();
+            startTrackThread();
         }
         else
             start();
@@ -612,7 +612,7 @@ public class Player extends Thread implements PlayerControls {
                     if (current != null)
                         current.kill();
                     current = next;
-                    startThreadTrack();
+                    startTrackThread();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -631,15 +631,13 @@ public class Player extends Thread implements PlayerControls {
     }
 
     public void play(int index) {
-        if (index < 0 || index >= getSongsCount())
-            return;
-        if (current != null) {
+        if (current != null && (index > -1 && index < getSongsCount())) {
             current.kill();
             final String soundPath = listSoundPaths.get(index);
             final Track track = Track.getTrack(soundPath, this);
             if (track != null) {
                 current = track;
-                startThreadTrack();
+                startTrackThread();
                 trackIndex = index;
                 loadListenerMethod(ONPLAYED, current);
             }
@@ -663,7 +661,7 @@ public class Player extends Thread implements PlayerControls {
             if (current != null)
                 current.kill();
             current = Track.getTrack(track, this);
-            startThreadTrack();
+            startTrackThread();
             loadListenerMethod(ONPLAYED, current);
         }
     }
@@ -687,7 +685,7 @@ public class Player extends Thread implements PlayerControls {
             if (current != null)
                 current.kill();
             current = Track.getTrack(song, this);
-            startThreadTrack();
+            startTrackThread();
             loadListenerMethod(ONPLAYED, current);
         }
     }
@@ -793,22 +791,22 @@ public class Player extends Thread implements PlayerControls {
         return current == null ? "00:00" : current.getFormattedProgress();
     }
 
-    @Override
-    public synchronized void playNext() {
+    private synchronized void changeTrack(SeekOption seekOption) {
         if (current != null)
             current.kill();
-        setCurrentTrack(SeekOption.NEXT);
-        startThreadTrack();
+        setCurrentTrack(seekOption);
+        startTrackThread();
         loadListenerMethod(ONSONGCHANGE, current);
     }
 
     @Override
+    public synchronized void playNext() {
+        changeTrack(SeekOption.NEXT);
+    }
+
+    @Override
     public synchronized void playPrevious() {
-        if (current != null)
-            current.kill();
-        setCurrentTrack(SeekOption.PREV);
-        startThreadTrack();
-        loadListenerMethod(ONSONGCHANGE, current);
+        changeTrack(SeekOption.PREV);
     }
 
     public void playFolder(String path) {
