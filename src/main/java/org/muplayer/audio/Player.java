@@ -26,10 +26,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -57,9 +54,9 @@ public class Player extends Thread implements PlayerControls {
 
     public Player(File rootFolder) throws FileNotFoundException {
         this.rootFolder = rootFolder;
-        listSoundPaths = new LinkedList<>();
-        listFolderPaths = new LinkedList<>();
-        listListeners = new LinkedList<>();
+        listSoundPaths = new ArrayList<>();
+        listFolderPaths = new ArrayList<>();
+        listListeners = new ArrayList<>();
         currentVolume = DEFAULT_VOLUME;
         on = false;
         isMute = false;
@@ -184,10 +181,6 @@ public class Player extends Thread implements PlayerControls {
             }
         }
         return nextTrack;
-    }
-
-    private void setCurrentTrack(SeekOption param) {
-        current = getTrackBy(trackIndex, param);
     }
 
     private String getThreadName() {
@@ -794,7 +787,7 @@ public class Player extends Thread implements PlayerControls {
     private synchronized void changeTrack(SeekOption seekOption) {
         if (current != null)
             current.kill();
-        setCurrentTrack(seekOption);
+        current = getTrackBy(trackIndex, seekOption);
         startTrackThread();
         loadListenerMethod(ONSONGCHANGE, current);
     }
