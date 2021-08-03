@@ -1,7 +1,11 @@
 package org.muplayer.audio;
 
 import org.aucom.sound.Speaker;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.TagException;
 import org.muplayer.audio.format.*;
 import org.muplayer.audio.info.AudioTag;
 import org.muplayer.audio.interfaces.MusicControls;
@@ -257,7 +261,8 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     protected AudioTag loadTagInfo(File dataSource) {
         try {
-            return isValidTrack() ? new AudioTag(dataSource) : null;
+            final AudioTag audioTag = new AudioTag(dataSource);
+            return audioTag.isValidFile() ? audioTag : null;
         } catch (Exception e) {
             return null;
         }
@@ -532,7 +537,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     @Override
     public byte[] getCoverData() {
-        return tagInfo.getCoverData();
+        return tagInfo != null ? tagInfo.getCoverData() : null;
     }
 
     @Override
