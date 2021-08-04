@@ -291,7 +291,7 @@
     - Se actualizan versiones de dependencias
     - Se agrega metodo onPlaying a PlayerListener
     - Se agregan comandos ln y lp para mostrar la cancion siguiente
-	y anterior respectivamente en ConsolePlayer
+    y anterior respectivamente en ConsolePlayer
     - Mejoras pequeñas aplicadas
 	
 - 1.5.1-RC
@@ -373,10 +373,26 @@
 - 2.2
     - Se aplican algunas mejoras de codigo y limpiezas menores
     - Nuevos metodos de conversion entre bytes y segundos sobreescrito por cada subclase de Track
-	- Se corrige gotoSec implementando un nuevo TrackState
+    - Se corrige gotoSec implementando un nuevo TrackState
 	
 - 2.2.1
-	- Menores correcciones de codigo
+    - Menores correcciones de codigo
 	
-- X
-	- Mejoras de codigo
+- 2.2.2
+    - Mejoras de codigo
+    - Correcciones al reproducir canciones
+
+- 2.3
+    - Correcciones en formato ogg
+    - Optimizaciones de codigo
+    - Se permite agregar soporte a formatos de audio de manera dinamica a traves del archivo audio-support.properties
+    - Soporte funcional pero parcial para formato Speex
+
+- 2.3.1
+    - Se mejora rendimiento al cargar canciones
+    - Rendimiento mejorado al leer lista de pistas de audio disponibles
+
+- 2.4
+    - Correcciones de codigo y optimizaciones
+    - Nuevo comando ld para listar carpetas detalladamente con las canciones que contienen disponible en modo consola
+
