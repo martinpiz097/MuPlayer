@@ -22,6 +22,7 @@ public class ConsoleOrder {
     public static final String LIST2 = "list";
     public static final String LISTCURRENTFOLDER = "lc";
     public static final String LISTFOLDERS = "lf";
+    public static final String LISTDETAILED = "ld";
     public static final String GETGAIN = "gv";
     public static final String SETGAIN = "v";
     public static final String GETSYSVOL = "gsv";

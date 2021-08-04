@@ -1,3 +1,2 @@
 Ver si seek y goto funcionan en todos los formatos y ver si entregan calculos o valores reales
-Al momento de tener un release definitivo separar clases de prueba del proyecto muplayer a proyecto aparte y crear un reproductor de musica en 
-consola dentro de la libreria para permitir conocer las funcionalidades de esta
+Al momento de tener un release definitivo separar clases de prueba del proyecto muplayer a proyecto aparte

@@ -82,6 +82,46 @@ public class ConsoleInterpreter implements CommandInterpreter {
         }
     }
 
+    private void printDetailedTracks() {
+        final File rootFolder = player.getRootFolder();
+        final List<Track> listTracks = player.getTracks();
+        final List<String> listFolderPaths = player.getListFolderPaths();
+        final Track current = player.getCurrent();
+
+        Logger.getLogger(this, "------------------------------").rawInfo();
+        if (rootFolder == null)
+            Logger.getLogger(this, "Music in folder").rawInfo();
+        else
+            Logger.getLogger(this, "Music in folder "+rootFolder.getName()).rawInfo();
+        Logger.getLogger(this, "------------------------------").rawInfo();
+
+        if (rootFolder != null) {
+            File trackFile;
+            File trackFolder, prevTrackFolder = null;
+            for (int i = 0; i < player.getSongsCount(); i++) {
+                trackFile = listTracks.get(i).getDataSource();
+                trackFolder = trackFile.getParentFile();
+                if (prevTrackFolder == null || !trackFolder.getPath().equals(prevTrackFolder.getPath()))
+                    Logger.getLogger(this,
+                            (prevTrackFolder != null
+                                    ? "----------------------------------------------------------------------" +
+                                    "\n\n----------------------------------------------------------------------" +
+                                    "\nFolder: "
+                                    : "----------------------------------------------------------------------\n"
+                                    + "Folder: ")+trackFolder.getName()).rawInfo();
+                if (current != null && trackFile.getPath().equals(current.getDataSource().getPath()))
+                    Logger.getLogger(this, "\tTrack "+(i+1)+": "
+                            +trackFile.getName()).rawWarning();
+                else
+                    Logger.getLogger(this, "\tTrack "+(i+1)+": "
+                            +trackFile.getName()).rawInfo();
+
+                prevTrackFolder = trackFile.getParentFile();
+            }
+            Logger.getLogger(this, "------------------------------").rawInfo();
+        }
+    }
+
     private synchronized void printFolderTracks() {
         final List<Track> listTracks = player.getTracks();
         final Track current = player.getCurrent();
@@ -334,6 +374,11 @@ public class ConsoleInterpreter implements CommandInterpreter {
             case ConsoleOrder.LISTFOLDERS:
                 if (isPlayerOn())
                     printFolders();
+                break;
+
+            case ConsoleOrder.LISTDETAILED:
+                if (isPlayerOn())
+                    printDetailedTracks();
                 break;
 
             case ConsoleOrder.GETGAIN:

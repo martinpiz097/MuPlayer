@@ -1,9 +1,0 @@
-EL hecho de que en track no haya una forma (creo) de que no se inicien las lines de inmediato
-cuando la clase de instancia, obliga a que en player no pueda tener una lista de tracks propiamente tal
-y por ende exportarla hacia afuera y ahorrar tiempo al solicitar datos
-
-ahora con listTracks toca optimizar muchos metodos en la clase Player
-
-revisar los addMusic
-
-error al leer tagInfo con los cambios

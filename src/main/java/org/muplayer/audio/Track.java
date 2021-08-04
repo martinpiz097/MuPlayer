@@ -502,12 +502,8 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     @Override
     public long getDuration() {
-        if (tagInfo != null)
-            return tagInfo.getDuration();
-        else {
-         //   audioReader.getAudioFileFormat(dataSource).properties()
-            return 0;
-        }
+        //   audioReader.getAudioFileFormat(dataSource).properties()
+        return tagInfo != null ? tagInfo.getDuration() : 0;
     }
 
     @Override
