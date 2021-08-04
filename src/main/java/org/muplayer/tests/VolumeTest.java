@@ -3,7 +3,7 @@ package org.muplayer.tests;
 import org.aucom.sound.AudioQuality;
 import org.muplayer.audio.Player;
 import org.muplayer.system.AudioHardware;
-import org.muplayer.system.AudioUtil;
+import org.muplayer.util.AudioUtil;
 
 import javax.sound.sampled.*;
 import java.util.LinkedList;

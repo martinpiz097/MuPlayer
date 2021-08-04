@@ -1,20 +1,15 @@
 package org.muplayer.audio;
 
 import org.aucom.sound.Speaker;
-import org.jaudiotagger.audio.exceptions.CannotReadException;
-import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
-import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
-import org.jaudiotagger.tag.TagException;
-import org.muplayer.audio.format.*;
 import org.muplayer.audio.info.AudioTag;
 import org.muplayer.audio.interfaces.MusicControls;
 import org.muplayer.audio.interfaces.PlayerControls;
 import org.muplayer.audio.model.TrackInfo;
 import org.muplayer.audio.trackstates.*;
 import org.muplayer.audio.util.AudioExtensions;
-import org.muplayer.audio.util.TimeFormatter;
-import org.muplayer.system.AudioUtil;
+import org.muplayer.system.TimeFormatter;
+import org.muplayer.util.AudioUtil;
 import org.muplayer.thread.TPlayingTrack;
 
 import javax.sound.sampled.*;
@@ -22,11 +17,12 @@ import javax.sound.sampled.spi.AudioFileReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+
+import static org.muplayer.util.TrackUtil.getTrackFromClass;
 
 public abstract class Track extends Thread implements MusicControls, TrackInfo {
     protected volatile File dataSource;
@@ -47,36 +43,6 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     protected final AudioSupportManager audioSupportManager = AudioSupportManager.getInstance();
 
-    private static Constructor<? extends Track> getTrackClassConstructor(String formatClass, Class<?>... paramsClasses) {
-        final Class<? extends Track> trackClass;
-        try {
-            trackClass = (Class<? extends Track>) Class.forName(formatClass);
-            return trackClass.getConstructor(paramsClasses);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private static Track getTrackFromClass(String formatClass, File dataSource, PlayerControls player) {
-        try {
-            final Constructor<? extends Track> constructor
-                    = getTrackClassConstructor(formatClass, dataSource.getClass(), PlayerControls.class);
-            return constructor != null ? constructor.newInstance(dataSource, player) : null;
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private static Track getTrackFromClass(String formatClass, InputStream dataSource, PlayerControls player) {
-        try {
-            final Constructor<? extends Track> constructor
-                    = getTrackClassConstructor(formatClass, dataSource.getClass(), PlayerControls.class);
-            return constructor != null ? constructor.newInstance(dataSource, player) : null;
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     public static Track getTrack(File fSound) {
         return getTrack(fSound, null);
     }
@@ -90,23 +56,17 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     }
 
     static Track getTrack(File dataSource, PlayerControls player) {
-        if (!dataSource.exists())
+        if (dataSource == null || !dataSource.exists())
             return null;
         Track result = null;
         final String formatName = AudioExtensions.getFormatName(dataSource.getName());
         final AudioSupportManager supportManager = AudioSupportManager.getInstance();
         final String formatClass = supportManager.getProperty(formatName);
 
-        if (formatClass != null)
+        // ojo que puede faltar un throws para mas adelante
+        // avisando que se intenta cargar un archivo que no es audio
+        if (AudioUtil.isSupported(dataSource))
             result = getTrackFromClass(formatClass, dataSource, player);
-        else {
-            // eso deberia irse por un throw
-            try {
-                throw new UnsupportedAudioFileException(formatName);
-            } catch (UnsupportedAudioFileException e) {
-                e.printStackTrace();
-            }
-        }
         return result;
     }
 
@@ -284,12 +244,12 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         return frameLen > 0 ? (int) (frameLen / 1024) : BUFFSIZE;
     }*/
 
-    public boolean isValidTrack() {
+    public boolean isTrackStreamsOpened() {
         return trackStream != null && trackLine != null;
     }
 
     public void validateTrack() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
-        if (!isValidTrack()) {
+        if (!isTrackStreamsOpened()) {
             initAll();
             closeAllStreams();
         }
@@ -472,7 +432,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     // -80 to 5.5
     @Override
     public void setGain(float volume) {
-        if (isValidTrack()) {
+        if (isTrackStreamsOpened()) {
             this.volume = volume > 100 ? 100 : (volume < 0 ? 0 : volume);
             if (trackLine != null)
                 trackLine.setGain(AudioUtil.convertVolRangeToLineRange(volume));
@@ -482,7 +442,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     @Override
     public void mute() {
-        if (isValidTrack() && !isMute) {
+        if (isTrackStreamsOpened() && !isMute) {
             isMute = true;
             if (trackLine != null)
                 trackLine.setGain(AudioUtil.convertVolRangeToLineRange(0));
@@ -491,7 +451,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     @Override
     public void unmute() {
-        if (isValidTrack() && isMute) {
+        if (isTrackStreamsOpened() && isMute) {
             isMute = false;
             setGain(volume);
         }

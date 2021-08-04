@@ -1,6 +1,11 @@
-package org.muplayer.system;
+package org.muplayer.util;
 
 import org.muplayer.audio.Track;
+import org.muplayer.audio.interfaces.PlayerControls;
+
+import java.io.File;
+import java.io.InputStream;
+import java.lang.reflect.Constructor;
 
 public class TrackUtil {
     private static void appendSongData(StringBuilder sbTabs, StringBuilder sbInfo, String title, String data) {
@@ -88,5 +93,35 @@ public class TrackUtil {
         sbTabs.append('\n');
 
         return sbTabs.toString();
+    }
+
+    public static Constructor<? extends Track> getTrackClassConstructor(String formatClass, Class<?>... paramsClasses) {
+        final Class<? extends Track> trackClass;
+        try {
+            trackClass = (Class<? extends Track>) Class.forName(formatClass);
+            return trackClass.getConstructor(paramsClasses);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static Track getTrackFromClass(String formatClass, File dataSource, PlayerControls player) {
+        try {
+            final Constructor<? extends Track> constructor
+                    = getTrackClassConstructor(formatClass, dataSource.getClass(), PlayerControls.class);
+            return constructor != null ? constructor.newInstance(dataSource, player) : null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static Track getTrackFromClass(String formatClass, InputStream dataSource, PlayerControls player) {
+        try {
+            final Constructor<? extends Track> constructor
+                    = getTrackClassConstructor(formatClass, dataSource.getClass(), PlayerControls.class);
+            return constructor != null ? constructor.newInstance(dataSource, player) : null;
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

@@ -1,6 +1,6 @@
 package org.muplayer.thread;
 
-import org.muplayer.audio.util.Time;
+import org.muplayer.system.Time;
 import org.orangelogger.sys.Logger;
 
 public class ThreadManager {

@@ -9,7 +9,7 @@ import net.sourceforge.jaad.mp4.api.Movie;
 import net.sourceforge.jaad.spi.javasound.AACAudioFileReader;
 import org.muplayer.audio.Track;
 import org.muplayer.audio.interfaces.PlayerControls;
-import org.muplayer.system.AudioUtil;
+import org.muplayer.util.AudioUtil;
 import org.orangelogger.sys.Logger;
 
 import javax.sound.sampled.AudioFormat;

@@ -6,7 +6,7 @@ import com.sun.media.sound.WaveFileReader;
 import org.muplayer.audio.Track;
 import org.muplayer.audio.interfaces.PlayerControls;
 import org.muplayer.audio.util.AudioExtensions;
-import org.muplayer.system.AudioUtil;
+import org.muplayer.util.AudioUtil;
 
 import javax.sound.sampled.*;
 import java.io.File;

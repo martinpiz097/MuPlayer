@@ -2,7 +2,7 @@ package org.muplayer.audio.format;
 
 import org.muplayer.audio.Track;
 import org.muplayer.audio.interfaces.PlayerControls;
-import org.muplayer.system.AudioUtil;
+import org.muplayer.util.AudioUtil;
 import org.xiph.speex.spi.SpeexAudioFileReader;
 import org.xiph.speex.spi.SpeexFormatConvertionProvider;
 

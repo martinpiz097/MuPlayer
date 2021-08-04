@@ -30,7 +30,7 @@ public class TPlayingTrack implements Runnable {
     @Override
     public void run() {
         PlayerControls player;
-        while (!track.isFinished() && !track.isKilled() && track.isValidTrack()) {
+        while (!track.isFinished() && !track.isKilled() && track.isTrackStreamsOpened()) {
             try {
                 player = track.getPlayer();
                 if (player instanceof Player)

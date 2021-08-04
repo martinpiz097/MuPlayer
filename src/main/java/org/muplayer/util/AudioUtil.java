@@ -1,4 +1,4 @@
-package org.muplayer.system;
+package org.muplayer.util;
 
 import org.muplayer.audio.AudioSupportManager;
 import org.muplayer.audio.util.AudioExtensions;
@@ -64,8 +64,8 @@ public class AudioUtil {
             return audioReader.getAudioInputStream((File) source);
     }
 
-    public static boolean isSupported(File track) {
-        final String formatName = AudioExtensions.getFormatName(track.getName());
+    public static boolean isSupported(File trackFile) {
+        final String formatName = AudioExtensions.getFormatName(trackFile.getName());
         return AudioSupportManager.getInstance().getProperty(formatName) != null;
     }
 

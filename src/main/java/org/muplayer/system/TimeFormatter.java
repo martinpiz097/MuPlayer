@@ -1,4 +1,4 @@
-package org.muplayer.audio.util;
+package org.muplayer.system;
 
 public class TimeFormatter {
     public static String format(long time) {

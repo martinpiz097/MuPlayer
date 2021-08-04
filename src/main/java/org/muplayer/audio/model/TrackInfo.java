@@ -1,7 +1,7 @@
 package org.muplayer.audio.model;
 
 import org.jaudiotagger.tag.FieldKey;
-import org.muplayer.audio.util.TimeFormatter;
+import org.muplayer.system.TimeFormatter;
 
 public interface TrackInfo {
     boolean hasCover();

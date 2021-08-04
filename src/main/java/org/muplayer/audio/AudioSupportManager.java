@@ -1,7 +1,7 @@
 package org.muplayer.audio;
 
 import lombok.Getter;
-import org.muplayer.system.DataUtil;
+import org.muplayer.util.DataUtil;
 import org.muplayer.system.SysInfo;
 
 import java.io.File;

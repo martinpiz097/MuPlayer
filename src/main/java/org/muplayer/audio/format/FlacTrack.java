@@ -5,7 +5,7 @@ import org.jflac.sound.spi.FlacFormatConversionProvider;
 import org.muplayer.audio.Track;
 import org.muplayer.audio.codec.DecodeManager;
 import org.muplayer.audio.interfaces.PlayerControls;
-import org.muplayer.system.AudioUtil;
+import org.muplayer.util.AudioUtil;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -42,7 +42,7 @@ public class FlacTrack extends Track {
     }
 
     @Override
-    public boolean isValidTrack() {
+    public boolean isTrackStreamsOpened() {
         return true;
     }
 

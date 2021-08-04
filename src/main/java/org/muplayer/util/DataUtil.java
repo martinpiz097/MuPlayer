@@ -1,4 +1,4 @@
-package org.muplayer.system;
+package org.muplayer.util;
 
 import java.io.IOException;
 import java.io.InputStream;
