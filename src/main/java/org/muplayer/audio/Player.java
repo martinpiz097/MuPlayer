@@ -661,6 +661,7 @@ public class Player extends Thread implements PlayerControls {
             current.kill();
             final Track track = listTracks.get(index);
             if (track != null) {
+                listTracks.set(trackIndex, Track.getTrack(current.getDataSource()));
                 current = track;
                 startTrackThread();
                 trackIndex = index;
