@@ -251,7 +251,7 @@
     - Se corrige error al cambiar volumen antes de iniciar player
     - Se agrega metodo getTracksInfo para solo obtener la informacion de las canciones
     - Se corrige metodo reloadTracks para el un futuro recargar desde rutas en un archivo
-    - Se agrega opcion de compatibilidad multicomando en una linea (&&)
+      - Se agrega opcion de compatibilidad multicomando en una linea (&&)
 
 - 1.3-RC
     - Se agrega metodo gotoSecond en clase Player
@@ -396,3 +396,5 @@
     - Correcciones de codigo y optimizaciones
     - Nuevo comando ld para listar carpetas detalladamente con las canciones que contienen disponible en modo consola
 
+- 2.4.1
+    - Correcciones en metodo play
