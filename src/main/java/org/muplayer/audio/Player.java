@@ -1,6 +1,5 @@
 package org.muplayer.audio;
 
-import org.aucom.sound.Speaker;
 import org.muplayer.audio.info.AudioTag;
 import org.muplayer.audio.info.SongData;
 import org.muplayer.audio.interfaces.PlayerControls;
@@ -10,15 +9,14 @@ import org.muplayer.audio.trackstates.TrackState;
 import org.muplayer.audio.trackstates.UnknownState;
 import org.muplayer.audio.util.PlayerInfo;
 import org.muplayer.exception.MuPlayerException;
-import org.muplayer.util.AudioUtil;
-import org.muplayer.util.FileUtil;
-import org.muplayer.util.LineUtil;
 import org.muplayer.thread.ListenerRunner;
 import org.muplayer.thread.TaskRunner;
 import org.muplayer.thread.ThreadManager;
+import org.muplayer.util.AudioUtil;
+import org.muplayer.util.FileUtil;
+import org.muplayer.util.LineUtil;
 
 import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,19 +24,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.LogManager;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static org.muplayer.system.ListenersNames.ONGOTOSECOND;
-import static org.muplayer.system.ListenersNames.ONPAUSED;
-import static org.muplayer.system.ListenersNames.ONPLAYED;
-import static org.muplayer.system.ListenersNames.ONRESUMED;
-import static org.muplayer.system.ListenersNames.ONSHUTDOWN;
-import static org.muplayer.system.ListenersNames.ONSONGCHANGE;
-import static org.muplayer.system.ListenersNames.ONSTARTED;
-import static org.muplayer.system.ListenersNames.ONSTOPPED;
+import static org.muplayer.system.ListenersNames.*;
 
 public class Player extends Thread implements PlayerControls {
     private volatile File rootFolder;
@@ -98,7 +87,7 @@ public class Player extends Thread implements PlayerControls {
         this(new File(folderPath));
     }
 
-    private void disableLogging() {
+    /*private void disableLogging() {
         //Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF);
         final Enumeration<String> loggerNames = LogManager.getLogManager().getLoggerNames();
 
@@ -111,13 +100,12 @@ public class Player extends Thread implements PlayerControls {
                 logger.setUseParentHandlers(false);
             }
         }
-    }
+    }*/
 
     private void loadTracks(File folder) {
         if (!Files.isReadable(folder.toPath()))
             throw new MuPlayerException("folder is not readable");
 
-        //Files.list(folder.toPath()).forEach(path->{});
         final File[] fldFiles = folder.listFiles();
         if (fldFiles != null) {
             // se analiza carpeta y se agregan sonidos recursivamente
@@ -172,8 +160,8 @@ public class Player extends Thread implements PlayerControls {
         listTracks.sort((o1, o2) -> {
             if (o1 == null || o2 == null)
                 return 0;
-            File dataSource1 = o1.getDataSource();
-            File dataSource2 = o2.getDataSource();
+            final File dataSource1 = o1.getDataSource();
+            final File dataSource2 = o2.getDataSource();
             if (dataSource1 == null || dataSource2 == null)
                 return 0;
             return FileUtil.getPath(dataSource1).compareTo(FileUtil.getPath(dataSource2));
@@ -253,6 +241,7 @@ public class Player extends Thread implements PlayerControls {
         if (current != null) {
             current.kill();
             listTracks.set(trackIndex, Track.getTrack(current.getDataSource(), this));
+            current = null;
         }
     }
 
@@ -284,18 +273,18 @@ public class Player extends Thread implements PlayerControls {
     private int seekToFolder(String folderPath) {
         final File parentFile = new File(folderPath);
         File fileTrack;
-        int trackIndex = -1;
         final int trackCount = listTracks.size();
+        int newTrackIndex = -1;
 
         // idea para electrolist -> Indexof con predicate
         for (int i = 0; i < trackCount; i++) {
             fileTrack = listTracks.get(i).getDataSource();
             if (fileTrack.getParentFile().equals(parentFile)) {
-                trackIndex = i;
+                newTrackIndex = i;
                 break;
             }
         }
-        return trackIndex-1;
+        return newTrackIndex;
     }
 
     private void startPlaying() {
@@ -657,11 +646,11 @@ public class Player extends Thread implements PlayerControls {
     }
 
     public void play(int index) {
-        if (current != null && (index > -1 && index < getSongsCount())) {
-            current.kill();
+        if (current != null)
+            shutdownCurrent();
+        if (index > -1 && index < getSongsCount()) {
             final Track track = listTracks.get(index);
             if (track != null) {
-                listTracks.set(trackIndex, Track.getTrack(current.getDataSource()));
                 current = track;
                 startTrackThread();
                 trackIndex = index;
@@ -840,18 +829,19 @@ public class Player extends Thread implements PlayerControls {
     }
 
     public void playFolder(String path) {
-        if (current != null)
-            current.kill();
-
-        if (listFolderPaths.contains(path))
-            playFolderSongs(path);
+        shutdownCurrent();
+        playFolderSongs(path);
     }
 
-    public void playFolder(int index) {
-        if (index < getFoldersCount()) {
-            trackIndex = seekToFolder(listFolderPaths.get(index));
-            playNext();
-        }
+    public void playFolder(int folderIndex) {
+        final int foldersCount = getFoldersCount();
+        if (folderIndex >= foldersCount)
+            folderIndex = foldersCount-1;
+        shutdownCurrent();
+        trackIndex = seekToFolder(listFolderPaths.get(folderIndex));
+        current = getTrackBy(trackIndex-1, SeekOption.NEXT);
+        startTrackThread();
+        loadListenerMethod(ONSONGCHANGE, current);
     }
 
     @Override

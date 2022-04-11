@@ -6,7 +6,7 @@
 
     <groupId>org.orangeplayer</groupId>
     <artifactId>muplayer</artifactId>
-    <version>2.4.1</version>
+    <version>2.4.2</version>
     <packaging>jar</packaging>
 
     <name>muplayer</name>
@@ -130,11 +130,6 @@
             <url>https://clojars.org/repo</url>
         </repository>
         <repository>
-            <id>jahia</id>
-            <name>Jahia Repository</name>
-            <url>http://maven.jahia.org/maven2/</url>
-        </repository>
-        <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
@@ -177,21 +172,16 @@
         </dependency>
 
         <dependency>
-            <groupId>com.sun</groupId>
-            <artifactId>tools</artifactId>
-            <version>1.5.0</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.orangeplayer</groupId>
             <artifactId>logger</artifactId>
             <version>0.4.1</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/io.vacco.jaad/jaad -->
         <dependency>
-            <groupId>net.sourceforge.jaadec</groupId>
+            <groupId>io.vacco.jaad</groupId>
             <artifactId>jaad</artifactId>
-            <version>0.8.5</version>
+            <version>0.8.8-MILESTONE-202111270642</version>
         </dependency>
 
         <dependency>
@@ -257,7 +247,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.20</version>
+            <version>LATEST</version>
             <scope>provided</scope>
         </dependency>
 

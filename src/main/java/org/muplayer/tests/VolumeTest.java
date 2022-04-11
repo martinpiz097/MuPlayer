@@ -6,10 +6,8 @@ import org.muplayer.system.AudioHardware;
 import org.muplayer.util.AudioUtil;
 
 import javax.sound.sampled.*;
-import java.util.LinkedList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.nio.ByteBuffer;
+import java.util.*;
 
 public class VolumeTest {
     static final Mixer.Info[] mixersInfo = AudioSystem.getMixerInfo();
@@ -146,53 +144,44 @@ public class VolumeTest {
         inLine.close();
     }
 
+    private static void showLineInfo(List<Line.Info> listLinesInfo, Mixer mixer) throws Exception {
+        Port.Info portInfo;
+        DataLine.Info dataLineInfo;
+        for (Line.Info lineInfo : listLinesInfo) {
+            if (lineInfo instanceof Port.Info) {
+                portInfo = (Port.Info) lineInfo;
+                System.out.println("\t\t" + "Port: " + portInfo.getName() + ", " + (portInfo.isSource()?
+                        "source" : "target"));
+                showControls(mixer.getLine(lineInfo));
+            }
+            else if (lineInfo instanceof DataLine.Info) {
+                dataLineInfo = (DataLine.Info) lineInfo;
+                System.out.println("\t\t" + "DataLine: " + dataLineInfo);
+            }
+        }
+    }
+
     public static void scanPortMixer(Mixer mixer) throws Exception {
         // found a Port Mixer
-        Mixer.Info mixerInfo = mixer.getMixerInfo();
+        final Mixer.Info mixerInfo = mixer.getMixerInfo();
 
         System.out.println("Found mixer: " +
                 mixerInfo.getName());
-        System.out.println("\t" +
+        System.out.println("\tDescription: " +
                 mixerInfo.getDescription());
-        System.out.println("Source Line Supported:");
+        System.out.println("\tVendor: " +
+                mixerInfo.getVendor());
+        System.out.println("\tVersion: " +
+                mixerInfo.getVersion());
+        final List<Line.Info> listSourceLineInfos = new ArrayList<>(Arrays.asList(mixer.getSourceLineInfo()));
+        final List<Line.Info> listTargetLineInfos = new ArrayList<>(Arrays.asList(mixer.getTargetLineInfo()));
 
-        final List<Line.Info> srcInfos = new LinkedList<>(
-                        Arrays.asList(mixer.getSourceLineInfo()));
-        for (Line.Info srcInfo:
-                srcInfos) {
-            if (srcInfo instanceof Port.Info) {
-                Port.Info pi =
-                        (Port.Info) srcInfo;
-                System.out.println("\t" + pi.getName() +
-                        ", " + (pi.isSource()?
-                        "source" : "target"));
-                showControls(mixer.getLine(
-                        srcInfo));
-            }
-            else if (srcInfo instanceof DataLine.Info) {
-                DataLine.Info info = (DataLine.Info) srcInfo;
-                System.out.println("\t" + info.toString());
-            }
-        } // of for Line.Info
+        System.out.println("Source1 Line Supported:");
+        showLineInfo(listSourceLineInfos, mixer);
+
         System.out.println("Target Line Supported:");
-        final List<Line.Info> targetInfos = new LinkedList<>(
-                        Arrays.asList(mixer.getTargetLineInfo()));
+        showLineInfo(listTargetLineInfos, mixer);
 
-        for (Line.Info targetInfo : targetInfos) {
-            if (targetInfo instanceof Port.Info) {
-                Port.Info pi =
-                        (Port.Info) targetInfo;
-                System.out.println("\t" + pi.getName() +
-                        ", " + (pi.isSource()?
-                        "source" : "target"));
-                showControls(mixer.getLine(
-                        targetInfo));
-            }
-            else if (targetInfo instanceof DataLine.Info) {
-                DataLine.Info info = (DataLine.Info) targetInfo;
-                System.out.println("\t" + info.toString());
-            }
-        }
         System.out.println("---------------------------");
     } // of if
     // (mixer.isLineSupported)
