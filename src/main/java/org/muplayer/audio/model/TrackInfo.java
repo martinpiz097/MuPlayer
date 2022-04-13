@@ -14,9 +14,6 @@ public interface TrackInfo {
     byte[] getCoverData();
     long getDuration();
 
-    default String getDurationAsString() {
-        return getFormattedDuration();
-    }
     default String getFormattedDuration() {
         return TimeFormatter.format(getDuration());
     }

@@ -168,7 +168,7 @@ public class M4ATrack extends Track {
         else {
             pause();
             if (isAac)
-                trackIO.resetStream();
+                resetStream();
             else {
                 trackIO.getDecodedStream().reset();
                 initLine();

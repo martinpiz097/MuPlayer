@@ -72,8 +72,8 @@ public class ConsoleInterpreter implements CommandInterpreter {
             File fileTrack;
             for (int i = 0; i < player.getSongsCount(); i++) {
                 track = listTracks.get(i);
-                fileTrack = track.getDataSource() instanceof File ? (File) track.getDataSource() : null;
-                if (current != null && fileTrack.getPath().equals((File)(current.getDataSource().getPath()))
+                fileTrack = track.getDataSourceAsFile();
+                if (current != null && fileTrack.getPath().equals(((File)current.getDataSourceAsFile()).getPath()))
                     Logger.getLogger(this, "Track "+(i+1)+": "
                             +fileTrack.getName()).rawWarning();
                 else
@@ -101,7 +101,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
             File trackFile;
             File trackFolder, prevTrackFolder = null;
             for (int i = 0; i < player.getSongsCount(); i++) {
-                trackFile = listTracks.get(i).getDataSource();
+                trackFile = listTracks.get(i).getDataSourceAsFile();
                 trackFolder = trackFile.getParentFile();
                 if (prevTrackFolder == null || !trackFolder.getPath().equals(prevTrackFolder.getPath()))
                     Logger.getLogger(this,
@@ -111,7 +111,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
                                     "\nFolder: "
                                     : "----------------------------------------------------------------------\n"
                                     + "Folder: ")+trackFolder.getName()).rawInfo();
-                if (current != null && trackFile.getPath().equals(current.getDataSource().getPath()))
+                if (current != null && trackFile.getPath().equals(current.getDataSourceAsFile().getPath()))
                     Logger.getLogger(this, "\tTrack "+(i+1)+": "
                             +trackFile.getName()).rawWarning();
                 else
@@ -129,7 +129,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
         final Track current = player.getCurrent();
         final int songsCount = player.getSongsCount();
 
-        File parentFolder = current == null ? null : current.getDataSource().getParentFile();
+        File parentFolder = current == null ? null : current.getDataSourceAsFile().getParentFile();
         Logger.getLogger(this, "------------------------------").rawInfo();
 
         if (parentFolder == null)
@@ -140,10 +140,10 @@ public class ConsoleInterpreter implements CommandInterpreter {
 
         if (parentFolder != null) {
             File fileTrack;
-            File currentFile = current.getDataSource();
+            File currentFile = current.getDataSourceAsFile();
 
             for (int i = 0; i < songsCount; i++) {
-                fileTrack = listTracks.get(i).getDataSource();
+                fileTrack = listTracks.get(i).getDataSourceAsFile();
                 if (fileTrack.getParentFile().equals(parentFolder)) {
                     if (fileTrack.getPath().equals(currentFile.getPath()))
                         Logger.getLogger(this, "Track "+(i+1)+": "
@@ -172,7 +172,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
         if (current == null)
             return;
 
-        File currentTrackFile = current.getDataSource();
+        File currentTrackFile = current.getDataSourceAsFile();
         File folder;
 
         for (int i = 0; i < player.getFoldersCount(); i++) {
@@ -572,7 +572,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
                 if (current == null)
                     Logger.getLogger(this, "Current track unavailable").rawError();
                 else {
-                    Logger.getLogger(this, current.getDataSource().getName()).rawWarning();
+                    Logger.getLogger(this, current.getDataSourceAsFile().getName()).rawWarning();
 
                 }
                 break;

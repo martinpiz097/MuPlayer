@@ -87,21 +87,6 @@ public class Player extends Thread implements PlayerControls {
         this(new File(folderPath));
     }
 
-    /*private void disableLogging() {
-        //Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF);
-        final Enumeration<String> loggerNames = LogManager.getLogManager().getLoggerNames();
-
-        String loggerName;
-        while (loggerNames.hasMoreElements()) {
-            loggerName = loggerNames.nextElement();
-            if (loggerName.trim().startsWith("org.jaudiotagger")) {
-                Logger logger = Logger.getLogger(loggerName);
-                logger.setLevel(Level.OFF);
-                logger.setUseParentHandlers(false);
-            }
-        }
-    }*/
-
     private void loadTracks(File folder) {
         if (!Files.isReadable(folder.toPath()))
             throw new MuPlayerException("folder is not readable");
@@ -160,8 +145,8 @@ public class Player extends Thread implements PlayerControls {
         listTracks.sort((o1, o2) -> {
             if (o1 == null || o2 == null)
                 return 0;
-            final File dataSource1 = o1.getDataSource() instanceof File ? (File) o1.getDataSource() : null;
-            final File dataSource2 = o2.getDataSource() instanceof File ? (File) o2.getDataSource() : null;
+            final File dataSource1 = o1.getDataSourceAsFile();
+            final File dataSource2 = o2.getDataSourceAsFile();
             if (dataSource1 == null || dataSource2 == null)
                 return 0;
             return FileUtil.getPath(dataSource1).compareTo(FileUtil.getPath(dataSource2));
@@ -170,7 +155,7 @@ public class Player extends Thread implements PlayerControls {
     }
 
     private int getFolderIndex() {
-        File dataSource = current.getDataSource() instanceof File ? (File) current.getDataSource() : null;
+        File dataSource = current.getDataSourceAsFile();
         final String currentParent = current != null ? dataSource.getParent() : null;
         return currentParent != null ? listFolderPaths.indexOf(currentParent) : -1;
     }
@@ -215,7 +200,7 @@ public class Player extends Thread implements PlayerControls {
     }
 
     private String getThreadName() {
-        File dataSource = current.getDataSource() instanceof File ? (File) current.getDataSource() : null;
+        File dataSource = current.getDataSourceAsFile();
         final String trackName = dataSource != null ? dataSource.getName() : dataSource.toString();
         final int strLimit = Math.min(trackName.length(), 10);
         return "ThreadTrack: " + trackName.substring(0, strLimit);
@@ -242,7 +227,7 @@ public class Player extends Thread implements PlayerControls {
     private void shutdownCurrent() {
         if (current != null) {
             current.kill();
-            listTracks.set(trackIndex, Track.getTrack(current.getDataSource(), this));
+            listTracks.set(trackIndex, Track.getTrack(current.getDataSourceAsFile(), this));
             current = null;
         }
     }
@@ -265,7 +250,7 @@ public class Player extends Thread implements PlayerControls {
         Track track;
         for (int i = 0; i < listTracks.size(); i++) {
             track = listTracks.get(i);
-            File dataSource = current.getDataSource()  instanceof File ? (File) current.getDataSource() : null;
+            File dataSource = current.getDataSourceAsFile();
             if (dataSource != null && dataSource.getParentFile().equals(parentFile)) {
                 return new TrackSearch(track, i);
             }
@@ -283,7 +268,7 @@ public class Player extends Thread implements PlayerControls {
         Track track;
         for (int i = 0; i < trackCount; i++) {
             track = listTracks.get(i);
-            fileTrack = track.getDataSource() instanceof File ? (File) track.getDataSource() : null;
+            fileTrack = track.getDataSourceAsFile();
             if (fileTrack != null && fileTrack.getParentFile().equals(parentFile)) {
                 newTrackIndex = i;
                 break;
@@ -303,7 +288,7 @@ public class Player extends Thread implements PlayerControls {
         File dataSource;
         for (int i = 0; i < listTracks.size(); i++) {
             track = listTracks.get(i);
-            dataSource = track.getDataSource() instanceof File ? (File) track.getDataSource() : null;
+            dataSource = track.getDataSourceAsFile();
             if (dataSource != null && dataSource.getParent().equals(fldPath)) {
                 play(i);
                 break;
@@ -370,8 +355,8 @@ public class Player extends Thread implements PlayerControls {
     }
 
     public synchronized List<File> getListSoundFiles() {
-        return listTracks.stream().filter(track -> track.getDataSource() instanceof File)
-                .map(track -> (File)track.getDataSource()).collect(Collectors.toList());
+        return listTracks.stream().filter(track -> track.getDataSourceAsFile() != null)
+                .map(track -> (File)track.getDataSourceAsFile()).collect(Collectors.toList());
     }
 
     // Se supone que todos los tracks serian validos
@@ -380,7 +365,7 @@ public class Player extends Thread implements PlayerControls {
         final List<AudioTag> listTags = new LinkedList<>();
         listTracks.forEach(track -> {
             try {
-                final AudioTag tag = new AudioTag(track.getDataSource());
+                final AudioTag tag = new AudioTag(track.getDataSourceAsFile());
                 if (tag.isValidFile())
                     listTags.add(tag);
             } catch (Exception e) {
@@ -398,7 +383,7 @@ public class Player extends Thread implements PlayerControls {
         final List<TrackInfo> listInfo = new ArrayList<>(listTracks.size()+1);
         listTracks.forEach(track->{
             try {
-                final AudioTag tag = new AudioTag(track.getDataSource());
+                final AudioTag tag = new AudioTag(track.getDataSourceAsFile());
                 if (tag.isValidFile())
                     listInfo.add(new SongData(tag));
             } catch (Exception e) {
@@ -636,8 +621,8 @@ public class Player extends Thread implements PlayerControls {
     @Override
     public synchronized void play(File track) {
         final int indexOf = listTracks.indexOf(listTracks.parallelStream().filter(
-                t->t.getDataSource() instanceof File &&
-                        ((File)t.getDataSource()).getPath().equals(track.getPath()))
+                t->t.getDataSourceAsFile() != null &&
+                        ((File)t.getDataSourceAsFile()).getPath().equals(track.getPath()))
                 .findFirst().orElse(null));
         if (indexOf == -1) {
             if (Track.isValidTrack(track)) {
@@ -664,7 +649,7 @@ public class Player extends Thread implements PlayerControls {
 
         for (int i = 0; i < listTracks.size(); i++) {
             track = listTracks.get(i);
-            trackFile = track.getDataSource() instanceof File ? (File) track.getDataSource() : null;
+            trackFile = track.getDataSourceAsFile();
             if (trackFile != null && trackFile.getName().equals(trackName)) {
                 indexOf = i;
                 break;

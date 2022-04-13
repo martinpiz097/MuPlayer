@@ -16,6 +16,8 @@ import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
@@ -40,8 +42,8 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     }
 
     public static Track getTrack(Object dataSource, PlayerControls player) {
-        if (dataSource instanceof File) {
-            File fileSource = (File) dataSource;
+        if (dataSource instanceof File || dataSource instanceof String) {
+            File fileSource = dataSource instanceof File ? (File) dataSource : new File((String) dataSource);
             if (!fileSource.exists())
                 return null;
 
@@ -104,6 +106,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     protected Track(File dataSource, PlayerControls player)
             throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this.dataSource = dataSource;
+        trackIO = new TrackIO();
         state = new StoppedState(this);
         this.trackData = new TrackData(0, 0, Player.DEFAULT_VOLUME, false);
         this.player = player;
@@ -114,6 +117,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     // ojo con los mp3
     protected Track(InputStream inputStream, PlayerControls player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         this.dataSource = inputStream;
+        trackIO = new TrackIO();
         state = new StoppedState(this);
         this.trackData = new TrackData(0, 0, Player.DEFAULT_VOLUME, false);
         this.player = player;
@@ -134,13 +138,13 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     }
 
     public void initLine() throws LineUnavailableException {
-        boolean initialized = trackIO.initLine();
+        final boolean initialized = trackIO.initLine();
         if (initialized)
             setGain(trackData.getVolume());
     }
 
     public void closeAllStreams() {
-        boolean closed = trackIO.closeAllStreams();
+        final boolean closed = trackIO.closeAllStreams();
         if (closed)
             trackData.setSecsSeeked(0);
     }
@@ -205,8 +209,16 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         return player;
     }
 
-    public Object getDataSource() {
-        return dataSource;
+    public File getDataSourceAsFile() {
+        return dataSource instanceof File ? (File) dataSource : null;
+    }
+
+    public InputStream getDataSourceAsStream() {
+        return dataSource instanceof InputStream ? (InputStream) dataSource : null;
+    }
+
+    public URL getDataSourceAsURL() {
+        return dataSource instanceof URL ? (URL) dataSource : null;
     }
 
     public AudioTag getTagInfo() {
@@ -222,7 +234,9 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     }
 
     public synchronized String getFormattedProgress() {
-        return TimeFormatter.format((long) getProgress());
+        final String progress = TimeFormatter.format((long) getProgress());
+        final String duration = getFormattedDuration();
+        return progress+"/"+duration;
     }
 
     public AudioFileFormat getFileFormat() throws IOException, UnsupportedAudioFileException {

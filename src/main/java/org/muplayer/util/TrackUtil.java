@@ -18,8 +18,8 @@ public class TrackUtil {
         final String album = track.getAlbum();
         final String artist = track.getArtist();
         final String date = track.getDate();
-        final String duration = track.getDurationAsString();
-        final String hasCover = track.hasCover()?"Si":"No";
+        final String duration = track.getFormattedDuration();
+        final String hasCover = track.hasCover()?"Yes":"No";
         final String encoder = track.getEncoder();
         final String bitrate = track.getBitrate();
 

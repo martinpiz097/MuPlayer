@@ -20,7 +20,7 @@ public class TPlayingTrack implements Runnable {
 
     public boolean hasTrack(Track track) {
         try {
-            File dataSource = this.track.getDataSource() instanceof File ? (File) this.track.getDataSource() : null;
+            File dataSource = this.track.getDataSourceAsFile();
             final String dataSourcePath = dataSource.getCanonicalPath();
             final String anotherSourcePath = dataSource.getCanonicalPath();
             return dataSourcePath.equals(anotherSourcePath);
