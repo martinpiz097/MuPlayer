@@ -68,10 +68,12 @@ public class ConsoleInterpreter implements CommandInterpreter {
         Logger.getLogger(this, "------------------------------").rawInfo();
 
         if (rootFolder != null) {
+            Track track;
             File fileTrack;
             for (int i = 0; i < player.getSongsCount(); i++) {
-                fileTrack = listTracks.get(i).getDataSource();
-                if (current != null && fileTrack.getPath().equals(current.getDataSource().getPath()))
+                track = listTracks.get(i);
+                fileTrack = track.getDataSource() instanceof File ? (File) track.getDataSource() : null;
+                if (current != null && fileTrack.getPath().equals((File)(current.getDataSource().getPath()))
                     Logger.getLogger(this, "Track "+(i+1)+": "
                             +fileTrack.getName()).rawWarning();
                 else

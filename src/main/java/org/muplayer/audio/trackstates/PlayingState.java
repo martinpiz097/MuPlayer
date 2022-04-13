@@ -12,19 +12,19 @@ public class PlayingState extends TrackState {
     private final Speaker trackLine;
     private final short BUFF_SIZE = 4096;
     private final byte[] audioBuffer = new byte[BUFF_SIZE];
-    private final int EOF = -1;
 
     public PlayingState(Track track) {
         super(track);
-        trackLine = track.getTrackLine();
+        trackLine = track.getTrackIO().getTrackLine();
     }
 
     private boolean canPlay() throws IOException {
+        int EOF = -1;
         return trackLine != null && readNextBytes() != EOF;
     }
 
     private int readNextBytes() throws IOException {
-        return track.getDecodedStream().read(audioBuffer);
+        return track.getTrackIO().getDecodedStream().read(audioBuffer);
     }
 
     private void checkTrackThread() {

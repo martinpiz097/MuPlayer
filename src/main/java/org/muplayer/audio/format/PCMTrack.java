@@ -4,11 +4,16 @@ import com.sun.media.sound.AiffFileReader;
 import com.sun.media.sound.AuFileReader;
 import com.sun.media.sound.WaveFileReader;
 import org.muplayer.audio.Track;
+import org.muplayer.audio.TrackIO;
 import org.muplayer.audio.interfaces.PlayerControls;
 import org.muplayer.audio.util.AudioExtensions;
 import org.muplayer.util.AudioUtil;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.spi.AudioFileReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,32 +46,12 @@ public class PCMTrack extends Track {
         super(trackPath, player);
     }
 
-    /*@Override
-    public long getDuration() {
-        AudioFormat format = decodedStream.getFormat();
-        // Bits por sample, channels y sampleRate
-        System.out.println(format.getSampleSizeInBits());
-        double bcm = format.getSampleSizeInBits()/8
-                *format.getChannels()*format.getSampleRate();
-        long fLen = dataSource.length();
-        System.out.println("BCM: "+bcm);
-        System.out.println("FL  en: "+fLen);
-        return (long) (fLen / bcm);
-    }
-
-    @Override
-    public String getDurationAsString() {
-        long sec = getDuration();
-        long min = sec / 60;
-        sec = sec-(min*60);
-        return new StringBuilder().append(min)
-                .append(':').append(sec < 10 ? '0'+sec:sec).toString();
-    }*/
-
-
     @Override
     protected void loadAudioStream() throws IOException, UnsupportedAudioFileException {
-        final String extension = AudioExtensions.getFormatName(dataSource.getName());
+        trackIO = new TrackIO();
+        final String extension = AudioExtensions.getFormatName(dataSource instanceof File
+                ? ((File) dataSource).getName() : "");
+        AudioFileReader audioReader;
         switch (extension) {
             case WAVE:
                 audioReader = new WaveFileReader();
@@ -79,12 +64,14 @@ public class PCMTrack extends Track {
                 audioReader = new AuFileReader();
                 break;
         }
-        trackStream = AudioUtil.instanceStream(audioReader, source);
+        AudioInputStream trackStream = AudioUtil.instanceStream(audioReader, dataSource);
+        trackIO.setAudioReader(audioReader);
+        trackIO.setDecodedStream(trackStream);
     }
 
     @Override
     protected double convertSecondsToBytes(Number seconds) {
-        final AudioFormat audioFormat = getAudioFormat();
+        final AudioFormat audioFormat = trackIO.getAudioFormat();
         final float frameRate = audioFormat.getFrameRate();
         final int frameSize = audioFormat.getFrameSize();
         final double framesToSeek = frameRate*seconds.doubleValue();
@@ -93,7 +80,7 @@ public class PCMTrack extends Track {
 
     @Override
     protected double convertBytesToSeconds(Number bytes) {
-        final AudioFormat audioFormat = getAudioFormat();
+        final AudioFormat audioFormat = trackIO.getAudioFormat();
         return bytes.doubleValue() / audioFormat.getFrameSize() / audioFormat.getFrameRate();
     }
 }

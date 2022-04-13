@@ -1,6 +1,7 @@
 package org.muplayer.audio.format;
 
 import org.muplayer.audio.Track;
+import org.muplayer.audio.TrackIO;
 import org.muplayer.audio.interfaces.PlayerControls;
 import org.muplayer.util.AudioUtil;
 import org.xiph.speex.spi.SpeexAudioFileReader;
@@ -41,22 +42,21 @@ public class SpeexTrack extends Track {
 
     @Override
     protected void loadAudioStream() throws IOException, UnsupportedAudioFileException {
-        //decoder = new SpeexDecoder();
-        //private SpeexDecoder decoder;
-        final SpeexFormatConvertionProvider provider = new SpeexFormatConvertionProvider();
-        this.audioReader = new SpeexAudioFileReader();
-        final AudioInputStream soundAis = AudioUtil.instanceStream(audioReader, source);
+        trackIO = new TrackIO();
+        trackIO.setAudioReader(new SpeexAudioFileReader());
 
+        final SpeexFormatConvertionProvider provider = new SpeexFormatConvertionProvider();
+        final AudioInputStream soundAis = AudioUtil.instanceStream(trackIO.getAudioReader(), dataSource);
+
+        final AudioInputStream trackStream = trackIO.getDecodedStream();
         if (trackStream != null)
             trackStream.close();
-        //AudioFormat targetFormat = DecodeManager.getPcmFormatByMpeg(soundAis.getFormat());
-        //trackStream = new Speex2PcmAudioInputStream(soundAis, targetFormat, dataSource.length());
-        trackStream = provider.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, soundAis);
+        trackIO.setDecodedStream(provider.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, soundAis));
     }
 
     @Override
     protected double convertSecondsToBytes(Number seconds) {
-        final AudioFormat audioFormat = getAudioFormat();
+        final AudioFormat audioFormat = trackIO.getAudioFormat();
         final float frameRate = audioFormat.getFrameRate();
         final int frameSize = audioFormat.getFrameSize();
         final double framesToSeek = frameRate*seconds.doubleValue();
@@ -65,14 +65,14 @@ public class SpeexTrack extends Track {
 
     @Override
     protected double convertBytesToSeconds(Number bytes) {
-        final AudioFormat audioFormat = getAudioFormat();
+        final AudioFormat audioFormat = trackIO.getAudioFormat();
         return bytes.doubleValue() / audioFormat.getFrameSize() / audioFormat.getFrameRate();
     }
 
     @Override
     public long getDuration() {
         try {
-            final AudioFileFormat fileFormat = AudioSystem.getAudioFileFormat(dataSource);
+            final AudioFileFormat fileFormat = AudioUtil.getAudioFileFormat(dataSource);
             return 0;
         } catch (Exception e) {
             e.printStackTrace();

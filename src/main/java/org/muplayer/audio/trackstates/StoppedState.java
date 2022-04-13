@@ -20,7 +20,7 @@ public class StoppedState extends TrackState {
     public void handle() {
         try {
             track.resetStream();
-            track.setSecsSeeked(0);
+            track.getTrackData().setSecsSeeked(0);
             track.suspend();
         } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
             e.printStackTrace();

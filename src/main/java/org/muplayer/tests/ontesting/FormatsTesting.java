@@ -226,7 +226,7 @@ public class FormatsTesting {
         char first;
         AudioTag tagInfo = track.getTagInfo();
         System.out.println(tagInfo.getTagReader().toString());
-        System.out.println(track.getDataSource().length());
+        System.out.println(((File)track.getDataSource()).length());
 
         System.out.println("Duracion en segundos: "+track.getDurationAsString());
         System.out.println("Duracion formateada: "+track.getFormattedDuration());

@@ -5,6 +5,7 @@ import org.muplayer.audio.Track;
 import org.muplayer.audio.interfaces.PlayerControls;
 import org.muplayer.system.ListenersNames;
 
+import java.io.File;
 import java.io.IOException;
 
 public class TPlayingTrack implements Runnable {
@@ -19,8 +20,9 @@ public class TPlayingTrack implements Runnable {
 
     public boolean hasTrack(Track track) {
         try {
-            final String dataSourcePath = this.track.getDataSource().getCanonicalPath();
-            final String anotherSourcePath = track.getDataSource().getCanonicalPath();
+            File dataSource = this.track.getDataSource() instanceof File ? (File) this.track.getDataSource() : null;
+            final String dataSourcePath = dataSource.getCanonicalPath();
+            final String anotherSourcePath = dataSource.getCanonicalPath();
             return dataSourcePath.equals(anotherSourcePath);
         } catch (IOException e) {
             return true;
@@ -30,7 +32,7 @@ public class TPlayingTrack implements Runnable {
     @Override
     public void run() {
         PlayerControls player;
-        while (!track.isFinished() && !track.isKilled() && track.isTrackStreamsOpened()) {
+        while (!track.isFinished() && !track.isKilled() && track.getTrackIO().isTrackStreamsOpened()) {
             try {
                 player = track.getPlayer();
                 if (player instanceof Player)

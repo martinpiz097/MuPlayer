@@ -19,7 +19,7 @@ public class ReverberatedState extends TrackState {
     public void handle() {
         try {
             track.resetStream();
-            track.setSecsSeeked(0);
+            track.getTrackData().setSecsSeeked(0);
             track.seek(Math.max(seekSeconds, 0));
             track.play();
         } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {

@@ -1,6 +1,7 @@
 package org.muplayer.audio.format;
 
 import org.muplayer.audio.Track;
+import org.muplayer.audio.TrackIO;
 import org.muplayer.audio.codec.DecodeManager;
 import org.muplayer.audio.interfaces.PlayerControls;
 import org.muplayer.util.AudioUtil;
@@ -42,19 +43,21 @@ public class OGGTrack extends Track {
     }
 
     private AudioInputStream createAudioStream() throws IOException, UnsupportedAudioFileException {
-        this.audioReader = new JorbisAudioFileReader();
-        final AudioInputStream soundEncodedStream = AudioUtil.instanceStream(audioReader, source);
+        trackIO.setAudioReader(new JorbisAudioFileReader());
+        final AudioInputStream soundEncodedStream = AudioUtil.instanceStream(trackIO.getAudioReader(),
+                dataSource);
         return DecodeManager.decodeToPcm(soundEncodedStream);
     }
 
     @Override
     protected void loadAudioStream() throws IOException, UnsupportedAudioFileException {
-        trackStream = createAudioStream();
+        trackIO = new TrackIO();
+        trackIO.setDecodedStream(createAudioStream());
     }
 
     @Override
     protected double convertSecondsToBytes(Number seconds) {
-        final AudioFormat audioFormat = getAudioFormat();
+        final AudioFormat audioFormat = trackIO.getAudioFormat();
         final float frameRate = audioFormat.getFrameRate();
         final int frameSize = audioFormat.getFrameSize();
         final double framesToSeek = frameRate*seconds.doubleValue();
@@ -63,22 +66,8 @@ public class OGGTrack extends Track {
 
     @Override
     protected double convertBytesToSeconds(Number bytes) {
-        final AudioFormat audioFormat = getAudioFormat();
+        final AudioFormat audioFormat = trackIO.getAudioFormat();
         return bytes.doubleValue() / audioFormat.getFrameSize() / audioFormat.getFrameRate();
     }
-
-    /*@Override
-    public void seek(double seconds) throws IOException {
-        AudioHeader header = tagInfo.getHeader();
-        System.out.println("Channels: "+header.getChannels());
-        System.out.println("Format: "+header.getFormat());
-        System.out.println("SampleRate: "+header.getSampleRate());
-        System.out.println("BitRate: "+header.getBitRate());
-        System.out.println("Encoding: "+header.getEncodingType());
-        System.out.println("TrackLenght: "+header.getTrackLength());
-        System.out.println("BitRateAsNumber: "+header.getBitRateAsNumber());
-        System.out.println("SampleRateAsNumber: "+header.getSampleRateAsNumber());
-        super.seek(seconds);
-    }*/
 
 }

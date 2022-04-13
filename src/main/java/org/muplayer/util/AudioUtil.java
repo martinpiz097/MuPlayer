@@ -3,9 +3,7 @@ package org.muplayer.util;
 import org.muplayer.audio.AudioSupportManager;
 import org.muplayer.audio.util.AudioExtensions;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.FloatControl;
-import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.*;
 import javax.sound.sampled.spi.AudioFileReader;
 import java.io.File;
 import java.io.IOException;
@@ -62,6 +60,18 @@ public class AudioUtil {
             return audioReader.getAudioInputStream((InputStream) source);
         else
             return audioReader.getAudioInputStream((File) source);
+    }
+
+    public static AudioFileFormat getAudioFileFormat(Object dataSource) throws UnsupportedAudioFileException, IOException {
+        if (dataSource != null) {
+            if (dataSource instanceof File)
+                return AudioSystem.getAudioFileFormat((File) dataSource);
+            else if (dataSource instanceof InputStream)
+                return AudioSystem.getAudioFileFormat((InputStream) dataSource);
+            else
+                return AudioSystem.getAudioFileFormat((URL) dataSource);
+        }
+        return null;
     }
 
     public static boolean isSupported(File trackFile) {

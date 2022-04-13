@@ -160,8 +160,8 @@ public class Player extends Thread implements PlayerControls {
         listTracks.sort((o1, o2) -> {
             if (o1 == null || o2 == null)
                 return 0;
-            final File dataSource1 = o1.getDataSource();
-            final File dataSource2 = o2.getDataSource();
+            final File dataSource1 = o1.getDataSource() instanceof File ? (File) o1.getDataSource() : null;
+            final File dataSource2 = o2.getDataSource() instanceof File ? (File) o2.getDataSource() : null;
             if (dataSource1 == null || dataSource2 == null)
                 return 0;
             return FileUtil.getPath(dataSource1).compareTo(FileUtil.getPath(dataSource2));
@@ -170,7 +170,8 @@ public class Player extends Thread implements PlayerControls {
     }
 
     private int getFolderIndex() {
-        final String currentParent = current != null ? current.getDataSource().getParent() : null;
+        File dataSource = current.getDataSource() instanceof File ? (File) current.getDataSource() : null;
+        final String currentParent = current != null ? dataSource.getParent() : null;
         return currentParent != null ? listFolderPaths.indexOf(currentParent) : -1;
     }
 
@@ -214,7 +215,8 @@ public class Player extends Thread implements PlayerControls {
     }
 
     private String getThreadName() {
-        final String trackName = current.getDataSource().getName();
+        File dataSource = current.getDataSource() instanceof File ? (File) current.getDataSource() : null;
+        final String trackName = dataSource != null ? dataSource.getName() : dataSource.toString();
         final int strLimit = Math.min(trackName.length(), 10);
         return "ThreadTrack: " + trackName.substring(0, strLimit);
     }
@@ -263,7 +265,8 @@ public class Player extends Thread implements PlayerControls {
         Track track;
         for (int i = 0; i < listTracks.size(); i++) {
             track = listTracks.get(i);
-            if (track.getDataSource().getParentFile().equals(parentFile)) {
+            File dataSource = current.getDataSource()  instanceof File ? (File) current.getDataSource() : null;
+            if (dataSource != null && dataSource.getParentFile().equals(parentFile)) {
                 return new TrackSearch(track, i);
             }
         }
@@ -277,9 +280,11 @@ public class Player extends Thread implements PlayerControls {
         int newTrackIndex = -1;
 
         // idea para electrolist -> Indexof con predicate
+        Track track;
         for (int i = 0; i < trackCount; i++) {
-            fileTrack = listTracks.get(i).getDataSource();
-            if (fileTrack.getParentFile().equals(parentFile)) {
+            track = listTracks.get(i);
+            fileTrack = track.getDataSource() instanceof File ? (File) track.getDataSource() : null;
+            if (fileTrack != null && fileTrack.getParentFile().equals(parentFile)) {
                 newTrackIndex = i;
                 break;
             }
@@ -294,8 +299,12 @@ public class Player extends Thread implements PlayerControls {
     }
 
     private void playFolderSongs(String fldPath) {
+        Track track;
+        File dataSource;
         for (int i = 0; i < listTracks.size(); i++) {
-            if (listTracks.get(i).getDataSource().getParent().equals(fldPath)) {
+            track = listTracks.get(i);
+            dataSource = track.getDataSource() instanceof File ? (File) track.getDataSource() : null;
+            if (dataSource != null && dataSource.getParent().equals(fldPath)) {
                 play(i);
                 break;
             }
@@ -361,7 +370,8 @@ public class Player extends Thread implements PlayerControls {
     }
 
     public synchronized List<File> getListSoundFiles() {
-        return listTracks.stream().map(Track::getDataSource).collect(Collectors.toList());
+        return listTracks.stream().filter(track -> track.getDataSource() instanceof File)
+                .map(track -> (File)track.getDataSource()).collect(Collectors.toList());
     }
 
     // Se supone que todos los tracks serian validos
@@ -529,44 +539,6 @@ public class Player extends Thread implements PlayerControls {
         return isMute;
     }
 
-    // se debe revisar rootFolder primero
-    /*@Override
-    public synchronized void open(File sound) {
-        if (!Track.isValidTrack(sound))
-            return;
-        listTracks.clear();
-        listFolderPaths.clear();
-        listTracks.add(Track.getTrack(sound, this));
-        listFolderPaths.add(sound.getParent());
-        if (isPlaying())
-            current.finish();
-        else if (isAlive()) {
-            trackIndex = -1;
-            playNext();
-        }
-        else
-            start();
-    }
-
-    @Override
-    public synchronized void open(List<File> listSounds) {
-        if (!listSounds.isEmpty()) {
-            listTracks.clear();
-            listFolderPaths.clear();
-            loadTracks(listSounds);
-            sortTracks();
-
-            if (isPlaying())
-                current.finish();
-            else if (isAlive()) {
-                trackIndex = -1;
-                playNext();
-            }
-            else
-                start();
-        }
-    }*/
-
     // ojo cuando se agrega musica de carpetas que estan fuera de rootFolder
     // puede ocasionar problemas
     @Override
@@ -664,7 +636,8 @@ public class Player extends Thread implements PlayerControls {
     @Override
     public synchronized void play(File track) {
         final int indexOf = listTracks.indexOf(listTracks.parallelStream().filter(
-                t->t.getDataSource().getPath().equals(t.getDataSource().getPath()))
+                t->t.getDataSource() instanceof File &&
+                        ((File)t.getDataSource()).getPath().equals(track.getPath()))
                 .findFirst().orElse(null));
         if (indexOf == -1) {
             if (Track.isValidTrack(track)) {
@@ -686,17 +659,17 @@ public class Player extends Thread implements PlayerControls {
     @Override
     public synchronized void play(String trackName) {
         int indexOf = -1;
-        File song = null;
+        File trackFile = null;
         Track track = null;
 
         for (int i = 0; i < listTracks.size(); i++) {
             track = listTracks.get(i);
-            song = track.getDataSource();
-            if (song.getName().equals(trackName)) {
+            trackFile = track.getDataSource() instanceof File ? (File) track.getDataSource() : null;
+            if (trackFile != null && trackFile.getName().equals(trackName)) {
                 indexOf = i;
                 break;
             }
-            song = null;
+            trackFile = null;
             track = null;
         }
 

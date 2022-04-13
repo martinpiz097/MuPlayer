@@ -8,6 +8,7 @@ import net.sourceforge.jaad.mp4.api.Frame;
 import net.sourceforge.jaad.mp4.api.Movie;
 import net.sourceforge.jaad.spi.javasound.AACAudioFileReader;
 import org.muplayer.audio.Track;
+import org.muplayer.audio.TrackIO;
 import org.muplayer.audio.interfaces.PlayerControls;
 import org.muplayer.util.AudioUtil;
 import org.orangelogger.sys.Logger;
@@ -20,8 +21,6 @@ import java.io.*;
 import java.util.List;
 
 public class M4ATrack extends Track {
-
-    //private volatile M4AInputStream m4aStream;
     private boolean isAac;
 
     public M4ATrack(File dataSource) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
@@ -54,12 +53,12 @@ public class M4ATrack extends Track {
             // Es aac
             decodeAAC();
             isAac = true;
-            //new AudioTranslatorStream()
         } catch (UnsupportedAudioFileException e) {
             Logger.getLogger(this, "File not supported!").rawError();
             e.printStackTrace();
         } catch (IOException e) {
-            trackStream = decodeM4A(source);
+            trackIO = new TrackIO();
+            trackIO.setDecodedStream(decodeM4A(dataSource));
             isAac = false;
         }
         // Probar despues transformando a PCM
@@ -69,27 +68,10 @@ public class M4ATrack extends Track {
     }
 
     private void decodeAAC() throws IOException, UnsupportedAudioFileException {
-        audioReader = new AACAudioFileReader();
-        trackStream = AudioUtil.instanceStream(audioReader, source);
-        // Para leer progreso en segundos de vorbis(posible opcion)
-        //OggInfoReader info = new OggInfoReader();
-        //FlacStreamReader streamReader = new FlacStreamReader();
+        trackIO = new TrackIO();
+        trackIO.setAudioReader(new AACAudioFileReader());
+        trackIO.setDecodedStream(AudioUtil.instanceStream(trackIO.getAudioReader(), dataSource));
     }
-
-
-
-    /*private AudioInputStream decodeM4A(File inputFile) throws IOException,
-            UnsupportedAudioFileException {
-        RandomAccessFile randomAccess = new RandomAccessFile(inputFile, "r");
-        final MP4Container cont = new MP4Container(randomAccess);
-        final List<net.sourceforge.jaad.mp4.api.Track> tracks =
-                cont.getMovie().getTracks(AudioTrack.AudioCodec.AAC);
-        if (tracks.isEmpty())
-            throw new UnsupportedAudioFileException("Movie does not contain any AAC track");
-
-        final AudioTrack track = (AudioTrack) tracks.get(0);
-        return new M4AAudioInputStream(inputFile, new AudioDataInputStream(), track);
-    }*/
 
     private AudioTrack getM4ATrack(Object source) throws IOException, UnsupportedAudioFileException {
         final MP4Container cont;
@@ -111,7 +93,6 @@ public class M4ATrack extends Track {
         return (AudioTrack) tracks.get(0);
     }
 
-    // para el caso de los m4a con contenedor quicktime
     private AudioInputStream decodeM4A(Object source) {
         try {
             final AudioTrack track;
@@ -124,13 +105,6 @@ public class M4ATrack extends Track {
             }
 
             final Decoder dec = new Decoder(track.getDecoderSpecificInfo());
-
-            /*m4aStream = new M4AInputStream(track, dec, randomAccess);
-            AudioFormat decFormat = new AudioFormat(track.getSampleRate(),
-                    track.getSampleSize(), track.getChannelCount(),
-                    true, true);
-            return new AudioInputStream(m4aStream, decFormat, inputFile.length());
-            */
             final SampleBuffer buffer = new SampleBuffer();
             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -138,23 +112,18 @@ public class M4ATrack extends Track {
                     track.getSampleSize(), track.getChannelCount(),
                     true, true);
 
-            //OutputStream outputStream = new AudioDataOutputStream();
-            //InputStream inputStream = new AudioDataInputStream((AudioDataOutputStream) outputStream);
-
             Frame frame;
             while (track.hasMoreFrames()) {
                 try {
                     frame = track.readNextFrame();
                     dec.decodeFrame(frame.getData(), buffer);
                     baos.write(buffer.getData());
-                    //outputStream.write(buffer.getData());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
             final byte[] audioData = baos.toByteArray();
             return new AudioInputStream(new ByteArrayInputStream(audioData), decFormat, audioData.length);
-            //return AudioSystem.getAudioInputStream(decFormat, AudioSystem.getAudioInputStream(inputFile));
         } catch (Exception e){
             Logger.getLogger(this, "Exception", e).error();
             e.printStackTrace();
@@ -164,7 +133,7 @@ public class M4ATrack extends Track {
 
     @Override
     protected double convertSecondsToBytes(Number seconds) {
-        final AudioFormat audioFormat = getAudioFormat();
+        final AudioFormat audioFormat = trackIO.getAudioFormat();
         final float frameRate = audioFormat.getFrameRate();
         final int frameSize = audioFormat.getFrameSize();
         final double framesToSeek = frameRate*seconds.doubleValue();
@@ -173,7 +142,7 @@ public class M4ATrack extends Track {
 
     @Override
     protected double convertBytesToSeconds(Number bytes) {
-        final AudioFormat audioFormat = getAudioFormat();
+        final AudioFormat audioFormat = trackIO.getAudioFormat();
         return bytes.doubleValue() / audioFormat.getFrameSize() / audioFormat.getFrameRate();
     }
 
@@ -196,16 +165,16 @@ public class M4ATrack extends Track {
             int gt = (int) Math.round(second-getProgress());
             seek(gt);
         }
-        else if (second < progress) {
+        else {
             pause();
             if (isAac)
-                resetStream();
+                trackIO.resetStream();
             else {
-                trackStream.reset();
+                trackIO.getDecodedStream().reset();
                 initLine();
             }
             resumeTrack();
-            secsSeeked = 0;
+            trackData.setSecsSeeked(0);
             seek(second);
         }
     }

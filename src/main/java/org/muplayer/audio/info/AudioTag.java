@@ -25,13 +25,21 @@ public class AudioTag {
     private final Tag tagReader;
     private final AudioHeader header;
 
-    public AudioTag(File sound)
+    public AudioTag(Object sound)
             throws TagException, ReadOnlyFileException,
             CannotReadException, InvalidAudioFrameException, IOException {
-        this.fileSource = sound;
-        this.audioFile = AudioFileIO.read(sound);
-        tagReader = audioFile.getTag();
-        header = audioFile.getAudioHeader();
+        if (sound instanceof File) {
+            this.fileSource = (File) sound;
+            this.audioFile = AudioFileIO.read(fileSource);
+            tagReader = audioFile.getTag();
+            header = audioFile.getAudioHeader();
+        }
+        else {
+            this.fileSource = null;
+            this.audioFile = null;
+            tagReader = null;
+            header = null;
+        }
     }
 
     public AudioTag(String soundPath) throws
@@ -53,10 +61,8 @@ public class AudioTag {
     }
 
     public String getTag(FieldKey tag) {
-        if (tagReader == null) {
-            //System.out.println("Solicitando tag "+tag.name()+" nulo");
+        if (tagReader == null)
             return null;
-        }
         final String tagValue = tagReader.getFirst(tag);
         return tagValue == null || tagValue.isEmpty() ?
                 null : tagValue.trim();

@@ -4,6 +4,7 @@ import javazoom.spi.mpeg.sampled.file.MpegAudioFileReader;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.mp3.MP3AudioHeader;
 import org.muplayer.audio.Track;
+import org.muplayer.audio.TrackIO;
 import org.muplayer.audio.codec.DecodeManager;
 import org.muplayer.audio.interfaces.PlayerControls;
 import org.muplayer.util.AudioUtil;
@@ -59,12 +60,15 @@ public class MP3Track extends Track {
     @Override
     protected void loadAudioStream() throws IOException, UnsupportedAudioFileException {
         // Ver si se escucha mejor en ogg utilizando la logica de mp3
-        audioReader = new MpegAudioFileReader();
-        final AudioInputStream soundAis = AudioUtil.instanceStream(audioReader, source);
+        trackIO = new TrackIO();
+        trackIO.setAudioReader(new MpegAudioFileReader());
+        final AudioInputStream soundAis = AudioUtil.instanceStream(trackIO.getAudioReader(), dataSource);
         final AudioFormat baseFormat = soundAis.getFormat();
+
+        final AudioInputStream trackStream = trackIO.getDecodedStream();
         if (trackStream != null)
             trackStream.close();
-        trackStream = DecodeManager.decodeToPcm(baseFormat, soundAis);
+        trackIO.setDecodedStream(DecodeManager.decodeToPcm(baseFormat, soundAis));
     }
 
     @Override

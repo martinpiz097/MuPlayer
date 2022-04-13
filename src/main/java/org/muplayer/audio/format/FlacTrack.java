@@ -3,6 +3,7 @@ package org.muplayer.audio.format;
 import org.jflac.sound.spi.FlacAudioFileReader;
 import org.jflac.sound.spi.FlacFormatConversionProvider;
 import org.muplayer.audio.Track;
+import org.muplayer.audio.TrackIO;
 import org.muplayer.audio.codec.DecodeManager;
 import org.muplayer.audio.interfaces.PlayerControls;
 import org.muplayer.util.AudioUtil;
@@ -42,54 +43,17 @@ public class FlacTrack extends Track {
     }
 
     @Override
-    public boolean isTrackStreamsOpened() {
-        return true;
-    }
-
-    @Override
     protected void loadAudioStream() {
-        /*try {
-        audioReader = new FlacAudioFileReader();
-        FlacDecoder decoder = new FlacDecoder(dataSource);
-        if (decoder.isFlac()) {
-            decoder.decode();
-            decodedStream = decoder.getDecodedStream();
-            decoder = null;
-            System.out.println("FlacAis: "+decodedStream);
-        }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }*/
         try {
-            this.audioReader = new FlacAudioFileReader();
-            final AudioInputStream flacEncodedStream = AudioUtil.instanceStream(audioReader, source);
+            trackIO = new TrackIO();
+            trackIO.setAudioReader(new FlacAudioFileReader());
+
+            final AudioInputStream flacEncodedStream = AudioUtil.instanceStream(trackIO.getAudioReader(),
+                    dataSource);
             final AudioFormat format = flacEncodedStream.getFormat();
             final AudioFormat decodedFormat = DecodeManager.getPcmFormatByFlac(format);
-            this.trackStream = new FlacFormatConversionProvider().
-                    getAudioInputStream(decodedFormat, flacEncodedStream);
-
-            /*FlacDecoder flacDecoder = new FlacDecoder(dataSource);
-            if (flacDecoder.isFlac()) {
-                StreamInfo info = flacDecoder.getFlacInfo();
-                System.out.println("SoundLenght: "+info.calcLength());
-                System.out.println("MinBlockSize: "+info.getMinBlockSize());
-                System.out.println("MaxBlockSize: "+info.getMaxBlockSize());
-                System.out.println("MinFrameSize: "+info.getMinFrameSize());
-                System.out.println("MaxFrameSize: "+info.getMaxFrameSize());
-                System.out.println("BitPerSample: "+info.getBitsPerSample());
-                System.out.println("Total Samples: "+info.getTotalSamples());
-                System.out.println("Sample Rate: "+info.getSampleRate());
-                System.out.println("Channels: "+info.getChannels());
-            }
-
-            try {
-                System.out.println("IsFLacAIS: "+(flacEncodedStream instanceof Flac2PcmAudioInputStream));
-                Flac2PcmAudioInputStream ais = (Flac2PcmAudioInputStream) flacEncodedStream;
-            } catch (Exception e) {
-                System.out.println("AIS Can't be cast to Flac2PcmAudioInputStream");
-            }*/
-
+            trackIO.setDecodedStream(new FlacFormatConversionProvider().
+                    getAudioInputStream(decodedFormat, flacEncodedStream));
         } catch (UnsupportedAudioFileException | IOException e) {
             e.printStackTrace();
         }
@@ -97,7 +61,7 @@ public class FlacTrack extends Track {
 
     @Override
     protected double convertSecondsToBytes(Number seconds) {
-        final AudioFormat audioFormat = getAudioFormat();
+        final AudioFormat audioFormat = trackIO.getAudioFormat();
         final float frameRate = audioFormat.getFrameRate();
         final int frameSize = audioFormat.getFrameSize();
         final double framesToSeek = frameRate*seconds.doubleValue();
@@ -106,7 +70,7 @@ public class FlacTrack extends Track {
 
     @Override
     protected double convertBytesToSeconds(Number bytes) {
-        final AudioFormat audioFormat = getAudioFormat();
+        final AudioFormat audioFormat = trackIO.getAudioFormat();
         return bytes.doubleValue() / audioFormat.getFrameSize() / audioFormat.getFrameRate();
     }
 
@@ -114,9 +78,9 @@ public class FlacTrack extends Track {
     public synchronized void seek(double seconds) throws IOException {
         if (seconds == 0)
             return;
-        this.secsSeeked+=seconds;
+        trackData.setSecsSeeked(trackData.getSecsSeeked()+seconds);
         final int bytesToSeek = (int) Math.round(convertSecondsToBytes(seconds));
-        trackStream.read(new byte[bytesToSeek]);
+        trackIO.getDecodedStream().read(new byte[bytesToSeek]);
     }
 
 }
