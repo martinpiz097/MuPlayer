@@ -5,8 +5,6 @@ import java.util.Collection;
 import java.util.List;
 
 public interface PlayerControls extends MusicControls {
-    //void open(File sound);
-    //void open(List<File> listSounds);
     void addMusic(Collection<File> soundCollection);
     void addMusic(File musicFolder);
     void play(File track);
