@@ -155,7 +155,7 @@ public class Player extends Thread implements PlayerControls {
     }
 
     private int getFolderIndex() {
-        File dataSource = current.getDataSourceAsFile();
+        final File dataSource = current.getDataSourceAsFile();
         final String currentParent = current != null ? dataSource.getParent() : null;
         return currentParent != null ? listFolderPaths.indexOf(currentParent) : -1;
     }
@@ -250,7 +250,7 @@ public class Player extends Thread implements PlayerControls {
         Track track;
         for (int i = 0; i < listTracks.size(); i++) {
             track = listTracks.get(i);
-            File dataSource = current.getDataSourceAsFile();
+            File dataSource = track.getDataSourceAsFile();
             if (dataSource != null && dataSource.getParentFile().equals(parentFile)) {
                 return new TrackSearch(track, i);
             }
