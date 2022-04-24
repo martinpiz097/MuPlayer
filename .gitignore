@@ -1,6 +1,6 @@
 target/
-compileandtest.sh
-testing.sh
+scripts/compileandtest.sh
+scripts/testing.sh
 test/
 dependency-reduced-pom.xml
 .idea/

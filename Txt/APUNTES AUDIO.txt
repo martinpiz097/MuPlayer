@@ -13,3 +13,6 @@ Padding es la data extra necesaria para completar el frame cuando faltan bytes
 1 fotograma -> 26 ms
 framesize = 144 * bitrate / (SampleRate + Padding) -> Tamaño total por cada frame
 Cada frame header tiene 32 bits -> 4 bytes
+
+
+CADA VEZ QUE SE AÑADE UNA LIBRERIA REVISAR QUE TENGA CARPETA SERVICES EN EL JAR

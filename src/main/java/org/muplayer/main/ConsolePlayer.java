@@ -1,5 +1,7 @@
 package org.muplayer.main;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.muplayer.audio.Player;
 import org.muplayer.system.AppInfo;
 import org.muplayer.system.AppKey;
@@ -16,24 +18,34 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class ConsolePlayer implements Runnable {
-    protected final Player player;
+public class ConsolePlayer extends Thread {
+    @Getter @Setter
+    protected Player player;
     protected final ConsoleInterpreter interpreter;
-
-    protected final File playerFolder;
     protected final Scanner scanner;
 
     protected static final String LINEHEADER = "[MuPlayer]> ";
 
+    public ConsolePlayer() throws FileNotFoundException {
+        player = new Player((File) null);
+        interpreter = new ConsoleInterpreter(player);
+        scanner = new Scanner(System.in);
+    }
+
     public ConsolePlayer(File rootFolder) throws FileNotFoundException {
         player = new Player(rootFolder);
         interpreter = new ConsoleInterpreter(player);
-        this.playerFolder = rootFolder;
         scanner = new Scanner(System.in);
     }
 
     public ConsolePlayer(String folder) throws FileNotFoundException {
         this(new File(folder));
+    }
+
+    public ConsolePlayer(Player player) throws FileNotFoundException {
+        this.player = player;
+        interpreter = new ConsoleInterpreter(player);
+        scanner = new Scanner(System.in);
     }
 
     protected void printHeader() {
@@ -47,13 +59,9 @@ public class ConsolePlayer implements Runnable {
         }
     }
 
-    public Player getPlayer() {
-        return player;
-    }
-
     public void execCommand(String strCmd) {
         try {
-            interpreter.preInterprate(strCmd);
+            interpreter.interprateCommand(strCmd);
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
         }
@@ -86,9 +94,8 @@ public class ConsolePlayer implements Runnable {
                             "If you want to load a folder path automatically, create a file called config.properties in " +
                             "the path of the jar file and set the root_folder property indicating the path of your music folder");
                 }
-                else {
+                else
                     TaskRunner.execute(new ConsolePlayer(defaultRootPath));
-                }
             }
             else
                 TaskRunner.execute(new ConsolePlayer(args[0]));

@@ -1,1 +1,0 @@
-- Cuando se reproduce una carpeta solo se reproduce la primera cancion

@@ -8,5 +8,4 @@
 - No siempre se termina exactamente en el segundo final calculado
 - Error -1 y 580 en algunos seek MP3
 
-CAGO EL GOTOSEC
 CUANDO REPRUDUZCO LOS M4A DE PETRUCCI APARECE UN JAVA HEAP SPACE

@@ -246,7 +246,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
             Logger.getLogger(this, TrackUtil.getSongInfo(track)).rawWarning();
     }
 
-    public void preInterprate(String cmd) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    public void interprateCommand(String cmd) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         if (cmd.contains(CMD_DIVISOR)) {
             final String[] cmdSplit = cmd.split(CMD_DIVISOR);
             for (int i = 0; i < cmdSplit.length; i++) {

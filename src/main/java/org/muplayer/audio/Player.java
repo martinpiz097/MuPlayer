@@ -500,6 +500,16 @@ public class Player extends Thread implements PlayerControls {
     }
 
     @Override
+    public synchronized boolean isOn() {
+        return on;
+    }
+
+    @Override
+    public synchronized void turnOn() {
+        start();
+    }
+
+    @Override
     public synchronized boolean isPlaying() {
         return current != null && current.isPlaying();
     }
