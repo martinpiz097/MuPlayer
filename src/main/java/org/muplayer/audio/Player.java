@@ -296,6 +296,7 @@ public class Player extends Thread implements PlayerControls {
         }
     }
 
+    @Override
     public boolean hasSounds() {
         return !listTracks.isEmpty();
     }
@@ -567,10 +568,12 @@ public class Player extends Thread implements PlayerControls {
         return listTracks.size();
     }
 
+    @Override
     public synchronized void seekFolder(SeekOption param) {
         seekFolder(param, 1);
     }
 
+    @Override
     public synchronized void seekFolder(SeekOption option, int jumps) {
         final int folderIndex = getFolderIndex();
         if (folderIndex != -1) {
@@ -612,6 +615,7 @@ public class Player extends Thread implements PlayerControls {
         }
     }
 
+    @Override
     public void play(int index) {
         if (current != null)
             shutdownCurrent();
@@ -695,7 +699,7 @@ public class Player extends Thread implements PlayerControls {
     }
 
     @Override
-    public synchronized void stopTrack() throws Exception {
+    public synchronized void stopTrack() {
         if (current != null) {
             current.stopTrack();
             loadListenerMethod(ONSTOPPED, current);
@@ -763,7 +767,7 @@ public class Player extends Thread implements PlayerControls {
     }
 
     @Override
-    public synchronized void unmute() {
+    public synchronized void unMute() {
         isMute = false;
         if (current != null)
             current.setGain(currentVolume);
@@ -796,11 +800,13 @@ public class Player extends Thread implements PlayerControls {
         changeTrack(SeekOption.PREV);
     }
 
+    @Override
     public void playFolder(String path) {
         shutdownCurrent();
         playFolderSongs(path);
     }
 
+    @Override
     public void playFolder(int folderIndex) {
         final int foldersCount = getFoldersCount();
         if (folderIndex >= foldersCount)

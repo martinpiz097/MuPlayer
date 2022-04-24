@@ -374,7 +374,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     }
 
     @Override
-    public void unmute() {
+    public void unMute() {
         if (trackIO.isTrackStreamsOpened() && trackData.isMute()) {
             trackData.setMute(false);
             setGain(trackData.getVolume());

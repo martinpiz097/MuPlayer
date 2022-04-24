@@ -91,8 +91,8 @@ public class TrackHandler extends Thread implements MusicControls {
     }
 
     @Override
-    public void unmute() {
-        track.unmute();
+    public void unMute() {
+        track.unMute();
     }
 
     @Override

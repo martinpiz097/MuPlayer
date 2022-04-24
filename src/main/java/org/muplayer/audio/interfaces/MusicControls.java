@@ -17,7 +17,7 @@ public interface MusicControls {
     float getGain();
     void setGain(float volume);
     void mute();
-    void unmute();
+    void unMute();
 
     double getProgress();
 }

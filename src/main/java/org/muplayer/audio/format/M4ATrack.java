@@ -151,7 +151,7 @@ public class M4ATrack extends Track {
         if (isAac) {
             mute();
             super.seek(seconds);
-            unmute();
+            unMute();
         }
         else
             super.seek(seconds);

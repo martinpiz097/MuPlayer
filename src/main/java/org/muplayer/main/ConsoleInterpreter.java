@@ -359,7 +359,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
 
             case ConsoleOrder.UNMUTE:
                 if (isPlayerOn())
-                    player.unmute();
+                    player.unMute();
                 break;
 
             case ConsoleOrder.LIST1:
