@@ -108,7 +108,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         this.dataSource = dataSource;
         trackIO = new TrackIO();
         state = new StoppedState(this);
-        this.trackData = new TrackData(0, 0, Player.DEFAULT_VOLUME, false);
+        this.trackData = new TrackData(0, 0, PlayerData.DEFAULT_VOLUME, false);
         this.player = player;
         tagInfo = loadTagInfo(dataSource);
         setPriority(MAX_PRIORITY);
@@ -119,7 +119,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         this.dataSource = inputStream;
         trackIO = new TrackIO();
         state = new StoppedState(this);
-        this.trackData = new TrackData(0, 0, Player.DEFAULT_VOLUME, false);
+        this.trackData = new TrackData(0, 0, PlayerData.DEFAULT_VOLUME, false);
         this.player = player;
         setPriority(MAX_PRIORITY);
     }
@@ -491,4 +491,3 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         }
     }
 }
-

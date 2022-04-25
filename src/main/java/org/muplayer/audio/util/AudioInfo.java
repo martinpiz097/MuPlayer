@@ -16,9 +16,9 @@ import java.io.IOException;
 import java.util.List;
 
 public class AudioInfo {
-    private AudioFile audioFile;
-    private Tag fileTag;
-    private AudioHeader header;
+    private final AudioFile audioFile;
+    private final Tag fileTag;
+    private final AudioHeader header;
 
     public AudioInfo(File sound)
             throws TagException, ReadOnlyFileException,

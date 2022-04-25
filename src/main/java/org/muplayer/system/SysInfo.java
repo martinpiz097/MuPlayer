@@ -5,19 +5,21 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class SysInfo {
-    public static final String OSNAME = System.getProperty("os.name").toLowerCase();
-    public static final boolean ISWINDOWS = OSNAME.contains("windows");
-    public static final boolean ISLINUX = OSNAME.contains("linux");
-    public static final boolean ISMAC = (!ISWINDOWS && !ISLINUX) &&
-            (OSNAME.contains("mac") || OSNAME.contains("osx"));
+    public static final String OS_NAME = System.getProperty("os.name").toLowerCase();
+    public static final boolean IS_WINDOWS = OS_NAME.contains("windows");
+    public static final boolean IS_LINUX = OS_NAME.contains("linux");
+    public static final boolean IS_MAC = (!IS_WINDOWS && !IS_LINUX) &&
+            (OS_NAME.contains("mac") || OS_NAME.contains("osx"));
 
-    public static final boolean ISUNIX = ISLINUX || ISMAC;
+    public static final boolean IS_UNIX = IS_LINUX || IS_MAC;
     public static final String USERNAME = System.getProperty("user.name");
     public static final String VERSION;
     public static final String CONFIG_FILE_NAME = "config.properties";
     public static String CONFIG_FILE_PATH;
 
     public static final String AUDIO_SUPPORT_FILE_NAME = "audio-support.properties";
+
+
 
     static {
         VERSION = readVersion();

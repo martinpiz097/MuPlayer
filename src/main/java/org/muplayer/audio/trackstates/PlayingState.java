@@ -13,13 +13,14 @@ public class PlayingState extends TrackState {
     private final short BUFF_SIZE = 4096;
     private final byte[] audioBuffer = new byte[BUFF_SIZE];
 
+    private final int EOF = -1;
+
     public PlayingState(Track track) {
         super(track);
         trackLine = track.getTrackIO().getTrackLine();
     }
 
     private boolean canPlay() throws IOException {
-        int EOF = -1;
         return trackLine != null && readNextBytes() != EOF;
     }
 

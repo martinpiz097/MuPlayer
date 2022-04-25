@@ -199,7 +199,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
 
     protected void clearConsole() throws IOException {
         Process process;
-        if (SysInfo.ISUNIX)
+        if (SysInfo.IS_UNIX)
             process = Runtime.getRuntime().exec("clear");
         else
             process = Runtime.getRuntime().exec("cls");

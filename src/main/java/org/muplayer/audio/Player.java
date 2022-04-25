@@ -37,12 +37,8 @@ public class Player extends Thread implements PlayerControls {
     private final List<String> listFolderPaths;
     private final List<PlayerListener> listListeners;
 
-    private volatile int trackIndex;
-    private volatile float currentVolume;
-    private volatile boolean on;
-    private volatile boolean isMute;
+    private PlayerData playerData;
 
-    public static final float DEFAULT_VOLUME = AudioUtil.convertLineRangeToVolRange(AudioUtil.MiDDLE_VOL);
     private static final int DEFAULT_INITIAL_LIST_CAPACITY = 500;
 
     static {
@@ -58,18 +54,14 @@ public class Player extends Thread implements PlayerControls {
     }
 
     public Player(File rootFolder) throws FileNotFoundException {
-        //disableLogging();
         this.rootFolder = rootFolder;
         listTracks = new ArrayList<>(DEFAULT_INITIAL_LIST_CAPACITY);
         listFolderPaths = new ArrayList<>(DEFAULT_INITIAL_LIST_CAPACITY);
         listListeners = new ArrayList<>();
-        currentVolume = DEFAULT_VOLUME;
-        on = false;
-        isMute = false;
+        playerData = new PlayerData();
 
         checkRootFolder();
         setName("ThreadPlayer "+getId());
-        trackIndex = -1;
     }
 
     private void checkRootFolder() throws FileNotFoundException {
@@ -172,7 +164,7 @@ public class Player extends Thread implements PlayerControls {
                 if (nextTrack != null) {
                     try {
                         nextTrack.validateTrack();
-                        trackIndex = i;
+                        playerData.setTrackIndex(i);
                         break;
                     } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
                         e.printStackTrace();
@@ -188,7 +180,7 @@ public class Player extends Thread implements PlayerControls {
                 if (nextTrack != null) {
                     try {
                         nextTrack.validateTrack();
-                        trackIndex = i;
+                        playerData.setTrackIndex(i);
                         break;
                     } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
                         e.printStackTrace();
@@ -210,7 +202,7 @@ public class Player extends Thread implements PlayerControls {
     private void startTrackThread() {
         if (current != null) {
             current.setName(getThreadName());
-            current.setGain(isMute ? 0 : currentVolume);
+            current.setGain(playerData.isMute() ? 0 : playerData.getCurrentVolume());
             current.start();
         }
     }
@@ -227,13 +219,14 @@ public class Player extends Thread implements PlayerControls {
     private void shutdownCurrent() {
         if (current != null) {
             current.kill();
-            listTracks.set(trackIndex, Track.getTrack(current.getDataSourceAsFile(), this));
+            listTracks.set(playerData.getTrackIndex(),
+                    Track.getTrack(current.getDataSourceAsFile(), this));
             current = null;
         }
     }
 
     private void waitForSongs() {
-        while (on && getSongsCount() == 0) {
+        while (playerData.isOn() && getSongsCount() == 0) {
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
@@ -278,7 +271,7 @@ public class Player extends Thread implements PlayerControls {
     }
 
     private void startPlaying() {
-        on = true;
+        playerData.setOn(true);
         waitForSongs();
         playNext();
     }
@@ -343,16 +336,16 @@ public class Player extends Thread implements PlayerControls {
 
     public synchronized void jumpTrack(int jumps, SeekOption option) {
         if (option == SeekOption.NEXT) {
-            trackIndex+=jumps;
-            if (trackIndex >= listTracks.size())
-                trackIndex = 0;
+            playerData.increaseTrackIndex(jumps);
+            if (playerData.getTrackIndex() >= listTracks.size())
+                playerData.setTrackIndex(0);
         }
         else {
-            trackIndex -= jumps;
-            if (trackIndex < 0)
-                trackIndex = listTracks.size()-1;
+            playerData.decreaseTrackIndex(jumps);
+            if (playerData.getTrackIndex() < 0)
+                playerData.setTrackIndex(listTracks.size()-1);
         }
-        play(trackIndex);
+        play(playerData.getTrackIndex());
     }
 
     public synchronized List<File> getListSoundFiles() {
@@ -466,17 +459,14 @@ public class Player extends Thread implements PlayerControls {
     // vuelve a leer y cargar las tracks
     public synchronized void reloadTracks() {
         if (rootFolder != null) {
-            final int currentIndex = trackIndex;
+            final int currentIndex = playerData.getTrackIndex();
             listTracks.clear();
             listFolderPaths.clear();
             loadTracks(rootFolder);
             sortTracks();
 
             final int songCount = getSongsCount();
-            if (songCount > currentIndex)
-                trackIndex = currentIndex;
-            else
-                trackIndex = songCount-1;
+            playerData.setTrackIndex(songCount > currentIndex ? currentIndex : songCount-1);
         }
     }
 
@@ -489,12 +479,14 @@ public class Player extends Thread implements PlayerControls {
     }
 
     public synchronized TrackInfo getNext() {
+        final int trackIndex = playerData.getTrackIndex();
         final int songsCount = getSongsCount();
         final int nextIndex = trackIndex == -1 ? 0 : (trackIndex == songsCount-1 ? 0 : trackIndex+1);
         return listTracks.get(nextIndex);
     }
 
     public synchronized TrackInfo getPrevious() {
+        final int trackIndex = playerData.getTrackIndex();
         final int songsCount = getSongsCount();
         final int prevIndex = trackIndex == -1 ? songsCount-1 : (trackIndex == 0 ? songsCount-1 : trackIndex-1);
         return listTracks.get(prevIndex);
@@ -502,7 +494,7 @@ public class Player extends Thread implements PlayerControls {
 
     @Override
     public synchronized boolean isOn() {
-        return on;
+        return playerData.isOn();
     }
 
     @Override
@@ -532,7 +524,7 @@ public class Player extends Thread implements PlayerControls {
 
     @Override
     public synchronized boolean isMute() {
-        return isMute;
+        return playerData.isMute();
     }
 
     // ojo cuando se agrega musica de carpetas que estan fuera de rootFolder
@@ -595,10 +587,11 @@ public class Player extends Thread implements PlayerControls {
             trackResult = findFirstIn(parentToFind);
             if (trackResult != null) {
                 shutdownCurrent();
-                trackIndex = option == SeekOption.NEXT
+                final int trackIndex = option == SeekOption.NEXT
                         ? trackResult.getIndex() - 1
                         : trackResult.getIndex() + 1;
                 current = getTrackBy(trackIndex, option);
+                playerData.setTrackIndex(trackIndex);
                 startTrackThread();
                 loadListenerMethod(ONSONGCHANGE, current);
             }
@@ -624,7 +617,7 @@ public class Player extends Thread implements PlayerControls {
             if (track != null) {
                 current = track;
                 startTrackThread();
-                trackIndex = index;
+                playerData.setTrackIndex(index);
                 loadListenerMethod(ONPLAYED, current);
             }
         }
@@ -646,10 +639,10 @@ public class Player extends Thread implements PlayerControls {
             }
         }
         else {
-            trackIndex = indexOf;
+            playerData.setTrackIndex(indexOf);
             if (current != null)
                 current.kill();
-            current = listTracks.get(trackIndex);
+            current = listTracks.get(playerData.getTrackIndex());
             startTrackThread();
             loadListenerMethod(ONPLAYED, current);
         }
@@ -673,7 +666,7 @@ public class Player extends Thread implements PlayerControls {
         }
 
         if (indexOf != -1) {
-            trackIndex = indexOf;
+            playerData.setTrackIndex(indexOf);
             if (current != null)
                 current.kill();
             current = track;
@@ -737,16 +730,17 @@ public class Player extends Thread implements PlayerControls {
 
     @Override
     public synchronized float getGain() {
-        return current == null ? currentVolume : current.getGain();
+        return current == null
+                ? playerData.getCurrentVolume() : current.getGain();
     }
 
     // 0-100
     @Override
     public synchronized void setGain(float volume) {
-        currentVolume = volume;
+        playerData.setCurrentVolume(volume);
         if (current != null)
             current.setGain(volume);
-        isMute = currentVolume == 0;
+        playerData.setMute(playerData.getCurrentVolume() == 0);
     }
 
     @Override
@@ -761,18 +755,18 @@ public class Player extends Thread implements PlayerControls {
 
     @Override
     public synchronized void mute() {
-        isMute = true;
+        playerData.setMute(true);
         if (current != null)
             current.mute();
     }
 
     @Override
     public synchronized void unMute() {
-        isMute = false;
+        playerData.setMute(false);
         if (current != null)
-            current.setGain(currentVolume);
+            current.setGain(playerData.getCurrentVolume());
         else
-            currentVolume = 100;
+            playerData.setCurrentVolume(100);
     }
 
     public double getProgress() {
@@ -785,7 +779,7 @@ public class Player extends Thread implements PlayerControls {
 
     private synchronized void changeTrack(SeekOption seekOption) {
         shutdownCurrent();
-        current = getTrackBy(trackIndex, seekOption);
+        current = getTrackBy(playerData.getTrackIndex(), seekOption);
         startTrackThread();
         loadListenerMethod(ONSONGCHANGE, current);
     }
@@ -812,15 +806,15 @@ public class Player extends Thread implements PlayerControls {
         if (folderIndex >= foldersCount)
             folderIndex = foldersCount-1;
         shutdownCurrent();
-        trackIndex = seekToFolder(listFolderPaths.get(folderIndex));
-        current = getTrackBy(trackIndex-1, SeekOption.NEXT);
+        playerData.setTrackIndex(seekToFolder(listFolderPaths.get(folderIndex)));
+        current = getTrackBy(playerData.getTrackIndex()-1, SeekOption.NEXT);
         startTrackThread();
         loadListenerMethod(ONSONGCHANGE, current);
     }
 
     @Override
     public synchronized void shutdown() {
-        on = false;
+        playerData.setOn(false);
         shutdownCurrent();
         this.interrupt();
         loadListenerMethod(ONSHUTDOWN, null);

@@ -1,16 +1,13 @@
 package org.muplayer.audio.interfaces;
 
-import org.muplayer.audio.Track;
 import org.muplayer.audio.model.SeekOption;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.List;
 
 public interface PlayerControls extends MusicControls {
 
     boolean isOn();
-
     boolean hasSounds();
 
     void turnOn();

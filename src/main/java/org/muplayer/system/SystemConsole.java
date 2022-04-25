@@ -18,7 +18,7 @@ public class SystemConsole {
     public static void exec(String cmd) throws IOException {
         Process process;
         if (cmd.equals("clear"))
-            if (SysInfo.ISUNIX)
+            if (SysInfo.IS_UNIX)
                 process = Runtime.getRuntime().exec("clear");
             else
                 process = Runtime.getRuntime().exec("cls");
