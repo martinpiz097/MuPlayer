@@ -1,6 +1,7 @@
 package org.muplayer.info;
 
 import lombok.Data;
+import lombok.Synchronized;
 import org.muplayer.util.AudioUtil;
 
 @Data

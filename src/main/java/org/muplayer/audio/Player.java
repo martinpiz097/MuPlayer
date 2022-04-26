@@ -1,5 +1,6 @@
 package org.muplayer.audio;
 
+import lombok.extern.java.Log;
 import org.muplayer.info.AudioTag;
 import org.muplayer.info.PlayerData;
 import org.muplayer.info.SongData;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 import static org.muplayer.info.ListenersNames.*;
 import static org.muplayer.properties.ConfigInfo.CONFIG_FILE_NAME;
 
+@Log
 public class Player extends Thread implements PlayerControls {
     private volatile File rootFolder;
     private volatile Track current;
@@ -153,43 +155,33 @@ public class Player extends Thread implements PlayerControls {
         return currentParent != null ? listFolderPaths.indexOf(currentParent) : -1;
     }
 
-    private Track getTrackBy(int currentIndex, SeekOption param) {
-        Track nextTrack = null;
-        int nextIndex;
-        if (param == SeekOption.NEXT) {
-            nextIndex = currentIndex == getSongsCount()-1 || currentIndex < 0 ? 0 : currentIndex+1;
-            for (int i = nextIndex; i < listTracks.size(); i++) {
-                nextTrack = listTracks.get(i);
-                // Este if es por si existen archivos que no fuesen sonidos
-                // en las carpetas
-                if (nextTrack != null) {
-                    try {
-                        nextTrack.validateTrack();
-                        playerData.setTrackIndex(i);
-                        break;
-                    } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+    private Track getValidTrackBy(int index) {
+        Track track = listTracks.get(index);
+        try {
+            track.validateTrack();
+            return track;
+        } catch (Exception e) {
+            return null;
         }
+    }
 
-        else {
-            nextIndex = currentIndex == 0 ? getSongsCount()-1 : currentIndex-1;
-            for (int i = nextIndex; i >= 0; i--) {
-                nextTrack = listTracks.get(i);
-                if (nextTrack != null) {
-                    try {
-                        nextTrack.validateTrack();
-                        playerData.setTrackIndex(i);
-                        break;
-                    } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+    private Track getTrackFromOption(SeekOption option) {
+        Track result;
+        final int trackIndex = playerData.getTrackIndex();
+
+        if (option == SeekOption.NEXT)
+            playerData.setTrackIndex(trackIndex == listTracks.size() - 1 ? 0 : trackIndex+1);
+        else
+            playerData.setTrackIndex(trackIndex == 0 ? listTracks.size()-1 : trackIndex-1);
+        Track track = listTracks.get(playerData.getTrackIndex());
+        try {
+            track.validateTrack();
+            return track;
+        } catch (Exception e) {
+            log.info("Error on getTrack: "+(track != null ? track.getTitle() : "Unknown; index="
+                    +playerData.getTrackIndex()));
+            return null;
         }
-        return nextTrack;
     }
 
     private String getThreadName() {
@@ -587,14 +579,8 @@ public class Player extends Thread implements PlayerControls {
 
             trackResult = findFirstIn(parentToFind);
             if (trackResult != null) {
-                shutdownCurrent();
-                final int trackIndex = option == SeekOption.NEXT
-                        ? trackResult.getIndex() - 1
-                        : trackResult.getIndex() + 1;
-                current = getTrackBy(trackIndex, option);
-                playerData.setTrackIndex(trackIndex);
-                startTrackThread();
-                loadListenerMethod(ONSONGCHANGE, current);
+                playerData.setTrackIndex(trackResult.getIndex());
+                changeTrack(trackResult.getTrack());
             }
         }
     }
@@ -779,8 +765,12 @@ public class Player extends Thread implements PlayerControls {
     }
 
     private synchronized void changeTrack(SeekOption seekOption) {
+        changeTrack(getTrackFromOption(seekOption));
+    }
+
+    private synchronized void changeTrack(Track newTrack) {
         shutdownCurrent();
-        current = getTrackBy(playerData.getTrackIndex(), seekOption);
+        current = newTrack;
         startTrackThread();
         loadListenerMethod(ONSONGCHANGE, current);
     }
@@ -807,8 +797,8 @@ public class Player extends Thread implements PlayerControls {
         if (folderIndex >= foldersCount)
             folderIndex = foldersCount-1;
         shutdownCurrent();
-        playerData.setTrackIndex(seekToFolder(listFolderPaths.get(folderIndex)));
-        current = getTrackBy(playerData.getTrackIndex()-1, SeekOption.NEXT);
+        playerData.setTrackIndex(seekToFolder(listFolderPaths.get(folderIndex))-1);
+        current = getTrackFromOption(SeekOption.NEXT);
         startTrackThread();
         loadListenerMethod(ONSONGCHANGE, current);
     }
