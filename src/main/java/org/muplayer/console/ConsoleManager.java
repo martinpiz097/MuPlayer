@@ -1,4 +1,4 @@
-package org.muplayer.main;
+package org.muplayer.console;
 
 import java.util.LinkedList;
 import java.util.List;

@@ -1,6 +1,7 @@
 package org.muplayer.properties;
 
 import lombok.Getter;
+import org.muplayer.model.AudioSupport;
 import org.muplayer.util.DataUtil;
 
 import java.io.File;
@@ -16,27 +17,27 @@ import java.util.stream.Collectors;
 
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 
-public class AudioSupportManager {
+public class AudioSupportInfo {
     @Getter
     private final File supportFile;
     private final Properties properties;
     private volatile boolean cacheMode;
 
     public static final String KEY_PREFFIX = "audio.format.class.";
-    private static final AudioSupportManager singleton = new AudioSupportManager();
+    private static final AudioSupportInfo singleton = new AudioSupportInfo();
 
-    public static AudioSupportManager getInstance() {
+    public static AudioSupportInfo getInstance() {
         return singleton;
     }
 
-    protected AudioSupportManager() {
+    protected AudioSupportInfo() {
         supportFile = new File("./", ConfigInfo.AUDIO_SUPPORT_FILE_NAME);
         properties = new Properties();
         loadDefaultData();
         cacheMode = false;
     }
 
-    protected AudioSupportManager(File supportFile) {
+    protected AudioSupportInfo(File supportFile) {
         this.supportFile = supportFile;
         properties = new Properties();
         loadData();
@@ -48,23 +49,23 @@ public class AudioSupportManager {
             supportFile.createNewFile();
     }
 
-    private AudioSupportManager createTempManager() throws IOException {
+    private AudioSupportInfo createTempManager() throws IOException {
         final File tempFile = new File(System.currentTimeMillis()
                 + ".properties");
 
         tempFile.createNewFile();
         final String dataFromStream = DataUtil.getDataFromStream(
-                AudioSupportManager.class.getResourceAsStream("/"+ConfigInfo.AUDIO_SUPPORT_FILE_NAME));
+                AudioSupportInfo.class.getResourceAsStream("/"+ConfigInfo.AUDIO_SUPPORT_FILE_NAME));
         Files.write(tempFile.toPath(), dataFromStream.getBytes(StandardCharsets.UTF_8),
                 TRUNCATE_EXISTING);
-        return new AudioSupportManager(tempFile);
+        return new AudioSupportInfo(tempFile);
     }
 
     private void loadDefaultData() {
         try {
             if (supportFile.exists()) {
                 loadData();
-                final AudioSupportManager tempManager = createTempManager();
+                final AudioSupportInfo tempManager = createTempManager();
                 final Set<String> propertyKeys = tempManager.getPropertyNames();
 
                 propertyKeys.forEach(key->{

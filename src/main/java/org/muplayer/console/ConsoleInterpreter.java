@@ -1,7 +1,8 @@
-package org.muplayer.main;
+package org.muplayer.console;
 
 import org.muplayer.audio.Player;
 import org.muplayer.audio.Track;
+import org.muplayer.console.ConsoleOrder;
 import org.muplayer.model.Album;
 import org.muplayer.model.Artist;
 import org.muplayer.model.SeekOption;

@@ -14,10 +14,12 @@ public class PlayingState extends TrackState {
     private final byte[] audioBuffer = new byte[BUFF_SIZE];
 
     private final int EOF = -1;
+    private final TPlayingTrack trackThread;
 
     public PlayingState(Track track) {
         super(track);
         trackLine = track.getTrackIO().getTrackLine();
+        trackThread = new TPlayingTrack(track);
     }
 
     private boolean canPlay() throws IOException {
@@ -28,19 +30,10 @@ public class PlayingState extends TrackState {
         return track.getTrackIO().getDecodedStream().read(audioBuffer);
     }
 
-    private void checkTrackThread() {
-        final TPlayingTrack trackThread = track.getPlayingTrack();
-        if (trackThread == null || !trackThread.hasTrack(track)) {
-            final TPlayingTrack tPlayingTrack = new TPlayingTrack(track);
-            track.setPlayingTrack(tPlayingTrack);
-            TaskRunner.execute(tPlayingTrack);
-        }
-    }
-
     @Override
     public void handle() {
         try {
-            checkTrackThread();
+            TaskRunner.execute(trackThread);
             while (track.isPlaying())
                 if (canPlay())
                     trackLine.playAudio(audioBuffer);

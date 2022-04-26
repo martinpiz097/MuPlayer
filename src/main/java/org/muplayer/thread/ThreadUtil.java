@@ -3,7 +3,7 @@ package org.muplayer.thread;
 import org.muplayer.system.Time;
 import org.orangelogger.sys.Logger;
 
-public class ThreadManager {
+public class ThreadUtil {
 
     // paso un segundo ?
     public static boolean hasOneSecond(long ti) {
@@ -14,7 +14,7 @@ public class ThreadManager {
         try {
             thread.wait();
         } catch (InterruptedException e) {
-            Logger.getLogger(ThreadManager.class, e.getMessage());
+            Logger.getLogger(ThreadUtil.class, e.getMessage());
         }
     }
 

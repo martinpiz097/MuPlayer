@@ -10,12 +10,11 @@ import java.io.IOException;
 
 public class TPlayingTrack implements Runnable {
     private final Track track;
+    private final Player trackPlayer;
 
     public TPlayingTrack(Track track) {
         this.track = track;
-        /*String title = track.getTitle();
-        if (title != null && title.length() > 10)
-            title = title.substring(0, 10);*/
+        this.trackPlayer = track.getPlayer() instanceof Player ? (Player) track.getPlayer() : null;
     }
 
     public boolean hasTrack(Track track) {
@@ -31,15 +30,14 @@ public class TPlayingTrack implements Runnable {
 
     @Override
     public void run() {
-        PlayerControls player;
-        while (!track.isFinished() && !track.isKilled() && track.getTrackIO().isTrackStreamsOpened()) {
-            try {
-                player = track.getPlayer();
-                if (player instanceof Player)
-                    ((Player) player).loadListenerMethod(ListenersNames.ONPLAYING, track);
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        if (trackPlayer != null) {
+            while (track.isPlaying()) {
+                try {
+                    trackPlayer.loadListenerMethod(ListenersNames.ONPLAYING, track);
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

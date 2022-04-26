@@ -3,7 +3,7 @@ package org.muplayer.audio;
 import org.aucom.sound.Speaker;
 import org.jaudiotagger.tag.FieldKey;
 import org.muplayer.info.TrackIO;
-import org.muplayer.properties.AudioSupportManager;
+import org.muplayer.properties.AudioSupportInfo;
 import org.muplayer.info.AudioTag;
 import org.muplayer.info.PlayerData;
 import org.muplayer.info.TrackData;
@@ -36,9 +36,8 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     protected volatile TrackData trackData;
 
     protected volatile TrackState state;
-    protected volatile TPlayingTrack playingTrack;
     protected final PlayerControls player;
-    protected final AudioSupportManager audioSupportManager = AudioSupportManager.getInstance();
+    protected final AudioSupportInfo audioSupportInfo = AudioSupportInfo.getInstance();
 
     public static Track getTrack(Object dataSource) {
         return getTrack(dataSource, null);
@@ -52,7 +51,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
             Track result = null;
             final String formatName = FileUtil.getFormatName(fileSource.getName());
-            final AudioSupportManager supportManager = AudioSupportManager.getInstance();
+            final AudioSupportInfo supportManager = AudioSupportInfo.getInstance();
             final String formatClass = supportManager.getProperty(formatName);
 
             // ojo que puede faltar un throws para mas adelante
@@ -63,7 +62,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
         }
         else if (dataSource instanceof InputStream) {
             InputStream inputStream = (InputStream) dataSource;
-            final AudioSupportManager supportManager = AudioSupportManager.getInstance();
+            final AudioSupportInfo supportManager = AudioSupportInfo.getInstance();
             final Set<String> propertyNames = supportManager.getPropertyNames();
 
             final Optional<Track> optionalTrack = propertyNames.stream()
@@ -190,14 +189,6 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
 
     public TrackData getTrackData() {
         return trackData;
-    }
-
-    public TPlayingTrack getPlayingTrack() {
-        return playingTrack;
-    }
-
-    public void setPlayingTrack(TPlayingTrack playingTrack) {
-        this.playingTrack = playingTrack;
     }
 
     public TrackState getTrackState() {

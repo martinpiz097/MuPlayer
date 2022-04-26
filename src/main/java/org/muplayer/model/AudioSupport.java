@@ -1,4 +1,4 @@
-package org.muplayer.properties;
+package org.muplayer.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -12,7 +12,7 @@ import org.muplayer.info.PlayerInfo;
 import org.muplayer.exception.MuPlayerException;
 import org.muplayer.thread.ListenerRunner;
 import org.muplayer.thread.TaskRunner;
-import org.muplayer.thread.ThreadManager;
+import org.muplayer.thread.ThreadUtil;
 import org.muplayer.util.FileUtil;
 import org.muplayer.util.LineUtil;
 
@@ -214,7 +214,7 @@ public class Player extends Thread implements PlayerControls {
     }
 
     private synchronized void freezePlayer() {
-        ThreadManager.freezeThread(this);
+        ThreadUtil.freezeThread(this);
     }
 
     private void shutdownCurrent() {
