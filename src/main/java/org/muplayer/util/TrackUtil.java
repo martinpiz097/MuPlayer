@@ -1,7 +1,7 @@
 package org.muplayer.util;
 
 import org.muplayer.audio.Track;
-import org.muplayer.audio.interfaces.PlayerControls;
+import org.muplayer.interfaces.PlayerControls;
 
 import java.io.File;
 import java.io.InputStream;

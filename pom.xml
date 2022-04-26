@@ -152,12 +152,6 @@
     </distributionManagement>
 
     <dependencies>
-        <!--<dependency>
-            <groupId>com.github.sarxos</groupId>
-            <artifactId>webcam-capture</artifactId>
-            <version>0.3.10</version>
-        </dependency>-->
-
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
@@ -232,21 +226,15 @@
         </dependency>
 
         <dependency>
-            <groupId>org.jline</groupId>
-            <artifactId>jline</artifactId>
-            <version>3.19.0</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.bytebuffer</groupId>
             <artifactId>bytebuffer</artifactId>
-            <version>RELEASE</version>
+            <version>0.2</version>
         </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.20</version>
+            <version>1.18.24</version>
             <scope>provided</scope>
         </dependency>
 

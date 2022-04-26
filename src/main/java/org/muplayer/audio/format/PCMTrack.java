@@ -4,10 +4,10 @@ import com.sun.media.sound.AiffFileReader;
 import com.sun.media.sound.AuFileReader;
 import com.sun.media.sound.WaveFileReader;
 import org.muplayer.audio.Track;
-import org.muplayer.audio.TrackIO;
-import org.muplayer.audio.interfaces.PlayerControls;
-import org.muplayer.audio.util.AudioExtensions;
+import org.muplayer.info.TrackIO;
+import org.muplayer.interfaces.PlayerControls;
 import org.muplayer.util.AudioUtil;
+import org.muplayer.util.FileUtil;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -18,9 +18,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.muplayer.audio.util.AudioExtensions.*;
-
 public class PCMTrack extends Track {
+
+    private static final String WAVE = "wav";
+    private static final String AIFF = "aiff";
+    private static final String AIFC = "aifc";
 
     public PCMTrack(File dataSource) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         super(dataSource);
@@ -49,7 +51,7 @@ public class PCMTrack extends Track {
     @Override
     protected void loadAudioStream() throws IOException, UnsupportedAudioFileException {
         trackIO = new TrackIO();
-        final String extension = AudioExtensions.getFormatName(dataSource instanceof File
+        final String extension = FileUtil.getFormatName(dataSource instanceof File
                 ? ((File) dataSource).getName() : "");
         AudioFileReader audioReader;
         switch (extension) {

@@ -1,6 +1,6 @@
 package org.muplayer.util;
 
-import org.muplayer.system.AudioHardware;
+import org.muplayer.info.AudioHardware;
 
 import javax.sound.sampled.FloatControl;
 

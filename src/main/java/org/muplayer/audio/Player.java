@@ -1,18 +1,18 @@
 package org.muplayer.audio;
 
-import org.muplayer.audio.info.AudioTag;
-import org.muplayer.audio.info.SongData;
-import org.muplayer.audio.interfaces.PlayerControls;
-import org.muplayer.audio.interfaces.PlayerListener;
-import org.muplayer.audio.model.*;
-import org.muplayer.audio.trackstates.TrackState;
-import org.muplayer.audio.trackstates.UnknownState;
-import org.muplayer.audio.util.PlayerInfo;
+import org.muplayer.info.AudioTag;
+import org.muplayer.info.PlayerData;
+import org.muplayer.info.SongData;
+import org.muplayer.interfaces.PlayerControls;
+import org.muplayer.interfaces.PlayerListener;
+import org.muplayer.model.*;
+import org.muplayer.model.trackstates.TrackState;
+import org.muplayer.model.trackstates.UnknownState;
+import org.muplayer.info.PlayerInfo;
 import org.muplayer.exception.MuPlayerException;
 import org.muplayer.thread.ListenerRunner;
 import org.muplayer.thread.TaskRunner;
 import org.muplayer.thread.ThreadManager;
-import org.muplayer.util.AudioUtil;
 import org.muplayer.util.FileUtil;
 import org.muplayer.util.LineUtil;
 
@@ -27,7 +27,8 @@ import java.util.*;
 import java.util.logging.LogManager;
 import java.util.stream.Collectors;
 
-import static org.muplayer.system.ListenersNames.*;
+import static org.muplayer.info.ListenersNames.*;
+import static org.muplayer.properties.ConfigInfo.CONFIG_FILE_NAME;
 
 public class Player extends Thread implements PlayerControls {
     private volatile File rootFolder;
@@ -37,14 +38,14 @@ public class Player extends Thread implements PlayerControls {
     private final List<String> listFolderPaths;
     private final List<PlayerListener> listListeners;
 
-    private PlayerData playerData;
+    private final PlayerData playerData;
 
     private static final int DEFAULT_INITIAL_LIST_CAPACITY = 500;
 
     static {
         final LogManager logManager = LogManager.getLogManager();
         try {
-            logManager.readConfiguration(new FileInputStream("config.properties"));
+            logManager.readConfiguration(new FileInputStream(CONFIG_FILE_NAME));
         } catch (IOException e) {
         }
     }

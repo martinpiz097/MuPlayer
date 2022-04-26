@@ -4,9 +4,9 @@ import javazoom.spi.mpeg.sampled.file.MpegAudioFileReader;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.mp3.MP3AudioHeader;
 import org.muplayer.audio.Track;
-import org.muplayer.audio.TrackIO;
+import org.muplayer.info.TrackIO;
 import org.muplayer.audio.codec.DecodeManager;
-import org.muplayer.audio.interfaces.PlayerControls;
+import org.muplayer.interfaces.PlayerControls;
 import org.muplayer.util.AudioUtil;
 
 import javax.sound.sampled.AudioFormat;

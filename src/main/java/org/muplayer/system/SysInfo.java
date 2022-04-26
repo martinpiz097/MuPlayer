@@ -1,8 +1,11 @@
 package org.muplayer.system;
 
-import java.io.File;
+import org.muplayer.properties.ConfigInfo;
+
 import java.io.IOException;
 import java.io.InputStream;
+
+import static org.muplayer.properties.ConfigInfo.INFO_FILE_NAKE;
 
 public class SysInfo {
     public static final String OS_NAME = System.getProperty("os.name").toLowerCase();
@@ -14,26 +17,19 @@ public class SysInfo {
     public static final boolean IS_UNIX = IS_LINUX || IS_MAC;
     public static final String USERNAME = System.getProperty("user.name");
     public static final String VERSION;
-    public static final String CONFIG_FILE_NAME = "config.properties";
-    public static String CONFIG_FILE_PATH;
-
-    public static final String AUDIO_SUPPORT_FILE_NAME = "audio-support.properties";
-
-
 
     static {
         VERSION = readVersion();
-        CONFIG_FILE_PATH = readConfigPath();
     }
 
     private static String readVersion() {
-        try {
-            InputStream inputStream = SysInfo.class.getResource("/version.txt").openStream();
-            StringBuilder sbVersion = new StringBuilder();
-
+        try (InputStream inputStream = ConfigInfo.class.getResourceAsStream(INFO_FILE_NAKE)) {
+            final StringBuilder sbVersion = new StringBuilder();
             int read;
-            while ((read = inputStream.read()) != -1) {
-                sbVersion.append((char)read);
+            if (inputStream != null) {
+                while ((read = inputStream.read()) != -1) {
+                    sbVersion.append((char) read);
+                }
             }
             return sbVersion.toString();
         } catch (IOException e) {
@@ -41,20 +37,6 @@ public class SysInfo {
         }
     }
 
-    private static String readConfigPath() {
-        File jarPath = new File(SysInfo.class.getProtectionDomain().getCodeSource().getLocation().getFile());
-        File configFile = new File(jarPath.getParent(), CONFIG_FILE_NAME);
-        try {
-            if (configFile.exists()) {
-                return configFile.getCanonicalPath();
-            }
-            else {
-                return CONFIG_FILE_NAME;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+
 
 }

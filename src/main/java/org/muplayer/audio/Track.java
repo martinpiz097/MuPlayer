@@ -2,13 +2,17 @@ package org.muplayer.audio;
 
 import org.aucom.sound.Speaker;
 import org.jaudiotagger.tag.FieldKey;
-import org.muplayer.audio.info.AudioTag;
-import org.muplayer.audio.interfaces.MusicControls;
-import org.muplayer.audio.interfaces.PlayerControls;
-import org.muplayer.audio.model.TrackInfo;
-import org.muplayer.audio.trackstates.*;
-import org.muplayer.audio.util.AudioExtensions;
-import org.muplayer.system.TimeFormatter;
+import org.muplayer.info.TrackIO;
+import org.muplayer.properties.AudioSupportManager;
+import org.muplayer.info.AudioTag;
+import org.muplayer.info.PlayerData;
+import org.muplayer.info.TrackData;
+import org.muplayer.interfaces.MusicControls;
+import org.muplayer.interfaces.PlayerControls;
+import org.muplayer.model.TrackInfo;
+import org.muplayer.util.FileUtil;
+import org.muplayer.system.Time;
+import org.muplayer.model.trackstates.*;
 import org.muplayer.util.AudioUtil;
 import org.muplayer.thread.TPlayingTrack;
 
@@ -16,7 +20,6 @@ import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Objects;
@@ -48,7 +51,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
                 return null;
 
             Track result = null;
-            final String formatName = AudioExtensions.getFormatName(fileSource.getName());
+            final String formatName = FileUtil.getFormatName(fileSource.getName());
             final AudioSupportManager supportManager = AudioSupportManager.getInstance();
             final String formatClass = supportManager.getProperty(formatName);
 
@@ -234,7 +237,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     }
 
     public synchronized String getFormattedProgress() {
-        final String progress = TimeFormatter.format((long) getProgress());
+        final String progress = Time.getInstance().getTimeFormatter().format((long) getProgress());
         final String duration = getFormattedDuration();
         return progress+"/"+duration;
     }

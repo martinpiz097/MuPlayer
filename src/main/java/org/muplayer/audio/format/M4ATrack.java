@@ -8,8 +8,8 @@ import net.sourceforge.jaad.mp4.api.Frame;
 import net.sourceforge.jaad.mp4.api.Movie;
 import net.sourceforge.jaad.spi.javasound.AACAudioFileReader;
 import org.muplayer.audio.Track;
-import org.muplayer.audio.TrackIO;
-import org.muplayer.audio.interfaces.PlayerControls;
+import org.muplayer.info.TrackIO;
+import org.muplayer.interfaces.PlayerControls;
 import org.muplayer.util.AudioUtil;
 import org.orangelogger.sys.Logger;
 

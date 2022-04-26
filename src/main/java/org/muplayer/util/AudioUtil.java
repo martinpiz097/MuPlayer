@@ -1,7 +1,6 @@
 package org.muplayer.util;
 
-import org.muplayer.audio.AudioSupportManager;
-import org.muplayer.audio.util.AudioExtensions;
+import org.muplayer.properties.AudioSupportManager;
 
 import javax.sound.sampled.*;
 import javax.sound.sampled.spi.AudioFileReader;
@@ -75,7 +74,7 @@ public class AudioUtil {
     }
 
     public static boolean isSupported(File trackFile) {
-        final String formatName = AudioExtensions.getFormatName(trackFile.getName());
+        final String formatName = FileUtil.getFormatName(trackFile.getName());
         return AudioSupportManager.getInstance().getProperty(formatName) != null;
     }
 

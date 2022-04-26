@@ -3,9 +3,9 @@ package org.muplayer.audio.format;
 import org.jflac.sound.spi.FlacAudioFileReader;
 import org.jflac.sound.spi.FlacFormatConversionProvider;
 import org.muplayer.audio.Track;
-import org.muplayer.audio.TrackIO;
+import org.muplayer.info.TrackIO;
 import org.muplayer.audio.codec.DecodeManager;
-import org.muplayer.audio.interfaces.PlayerControls;
+import org.muplayer.interfaces.PlayerControls;
 import org.muplayer.util.AudioUtil;
 
 import javax.sound.sampled.AudioFormat;
@@ -80,7 +80,10 @@ public class FlacTrack extends Track {
             return;
         trackData.setSecsSeeked(trackData.getSecsSeeked()+seconds);
         final int bytesToSeek = (int) Math.round(convertSecondsToBytes(seconds));
-        trackIO.getDecodedStream().read(new byte[bytesToSeek]);
+
+        AudioInputStream decodedStream = trackIO.getDecodedStream();
+        if (decodedStream != null)
+            decodedStream.read(new byte[bytesToSeek]);
     }
 
 }

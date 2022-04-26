@@ -2,9 +2,12 @@ package org.muplayer.main;
 
 import org.muplayer.audio.Player;
 import org.muplayer.audio.Track;
-import org.muplayer.audio.model.Album;
-import org.muplayer.audio.model.Artist;
-import org.muplayer.audio.model.SeekOption;
+import org.muplayer.model.Album;
+import org.muplayer.model.Artist;
+import org.muplayer.model.SeekOption;
+import org.muplayer.console.Command;
+import org.muplayer.console.CommandInterpreter;
+import org.muplayer.properties.HelpInfo;
 import org.muplayer.system.*;
 import org.muplayer.util.TrackUtil;
 import org.orangelogger.sys.Logger;
@@ -215,9 +218,8 @@ public class ConsoleInterpreter implements CommandInterpreter {
     }
 
     protected void printHelp() {
-        final HelpManager helpManager = HelpManager.getInstance();
-        helpManager.setCacheMode(true);
-        final Set<String> propertyNames = helpManager.getPropertyNames();
+        final HelpInfo helpInfo = HelpInfo.getInstance();
+        final Set<String> propertyNames = helpInfo.getPropertyNames();
 
         final Iterator<String> it = propertyNames.iterator();
         final StringBuilder sbHelp = new StringBuilder();
@@ -229,14 +231,13 @@ public class ConsoleInterpreter implements CommandInterpreter {
             sbHelp.append(count++).append(") ")
                     .append(key)
                     .append(": ")
-                    .append(helpManager.getProperty(key))
+                    .append(helpInfo.getProperty(key))
                     .append('\n');
         }
         Logger.getLogger(this, "---------").rawWarning();
         Logger.getLogger(this, "Help Info").rawWarning();
         Logger.getLogger(this, "---------").rawWarning();
         Logger.getLogger(this, sbHelp.toString()).rawWarning();
-        helpManager.setCacheMode(false);
     }
 
     public void showSongInfo(Track track) {

@@ -2,8 +2,8 @@ package org.muplayer.thread;
 
 import org.muplayer.audio.Player;
 import org.muplayer.audio.Track;
-import org.muplayer.audio.interfaces.PlayerControls;
-import org.muplayer.system.ListenersNames;
+import org.muplayer.interfaces.PlayerControls;
+import org.muplayer.info.ListenersNames;
 
 import java.io.File;
 import java.io.IOException;

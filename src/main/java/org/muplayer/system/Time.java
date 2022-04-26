@@ -1,17 +1,23 @@
 package org.muplayer.system;
 
+import lombok.Data;
+
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+@Data
 public class Time {
 
-    private static volatile Time time = new Time();
+    private static final Time time = new Time();
+    private final TimeFormatter timeFormatter;
 
     public static Time getInstance() {
         return time;
     }
 
-    private Time() {}
+    private Time() {
+        timeFormatter = new TimeFormatter();
+    }
 
     private Calendar getCalendar() {
         return new GregorianCalendar();
