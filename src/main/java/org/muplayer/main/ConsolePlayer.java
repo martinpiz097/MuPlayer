@@ -69,12 +69,11 @@ public class ConsolePlayer extends Thread {
 
     @Override
     public void run() {
-        if (SysInfo.VERSION == null) {
-            Logger.getLogger(this, "MuPlayer started...").rawInfo();
-        }
-        else {
-            Logger.getLogger(this, "MuPlayer v"+SysInfo.VERSION+" started...").rawInfo();
-        }
+        final String appVersion = SysInfo.readVersion();
+        final String msg = appVersion != null
+                ? "MuPlayer v"+appVersion+" started..."
+                : "MuPlayer started...";
+        Logger.getLogger(this, msg).rawInfo();
         interpreter.setOn(true);
 
         while (interpreter.isOn()) {

@@ -54,7 +54,7 @@ public class AudioSupportManager {
 
         tempFile.createNewFile();
         final String dataFromStream = DataUtil.getDataFromStream(
-                AudioSupportManager.class.getResourceAsStream("/audio-support.properties"));
+                AudioSupportManager.class.getResourceAsStream("/"+ConfigInfo.AUDIO_SUPPORT_FILE_NAME));
         Files.write(tempFile.toPath(), dataFromStream.getBytes(StandardCharsets.UTF_8),
                 TRUNCATE_EXISTING);
         return new AudioSupportManager(tempFile);

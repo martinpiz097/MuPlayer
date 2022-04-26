@@ -6,7 +6,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.muplayer.properties.ConfigInfo.HELP_FILE_NAME;
+import static org.muplayer.properties.ConfigInfo.HELP_FILE_PATH;
 
 public class HelpInfo {
     private final Properties properties;
@@ -31,7 +31,7 @@ public class HelpInfo {
 
     private void loadData() {
         try {
-            properties.load(getClass().getResourceAsStream(HELP_FILE_NAME));
+            properties.load(getClass().getResourceAsStream(HELP_FILE_PATH));
             System.out.println("");
         } catch (IOException e) {
             e.printStackTrace();
@@ -43,9 +43,7 @@ public class HelpInfo {
     }
 
     public Set<String> getPropertyNames() {
-        Set<String> stringsPropNames;
-        stringsPropNames = properties.stringPropertyNames();
-        return stringsPropNames.stream().sorted()
+        return properties.stringPropertyNames().stream().sorted()
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 

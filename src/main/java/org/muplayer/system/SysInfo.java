@@ -1,11 +1,13 @@
 package org.muplayer.system;
 
+import org.muplayer.properties.AppInfo;
+import org.muplayer.properties.AppInfoKeys;
 import org.muplayer.properties.ConfigInfo;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.muplayer.properties.ConfigInfo.INFO_FILE_NAKE;
+import static org.muplayer.properties.ConfigInfo.INFO_FILE_PATH;
 
 public class SysInfo {
     public static final String OS_NAME = System.getProperty("os.name").toLowerCase();
@@ -16,25 +18,9 @@ public class SysInfo {
 
     public static final boolean IS_UNIX = IS_LINUX || IS_MAC;
     public static final String USERNAME = System.getProperty("user.name");
-    public static final String VERSION;
 
-    static {
-        VERSION = readVersion();
-    }
-
-    private static String readVersion() {
-        try (InputStream inputStream = ConfigInfo.class.getResourceAsStream(INFO_FILE_NAKE)) {
-            final StringBuilder sbVersion = new StringBuilder();
-            int read;
-            if (inputStream != null) {
-                while ((read = inputStream.read()) != -1) {
-                    sbVersion.append((char) read);
-                }
-            }
-            return sbVersion.toString();
-        } catch (IOException e) {
-            return null;
-        }
+    public static String readVersion() {
+        return AppInfo.getInstance().getProperty(AppInfoKeys.APP_VERSION);
     }
 
 
