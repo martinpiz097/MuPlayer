@@ -1,5 +1,7 @@
 package org.muplayer.info;
 
+import org.muplayer.util.AudioUtil;
+
 import javax.sound.sampled.*;
 import javax.xml.crypto.Data;
 import java.util.Arrays;
@@ -246,6 +248,16 @@ public class AudioHardware {
             return false;
         }
         return true;
+    }
+
+    public static float getFormattedMasterVolume() {
+        final FloatControl volumeControl = AudioHardware.getReadyVolumeControl();
+        return AudioUtil.convertLineRangeToVolRange(volumeControl.getValue(), volumeControl);
+    }
+
+    public static void setFormattedMasterVolume(float volume) {
+        final FloatControl volumeControl = AudioHardware.getReadyVolumeControl();
+        volumeControl.setValue(AudioUtil.convertVolRangeToLineRange(volume, volumeControl));
     }
 
     public static String toString(Control control) {

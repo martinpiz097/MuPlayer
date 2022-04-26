@@ -1,4 +1,4 @@
-package org.muplayer.model.trackstates;
+package org.muplayer.audio.trackstates;
 
 import org.aucom.sound.Speaker;
 import org.muplayer.audio.Track;

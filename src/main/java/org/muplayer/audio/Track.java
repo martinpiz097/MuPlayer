@@ -2,6 +2,7 @@ package org.muplayer.audio;
 
 import org.aucom.sound.Speaker;
 import org.jaudiotagger.tag.FieldKey;
+import org.muplayer.audio.trackstates.*;
 import org.muplayer.info.TrackIO;
 import org.muplayer.properties.AudioSupportInfo;
 import org.muplayer.info.AudioTag;
@@ -12,9 +13,7 @@ import org.muplayer.interfaces.PlayerControls;
 import org.muplayer.model.TrackInfo;
 import org.muplayer.util.FileUtil;
 import org.muplayer.system.Time;
-import org.muplayer.model.trackstates.*;
 import org.muplayer.util.AudioUtil;
-import org.muplayer.thread.TPlayingTrack;
 
 import javax.sound.sampled.*;
 import java.io.File;

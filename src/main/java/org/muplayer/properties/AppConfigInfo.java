@@ -4,19 +4,19 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
-public class AppConfig {
+public class AppConfigInfo {
     private final File fileProps;
     private Properties props;
 
-    private static AppConfig singleton;
+    private static AppConfigInfo singleton;
 
-    public static AppConfig getInstance() {
+    public static AppConfigInfo getInstance() {
         if (singleton == null)
-            singleton = new AppConfig();
+            singleton = new AppConfigInfo();
         return singleton;
     }
 
-    private AppConfig() {
+    private AppConfigInfo() {
         /*try {
             System.out.println(new File(".").getCanonicalPath());
             System.out.println(new File("").getCanonicalPath());

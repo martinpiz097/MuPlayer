@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.muplayer.audio.Player;
 import org.muplayer.console.ConsoleInterpreter;
-import org.muplayer.properties.AppConfig;
+import org.muplayer.properties.AppConfigInfo;
 import org.muplayer.properties.AppInfoKeys;
 import org.muplayer.system.SysInfo;
 import org.muplayer.thread.TaskRunner;
@@ -88,7 +88,7 @@ public class ConsolePlayer extends Thread {
     public static void main(String[] args) {
         try {
             if (args.length == 0) {
-                final String defaultRootPath = AppConfig.getInstance().get(AppInfoKeys.DEFAULT_ROOT_FOLDER);
+                final String defaultRootPath = AppConfigInfo.getInstance().get(AppInfoKeys.DEFAULT_ROOT_FOLDER);
                 if (defaultRootPath == null) {
                     throw new NullPointerException("Property 'root_folder' must be configured.\n" +
                             "If you want to load a folder path automatically, create a file called config.properties in " +

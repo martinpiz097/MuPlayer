@@ -1,21 +1,17 @@
 package org.muplayer.audio;
 
 import lombok.extern.java.Log;
-import org.muplayer.info.AudioTag;
-import org.muplayer.info.PlayerData;
-import org.muplayer.info.SongData;
+import org.muplayer.info.*;
 import org.muplayer.interfaces.PlayerControls;
 import org.muplayer.interfaces.PlayerListener;
 import org.muplayer.model.*;
-import org.muplayer.model.trackstates.TrackState;
-import org.muplayer.model.trackstates.UnknownState;
-import org.muplayer.info.PlayerInfo;
+import org.muplayer.audio.trackstates.TrackState;
+import org.muplayer.audio.trackstates.UnknownState;
 import org.muplayer.exception.MuPlayerException;
 import org.muplayer.thread.ListenerRunner;
 import org.muplayer.thread.TaskRunner;
 import org.muplayer.thread.ThreadUtil;
 import org.muplayer.util.FileUtil;
-import org.muplayer.util.LineUtil;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -709,12 +705,12 @@ public class Player extends Thread implements PlayerControls {
 
     @Override
     public float getSystemVolume() {
-        return LineUtil.getFormattedMasterVolume();
+        return AudioHardware.getFormattedMasterVolume();
     }
 
     @Override
     public void setSystemVolume(float volume) {
-        LineUtil.setFormattedMasterVolume(volume);
+        AudioHardware.setFormattedMasterVolume(volume);
     }
 
     @Override
