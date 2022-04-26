@@ -31,12 +31,15 @@ public class ConsoleInterpreter implements CommandInterpreter {
     private final File playerFolder;
     private boolean on;
 
+    private final HelpInfo helpInfo;
+
     private static final String CMD_DIVISOR = " && ";
 
     public ConsoleInterpreter(Player player) {
         this.player = player;
         this.playerFolder = player.getRootFolder();
         on = false;
+        helpInfo = HelpInfo.getInstance();
     }
 
     private boolean isPlayerOn() {
@@ -218,7 +221,6 @@ public class ConsoleInterpreter implements CommandInterpreter {
     }
 
     protected void printHelp() {
-        final HelpInfo helpInfo = HelpInfo.getInstance();
         final Set<String> propertyNames = helpInfo.getPropertyNames();
 
         final Iterator<String> it = propertyNames.iterator();

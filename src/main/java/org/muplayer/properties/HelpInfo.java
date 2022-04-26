@@ -1,5 +1,8 @@
 package org.muplayer.properties;
 
+import org.muplayer.util.IOUtil;
+
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.Properties;
@@ -17,21 +20,16 @@ public class HelpInfo {
         return instance;
     }
 
-    public HelpInfo() {
+    private HelpInfo() {
         properties = new Properties();
         loadData();
     }
 
-    private void checkProperty(String key, String defaultValue) {
-        final String property = properties.getProperty(key);
-        if (property == null || property.isEmpty()) {
-            properties.setProperty(key, defaultValue);
-        }
-    }
-
     private void loadData() {
         try {
-            properties.load(getClass().getResourceAsStream(HELP_FILE_PATH));
+            final byte[] resourceBytes = IOUtil.getBytesFromStream(
+                    getClass().getResourceAsStream(HELP_FILE_PATH));
+            properties.load(new ByteArrayInputStream(resourceBytes));
             System.out.println("");
         } catch (IOException e) {
             e.printStackTrace();
