@@ -161,23 +161,6 @@ public class Player extends Thread implements PlayerControls {
             track.validateTrack();
             return track;
         } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private Track getTrackFromOption(SeekOption option) {
-        Track result;
-        final int trackIndex = playerData.getTrackIndex();
-
-        if (option == SeekOption.NEXT)
-            playerData.setTrackIndex(trackIndex == listTracks.size() - 1 ? 0 : trackIndex+1);
-        else
-            playerData.setTrackIndex(trackIndex == 0 ? listTracks.size()-1 : trackIndex-1);
-        Track track = listTracks.get(playerData.getTrackIndex());
-        try {
-            track.validateTrack();
-            return track;
-        } catch (Exception e) {
             log.info("Error on getTrack: "+(track != null ? track.getTitle() : "Unknown; index="
                     +playerData.getTrackIndex()));
             return null;
@@ -562,9 +545,8 @@ public class Player extends Thread implements PlayerControls {
     public synchronized void seekFolder(SeekOption option, int jumps) {
         final int folderIndex = getFolderIndex();
         if (folderIndex != -1) {
-            int newFolderIndex;
-            String parentToFind;
-            TrackSearch trackResult;
+            final int newFolderIndex;
+            final String parentToFind;
 
             if (option == SeekOption.NEXT) {
                 newFolderIndex = folderIndex+jumps;
@@ -576,12 +558,7 @@ public class Player extends Thread implements PlayerControls {
                 parentToFind = listFolderPaths.get(newFolderIndex < 0
                         ? listFolderPaths.size()-1 : newFolderIndex);
             }
-
-            trackResult = findFirstIn(parentToFind);
-            if (trackResult != null) {
-                playerData.setTrackIndex(trackResult.getIndex());
-                changeTrack(trackResult.getTrack());
-            }
+            changeTrack(findFirstIn(parentToFind));
         }
     }
 
@@ -765,14 +742,31 @@ public class Player extends Thread implements PlayerControls {
     }
 
     private synchronized void changeTrack(SeekOption seekOption) {
-        changeTrack(getTrackFromOption(seekOption));
+        final int currentIndex = playerData.getTrackIndex();
+        final int newIndex;
+        if (seekOption == SeekOption.NEXT)
+            newIndex = currentIndex == listTracks.size() - 1 ? 0 : currentIndex+1;
+        else
+            newIndex = currentIndex == 0 ? listTracks.size()-1 : currentIndex-1;
+        changeTrack(newIndex);
     }
 
-    private synchronized void changeTrack(Track newTrack) {
+    private synchronized void changeTrack(int trackIndex) {
         shutdownCurrent();
-        current = newTrack;
+        playerData.setTrackIndex(trackIndex);
+        current = getValidTrackBy(playerData.getTrackIndex());
         startTrackThread();
         loadListenerMethod(ONSONGCHANGE, current);
+    }
+
+    private synchronized void changeTrack(TrackSearch trackSearch) {
+        if (trackSearch != null) {
+            shutdownCurrent();
+            playerData.setTrackIndex(trackSearch.getIndex());
+            current = trackSearch.getTrack();
+            startTrackThread();
+            loadListenerMethod(ONSONGCHANGE, current);
+        }
     }
 
     @Override
@@ -796,11 +790,8 @@ public class Player extends Thread implements PlayerControls {
         final int foldersCount = getFoldersCount();
         if (folderIndex >= foldersCount)
             folderIndex = foldersCount-1;
-        shutdownCurrent();
-        playerData.setTrackIndex(seekToFolder(listFolderPaths.get(folderIndex))-1);
-        current = getTrackFromOption(SeekOption.NEXT);
-        startTrackThread();
-        loadListenerMethod(ONSONGCHANGE, current);
+        final int newIndex = seekToFolder(listFolderPaths.get(folderIndex));
+        changeTrack(newIndex);
     }
 
     @Override
