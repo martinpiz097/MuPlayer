@@ -31,7 +31,7 @@ public class AudioSupportInfo {
     }
 
     protected AudioSupportInfo() {
-        supportFile = new File("./", ConfigInfo.AUDIO_SUPPORT_FILE_NAME);
+        supportFile = new File("./", PropertiesFilesInfo.AUDIO_SUPPORT_FILE_NAME);
         properties = new Properties();
         loadDefaultData();
         cacheMode = false;
@@ -55,7 +55,7 @@ public class AudioSupportInfo {
 
         tempFile.createNewFile();
         final String dataFromStream = DataUtil.getDataFromStream(
-                AudioSupportInfo.class.getResourceAsStream("/"+ConfigInfo.AUDIO_SUPPORT_FILE_NAME));
+                AudioSupportInfo.class.getResourceAsStream("/"+ PropertiesFilesInfo.AUDIO_SUPPORT_FILE_NAME));
         Files.write(tempFile.toPath(), dataFromStream.getBytes(StandardCharsets.UTF_8),
                 TRUNCATE_EXISTING);
         return new AudioSupportInfo(tempFile);

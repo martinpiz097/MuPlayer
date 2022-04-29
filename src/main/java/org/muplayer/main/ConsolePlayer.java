@@ -63,7 +63,7 @@ public class ConsolePlayer extends Thread {
     public void execCommand(String strCmd) {
         try {
             interpreter.interprateCommand(strCmd);
-        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

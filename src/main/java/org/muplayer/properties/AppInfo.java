@@ -6,7 +6,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.muplayer.properties.ConfigInfo.INFO_FILE_PATH;
+import static org.muplayer.properties.PropertiesFilesInfo.INFO_FILE_PATH;
 
 public class AppInfo {
     private final Properties properties;

@@ -2,12 +2,6 @@ package org.muplayer.system;
 
 import org.muplayer.properties.AppInfo;
 import org.muplayer.properties.AppInfoKeys;
-import org.muplayer.properties.ConfigInfo;
-
-import java.io.IOException;
-import java.io.InputStream;
-
-import static org.muplayer.properties.ConfigInfo.INFO_FILE_PATH;
 
 public class SysInfo {
     public static final String OS_NAME = System.getProperty("os.name").toLowerCase();

@@ -1,31 +1,30 @@
 package org.muplayer.audio;
 
 import lombok.extern.java.Log;
+import org.muplayer.audio.trackstates.TrackState;
+import org.muplayer.audio.trackstates.UnknownState;
+import org.muplayer.exception.MuPlayerException;
 import org.muplayer.info.*;
 import org.muplayer.interfaces.PlayerControls;
 import org.muplayer.interfaces.PlayerListener;
 import org.muplayer.model.*;
-import org.muplayer.audio.trackstates.TrackState;
-import org.muplayer.audio.trackstates.UnknownState;
-import org.muplayer.exception.MuPlayerException;
+import org.muplayer.properties.PropertiesFilesInfo;
 import org.muplayer.thread.ListenerRunner;
 import org.muplayer.thread.TaskRunner;
 import org.muplayer.thread.ThreadUtil;
 import org.muplayer.util.FileUtil;
+import org.muplayer.util.IOUtil;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.logging.LogManager;
 import java.util.stream.Collectors;
 
 import static org.muplayer.info.ListenersNames.*;
-import static org.muplayer.properties.ConfigInfo.CONFIG_FILE_NAME;
+import static org.muplayer.properties.PropertiesFilesInfo.INFO_FILE_PATH;
 
 @Log
 public class Player extends Thread implements PlayerControls {
@@ -43,7 +42,7 @@ public class Player extends Thread implements PlayerControls {
     static {
         final LogManager logManager = LogManager.getLogManager();
         try {
-            logManager.readConfiguration(new FileInputStream(CONFIG_FILE_NAME));
+            logManager.readConfiguration(IOUtil.getArrayStreamFromRes(INFO_FILE_PATH));
         } catch (IOException e) {
         }
     }

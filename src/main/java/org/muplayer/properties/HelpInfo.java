@@ -9,7 +9,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.muplayer.properties.ConfigInfo.HELP_FILE_PATH;
+import static org.muplayer.properties.PropertiesFilesInfo.HELP_FILE_PATH;
 
 public class HelpInfo {
     private final Properties properties;

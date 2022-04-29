@@ -28,7 +28,7 @@ public class AppConfigInfo {
         } catch (IOException e) {
             e.printStackTrace();
         }*/
-        fileProps = new File(ConfigInfo.CONFIG_FILE_NAME);
+        fileProps = new File(PropertiesFilesInfo.CONFIG_FILE_PATH);
         props = new Properties();
 
         if (!fileProps.exists()) {
