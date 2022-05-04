@@ -3,6 +3,7 @@ package org.muplayer.main;
 import lombok.Getter;
 import lombok.Setter;
 import org.muplayer.audio.Player;
+import org.muplayer.console.ConsoleExecution;
 import org.muplayer.console.ConsoleInterpreter;
 import org.muplayer.properties.AppConfigInfo;
 import org.muplayer.properties.AppInfoKeys;
@@ -60,12 +61,13 @@ public class ConsolePlayer extends Thread {
         }
     }
 
-    public void execCommand(String strCmd) {
+    public ConsoleExecution execCommand(String strCmd) {
         try {
-            interpreter.interprateCommand(strCmd);
+            return interpreter.executeCommand(strCmd);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     @Override

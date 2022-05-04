@@ -227,9 +227,7 @@ public abstract class Track extends Thread implements MusicControls, TrackInfo {
     }
 
     public synchronized String getFormattedProgress() {
-        final String progress = Time.getInstance().getTimeFormatter().format((long) getProgress());
-        final String duration = getFormattedDuration();
-        return progress+"/"+duration;
+        return Time.getInstance().getTimeFormatter().format((long) getProgress());
     }
 
     public AudioFileFormat getFileFormat() throws IOException, UnsupportedAudioFileException {

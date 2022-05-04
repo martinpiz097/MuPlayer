@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -250,15 +251,25 @@ public class ConsoleInterpreter implements CommandInterpreter {
             Logger.getLogger(this, TrackUtil.getSongInfo(track)).rawWarning();
     }
 
-    public void interprateCommand(String cmd) throws Exception {
+    public ConsoleExecution executeCommand(String cmd) throws Exception {
         if (cmd.contains(CMD_DIVISOR)) {
             final String[] cmdSplit = cmd.split(CMD_DIVISOR);
+            ConsoleExecution consoleExecution = new ConsoleExecution();
+
+            final List<Object> listExec = new ArrayList<>();
+            ConsoleExecution exec;
+
             for (int i = 0; i < cmdSplit.length; i++) {
-                interprate(cmdSplit[i].trim());
+                exec = executeCommand(cmdSplit[i].trim());
+                if (exec != null)
+                    listExec.add(exec.getOutput());
             }
+            consoleExecution.setCmd(cmd);
+            consoleExecution.setOutput(listExec);
+            return consoleExecution;
         }
         else
-            interprate(cmd);
+            return executeCommand(cmd);
     }
 
     public boolean isOn() {
@@ -270,10 +281,12 @@ public class ConsoleInterpreter implements CommandInterpreter {
     }
 
     @Override
-    public void interprate(Command cmd) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
+    public ConsoleExecution executeCommand(Command cmd) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
         final String cmdOrder = cmd.getOrder();
         Track current;
 
+        final ConsoleExecution consoleExecution = new ConsoleExecution();
+        consoleExecution.setCmd(cmd.toString());
         switch (cmdOrder) {
             case ConsoleOrder.START:
                 if (player == null)
@@ -539,7 +552,9 @@ public class ConsoleInterpreter implements CommandInterpreter {
                 if (current == null)
                     Logger.getLogger(this, "Current track unavailable").rawError();
                 else {
-                    Logger.getLogger(this, current.getFormattedProgress()).rawWarning();
+                    final String formattedProgress = current.getFormattedProgress();;
+                    final String formattedDuration = current.getFormattedDuration();
+                    Logger.getLogger(this, formattedProgress+"/"+formattedDuration).rawWarning();
                 }
                 break;
 
@@ -678,5 +693,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
                         "para desplegar el menú de ayuda.").rawWarning();
                 break;
         }
+
+        return consoleExecution;
     }
 }

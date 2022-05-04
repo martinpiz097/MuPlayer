@@ -5,9 +5,11 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 
 public interface CommandInterpreter {
-    void interprate(Command cmd) throws Exception;
-    default void interprate(String strCmd) throws Exception {
+    ConsoleExecution executeCommand(Command cmd) throws Exception;
+    default ConsoleExecution executeCommand(String strCmd) throws Exception {
         if (strCmd != null && !strCmd.isEmpty())
-            interprate(new Command(strCmd));
+            return executeCommand(new Command(strCmd));
+        else
+            return null;
     }
 }
