@@ -1,5 +1,6 @@
 package org.muplayer.audio.trackstates;
 
+import lombok.extern.java.Log;
 import org.aucom.sound.Speaker;
 import org.muplayer.audio.Track;
 import org.muplayer.thread.TPlayingTrack;
@@ -7,7 +8,9 @@ import org.muplayer.thread.TaskRunner;
 import org.orangelogger.sys.Logger;
 
 import java.io.IOException;
+import java.util.logging.Level;
 
+@Log
 public class PlayingState extends TrackState {
     private final Speaker trackLine;
     private final short BUFF_SIZE = 4096;
@@ -40,10 +43,9 @@ public class PlayingState extends TrackState {
                 else
                     track.finish();
         } catch (IOException | IndexOutOfBoundsException | IllegalArgumentException e) {
+            log.log(Level.SEVERE, "Error on playing sound "+track.getTitle()+": ", e);
             track.finish();
-            e.printStackTrace();
             final String exClassName = e.getClass().getSimpleName();
-            Logger.getLogger(this, exClassName.concat(" in track "+track.getTitle())).error();
         }
     }
 

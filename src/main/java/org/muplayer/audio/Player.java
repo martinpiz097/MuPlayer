@@ -8,7 +8,6 @@ import org.muplayer.info.*;
 import org.muplayer.interfaces.PlayerControls;
 import org.muplayer.interfaces.PlayerListener;
 import org.muplayer.model.*;
-import org.muplayer.properties.PropertiesFilesInfo;
 import org.muplayer.thread.ListenerRunner;
 import org.muplayer.thread.TaskRunner;
 import org.muplayer.thread.ThreadUtil;
@@ -17,7 +16,9 @@ import org.muplayer.util.IOUtil;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.logging.LogManager;
@@ -44,6 +45,7 @@ public class Player extends Thread implements PlayerControls {
         try {
             logManager.readConfiguration(IOUtil.getArrayStreamFromRes(INFO_FILE_PATH));
         } catch (IOException e) {
+            log.warning("Cannot load "+INFO_FILE_PATH);
         }
     }
 
