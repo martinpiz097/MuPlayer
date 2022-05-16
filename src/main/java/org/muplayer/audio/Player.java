@@ -376,7 +376,7 @@ public class Player extends Thread implements PlayerControl {
             try {
                 final AudioTag tag = new AudioTag(track.getDataSourceAsFile());
                 if (tag.isValidFile())
-                    listInfo.add(new SongData(tag));
+                    listInfo.add(track);
             } catch (Exception e) {
                 e.printStackTrace();
             }
