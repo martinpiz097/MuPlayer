@@ -3,7 +3,7 @@ package org.muplayer.audio.format;
 import org.muplayer.audio.Track;
 import org.muplayer.info.TrackIO;
 import org.muplayer.audio.codec.DecodeManager;
-import org.muplayer.interfaces.PlayerControls;
+import org.muplayer.interfaces.PlayerControl;
 import org.muplayer.util.AudioUtil;
 import org.tritonus.sampled.file.jorbis.JorbisAudioFileReader;
 
@@ -30,15 +30,15 @@ public class OGGTrack extends Track {
         super(inputStream);
     }
 
-    public OGGTrack(File dataSource, PlayerControls player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+    public OGGTrack(File dataSource, PlayerControl player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         super(dataSource, player);
     }
 
-    public OGGTrack(InputStream inputStream, PlayerControls player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    public OGGTrack(InputStream inputStream, PlayerControl player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         super(inputStream, player);
     }
 
-    public OGGTrack(String trackPath, PlayerControls player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+    public OGGTrack(String trackPath, PlayerControl player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         super(trackPath, player);
     }
 

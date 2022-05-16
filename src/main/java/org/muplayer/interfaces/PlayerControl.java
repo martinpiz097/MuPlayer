@@ -5,7 +5,7 @@ import org.muplayer.model.SeekOption;
 import java.io.File;
 import java.util.Collection;
 
-public interface PlayerControls extends MusicControls {
+public interface PlayerControl extends MusicControl {
 
     boolean isOn();
     boolean hasSounds();

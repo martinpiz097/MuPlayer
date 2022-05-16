@@ -5,7 +5,7 @@ import com.sun.media.sound.AuFileReader;
 import com.sun.media.sound.WaveFileReader;
 import org.muplayer.audio.Track;
 import org.muplayer.info.TrackIO;
-import org.muplayer.interfaces.PlayerControls;
+import org.muplayer.interfaces.PlayerControl;
 import org.muplayer.util.AudioUtil;
 import org.muplayer.util.FileUtil;
 
@@ -36,15 +36,15 @@ public class PCMTrack extends Track {
         super(inputStream);
     }
 
-    public PCMTrack(File dataSource, PlayerControls player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+    public PCMTrack(File dataSource, PlayerControl player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         super(dataSource, player);
     }
 
-    public PCMTrack(InputStream inputStream, PlayerControls player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    public PCMTrack(InputStream inputStream, PlayerControl player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         super(inputStream, player);
     }
 
-    public PCMTrack(String trackPath, PlayerControls player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+    public PCMTrack(String trackPath, PlayerControl player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         super(trackPath, player);
     }
 

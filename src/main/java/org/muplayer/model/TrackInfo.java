@@ -12,12 +12,8 @@ public interface TrackInfo {
     String getArtist();
     String getDate();
     byte[] getCoverData();
-    long getDuration();
-
-    default String getFormattedDuration() {
-        return Time.getInstance().getTimeFormatter().format(getDuration());
-    }
 
     String getEncoder();
     String getBitrate();
+    String getFormat();
 }

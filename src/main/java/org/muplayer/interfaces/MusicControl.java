@@ -1,6 +1,8 @@
 package org.muplayer.interfaces;
 
-public interface MusicControls {
+import org.muplayer.system.Time;
+
+public interface MusicControl {
     boolean isPlaying() throws Exception;
     boolean isPaused() throws Exception;
     boolean isStopped() throws Exception;
@@ -20,4 +22,13 @@ public interface MusicControls {
     void unMute();
 
     double getProgress();
+    default String getFormattedProgress() {
+        return Time.getInstance().getTimeFormatter().format((long) getProgress());
+    }
+
+    long getDuration();
+    default String getFormattedDuration() {
+        return Time.getInstance().getTimeFormatter().format(getDuration());
+    }
+
 }

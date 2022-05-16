@@ -1,8 +1,11 @@
 package org.muplayer.util;
 
 import org.muplayer.audio.Track;
-import org.muplayer.interfaces.PlayerControls;
+import org.muplayer.info.TrackIO;
+import org.muplayer.interfaces.PlayerControl;
 
+import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.SourceDataLine;
 import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -105,23 +108,41 @@ public class TrackUtil {
         }
     }
 
-    public static Track getTrackFromClass(String formatClass, File dataSource, PlayerControls player) {
+    public static Track getTrackFromClass(String formatClass, File dataSource, PlayerControl player) {
         try {
             final Constructor<? extends Track> constructor
-                    = getTrackClassConstructor(formatClass, dataSource.getClass(), PlayerControls.class);
+                    = getTrackClassConstructor(formatClass, dataSource.getClass(), PlayerControl.class);
             return constructor != null ? constructor.newInstance(dataSource, player) : null;
         } catch (Exception e) {
             return null;
         }
     }
 
-    public static Track getTrackFromClass(String formatClass, InputStream dataSource, PlayerControls player) {
+    public static Track getTrackFromClass(String formatClass, InputStream dataSource, PlayerControl player) {
         try {
             final Constructor<? extends Track> constructor
-                    = getTrackClassConstructor(formatClass, dataSource.getClass(), PlayerControls.class);
+                    = getTrackClassConstructor(formatClass, dataSource.getClass(), PlayerControl.class);
             return constructor != null ? constructor.newInstance(dataSource, player) : null;
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public static String getLineInfo(Track track) {
+        final TrackIO trackIO = track.getTrackIO();
+        final SourceDataLine driver = trackIO.getTrackLine().getDriver();
+
+        return new StringBuilder().append("Soporte de controles en line")
+                .append("---------------")
+                .append("Pan: ").append(driver.isControlSupported(FloatControl.Type.PAN))
+                .append("AuxReturn: ").append(driver.isControlSupported(FloatControl.Type.AUX_RETURN))
+                .append("AuxSend: ").append(driver.isControlSupported(FloatControl.Type.AUX_SEND))
+                .append("Balance: ").append(driver.isControlSupported(FloatControl.Type.BALANCE))
+                .append("ReverbReturn: ").append(driver.isControlSupported(FloatControl.Type.REVERB_RETURN))
+                .append("ReberbSend: ").append(driver.isControlSupported(FloatControl.Type.REVERB_SEND))
+                .append("Volume: ").append(driver.isControlSupported(FloatControl.Type.VOLUME))
+                .append("SampleRate: ").append(driver.isControlSupported(FloatControl.Type.SAMPLE_RATE))
+                .append("MasterGain: ").append(driver.isControlSupported(FloatControl.Type.MASTER_GAIN))
+                .toString();
     }
 }

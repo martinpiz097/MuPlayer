@@ -1,11 +1,11 @@
 package org.muplayer.audio.trackstates;
 
 import org.muplayer.audio.Track;
-import org.muplayer.interfaces.PlayerControls;
+import org.muplayer.interfaces.PlayerControl;
 
 public class FinishedState extends TrackState {
 
-    private final PlayerControls player;
+    private final PlayerControl player;
 
     public FinishedState(Track track) {
         super(track);

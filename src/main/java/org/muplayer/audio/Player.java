@@ -5,12 +5,13 @@ import org.muplayer.audio.trackstates.TrackState;
 import org.muplayer.audio.trackstates.UnknownState;
 import org.muplayer.exception.MuPlayerException;
 import org.muplayer.info.*;
-import org.muplayer.interfaces.PlayerControls;
+import org.muplayer.interfaces.PlayerControl;
 import org.muplayer.interfaces.PlayerListener;
 import org.muplayer.model.*;
 import org.muplayer.thread.ListenerRunner;
 import org.muplayer.thread.TaskRunner;
 import org.muplayer.thread.ThreadUtil;
+import org.muplayer.util.AudioUtil;
 import org.muplayer.util.FileUtil;
 import org.muplayer.util.IOUtil;
 
@@ -28,7 +29,7 @@ import static org.muplayer.info.ListenersNames.*;
 import static org.muplayer.properties.PropertiesFilesInfo.INFO_FILE_PATH;
 
 @Log
-public class Player extends Thread implements PlayerControls {
+public class Player extends Thread implements PlayerControl {
     private volatile File rootFolder;
     private volatile Track current;
 
@@ -64,6 +65,10 @@ public class Player extends Thread implements PlayerControls {
         setName("ThreadPlayer "+getId());
     }
 
+    public Player(String folderPath) throws FileNotFoundException {
+        this(new File(folderPath));
+    }
+
     private void checkRootFolder() throws FileNotFoundException {
         if(rootFolder != null) {
             if (!rootFolder.exists())
@@ -73,10 +78,6 @@ public class Player extends Thread implements PlayerControls {
                 sortTracks();
             }
         }
-    }
-
-    public Player(String folderPath) throws FileNotFoundException {
-        this(new File(folderPath));
     }
 
     private void loadTracks(File folder) {
@@ -180,11 +181,6 @@ public class Player extends Thread implements PlayerControls {
         }
     }
 
-    public void loadListenerMethod(String methodName, Track track) {
-        if (!listListeners.isEmpty())
-            TaskRunner.execute(new ListenerRunner(listListeners, methodName, track));
-    }
-
     private synchronized void freezePlayer() {
         ThreadUtil.freezeThread(this);
     }
@@ -262,9 +258,37 @@ public class Player extends Thread implements PlayerControls {
         }
     }
 
-    @Override
-    public boolean hasSounds() {
-        return !listTracks.isEmpty();
+    private synchronized void changeTrack(SeekOption seekOption) {
+        final int currentIndex = playerData.getTrackIndex();
+        final int newIndex;
+        if (seekOption == SeekOption.NEXT)
+            newIndex = currentIndex == listTracks.size() - 1 ? 0 : currentIndex+1;
+        else
+            newIndex = currentIndex == 0 ? listTracks.size()-1 : currentIndex-1;
+        changeTrack(newIndex);
+    }
+
+    private synchronized void changeTrack(int trackIndex) {
+        shutdownCurrent();
+        playerData.setTrackIndex(trackIndex);
+        current = getValidTrackBy(playerData.getTrackIndex());
+        startTrackThread();
+        loadListenerMethod(ONSONGCHANGE, current);
+    }
+
+    private synchronized void changeTrack(TrackSearch trackSearch) {
+        if (trackSearch != null) {
+            shutdownCurrent();
+            playerData.setTrackIndex(trackSearch.getIndex());
+            current = trackSearch.getTrack();
+            startTrackThread();
+            loadListenerMethod(ONSONGCHANGE, current);
+        }
+    }
+
+    public void loadListenerMethod(String methodName, Track track) {
+        if (!listListeners.isEmpty())
+            TaskRunner.execute(new ListenerRunner(listListeners, methodName, track));
     }
 
     public boolean isActive() {
@@ -465,6 +489,15 @@ public class Player extends Thread implements PlayerControls {
         return listTracks.get(prevIndex);
     }
 
+    public int getSongsCount() {
+        return listTracks.size();
+    }
+
+    @Override
+    public boolean hasSounds() {
+        return !listTracks.isEmpty();
+    }
+
     @Override
     public synchronized boolean isOn() {
         return playerData.isOn();
@@ -509,28 +542,24 @@ public class Player extends Thread implements PlayerControls {
     }
 
     @Override
-    public synchronized void addMusic(File musicFolder) {
-        if (musicFolder.isDirectory()) {
+    public synchronized void addMusic(File folderOrFile) {
+        if (folderOrFile.isDirectory()) {
             if (rootFolder == null)
-                rootFolder = musicFolder;
+                rootFolder = folderOrFile;
             final boolean validSort = !hasSounds();
-            loadTracks(musicFolder);
+            loadTracks(folderOrFile);
             if (validSort)
                 sortTracks();
         }
-        else if (Track.isValidTrack(musicFolder)) {
-            Track track = Track.getTrack(musicFolder, this);
+        else if (AudioUtil.isSupportedFile(folderOrFile)) {
+            final Track track = Track.getTrack(folderOrFile, this);
             if (track != null) {
                 listTracks.add(track);
-                final String parentPath = musicFolder.getParent();
+                final String parentPath = folderOrFile.getParent();
                 if (listFolderPaths.parallelStream().noneMatch(parentPath::equals))
                     listFolderPaths.add(parentPath);
             }
         }
-    }
-
-    public int getSongsCount() {
-        return listTracks.size();
     }
 
     @Override
@@ -593,7 +622,7 @@ public class Player extends Thread implements PlayerControls {
                         ((File)t.getDataSourceAsFile()).getPath().equals(track.getPath()))
                 .findFirst().orElse(null));
         if (indexOf == -1) {
-            if (Track.isValidTrack(track)) {
+            if (AudioUtil.isSupportedFile(track)) {
                 listTracks.add(Track.getTrack(track, this));
                 if (!existsFolder(track.getParent()))
                     listFolderPaths.add(track.getParent());
@@ -730,40 +759,15 @@ public class Player extends Thread implements PlayerControls {
             playerData.setCurrentVolume(100);
     }
 
+    @Override
     public double getProgress() {
         return current == null ? 0 : current.getProgress();
     }
 
-    public String getFormattedProgress() {
-        return current == null ? "00:00" : current.getFormattedProgress();
-    }
-
-    private synchronized void changeTrack(SeekOption seekOption) {
-        final int currentIndex = playerData.getTrackIndex();
-        final int newIndex;
-        if (seekOption == SeekOption.NEXT)
-            newIndex = currentIndex == listTracks.size() - 1 ? 0 : currentIndex+1;
-        else
-            newIndex = currentIndex == 0 ? listTracks.size()-1 : currentIndex-1;
-        changeTrack(newIndex);
-    }
-
-    private synchronized void changeTrack(int trackIndex) {
-        shutdownCurrent();
-        playerData.setTrackIndex(trackIndex);
-        current = getValidTrackBy(playerData.getTrackIndex());
-        startTrackThread();
-        loadListenerMethod(ONSONGCHANGE, current);
-    }
-
-    private synchronized void changeTrack(TrackSearch trackSearch) {
-        if (trackSearch != null) {
-            shutdownCurrent();
-            playerData.setTrackIndex(trackSearch.getIndex());
-            current = trackSearch.getTrack();
-            startTrackThread();
-            loadListenerMethod(ONSONGCHANGE, current);
-        }
+    @Override
+    public long getDuration() {
+        return listTracks.stream().map(Track::getDuration)
+                .reduce(Long::sum).orElse(0L);
     }
 
     @Override

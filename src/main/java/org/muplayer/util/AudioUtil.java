@@ -73,13 +73,17 @@ public class AudioUtil {
         return null;
     }
 
-    public static boolean isSupported(File trackFile) {
+    public static boolean isSupportedFile(File trackFile) {
         final String formatName = FileUtil.getFormatName(trackFile.getName());
         return AudioSupportInfo.getInstance().getProperty(formatName) != null;
     }
 
-    public static boolean isSupported(Path track) {
-        return isSupported(track.toFile());
+    public static boolean isSupportedFile(Path track) {
+        return isSupportedFile(track.toFile());
+    }
+
+    public static boolean isSupportedFile(String trackPath) {
+        return isSupportedFile(new File(trackPath));
     }
 
 }
