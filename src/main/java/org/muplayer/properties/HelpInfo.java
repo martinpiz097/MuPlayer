@@ -4,6 +4,9 @@ import org.muplayer.util.IOUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -29,7 +32,8 @@ public class HelpInfo {
         try {
             final byte[] resourceBytes = IOUtil.getBytesFromStream(
                     getClass().getResourceAsStream(HELP_FILE_PATH));
-            properties.load(new ByteArrayInputStream(resourceBytes));
+            properties.load(new InputStreamReader(
+                    new ByteArrayInputStream(resourceBytes), StandardCharsets.UTF_8));
             System.out.println("");
         } catch (IOException e) {
             e.printStackTrace();

@@ -269,7 +269,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
             return consoleExecution;
         }
         else
-            return executeCommand(cmd);
+            return executeCommand(new Command(cmd));
     }
 
     public boolean isOn() {

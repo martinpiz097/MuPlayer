@@ -1,7 +1,6 @@
-target/
-scripts/compileandtest.sh
-scripts/testing.sh
-test/
-dependency-reduced-pom.xml
 .idea/
+target/
+test/
+audio-support.properties
+dependency-reduced-pom.xml
 testingInfo.properties

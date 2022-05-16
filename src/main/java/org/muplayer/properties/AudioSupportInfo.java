@@ -21,7 +21,6 @@ public class AudioSupportInfo {
     @Getter
     private final File supportFile;
     private final Properties properties;
-    private volatile boolean cacheMode;
 
     public static final String KEY_PREFFIX = "audio.format.class.";
     private static final AudioSupportInfo singleton = new AudioSupportInfo();
@@ -34,14 +33,12 @@ public class AudioSupportInfo {
         supportFile = new File("./", PropertiesFilesInfo.AUDIO_SUPPORT_FILE_NAME);
         properties = new Properties();
         loadDefaultData();
-        cacheMode = false;
     }
 
     protected AudioSupportInfo(File supportFile) {
         this.supportFile = supportFile;
         properties = new Properties();
         loadData();
-        cacheMode = false;
     }
 
     private void validateFile() throws IOException {
@@ -104,14 +101,6 @@ public class AudioSupportInfo {
         }
     }
 
-    public synchronized void enableCacheMode() {
-        cacheMode = true;
-    }
-
-    public synchronized void disableCacheMode() {
-        cacheMode = false;
-    }
-
     public String getProperty(String key) {
         return properties.getProperty(key.startsWith(KEY_PREFFIX) ? key : KEY_PREFFIX.concat(key));
     }
@@ -135,7 +124,6 @@ public class AudioSupportInfo {
 
     public void setProperty(String key, String value) {
         properties.setProperty(key.startsWith(KEY_PREFFIX) ? key : KEY_PREFFIX.concat(key), value);
-        if (!cacheMode)
-            saveData();
+        saveData();
     }
 }

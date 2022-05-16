@@ -13,8 +13,6 @@
 - Comando add + rutacarpeta para agregar mas canciones a la lista
 - Comando delf para eliminar carpeta de la lista
 
-- seek hacia atras usando gotosec
-
 - Agregar comandos para ver info de muplayer como su version, canciones cargadas, formatos soportados, etc
     agregar opcion al reproductor para entregar informacion general
         cancion reproducida actualmente y formato
