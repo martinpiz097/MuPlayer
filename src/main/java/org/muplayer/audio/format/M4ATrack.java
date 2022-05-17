@@ -9,7 +9,7 @@ import net.sourceforge.jaad.mp4.api.Movie;
 import net.sourceforge.jaad.spi.javasound.AACAudioFileReader;
 import org.muplayer.audio.Track;
 import org.muplayer.info.TrackIO;
-import org.muplayer.interfaces.PlayerControl;
+import org.muplayer.interfaces.Player;
 import org.muplayer.util.AudioUtil;
 import org.orangelogger.sys.Logger;
 
@@ -35,15 +35,15 @@ public class M4ATrack extends Track {
         super(inputStream);
     }
 
-    public M4ATrack(File dataSource, PlayerControl player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+    public M4ATrack(File dataSource, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         super(dataSource, player);
     }
 
-    public M4ATrack(InputStream inputStream, PlayerControl player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    public M4ATrack(InputStream inputStream, Player player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         super(inputStream, player);
     }
 
-    public M4ATrack(String trackPath, PlayerControl player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+    public M4ATrack(String trackPath, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         super(trackPath, player);
     }
 

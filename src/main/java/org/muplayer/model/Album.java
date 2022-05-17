@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class Album {
     private String name;
-    private Set<TrackInfo> tracksSet;
+    private Set<ReportableTrack> tracksSet;
 
     public Album() {
         tracksSet = new ArraySet<>();
@@ -35,22 +35,22 @@ public class Album {
         if (tracksSet.isEmpty())
             return null;
         else {
-            TrackInfo trackInfo = tracksSet.parallelStream()
-                    .filter(TrackInfo::hasCover)
+            ReportableTrack trackInfo = tracksSet.parallelStream()
+                    .filter(ReportableTrack::hasCover)
                     .findFirst().orElse(null);
             return trackInfo == null ? null : trackInfo.getCoverData();
         }
     }
 
-    public void addTrack(TrackInfo trackInfo) {
+    public void addTrack(ReportableTrack trackInfo) {
         tracksSet.add(trackInfo);
     }
 
-    public Set<TrackInfo> getTracksSet() {
+    public Set<ReportableTrack> getTracksSet() {
         return tracksSet;
     }
 
-    public void setTracksSet(Set<TrackInfo> tracksSet) {
+    public void setTracksSet(Set<ReportableTrack> tracksSet) {
         this.tracksSet = tracksSet;
     }
 }

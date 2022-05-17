@@ -2,7 +2,7 @@ package org.muplayer.main;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.muplayer.audio.Player;
+import org.muplayer.audio.MusicPlayer;
 import org.muplayer.console.ConsoleExecution;
 import org.muplayer.console.ConsoleInterpreter;
 import org.muplayer.properties.AppConfigInfo;
@@ -12,8 +12,6 @@ import org.muplayer.thread.TaskRunner;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
 
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -22,21 +20,21 @@ import java.util.Scanner;
 
 public class ConsolePlayer extends Thread {
     @Getter @Setter
-    protected Player player;
+    protected MusicPlayer musicPlayer;
     protected final ConsoleInterpreter interpreter;
     protected final Scanner scanner;
 
     protected static final String LINEHEADER = "[MuPlayer]> ";
 
     public ConsolePlayer() throws FileNotFoundException {
-        player = new Player((File) null);
-        interpreter = new ConsoleInterpreter(player);
+        musicPlayer = new MusicPlayer((File) null);
+        interpreter = new ConsoleInterpreter(musicPlayer);
         scanner = new Scanner(System.in);
     }
 
     public ConsolePlayer(File rootFolder) throws FileNotFoundException {
-        player = new Player(rootFolder);
-        interpreter = new ConsoleInterpreter(player);
+        musicPlayer = new MusicPlayer(rootFolder);
+        interpreter = new ConsoleInterpreter(musicPlayer);
         scanner = new Scanner(System.in);
     }
 
@@ -44,9 +42,9 @@ public class ConsolePlayer extends Thread {
         this(new File(folder));
     }
 
-    public ConsolePlayer(Player player) throws FileNotFoundException {
-        this.player = player;
-        interpreter = new ConsoleInterpreter(player);
+    public ConsolePlayer(MusicPlayer musicPlayer) throws FileNotFoundException {
+        this.musicPlayer = musicPlayer;
+        interpreter = new ConsoleInterpreter(musicPlayer);
         scanner = new Scanner(System.in);
     }
 

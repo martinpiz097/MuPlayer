@@ -5,7 +5,7 @@ import org.muplayer.audio.trackstates.TrackState;
 import org.muplayer.audio.trackstates.UnknownState;
 import org.muplayer.exception.MuPlayerException;
 import org.muplayer.info.*;
-import org.muplayer.interfaces.PlayerControl;
+import org.muplayer.interfaces.Player;
 import org.muplayer.interfaces.PlayerListener;
 import org.muplayer.model.*;
 import org.muplayer.thread.ListenerRunner;
@@ -29,12 +29,12 @@ import static org.muplayer.info.ListenersNames.*;
 import static org.muplayer.properties.PropertiesFilesInfo.INFO_FILE_PATH;
 
 @Log
-public class Player extends Thread implements PlayerControl {
+public class MusicPlayer extends Player {
     private volatile File rootFolder;
     private volatile Track current;
 
     private final List<Track> listTracks;
-    private final List<String> listFolderPaths;
+    private final List<File> listFolders;
     private final List<PlayerListener> listListeners;
 
     private final PlayerData playerData;
@@ -50,14 +50,14 @@ public class Player extends Thread implements PlayerControl {
         }
     }
 
-    public Player() throws FileNotFoundException {
+    public MusicPlayer() throws FileNotFoundException {
         this((File) null);
     }
 
-    public Player(File rootFolder) throws FileNotFoundException {
+    public MusicPlayer(File rootFolder) throws FileNotFoundException {
         this.rootFolder = rootFolder;
         listTracks = new ArrayList<>(DEFAULT_INITIAL_LIST_CAPACITY);
-        listFolderPaths = new ArrayList<>(DEFAULT_INITIAL_LIST_CAPACITY);
+        listFolders = new ArrayList<>(DEFAULT_INITIAL_LIST_CAPACITY);
         listListeners = new ArrayList<>();
         playerData = new PlayerData();
 
@@ -65,7 +65,7 @@ public class Player extends Thread implements PlayerControl {
         setName("ThreadPlayer "+getId());
     }
 
-    public Player(String folderPath) throws FileNotFoundException {
+    public MusicPlayer(String folderPath) throws FileNotFoundException {
         this(new File(folderPath));
     }
 
@@ -80,11 +80,11 @@ public class Player extends Thread implements PlayerControl {
         }
     }
 
-    private void loadTracks(File folder) {
-        if (!Files.isReadable(folder.toPath()))
-            throw new MuPlayerException("folder is not readable");
+    private void loadTracks(File folderToLoad) {
+        if (!Files.isReadable(folderToLoad.toPath()))
+            throw new MuPlayerException("folderToLoad is not readable");
 
-        final File[] fldFiles = folder.listFiles();
+        final File[] fldFiles = folderToLoad.listFiles();
         if (fldFiles != null) {
             // se analiza carpeta y se agregan sonidos recursivamente
             boolean hasTracks = false;
@@ -104,20 +104,12 @@ public class Player extends Thread implements PlayerControl {
             }
 
             // si la carpeta tiene sonidos se agrega a la lista de carpetas
-            if (hasTracks)
-                try {
-                    if (listFolderPaths.parallelStream().noneMatch(path-> {
-                        try {
-                            return path.equals(folder.getCanonicalPath());
-                        } catch (IOException e) {
-                            return true;
-                        }
-                    })) {
-                        listFolderPaths.add(folder.getCanonicalPath());
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+            if (hasTracks) {
+                if (listFolders.parallelStream().noneMatch(
+                        folder -> folder.getPath().equals(folderToLoad.getPath()))) {
+                    listFolders.add(folderToLoad);
                 }
+            }
         }
     }
 
@@ -134,7 +126,6 @@ public class Player extends Thread implements PlayerControl {
     }
 
     private void sortTracks() {
-        final Comparator<String> comparator = Comparator.naturalOrder();
         listTracks.sort((o1, o2) -> {
             if (o1 == null || o2 == null)
                 return 0;
@@ -142,15 +133,15 @@ public class Player extends Thread implements PlayerControl {
             final File dataSource2 = o2.getDataSourceAsFile();
             if (dataSource1 == null || dataSource2 == null)
                 return 0;
-            return FileUtil.getPath(dataSource1).compareTo(FileUtil.getPath(dataSource2));
+            return dataSource1.getPath().compareTo(dataSource2.getPath());
         });
-        listFolderPaths.sort(comparator);
+        listFolders.sort(Comparator.comparing(File::getPath));
     }
 
     private int getFolderIndex() {
         final File dataSource = current.getDataSourceAsFile();
-        final String currentParent = current != null ? dataSource.getParent() : null;
-        return currentParent != null ? listFolderPaths.indexOf(currentParent) : -1;
+        final File currentParent = current != null ? dataSource.getParentFile() : null;
+        return currentParent != null ? listFolders.indexOf(currentParent) : -1;
     }
 
     private Track getValidTrackBy(int index) {
@@ -291,46 +282,42 @@ public class Player extends Thread implements PlayerControl {
             TaskRunner.execute(new ListenerRunner(listListeners, methodName, track));
     }
 
-    public boolean isActive() {
-        return isAlive() && hasSounds();
+    private boolean existsFolder(String folderPath) {
+        return listFolders.parallelStream().anyMatch(fp->fp.getPath().equals(folderPath));
     }
 
-    public boolean existsFolder(String folderPath) {
-        return listFolderPaths.parallelStream().anyMatch(fp->fp.equals(folderPath));
-    }
-
-    public boolean existsFolder(File folder) {
+    private boolean existsFolder(File folder) {
         return existsFolder(folder.getPath());
     }
 
-    public boolean existsParent(String childPath) {
+    private boolean existsParent(String childPath) {
         return existsParent(new File(childPath));
     }
 
-    public boolean existsParent(File child) {
+    private boolean existsParent(File child) {
         return existsFolder(child.getParent());
     }
 
+    @Override
     public TrackState getCurrentTrackState() {
         return current == null ? new UnknownState(current) : current.getTrackState();
     }
 
-    public String getCurrentTrackStateToString() {
-        return current == null ? "Unknown" : current.getStateToString();
-    }
-
     public int getFoldersCount() {
-        return listFolderPaths.size();
+        return listFolders.size();
     }
 
+    @Override
     public File getRootFolder() {
         return rootFolder;
     }
 
-    public List<String> getListFolderPaths() {
-        return listFolderPaths;
+    @Override
+    public List<File> getListFolders() {
+        return listFolders;
     }
 
+    @Override
     public synchronized void jumpTrack(int jumps, SeekOption option) {
         if (option == SeekOption.NEXT) {
             playerData.increaseTrackIndex(jumps);
@@ -345,33 +332,20 @@ public class Player extends Thread implements PlayerControl {
         play(playerData.getTrackIndex());
     }
 
+    @Override
     public synchronized List<File> getListSoundFiles() {
         return listTracks.stream().filter(track -> track.getDataSourceAsFile() != null)
                 .map(track -> (File)track.getDataSourceAsFile()).collect(Collectors.toList());
     }
 
-    // Se supone que todos los tracks serian validos
-    // sino rescatar de los que sean no mas
-    public synchronized List<AudioTag> getTrackTags() {
-        final List<AudioTag> listTags = new LinkedList<>();
-        listTracks.forEach(track -> {
-            try {
-                final AudioTag tag = new AudioTag(track.getDataSourceAsFile());
-                if (tag.isValidFile())
-                    listTags.add(tag);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-        return listTags;
-    }
-
+    @Override
     public synchronized List<Track> getTracks() {
         return listTracks;
     }
 
-    public synchronized List<TrackInfo> getTracksInfo() {
-        final List<TrackInfo> listInfo = new ArrayList<>(listTracks.size()+1);
+    @Override
+    public synchronized List<ReportableTrack> getTracksInfo() {
+        final List<ReportableTrack> listInfo = new ArrayList<>(listTracks.size()+1);
         listTracks.forEach(track->{
             try {
                 final AudioTag tag = new AudioTag(track.getDataSourceAsFile());
@@ -384,8 +358,9 @@ public class Player extends Thread implements PlayerControl {
         return listInfo;
     }
 
+    @Override
     public synchronized List<Artist> getArtists() {
-        final List<TrackInfo> listTracks = getTracksInfo();
+        final List<ReportableTrack> listTracks = getTracksInfo();
         final List<Artist> listArtists = new ArrayList<>(listTracks.size()+1);
 
         listTracks.parallelStream()
@@ -411,8 +386,9 @@ public class Player extends Thread implements PlayerControl {
         return listArtists;
     }
 
+    @Override
     public synchronized List<Album> getAlbums() {
-        final List<TrackInfo> listTracks = getTracksInfo();
+        final List<ReportableTrack> listTracks = getTracksInfo();
         final List<Album> listAlbums = new ArrayList<>(listTracks.size()+1);
 
         listTracks.parallelStream()
@@ -437,28 +413,32 @@ public class Player extends Thread implements PlayerControl {
         return listAlbums;
     }
 
+    @Override
     public synchronized void addPlayerListener(PlayerListener listener) {
         listListeners.add(listener);
     }
 
+    @Override
     public synchronized List<PlayerListener> getListeners() {
         return listListeners;
     }
 
+    @Override
     public synchronized void removePlayerListener(PlayerListener reference) {
         listListeners.removeIf(listener->listener.equals(reference));
     }
 
+    @Override
     public synchronized void removeAllListeners() {
         listListeners.clear();
     }
 
-    // vuelve a leer y cargar las tracks
+    @Override
     public synchronized void reloadTracks() {
         if (rootFolder != null) {
             final int currentIndex = playerData.getTrackIndex();
             listTracks.clear();
-            listFolderPaths.clear();
+            listFolders.clear();
             loadTracks(rootFolder);
             sortTracks();
 
@@ -467,28 +447,33 @@ public class Player extends Thread implements PlayerControl {
         }
     }
 
+    @Override
     public PlayerInfo getInfo() {
         return new PlayerInfo(this);
     }
 
+    @Override
     public synchronized Track getCurrent() {
         return current;
     }
 
-    public synchronized TrackInfo getNext() {
+    @Override
+    public synchronized Track getNext() {
         final int trackIndex = playerData.getTrackIndex();
         final int songsCount = getSongsCount();
         final int nextIndex = trackIndex == -1 ? 0 : (trackIndex == songsCount-1 ? 0 : trackIndex+1);
         return listTracks.get(nextIndex);
     }
 
-    public synchronized TrackInfo getPrevious() {
+    @Override
+    public synchronized Track getPrevious() {
         final int trackIndex = playerData.getTrackIndex();
         final int songsCount = getSongsCount();
         final int prevIndex = trackIndex == -1 ? songsCount-1 : (trackIndex == 0 ? songsCount-1 : trackIndex-1);
         return listTracks.get(prevIndex);
     }
 
+    @Override
     public int getSongsCount() {
         return listTracks.size();
     }
@@ -501,11 +486,6 @@ public class Player extends Thread implements PlayerControl {
     @Override
     public synchronized boolean isOn() {
         return playerData.isOn();
-    }
-
-    @Override
-    public synchronized void turnOn() {
-        start();
     }
 
     @Override
@@ -555,9 +535,9 @@ public class Player extends Thread implements PlayerControl {
             final Track track = Track.getTrack(folderOrFile, this);
             if (track != null) {
                 listTracks.add(track);
-                final String parentPath = folderOrFile.getParent();
-                if (listFolderPaths.parallelStream().noneMatch(parentPath::equals))
-                    listFolderPaths.add(parentPath);
+                final File parent = folderOrFile.getParentFile();
+                if (listFolders.parallelStream().noneMatch(parent::equals))
+                    listFolders.add(parent);
             }
         }
     }
@@ -572,19 +552,19 @@ public class Player extends Thread implements PlayerControl {
         final int folderIndex = getFolderIndex();
         if (folderIndex != -1) {
             final int newFolderIndex;
-            final String parentToFind;
+            final File parentToFind;
 
             if (option == SeekOption.NEXT) {
                 newFolderIndex = folderIndex+jumps;
-                parentToFind = listFolderPaths.get(newFolderIndex >= getFoldersCount()
+                parentToFind = listFolders.get(newFolderIndex >= getFoldersCount()
                         ? 0 : newFolderIndex);
             }
             else {
                 newFolderIndex = folderIndex - jumps;
-                parentToFind = listFolderPaths.get(newFolderIndex < 0
-                        ? listFolderPaths.size()-1 : newFolderIndex);
+                parentToFind = listFolders.get(newFolderIndex < 0
+                        ? listFolders.size()-1 : newFolderIndex);
             }
-            changeTrack(findFirstIn(parentToFind));
+            changeTrack(findFirstIn(parentToFind.getPath()));
         }
     }
 
@@ -618,14 +598,14 @@ public class Player extends Thread implements PlayerControl {
     @Override
     public synchronized void play(File track) {
         final int indexOf = listTracks.indexOf(listTracks.parallelStream().filter(
-                t->t.getDataSourceAsFile() != null &&
-                        ((File)t.getDataSourceAsFile()).getPath().equals(track.getPath()))
+                        t->t.getDataSourceAsFile() != null &&
+                                ((File)t.getDataSourceAsFile()).getPath().equals(track.getPath()))
                 .findFirst().orElse(null));
         if (indexOf == -1) {
             if (AudioUtil.isSupportedFile(track)) {
                 listTracks.add(Track.getTrack(track, this));
                 if (!existsFolder(track.getParent()))
-                    listFolderPaths.add(track.getParent());
+                    listFolders.add(track.getParentFile());
             }
         }
         else {
@@ -791,7 +771,7 @@ public class Player extends Thread implements PlayerControl {
         final int foldersCount = getFoldersCount();
         if (folderIndex >= foldersCount)
             folderIndex = foldersCount-1;
-        final int newIndex = seekToFolder(listFolderPaths.get(folderIndex));
+        final int newIndex = seekToFolder(listFolders.get(folderIndex).getPath());
         changeTrack(newIndex);
     }
 

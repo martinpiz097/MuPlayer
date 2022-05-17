@@ -1,6 +1,6 @@
 package org.muplayer.info;
 
-import org.muplayer.audio.Player;
+import org.muplayer.audio.MusicPlayer;
 import org.muplayer.audio.Track;
 
 import java.io.File;
@@ -15,14 +15,14 @@ public class PlayerInfo {
     private final int songsCount;
     private final int foldersCount;
 
-    public PlayerInfo(Player player) {
-        this.current = player.getCurrent();
+    public PlayerInfo(MusicPlayer musicPlayer) {
+        this.current = musicPlayer.getCurrent();
         trackFolder = current != null && current.getDataSourceAsFile() != null
                 ? current.getDataSourceAsFile().getParentFile() : null;
-        rootFolder = player.getRootFolder();
-        gain = player.getGain();
-        songsCount = player.getSongsCount();
-        foldersCount = player.getFoldersCount();
+        rootFolder = musicPlayer.getRootFolder();
+        gain = musicPlayer.getGain();
+        songsCount = musicPlayer.getSongsCount();
+        foldersCount = musicPlayer.getFoldersCount();
     }
 
     public Track getCurrentTrack() {

@@ -1,9 +1,8 @@
 package org.muplayer.model;
 
 import org.jaudiotagger.tag.FieldKey;
-import org.muplayer.system.Time;
 
-public interface TrackInfo {
+public interface ReportableTrack {
     boolean hasCover();
     String getProperty(String key);
     String getProperty(FieldKey key);

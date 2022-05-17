@@ -6,7 +6,7 @@ import org.jaudiotagger.audio.mp3.MP3AudioHeader;
 import org.muplayer.audio.Track;
 import org.muplayer.info.TrackIO;
 import org.muplayer.audio.codec.DecodeManager;
-import org.muplayer.interfaces.PlayerControl;
+import org.muplayer.interfaces.Player;
 import org.muplayer.util.AudioUtil;
 
 import javax.sound.sampled.AudioFormat;
@@ -36,7 +36,7 @@ public class MP3Track extends Track {
         this(inputStream, null);
     }
 
-    public MP3Track(File dataSource, PlayerControl player) throws LineUnavailableException, IOException, UnsupportedAudioFileException, InvalidAudioFrameException {
+    public MP3Track(File dataSource, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException, InvalidAudioFrameException {
         super(dataSource, player);
         final MP3AudioHeader audioHeader = new MP3AudioHeader(dataSource);
         final long audioStartByte = audioHeader.getMp3StartByte();
@@ -46,13 +46,13 @@ public class MP3Track extends Track {
         this.frameDurationInSec = (audioHeader.getPreciseTrackLength() / (double) frameCount);
     }
 
-    public MP3Track(InputStream inputStream, PlayerControl player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    public MP3Track(InputStream inputStream, Player player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         super(inputStream, player);
         this.frameSize = 0;
         this.frameDurationInSec = 0;
     }
 
-    public MP3Track(String trackPath, PlayerControl player) throws LineUnavailableException, IOException,
+    public MP3Track(String trackPath, Player player) throws LineUnavailableException, IOException,
             UnsupportedAudioFileException, InvalidAudioFrameException {
         this(new File(trackPath), player);
     }

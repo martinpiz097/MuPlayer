@@ -1,5 +1,5 @@
 # MuPlayer
-Music player library in pure Java.
+Music musicPlayer library in pure Java.
 
 ## Note: 
     To compile the project you must execute "mvn clean install" command to

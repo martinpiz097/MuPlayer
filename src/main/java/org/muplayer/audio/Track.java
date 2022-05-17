@@ -6,9 +6,9 @@ import org.muplayer.info.AudioTag;
 import org.muplayer.info.PlayerData;
 import org.muplayer.info.TrackData;
 import org.muplayer.info.TrackIO;
-import org.muplayer.interfaces.MusicControl;
-import org.muplayer.interfaces.PlayerControl;
-import org.muplayer.model.TrackInfo;
+import org.muplayer.interfaces.ControllableMusic;
+import org.muplayer.interfaces.Player;
+import org.muplayer.model.ReportableTrack;
 import org.muplayer.properties.AudioSupportInfo;
 import org.muplayer.util.AudioUtil;
 import org.muplayer.util.FileUtil;
@@ -25,7 +25,7 @@ import java.util.Set;
 
 import static org.muplayer.util.TrackUtil.getTrackFromClass;
 
-public abstract class Track extends Thread implements MusicControl, TrackInfo {
+public abstract class Track extends Thread implements ControllableMusic, ReportableTrack {
     protected volatile Object dataSource;
     protected volatile AudioTag tagInfo;
 
@@ -33,14 +33,14 @@ public abstract class Track extends Thread implements MusicControl, TrackInfo {
     protected volatile TrackData trackData;
 
     protected volatile TrackState state;
-    protected final PlayerControl player;
+    protected final Player player;
     protected final AudioSupportInfo audioSupportInfo = AudioSupportInfo.getInstance();
 
     public static Track getTrack(Object dataSource) {
         return getTrack(dataSource, null);
     }
 
-    public static Track getTrack(Object dataSource, PlayerControl player) {
+    public static Track getTrack(Object dataSource, Player player) {
         if (dataSource instanceof File || dataSource instanceof String) {
             final File fileSource = dataSource instanceof File ? (File) dataSource : new File((String) dataSource);
             if (!fileSource.exists())
@@ -90,7 +90,7 @@ public abstract class Track extends Thread implements MusicControl, TrackInfo {
         this(new File(trackPath), null);
     }
 
-    protected Track(File dataSource, PlayerControl player)
+    protected Track(File dataSource, Player player)
             throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this.dataSource = dataSource;
         trackIO = new TrackIO();
@@ -102,7 +102,7 @@ public abstract class Track extends Thread implements MusicControl, TrackInfo {
     }
 
     // ojo con los mp3
-    protected Track(InputStream inputStream, PlayerControl player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    protected Track(InputStream inputStream, Player player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         this.dataSource = inputStream;
         trackIO = new TrackIO();
         state = new StoppedState(this);
@@ -111,7 +111,7 @@ public abstract class Track extends Thread implements MusicControl, TrackInfo {
         setPriority(MAX_PRIORITY);
     }
 
-    protected Track(String trackPath, PlayerControl player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+    protected Track(String trackPath, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this(new File(trackPath), player);
     }
 
@@ -182,7 +182,7 @@ public abstract class Track extends Thread implements MusicControl, TrackInfo {
         return state.getName();
     }
 
-    public PlayerControl getPlayer() {
+    public Player getPlayerControl() {
         return player;
     }
 

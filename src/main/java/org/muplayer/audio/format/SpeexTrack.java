@@ -2,7 +2,7 @@ package org.muplayer.audio.format;
 
 import org.muplayer.audio.Track;
 import org.muplayer.info.TrackIO;
-import org.muplayer.interfaces.PlayerControl;
+import org.muplayer.interfaces.Player;
 import org.muplayer.util.AudioUtil;
 import org.xiph.speex.spi.SpeexAudioFileReader;
 import org.xiph.speex.spi.SpeexFormatConvertionProvider;
@@ -28,15 +28,15 @@ public class SpeexTrack extends Track {
         super(trackPath);
     }
 
-    public SpeexTrack(File dataSource, PlayerControl player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+    public SpeexTrack(File dataSource, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         super(dataSource, player);
     }
 
-    public SpeexTrack(InputStream inputStream, PlayerControl player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    public SpeexTrack(InputStream inputStream, Player player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         super(inputStream, player);
     }
 
-    public SpeexTrack(String trackPath, PlayerControl player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+    public SpeexTrack(String trackPath, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         super(trackPath, player);
     }
 

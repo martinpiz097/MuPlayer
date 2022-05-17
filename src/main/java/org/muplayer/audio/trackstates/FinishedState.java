@@ -1,15 +1,15 @@
 package org.muplayer.audio.trackstates;
 
 import org.muplayer.audio.Track;
-import org.muplayer.interfaces.PlayerControl;
+import org.muplayer.interfaces.Player;
 
 public class FinishedState extends TrackState {
 
-    private final PlayerControl player;
+    private final Player player;
 
     public FinishedState(Track track) {
         super(track);
-        player = track.getPlayer();
+        player = track.getPlayerControl();
     }
 
     @Override

@@ -2,7 +2,7 @@ package org.muplayer.util;
 
 import org.muplayer.audio.Track;
 import org.muplayer.info.TrackIO;
-import org.muplayer.interfaces.PlayerControl;
+import org.muplayer.interfaces.Player;
 
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.SourceDataLine;
@@ -108,20 +108,20 @@ public class TrackUtil {
         }
     }
 
-    public static Track getTrackFromClass(String formatClass, File dataSource, PlayerControl player) {
+    public static Track getTrackFromClass(String formatClass, File dataSource, Player player) {
         try {
             final Constructor<? extends Track> constructor
-                    = getTrackClassConstructor(formatClass, dataSource.getClass(), PlayerControl.class);
+                    = getTrackClassConstructor(formatClass, dataSource.getClass(), Player.class);
             return constructor != null ? constructor.newInstance(dataSource, player) : null;
         } catch (Exception e) {
             return null;
         }
     }
 
-    public static Track getTrackFromClass(String formatClass, InputStream dataSource, PlayerControl player) {
+    public static Track getTrackFromClass(String formatClass, InputStream dataSource, Player player) {
         try {
             final Constructor<? extends Track> constructor
-                    = getTrackClassConstructor(formatClass, dataSource.getClass(), PlayerControl.class);
+                    = getTrackClassConstructor(formatClass, dataSource.getClass(), Player.class);
             return constructor != null ? constructor.newInstance(dataSource, player) : null;
         } catch (Exception e) {
             return null;

@@ -6,6 +6,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 import static org.muplayer.properties.PropertiesFilesInfo.INFO_FILE_PATH;
@@ -18,8 +20,12 @@ public class IOUtil {
         while ((read = inputStream.read()) != -1) {
             byteBuffer.add(read);
         }
-
         return byteBuffer.toArray();
+    }
+
+    public static String getAsciiStringFromStream(InputStream inputStream) throws IOException {
+        final byte[] buffer = getBytesFromStream(inputStream);
+        return new String(buffer, StandardCharsets.UTF_8);
     }
 
     public static byte[] getBytesFromPath(String path) throws IOException {
