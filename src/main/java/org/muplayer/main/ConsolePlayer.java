@@ -2,7 +2,7 @@ package org.muplayer.main;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.muplayer.audio.MusicPlayer;
+import org.muplayer.audio.player.MusicPlayer;
 import org.muplayer.console.ConsoleExecution;
 import org.muplayer.console.ConsoleInterpreter;
 import org.muplayer.properties.AppConfigInfo;

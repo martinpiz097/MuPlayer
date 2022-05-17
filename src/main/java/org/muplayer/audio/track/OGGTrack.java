@@ -1,9 +1,8 @@
-package org.muplayer.audio.format;
+package org.muplayer.audio.track;
 
-import org.muplayer.audio.Track;
 import org.muplayer.info.TrackIO;
 import org.muplayer.audio.codec.DecodeManager;
-import org.muplayer.interfaces.Player;
+import org.muplayer.audio.player.Player;
 import org.muplayer.util.AudioUtil;
 import org.tritonus.sampled.file.jorbis.JorbisAudioFileReader;
 

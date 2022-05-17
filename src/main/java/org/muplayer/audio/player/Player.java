@@ -1,6 +1,8 @@
-package org.muplayer.interfaces;
+package org.muplayer.audio.player;
 
-import org.muplayer.audio.Track;
+import org.muplayer.interfaces.ControllableMusic;
+import org.muplayer.interfaces.PlayerListener;
+import org.muplayer.interfaces.ReportablePlayer;
 import org.muplayer.model.SeekOption;
 
 import java.io.File;
@@ -8,7 +10,6 @@ import java.util.Collection;
 import java.util.List;
 
 public abstract class Player extends Thread implements ControllableMusic, ReportablePlayer {
-
     public abstract boolean isOn();
     public abstract boolean hasSounds();
 
@@ -22,6 +23,9 @@ public abstract class Player extends Thread implements ControllableMusic, Report
     public abstract void playFolder(int folderIndex);
     public abstract void playNext();
     public abstract void playPrevious();
+    public abstract void seekFolder(SeekOption seekOption);
+    public abstract void seekFolder(SeekOption seekOption, int jumps);
+    public abstract void jumpTrack(int jumps, SeekOption option);
 
     public abstract void shutdown();
 

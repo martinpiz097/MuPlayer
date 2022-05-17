@@ -1,11 +1,11 @@
-package org.muplayer.audio;
+package org.muplayer.audio.player;
 
 import lombok.extern.java.Log;
-import org.muplayer.audio.trackstates.TrackState;
-import org.muplayer.audio.trackstates.UnknownState;
+import org.muplayer.audio.track.Track;
+import org.muplayer.audio.track.states.TrackState;
+import org.muplayer.audio.track.states.UnknownState;
 import org.muplayer.exception.MuPlayerException;
 import org.muplayer.info.*;
-import org.muplayer.interfaces.Player;
 import org.muplayer.interfaces.PlayerListener;
 import org.muplayer.model.*;
 import org.muplayer.thread.ListenerRunner;
@@ -711,16 +711,6 @@ public class MusicPlayer extends Player {
         if (current != null)
             current.setGain(volume);
         playerData.setMute(playerData.getCurrentVolume() == 0);
-    }
-
-    @Override
-    public float getSystemVolume() {
-        return AudioHardware.getFormattedMasterVolume();
-    }
-
-    @Override
-    public void setSystemVolume(float volume) {
-        AudioHardware.setFormattedMasterVolume(volume);
     }
 
     @Override

@@ -1,8 +1,8 @@
 package org.muplayer.util;
 
-import org.muplayer.audio.Track;
+import org.muplayer.audio.track.Track;
 import org.muplayer.info.TrackIO;
-import org.muplayer.interfaces.Player;
+import org.muplayer.audio.player.Player;
 
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.SourceDataLine;

@@ -1,18 +1,19 @@
-package org.muplayer.audio.trackstates;
+package org.muplayer.audio.track.states;
 
-import org.muplayer.audio.Track;
+import org.muplayer.audio.track.Track;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 
-public class ReverberatedState extends TrackState {
+public class StoppedState extends TrackState {
 
-    private final double seekSeconds;
-
-    public ReverberatedState(Track track, double seekSeconds) {
+    public StoppedState(Track track) {
         super(track);
-        this.seekSeconds = seekSeconds;
+    }
+
+    private void resetStream() throws IOException, LineUnavailableException, UnsupportedAudioFileException {
+        track.resetStream();
     }
 
     @Override
@@ -20,8 +21,7 @@ public class ReverberatedState extends TrackState {
         try {
             track.resetStream();
             track.getTrackData().setSecsSeeked(0);
-            track.seek(Math.max(seekSeconds, 0));
-            track.play();
+            track.suspend();
         } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
             e.printStackTrace();
         }

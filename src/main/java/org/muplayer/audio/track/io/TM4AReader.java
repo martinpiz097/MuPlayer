@@ -1,4 +1,4 @@
-package org.muplayer.audio.format.io;
+package org.muplayer.audio.track.io;
 
 import net.sourceforge.jaad.aac.AACException;
 import net.sourceforge.jaad.aac.Decoder;

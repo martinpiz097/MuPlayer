@@ -1,5 +1,6 @@
 package org.muplayer.interfaces;
 
+import org.muplayer.info.AudioHardware;
 import org.muplayer.model.SeekOption;
 import org.muplayer.system.Time;
 
@@ -19,13 +20,14 @@ public interface ControllableMusic {
     void gotoSecond(double second) throws Exception;
     float getGain();
     void setGain(float volume);
-    float getSystemVolume();
-    void setSystemVolume(float volume);
+    default float getSystemVolume() {
+        return AudioHardware.getFormattedMasterVolume();
+    }
+    default void setSystemVolume(float volume) {
+        AudioHardware.setFormattedMasterVolume(volume);
+    }
     void mute();
     void unMute();
-    void seekFolder(SeekOption seekOption);
-    void seekFolder(SeekOption seekOption, int jumps);
-    void jumpTrack(int jumps, SeekOption option);
 
     double getProgress();
     default String getFormattedProgress() {

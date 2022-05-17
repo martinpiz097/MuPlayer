@@ -1,13 +1,14 @@
-package org.muplayer.audio;
+package org.muplayer.audio.track;
 
 import org.jaudiotagger.tag.FieldKey;
-import org.muplayer.audio.trackstates.*;
+import org.muplayer.audio.player.Player;
+import org.muplayer.audio.states.*;
+import org.muplayer.audio.track.states.*;
 import org.muplayer.info.AudioTag;
 import org.muplayer.info.PlayerData;
 import org.muplayer.info.TrackData;
 import org.muplayer.info.TrackIO;
 import org.muplayer.interfaces.ControllableMusic;
-import org.muplayer.interfaces.Player;
 import org.muplayer.model.ReportableTrack;
 import org.muplayer.properties.AudioSupportInfo;
 import org.muplayer.util.AudioUtil;

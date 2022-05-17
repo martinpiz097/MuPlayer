@@ -1,7 +1,7 @@
 package org.muplayer.thread;
 
-import org.muplayer.audio.MusicPlayer;
-import org.muplayer.audio.Track;
+import org.muplayer.audio.player.MusicPlayer;
+import org.muplayer.audio.track.Track;
 import org.muplayer.info.ListenersNames;
 
 import java.io.File;

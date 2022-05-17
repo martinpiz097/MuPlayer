@@ -1,7 +1,7 @@
 package org.muplayer.interfaces;
 
-import org.muplayer.audio.Track;
-import org.muplayer.audio.trackstates.TrackState;
+import org.muplayer.audio.track.Track;
+import org.muplayer.audio.track.states.TrackState;
 import org.muplayer.info.PlayerInfo;
 import org.muplayer.model.Album;
 import org.muplayer.model.Artist;

@@ -1,6 +1,6 @@
 package org.muplayer.interfaces;
 
-import org.muplayer.audio.Track;
+import org.muplayer.audio.track.Track;
 
 public interface PlayerListener {
     void onSongChange(Track newTrack);

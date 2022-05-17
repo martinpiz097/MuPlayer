@@ -1,9 +1,7 @@
 package org.muplayer.net;
 
 import org.muplayer.console.ConsoleInterpreter;
-import org.muplayer.interfaces.Player;
-
-import java.net.ServerSocket;
+import org.muplayer.audio.player.Player;
 
 public class DaemonService extends Thread {
     private final Player player;

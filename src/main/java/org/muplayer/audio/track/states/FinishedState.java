@@ -1,7 +1,7 @@
-package org.muplayer.audio.trackstates;
+package org.muplayer.audio.track.states;
 
-import org.muplayer.audio.Track;
-import org.muplayer.interfaces.Player;
+import org.muplayer.audio.track.Track;
+import org.muplayer.audio.player.Player;
 
 public class FinishedState extends TrackState {
 

@@ -1,4 +1,4 @@
-package org.muplayer.audio.format;
+package org.muplayer.audio.track;
 
 import net.sourceforge.jaad.aac.Decoder;
 import net.sourceforge.jaad.aac.SampleBuffer;
@@ -7,9 +7,8 @@ import net.sourceforge.jaad.mp4.api.AudioTrack;
 import net.sourceforge.jaad.mp4.api.Frame;
 import net.sourceforge.jaad.mp4.api.Movie;
 import net.sourceforge.jaad.spi.javasound.AACAudioFileReader;
-import org.muplayer.audio.Track;
 import org.muplayer.info.TrackIO;
-import org.muplayer.interfaces.Player;
+import org.muplayer.audio.player.Player;
 import org.muplayer.util.AudioUtil;
 import org.orangelogger.sys.Logger;
 

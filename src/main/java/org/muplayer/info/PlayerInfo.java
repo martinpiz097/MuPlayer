@@ -1,7 +1,7 @@
 package org.muplayer.info;
 
-import org.muplayer.audio.MusicPlayer;
-import org.muplayer.audio.Track;
+import org.muplayer.audio.player.MusicPlayer;
+import org.muplayer.audio.track.Track;
 
 import java.io.File;
 import java.text.DecimalFormat;

@@ -1,11 +1,10 @@
-package org.muplayer.audio.trackstates;
+package org.muplayer.audio.track.states;
 
 import lombok.extern.java.Log;
 import org.aucom.sound.Speaker;
-import org.muplayer.audio.Track;
+import org.muplayer.audio.track.Track;
 import org.muplayer.thread.TPlayingTrack;
 import org.muplayer.thread.TaskRunner;
-import org.orangelogger.sys.Logger;
 
 import java.io.IOException;
 import java.util.logging.Level;
