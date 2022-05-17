@@ -16,17 +16,16 @@ import java.io.InputStream;
 
 public class OGGTrack extends Track {
 
-    public OGGTrack(File dataSource)
-            throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    public OGGTrack(File dataSource) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         super(dataSource);
-    }
-
-    public OGGTrack(String trackPath) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
-        this(new File(trackPath));
     }
 
     public OGGTrack(InputStream inputStream) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         super(inputStream);
+    }
+
+    public OGGTrack(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        super(trackPath);
     }
 
     public OGGTrack(File dataSource, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {

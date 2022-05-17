@@ -6,4 +6,9 @@ import lombok.Data;
 public class ConsoleExecution {
     private String cmd;
     private Object output;
+    private String outputType;
+
+    public boolean hasOutput() {
+        return output != null;
+    }
 }

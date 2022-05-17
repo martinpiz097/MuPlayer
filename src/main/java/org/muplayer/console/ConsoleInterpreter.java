@@ -285,6 +285,8 @@ public class ConsoleInterpreter implements CommandInterpreter {
 
         final ConsoleExecution consoleExecution = new ConsoleExecution();
         consoleExecution.setCmd(cmd.toString());
+        // imprimir output de este objeto no mas
+
         switch (cmdOrder) {
             case ConsoleOrder.START:
                 if (player == null)

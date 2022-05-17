@@ -8,16 +8,16 @@ import java.util.stream.Collectors;
 
 import static org.muplayer.properties.PropertiesFilesInfo.INFO_FILE_PATH;
 
-public class AppInfo {
+public class MuPlayerInfo {
     private final Properties properties;
 
-    private static final AppInfo instance = new AppInfo();
+    private static final MuPlayerInfo instance = new MuPlayerInfo();
 
-    public static AppInfo getInstance() {
+    public static MuPlayerInfo getInstance() {
         return instance;
     }
 
-    public AppInfo() {
+    public MuPlayerInfo() {
         properties = new Properties();
         loadData();
     }
@@ -34,7 +34,7 @@ public class AppInfo {
         return properties.get(key).toString();
     }
 
-    public Set<String> getPropertyNames() {
+        public Set<String> getPropertyNames() {
         return properties.stringPropertyNames().stream().sorted()
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }

@@ -1,7 +1,6 @@
 package org.muplayer.properties;
 
 import java.io.File;
-import java.io.IOException;
 
 public class PropertiesFilesInfo {
     public static final String CONFIG_FILE_PATH = getJarParentPath()+"/config.properties";

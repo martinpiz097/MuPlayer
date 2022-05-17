@@ -26,12 +26,12 @@ public class M4ATrack extends Track {
         super(dataSource);
     }
 
-    public M4ATrack(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        this(new File(trackPath));
-    }
-
     public M4ATrack(InputStream inputStream) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         super(inputStream);
+    }
+
+    public M4ATrack(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        super(trackPath);
     }
 
     public M4ATrack(File dataSource, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {

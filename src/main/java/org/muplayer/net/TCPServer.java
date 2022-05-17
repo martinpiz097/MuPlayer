@@ -5,5 +5,5 @@ import java.util.List;
 
 public class TCPServer {
     private ServerSocket serverSocket;
-    private List<TCPConnectable> listClients;
+    private List<TCPClient> listClients;
 }

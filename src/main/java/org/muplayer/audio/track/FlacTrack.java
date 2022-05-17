@@ -21,12 +21,12 @@ public class FlacTrack extends Track {
         super(dataSource);
     }
 
-    public FlacTrack(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        this(new File(trackPath));
-    }
-
     public FlacTrack(InputStream inputStream) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         super(inputStream);
+    }
+
+    public FlacTrack(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        super(trackPath);
     }
 
     public FlacTrack(File dataSource, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {

@@ -25,16 +25,6 @@ public class MP3Track extends Track {
         this(dataSource, null);
     }
 
-    public MP3Track(String trackPath)
-            throws UnsupportedAudioFileException, IOException,
-            LineUnavailableException, InvalidAudioFrameException {
-        this(new File(trackPath), null);
-    }
-
-    public MP3Track(InputStream inputStream) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-        this(inputStream, null);
-    }
-
     public MP3Track(File dataSource, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException, InvalidAudioFrameException {
         super(dataSource, player);
         final MP3AudioHeader audioHeader = new MP3AudioHeader(dataSource);
@@ -45,15 +35,25 @@ public class MP3Track extends Track {
         this.frameDurationInSec = (audioHeader.getPreciseTrackLength() / (double) frameCount);
     }
 
-    public MP3Track(InputStream inputStream, Player player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-        super(inputStream, player);
-        this.frameSize = 0;
-        this.frameDurationInSec = 0;
+    public MP3Track(String trackPath)
+            throws UnsupportedAudioFileException, IOException,
+            LineUnavailableException, InvalidAudioFrameException {
+        this(new File(trackPath), null);
     }
 
     public MP3Track(String trackPath, Player player) throws LineUnavailableException, IOException,
             UnsupportedAudioFileException, InvalidAudioFrameException {
         this(new File(trackPath), player);
+    }
+
+    public MP3Track(InputStream inputStream) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        this(inputStream, null);
+    }
+
+    public MP3Track(InputStream inputStream, Player player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        super(inputStream, player);
+        this.frameSize = 0;
+        this.frameDurationInSec = 0;
     }
 
     @Override

@@ -1,14 +1,11 @@
-package org.muplayer.main;
+package org.muplayer.console;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.muplayer.audio.player.MusicPlayer;
 import org.muplayer.console.ConsoleExecution;
 import org.muplayer.console.ConsoleInterpreter;
-import org.muplayer.properties.AppConfigInfo;
-import org.muplayer.properties.AppInfoKeys;
 import org.muplayer.system.SysInfo;
-import org.muplayer.thread.TaskRunner;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
 
@@ -83,26 +80,6 @@ public class ConsolePlayer extends Thread {
         }
 
         System.exit(0);
-    }
-
-    public static void main(String[] args) {
-        try {
-            if (args.length == 0) {
-                final String defaultRootPath = AppConfigInfo.getInstance().get(AppInfoKeys.DEFAULT_ROOT_FOLDER);
-                if (defaultRootPath == null) {
-                    throw new NullPointerException("Property 'root_folder' must be configured.\n" +
-                            "If you want to load a folder path automatically, create a file called config.properties in " +
-                            "the path of the jar file and set the root_folder property indicating the path of your music folder");
-                }
-                else
-                    TaskRunner.execute(new ConsolePlayer(defaultRootPath));
-            }
-            else
-                TaskRunner.execute(new ConsolePlayer(args[0]));
-        } catch (Exception e) {
-            e.printStackTrace();
-            //Logger.getLogger(ConsolePlayer.class, e.getClass().getSimpleName(), e.getMessage()).error();
-        }
     }
 
 }

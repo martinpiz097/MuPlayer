@@ -27,12 +27,12 @@ public class PCMTrack extends Track {
         super(dataSource);
     }
 
-    public PCMTrack(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        super(trackPath);
-    }
-
     public PCMTrack(InputStream inputStream) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         super(inputStream);
+    }
+
+    public PCMTrack(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        super(trackPath);
     }
 
     public PCMTrack(File dataSource, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {

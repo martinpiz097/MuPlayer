@@ -1,6 +1,6 @@
 package org.muplayer.system;
 
-import org.muplayer.properties.AppInfo;
+import org.muplayer.properties.MuPlayerInfo;
 import org.muplayer.properties.AppInfoKeys;
 
 public class SysInfo {
@@ -14,7 +14,7 @@ public class SysInfo {
     public static final String USERNAME = System.getProperty("user.name");
 
     public static String readVersion() {
-        return AppInfo.getInstance().getProperty(AppInfoKeys.APP_VERSION);
+        return MuPlayerInfo.getInstance().getProperty(AppInfoKeys.APP_VERSION);
     }
 
 
