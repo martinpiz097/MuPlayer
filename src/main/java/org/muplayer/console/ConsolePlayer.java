@@ -9,10 +9,7 @@ import org.muplayer.system.SysInfo;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Scanner;
 
 public class ConsolePlayer extends Thread {
@@ -74,9 +71,13 @@ public class ConsolePlayer extends Thread {
         Logger.getLogger(this, msg).rawInfo();
         interpreter.setOn(true);
 
+        ConsoleExecution consoleExecution;
+
         while (interpreter.isOn()) {
             printHeader();
-            execCommand(scanner.nextLine().trim());
+            consoleExecution = execCommand(scanner.nextLine().trim());
+            if (consoleExecution.hasOutput())
+                System.out.println(consoleExecution.getOutput());
         }
 
         System.exit(0);

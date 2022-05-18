@@ -319,17 +319,18 @@ public class MusicPlayer extends Player {
 
     @Override
     public synchronized void jumpTrack(int jumps, SeekOption option) {
+        int newIndex;
         if (option == SeekOption.NEXT) {
-            playerData.increaseTrackIndex(jumps);
-            if (playerData.getTrackIndex() >= listTracks.size())
-                playerData.setTrackIndex(0);
+            newIndex = playerData.getTrackIndex()+jumps;
+            if (newIndex >= listTracks.size())
+                newIndex = 0;
         }
         else {
-            playerData.decreaseTrackIndex(jumps);
-            if (playerData.getTrackIndex() < 0)
-                playerData.setTrackIndex(listTracks.size()-1);
+            newIndex = playerData.getTrackIndex() - jumps;
+            if (newIndex < 0)
+                newIndex = listTracks.size()-1;
         }
-        play(playerData.getTrackIndex());
+        play(newIndex);
     }
 
     @Override
@@ -344,23 +345,8 @@ public class MusicPlayer extends Player {
     }
 
     @Override
-    public synchronized List<ReportableTrack> getTracksInfo() {
-        final List<ReportableTrack> listInfo = new ArrayList<>(listTracks.size()+1);
-        listTracks.forEach(track->{
-            try {
-                final AudioTag tag = new AudioTag(track.getDataSourceAsFile());
-                if (tag.isValidFile())
-                    listInfo.add(track);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-        return listInfo;
-    }
-
-    @Override
     public synchronized List<Artist> getArtists() {
-        final List<ReportableTrack> listTracks = getTracksInfo();
+        final List<Track> listTracks = getTracks();
         final List<Artist> listArtists = new ArrayList<>(listTracks.size()+1);
 
         listTracks.parallelStream()
@@ -388,7 +374,7 @@ public class MusicPlayer extends Player {
 
     @Override
     public synchronized List<Album> getAlbums() {
-        final List<ReportableTrack> listTracks = getTracksInfo();
+        final List<Track> listTracks = getTracks();
         final List<Album> listAlbums = new ArrayList<>(listTracks.size()+1);
 
         listTracks.parallelStream()

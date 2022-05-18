@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.nio.file.StandardOpenOption.WRITE;
+import static org.muplayer.console.OutputType.*;
 
 public class ConsoleInterpreter implements CommandInterpreter {
     private Player player;
@@ -60,17 +61,17 @@ public class ConsoleInterpreter implements CommandInterpreter {
         }
     }
 
-    private void printTracks() {
+    private void printTracks(ConsoleExecution execution) {
         final File rootFolder = player.getRootFolder();
         final List<Track> listTracks = player.getTracks();
         final Track current = player.getCurrent();
 
-        Logger.getLogger(this, "------------------------------").rawInfo();
+        execution.appendOutput("------------------------------", INFO);
         if (rootFolder == null)
-            Logger.getLogger(this, "Music in folder").rawInfo();
+            execution.appendOutput("Music in folder", INFO);
         else
-            Logger.getLogger(this, "Music in folder "+rootFolder.getName()).rawInfo();
-        Logger.getLogger(this, "------------------------------").rawInfo();
+            execution.appendOutput("Music in folder "+rootFolder.getName(), INFO);
+        execution.appendOutput("------------------------------", INFO);
 
         if (rootFolder != null) {
             Track track;
@@ -79,29 +80,29 @@ public class ConsoleInterpreter implements CommandInterpreter {
                 track = listTracks.get(i);
                 fileTrack = track.getDataSourceAsFile();
                 if (current != null && fileTrack.getPath().equals(((File)current.getDataSourceAsFile()).getPath()))
-                    Logger.getLogger(this, "Track "+(i+1)+": "
-                            +fileTrack.getName()).rawWarning();
+                    execution.appendOutput("Track "+(i+1)+": "
+                            +fileTrack.getName(), WARNING);
                 else
-                    Logger.getLogger(this, "Track "+(i+1)+": "
-                            +fileTrack.getName()).rawInfo();
+                    execution.appendOutput("Track "+(i+1)+": "
+                            +fileTrack.getName(), INFO);
             }
-            Logger.getLogger(this, "------------------------------").rawInfo();
+            execution.appendOutput("------------------------------", INFO);
         }
     }
 
-    private void printDetailedTracks() {
+    private void printDetailedTracks(ConsoleExecution execution) {
         final File rootFolder = player.getRootFolder();
         final List<Track> listTracks = player.getTracks();
         final List<String> listFolderPaths = player.getListFolders().stream()
                 .map(File::getPath).collect(Collectors.toList());
         final Track current = player.getCurrent();
 
-        Logger.getLogger(this, "------------------------------").rawInfo();
+        execution.appendOutput("------------------------------", INFO);
         if (rootFolder == null)
-            Logger.getLogger(this, "Music in folder").rawInfo();
+            execution.appendOutput("Music in folder", INFO);
         else
-            Logger.getLogger(this, "Music in folder "+rootFolder.getName()).rawInfo();
-        Logger.getLogger(this, "------------------------------").rawInfo();
+            execution.appendOutput("Music in folder "+rootFolder.getName(), INFO);
+        execution.appendOutput("------------------------------", INFO);
 
         if (rootFolder != null) {
             File trackFile;
@@ -110,39 +111,38 @@ public class ConsoleInterpreter implements CommandInterpreter {
                 trackFile = listTracks.get(i).getDataSourceAsFile();
                 trackFolder = trackFile.getParentFile();
                 if (prevTrackFolder == null || !trackFolder.getPath().equals(prevTrackFolder.getPath()))
-                    Logger.getLogger(this,
-                            (prevTrackFolder != null
-                                    ? "----------------------------------------------------------------------" +
-                                    "\n\n----------------------------------------------------------------------" +
-                                    "\nFolder: "
-                                    : "----------------------------------------------------------------------\n"
-                                    + "Folder: ")+trackFolder.getName()).rawInfo();
+                    execution.appendOutput((prevTrackFolder != null
+                            ? "----------------------------------------------------------------------" +
+                            "\n\n----------------------------------------------------------------------" +
+                            "\nFolder: "
+                            : "----------------------------------------------------------------------\n"
+                            + "Folder: ")+trackFolder.getName(), INFO);
                 if (current != null && trackFile.getPath().equals(current.getDataSourceAsFile().getPath()))
-                    Logger.getLogger(this, "\tTrack "+(i+1)+": "
-                            +trackFile.getName()).rawWarning();
+                    execution.appendOutput("\tTrack "+(i+1)+": "
+                            +trackFile.getName(), WARNING);
                 else
-                    Logger.getLogger(this, "\tTrack "+(i+1)+": "
-                            +trackFile.getName()).rawInfo();
+                    execution.appendOutput("\tTrack "+(i+1)+": "
+                            +trackFile.getName(), INFO);
 
                 prevTrackFolder = trackFile.getParentFile();
             }
-            Logger.getLogger(this, "------------------------------").rawInfo();
+            execution.appendOutput("------------------------------", INFO);
         }
     }
 
-    private synchronized void printFolderTracks() {
+    private synchronized void printFolderTracks(ConsoleExecution execution) {
         final List<Track> listTracks = player.getTracks();
         final Track current = player.getCurrent();
         final int songsCount = player.getSongsCount();
 
         File parentFolder = current == null ? null : current.getDataSourceAsFile().getParentFile();
-        Logger.getLogger(this, "------------------------------").rawInfo();
 
+        execution.appendOutput("------------------------------", INFO);
         if (parentFolder == null)
-            Logger.getLogger(this, "Music in current folder").rawInfo();
+            execution.appendOutput("Music in current folder", INFO);
         else
-            Logger.getLogger(this, "Music in folder "+parentFolder.getName()).rawInfo();
-        Logger.getLogger(this, "------------------------------").rawInfo();
+            execution.appendOutput("Music in folder "+parentFolder.getName(), INFO);
+        execution.appendOutput("------------------------------", INFO);
 
         if (parentFolder != null) {
             File fileTrack;
@@ -152,29 +152,29 @@ public class ConsoleInterpreter implements CommandInterpreter {
                 fileTrack = listTracks.get(i).getDataSourceAsFile();
                 if (fileTrack.getParentFile().equals(parentFolder)) {
                     if (fileTrack.getPath().equals(currentFile.getPath()))
-                        Logger.getLogger(this, "Track "+(i+1)+": "
-                                +fileTrack.getName()).rawWarning();
+                        execution.appendOutput("Track "+(i+1)+": "
+                                +fileTrack.getName(), WARNING);
                     else
-                        Logger.getLogger(this, "Track "+(i+1)+": "
-                                +fileTrack.getName()).rawInfo();
+                        execution.appendOutput("Track "+(i+1)+": "
+                                +fileTrack.getName(), INFO);
                 }
             }
-            Logger.getLogger(this, "------------------------------").rawInfo();
+            execution.appendOutput("------------------------------", INFO);
         }
     }
 
-    private synchronized void printFolders() {
+    private synchronized void printFolders(ConsoleExecution execution) {
         final File rootFolder = player.getRootFolder();
         final List<String> listFolderPaths = player.getListFolders().stream().map(
                 File::getPath).collect(Collectors.toList());
         final Track current = player.getCurrent();
 
-        Logger.getLogger(this, "------------------------------").rawInfo();
+        execution.appendOutput("------------------------------", INFO);
         if (rootFolder == null)
-            Logger.getLogger(this, "Folders").rawInfo();
+            execution.appendOutput("Folders", INFO);
         else
-            Logger.getLogger(this, "Folders in "+rootFolder.getName()).rawInfo();
-        Logger.getLogger(this, "------------------------------").rawInfo();
+            execution.appendOutput("Folders in "+rootFolder.getName(), INFO);
+        execution.appendOutput("------------------------------", INFO);
 
         if (current == null)
             return;
@@ -185,16 +185,16 @@ public class ConsoleInterpreter implements CommandInterpreter {
         for (int i = 0; i < player.getFoldersCount(); i++) {
             folder = new File(listFolderPaths.get(i));
             if (folder.getPath().equals(currentTrackFile.getParentFile().getPath())) {
-                Logger.getLogger(this, "Folder "+(i+1)+": "
-                        +folder.getName()).rawWarning();
+                execution.appendOutput("Folder "+(i+1)+": "
+                        +folder.getName(), WARNING);
             }
             else {
-                Logger.getLogger(this, "Folder "+(i+1)+": "
-                        +folder.getName()).rawInfo();
+                execution.appendOutput("Folder "+(i+1)+": "
+                        +folder.getName(), INFO);
             }
 
         }
-        Logger.getLogger(this, "------------------------------").rawInfo();
+        execution.appendOutput("------------------------------", INFO);
     }
 
     protected void printStreamOut(InputStream cmdStream) throws IOException {
@@ -221,7 +221,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
             printStreamOut(process.getErrorStream());
     }
 
-    protected void printHelp() {
+    protected void printHelp(ConsoleExecution execution) {
         final Set<String> propertyNames = helpInfo.getPropertyNames();
         final Iterator<String> it = propertyNames.iterator();
         final StringBuilder sbHelp = new StringBuilder();
@@ -236,17 +236,17 @@ public class ConsoleInterpreter implements CommandInterpreter {
                     .append(helpInfo.getProperty(key))
                     .append('\n');
         }
-        Logger.getLogger(this, "---------").rawWarning();
-        Logger.getLogger(this, "Help Info").rawWarning();
-        Logger.getLogger(this, "---------").rawWarning();
-        Logger.getLogger(this, sbHelp.toString()).rawWarning();
+        execution.appendOutput("---------", WARNING);
+        execution.appendOutput("Help Info", WARNING);
+        execution.appendOutput("---------", WARNING);
+        execution.appendOutput(sbHelp.toString(), WARNING);
     }
 
-    public void showSongInfo(Track track) {
+    public void showSongInfo(Track track, ConsoleExecution execution) {
         if (track == null)
-            Logger.getLogger(this, "Current track unavailable").rawError();
+            execution.appendOutput("Current track unavailable", ERROR);
         else
-            Logger.getLogger(this, TrackUtil.getSongInfo(track)).rawWarning();
+            execution.appendOutput(TrackUtil.getSongInfo(track), WARNING);
     }
 
     public ConsoleExecution executeCommand(String cmd) throws Exception {
@@ -254,7 +254,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
             final String[] cmdSplit = cmd.split(CMD_DIVISOR);
             ConsoleExecution consoleExecution = new ConsoleExecution();
 
-            final List<Object> listExec = new ArrayList<>();
+            final List<String> listExec = new ArrayList<>();
             ConsoleExecution exec;
 
             for (int i = 0; i < cmdSplit.length; i++) {
@@ -263,7 +263,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
                     listExec.add(exec.getOutput());
             }
             consoleExecution.setCmd(cmd);
-            consoleExecution.setOutput(listExec);
+            consoleExecution.appendOutput(listExec.get(listExec.size()-1), "");
             return consoleExecution;
         }
         else
@@ -283,8 +283,8 @@ public class ConsoleInterpreter implements CommandInterpreter {
         final String cmdOrder = cmd.getOrder();
         Track current;
 
-        final ConsoleExecution consoleExecution = new ConsoleExecution();
-        consoleExecution.setCmd(cmd.toString());
+        final ConsoleExecution execution = new ConsoleExecution();
+        execution.setCmd(cmd.toString());
         // imprimir output de este objeto no mas
 
         switch (cmdOrder) {
@@ -298,16 +298,17 @@ public class ConsoleInterpreter implements CommandInterpreter {
                         player.shutdown();
                         newMusicPlayer.start();
                         player = newMusicPlayer;
-                    } else
-                        Logger.getLogger(this, "Folder not exists").rawError();
+                    } else {
+                        execution.appendOutput("Folder not exists", ERROR);
+                    }
                 } else if (!player.isAlive())
                     player.start();
                 if (player.getCurrent() != null) {
-                    showSongInfo(player.getCurrent());
+                    showSongInfo(player.getCurrent(), execution);
                 }
                 break;
             case ConsoleOrder.ISSTARTED:
-                Logger.getLogger(this, isPlayerOn() ? "Is playing" : "Is not playing").rawWarning();
+                execution.appendOutput(isPlayerOn() ? "Is playing" : "Is not playing", WARNING);
                 break;
 
             case ConsoleOrder.PLAY:
@@ -317,7 +318,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
                         if (playIndex != null &&
                                 playIndex.intValue() > 0 && playIndex.intValue() <= player.getSongsCount())
                             player.play(playIndex.intValue() - 1);
-                        showSongInfo(player.getCurrent());
+                        showSongInfo(player.getCurrent(), execution);
                     } else
                         player.play();
                 break;
@@ -343,16 +344,18 @@ public class ConsoleInterpreter implements CommandInterpreter {
                 break;
 
             case ConsoleOrder.NEXT:
-                if (isPlayerOn())
+                if (isPlayerOn()) {
                     if (cmd.hasOptions()) {
                         Number jumps = cmd.getOptionAsNumber(0);
                         if (jumps == null)
-                            Logger.getLogger(this, "Jump value incorrect").rawError();
+                            execution.appendOutput("Jump value incorrect", ERROR);
                         else
                             player.jumpTrack(jumps.intValue(), SeekOption.NEXT);
-                    } else
+                    }
+                    else
                         player.playNext();
-                showSongInfo(player.getCurrent());
+                }
+                showSongInfo(player.getCurrent(), execution);
                 break;
 
             case ConsoleOrder.PREV:
@@ -360,12 +363,12 @@ public class ConsoleInterpreter implements CommandInterpreter {
                     if (cmd.hasOptions()) {
                         Number jumps = cmd.getOptionAsNumber(0);
                         if (jumps == null)
-                            Logger.getLogger(this, "Jump value incorrect").rawError();
+                            execution.appendOutput("Jump value incorrect", ERROR);
                         else
                             player.jumpTrack(jumps.intValue(), SeekOption.PREV);
                     } else
                         player.playPrevious();
-                    showSongInfo(player.getCurrent());
+                    showSongInfo(player.getCurrent(), execution);
                 }
                 break;
 
@@ -382,27 +385,27 @@ public class ConsoleInterpreter implements CommandInterpreter {
             case ConsoleOrder.LIST1:
             case ConsoleOrder.LIST2:
                 if (player != null)
-                    printTracks();
+                    printTracks(execution);
                 break;
 
             case ConsoleOrder.LISTCURRENTFOLDER:
                 if (isPlayerOn())
-                    printFolderTracks();
+                    printFolderTracks(execution);
                 break;
 
             case ConsoleOrder.LISTFOLDERS:
                 if (isPlayerOn())
-                    printFolders();
+                    printFolders(execution);
                 break;
 
             case ConsoleOrder.LISTDETAILED:
                 if (isPlayerOn())
-                    printDetailedTracks();
+                    printDetailedTracks(execution);
                 break;
 
             case ConsoleOrder.GETGAIN:
                 if (player != null)
-                    Logger.getLogger(this, "Player Volume(0-100): " + player.getGain()).rawWarning();
+                    execution.appendOutput("Player Volume(0-100): " + player.getGain(), WARNING);
                 break;
 
             case ConsoleOrder.SETGAIN:
@@ -410,16 +413,16 @@ public class ConsoleInterpreter implements CommandInterpreter {
                     if (cmd.hasOptions()) {
                         Number volume = cmd.getOptionAsNumber(0);
                         if (volume == null)
-                            Logger.getLogger(this, "Volume value incorrect").rawError();
+                            execution.appendOutput("Volume value incorrect", ERROR);
                         else {
                             player.setGain(volume.floatValue());
-                            Logger.getLogger(this, "Volume value changed").rawWarning();
+                            execution.appendOutput("Volume value changed", WARNING);
                         }
                     }
                 break;
             case ConsoleOrder.GETSYSVOL:
                 if (player != null)
-                    Logger.getLogger(this, "Player Volume(0-100): " + player.getSystemVolume()).rawWarning();
+                    execution.appendOutput("Player Volume(0-100): " + player.getSystemVolume(), WARNING);
                 break;
 
             case ConsoleOrder.SETSYSVOL:
@@ -427,10 +430,10 @@ public class ConsoleInterpreter implements CommandInterpreter {
                     if (cmd.hasOptions()) {
                         Number volume = cmd.getOptionAsNumber(0);
                         if (volume == null)
-                            Logger.getLogger(this, "Volume value incorrect").rawError();
+                            execution.appendOutput("Volume value incorrect", ERROR);
                         else {
                             player.setSystemVolume(volume.floatValue());
-                            Logger.getLogger(this, "Volume value changed").rawWarning();
+                            execution.appendOutput("Volume value changed", WARNING);
                         }
                     }
                 break;
@@ -456,10 +459,9 @@ public class ConsoleInterpreter implements CommandInterpreter {
                     if (cmd.hasOptions()) {
                         Number seekSec = cmd.getOptionAsNumber(0);
                         if (seekSec == null)
-                            Logger.getLogger(this, "Seek value incorrect").rawError();
+                            execution.appendOutput("Seek value incorrect", ERROR);
                         else {
                             player.seek(seekSec.doubleValue());
-                            //Logger.getLogger(this, "Seeked").rawWarning();
                         }
                     }
                 break;
@@ -472,24 +474,21 @@ public class ConsoleInterpreter implements CommandInterpreter {
                         Number jumps = cmd.getOptionAsNumber(1);
 
                         if (cmd.getOptionsCount() > 1 && jumps == null)
-                            Logger.getLogger(this, "Seek value incorrect").rawError();
+                            execution.appendOutput("Seek value incorrect", ERROR);
                         else {
                             if (jumps == null && option == null)
-                                Logger.getLogger(this, "Option value incorrect").rawError();
-                            else if (jumps == null) {
+                                execution.appendOutput("Option value incorrect", ERROR);
+                            else if (jumps == null)
                                 player.seekFolder(option);
-                            }
                             else if (jumps.intValue() < 0)
-                                Logger.getLogger(this, "Jumps value incorrect").rawError();
-                            else {
+                                execution.appendOutput("Jumps value incorrect", ERROR);
+                            else
                                 player.seekFolder(option, jumps.intValue());
-                                //Logger.getLogger(this, "Seeked").rawWarning();
-                            }
                         }
 
                     } else
                         player.seekFolder(SeekOption.NEXT);
-                    showSongInfo(player.getCurrent());
+                    showSongInfo(player.getCurrent(), execution);
                 }
                 break;
 
@@ -502,29 +501,26 @@ public class ConsoleInterpreter implements CommandInterpreter {
                     if (cmd.hasOptions()) {
                         Number gotoSec = cmd.getOptionAsNumber(0);
                         if (gotoSec == null)
-                            Logger.getLogger(this, "Go to value incorrect").rawError();
+                            execution.appendOutput("Go to value incorrect", ERROR);
                         else
                             player.gotoSecond(gotoSec.doubleValue());
                     }
                 break;
             case ConsoleOrder.SOUNDCOUNT:
-                System.out.println("in soundcount option");
-                int count = player.getSongsCount();
-                System.out.println("SoundCount: "+count);
+                final int count = player.getSongsCount();
                 if (player != null)
-                    Logger.getLogger(this, count).info();
+                    execution.appendOutput(player.getSongsCount(), INFO);
                 break;
             case ConsoleOrder.DURATION:
-                if (player != null) {
-                    Logger.getLogger(this, player.getCurrent().getFormattedDuration()).rawInfo();
-                }
+                if (player != null)
+                    execution.appendOutput(player.getCurrent().getFormattedDuration(), INFO);
                 break;
             case ConsoleOrder.GETCOVER:
                 current = player.getCurrent();
                 if (current == null)
-                    Logger.getLogger(this, "Current track unavailable").rawError();
+                    execution.appendOutput("Current track unavailable", ERROR);
                 else if (!current.hasCover())
-                    Logger.getLogger(this, "Current song don't have cover").rawError();
+                    execution.appendOutput("Current song don't have cover", ERROR);
                 else if (cmd.hasOptions()) {
                     File folderPath = new File(cmd.getOptionAt(0));
                     if (!folderPath.exists())
@@ -532,29 +528,27 @@ public class ConsoleInterpreter implements CommandInterpreter {
                     File fileCover = new File(folderPath, "cover-" + current.getTitle() + ".png");
                     fileCover.createNewFile();
                     Files.write(fileCover.toPath(), current.getCoverData(), WRITE);
-                    Logger.getLogger(this, "Created cover with name " + fileCover.getName()).rawWarning();
-                } else {
-                    Logger.getLogger(this, "Cover path not defined").rawError();
-                }
+                    execution.appendOutput("Created cover with name " + fileCover.getName(), WARNING);
+                } else
+                    execution.appendOutput("Cover path not defined", ERROR);
                 break;
 
             case ConsoleOrder.GETINFO:
-                if (player.hasSounds() && player.getCurrent() != null) {
-                    showSongInfo(player.getCurrent());
-                }
-                else {
-                    Logger.getLogger(this, "No song available").rawWarning();
-                }
+                if (player.hasSounds() && player.getCurrent() != null)
+                    showSongInfo(player.getCurrent(), execution);
+                else
+                    execution.appendOutput("No song available", WARNING);
                 break;
 
             case ConsoleOrder.GETPROGRESS:
                 current = player.getCurrent();
-                if (current == null)
-                    Logger.getLogger(this, "Current track unavailable").rawError();
+                if (current == null) {
+                    execution.appendOutput("Current track unavailable", ERROR);
+                }
                 else {
                     final String formattedProgress = current.getFormattedProgress();;
                     final String formattedDuration = current.getFormattedDuration();
-                    Logger.getLogger(this, formattedProgress+"/"+formattedDuration).rawWarning();
+                    execution.appendOutput(formattedProgress+"/"+formattedDuration, WARNING);
                 }
                 break;
 
@@ -566,39 +560,32 @@ public class ConsoleInterpreter implements CommandInterpreter {
             case ConsoleOrder.FORMAT:
                 current = player.getCurrent();
                 if (current == null)
-                    Logger.getLogger(this, "Current track unavailable").rawError();
+                    execution.appendOutput("Current track unavailable", ERROR);
                 else {
-                    String className = current.getClass().getSimpleName();
-                    Logger.getLogger(
-                            this,
-                            className.substring(0, className.length() - 5).toLowerCase()).rawWarning();
-
+                    final String className = current.getClass().getSimpleName();
+                    execution.appendOutput(className.substring(0, className.length() - 5).toLowerCase(), WARNING);
                 }
                 break;
 
             case ConsoleOrder.TITLE:
                 current = player.getCurrent();
                 if (current == null)
-                    Logger.getLogger(this, "Current track unavailable").rawError();
-                else {
-                    Logger.getLogger(this, current.getTitle()).rawWarning();
-
-                }
+                    execution.appendOutput("Current track unavailable", ERROR);
+                else
+                    execution.appendOutput(current.getTitle(), WARNING);
                 break;
 
             case ConsoleOrder.NAME:
                 current = player.getCurrent();
                 if (current == null)
-                    Logger.getLogger(this, "Current track unavailable").rawError();
-                else {
-                    Logger.getLogger(this, current.getDataSourceAsFile().getName()).rawWarning();
-
-                }
+                    execution.appendOutput("Current track unavailable", ERROR);
+                else
+                    execution.appendOutput(current.getDataSourceAsFile().getName(), WARNING);
                 break;
 
             case ConsoleOrder.HELP1:
             case ConsoleOrder.HELP2:
-                printHelp();
+                printHelp(execution);
                 break;
 
             case ConsoleOrder.SYSTEM1:
@@ -608,17 +595,13 @@ public class ConsoleInterpreter implements CommandInterpreter {
                 break;
 
             case ConsoleOrder.SHOW_NEXT:
-                if (isPlayerOn()) {
-                    Track next = (Track) player.getNext();
-                    System.out.println(TrackUtil.getSongInfo(next));
-                }
+                if (isPlayerOn())
+                    execution.appendOutput(TrackUtil.getSongInfo(player.getNext()), WARNING);
                 break;
 
             case ConsoleOrder.SHOW_PREV:
-                if (isPlayerOn()) {
-                    Track prev = (Track) player.getPrevious();
-                    System.out.println(TrackUtil.getSongInfo(prev));
-                }
+                if (isPlayerOn())
+                    execution.appendOutput(TrackUtil.getSongInfo(player.getPrevious()), WARNING);
                 break;
 
             case ConsoleOrder.PLAY_FOLDER:
@@ -627,7 +610,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
                         final Number fldIndex = cmd.getOptionAsNumber(0);
                         if (fldIndex != null && fldIndex.intValue() > 0) {
                             player.playFolder(fldIndex.intValue()-1);
-                            showSongInfo(player.getCurrent());
+                            showSongInfo(player.getCurrent(), execution);
                         }
                     }
                 }
@@ -638,62 +621,55 @@ public class ConsoleInterpreter implements CommandInterpreter {
                     File folder = new File(cmd.getOptionAt(0));
                     if (folder.exists()) {
                         if (folder.isDirectory()) {
-                            if (folder.list() == null) {
-                                Logger.getLogger(this, "Folder is empty").rawError();
-                            }
+                            if (folder.list() == null)
+                                execution.appendOutput("Folder is empty", ERROR);
                             else {
-                                MusicPlayer newMusicPlayer = new MusicPlayer(folder);
+                                final Player newMusicPlayer = new MusicPlayer(folder);
                                 newMusicPlayer.start();
-                                if (isPlayerOn()) {
+                                if (isPlayerOn())
                                     player.shutdown();
-                                }
                                 player = newMusicPlayer;
                             }
                         }
-                        else {
-                            Logger.getLogger(this, "Path not be a directory").rawError();
-                        }
+                        else
+                            execution.appendOutput("Path not be a directory", ERROR);
                     }
-                    else {
-                        Logger.getLogger(this, "Folder not exists").rawError();
-                    }
+                    else
+                        execution.appendOutput("Folder not exists", ERROR);
                 }
                 break;
 
             case ConsoleOrder.LIST_ARTISTS:
                 if (player.isAlive() && player.hasSounds()) {
-                    List<Artist> listArtists = player.getArtists();
-                    for(Artist artist : listArtists) {
-                        Logger.getLogger(this, artist.getName()).rawInfo();
-                    }
-                    Logger.getLogger(this, "------------------------------").rawInfo();
-                    Logger.getLogger(this, "Total: "+listArtists.size()).rawInfo();
+                    final List<Artist> listArtists = player.getArtists();
+                    for(Artist artist : listArtists)
+                        execution.appendOutput(artist.getName(), INFO);
+                    execution.appendOutput("------------------------------", INFO);
+                    execution.appendOutput("Total: "+listArtists.size(), INFO);
                 }
-                else {
-                    Logger.getLogger(this, "The player is not active").rawWarning();
-                }
+                else
+                    execution.appendOutput("The player is not active", WARNING);
                 break;
 
             case ConsoleOrder.LIST_ALBUMS:
                 if (player.isAlive() && player.hasSounds()) {
                     List<Album> listAlbums = player.getAlbums();
                     for(Album album : listAlbums) {
-                        Logger.getLogger(this, album.getName()).rawInfo();
+                        execution.appendOutput(album.getName(), INFO);
                     }
-                    Logger.getLogger(this, "------------------------------").rawInfo();
-                    Logger.getLogger(this, "Total: "+listAlbums.size()).rawInfo();
+                    execution.appendOutput("------------------------------", INFO);
+                    execution.appendOutput("Total: "+listAlbums.size(), INFO);
                 }
-                else {
-                    Logger.getLogger(this, "The player is not active").rawWarning();
-                }
+                else
+                    execution.appendOutput("The player is not active", WARNING);
                 break;
 
             default:
-                Logger.getLogger(this, "Comando desconocido, inserte el comando \"h\" o \"help\"\n" +
-                        "para desplegar el menú de ayuda.").rawWarning();
+                execution.appendOutput("Comando desconocido, inserte el comando \"h\" o \"help\"\n" +
+                        "para desplegar el menú de ayuda.", WARNING);
                 break;
         }
 
-        return consoleExecution;
+        return execution;
     }
 }
