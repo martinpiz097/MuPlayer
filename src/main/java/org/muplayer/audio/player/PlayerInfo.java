@@ -1,4 +1,4 @@
-package org.muplayer.info;
+package org.muplayer.audio.player;
 
 import org.muplayer.audio.player.MusicPlayer;
 import org.muplayer.audio.track.Track;

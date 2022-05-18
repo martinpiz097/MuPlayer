@@ -1,10 +1,8 @@
 package org.muplayer.console;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.muplayer.audio.player.MusicPlayer;
-import org.muplayer.console.ConsoleExecution;
-import org.muplayer.console.ConsoleInterpreter;
+import org.muplayer.audio.player.Player;
 import org.muplayer.system.SysInfo;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
@@ -12,33 +10,33 @@ import org.orangelogger.sys.SystemUtil;
 import java.io.*;
 import java.util.Scanner;
 
-public class ConsolePlayer extends Thread {
-    @Getter @Setter
-    protected MusicPlayer musicPlayer;
+public class ConsoleRunner extends Thread {
+    @Getter
+    protected final Player player;
     protected final ConsoleInterpreter interpreter;
     protected final Scanner scanner;
 
     protected static final String LINEHEADER = "[MuPlayer]> ";
 
-    public ConsolePlayer() throws FileNotFoundException {
-        musicPlayer = new MusicPlayer((File) null);
-        interpreter = new ConsoleInterpreter(musicPlayer);
+    public ConsoleRunner() throws FileNotFoundException {
+        player = new MusicPlayer((File) null);
+        interpreter = new ConsoleInterpreter(player);
         scanner = new Scanner(System.in);
     }
 
-    public ConsolePlayer(File rootFolder) throws FileNotFoundException {
-        musicPlayer = new MusicPlayer(rootFolder);
-        interpreter = new ConsoleInterpreter(musicPlayer);
+    public ConsoleRunner(File rootFolder) throws FileNotFoundException {
+        player = new MusicPlayer(rootFolder);
+        interpreter = new ConsoleInterpreter(player);
         scanner = new Scanner(System.in);
     }
 
-    public ConsolePlayer(String folder) throws FileNotFoundException {
+    public ConsoleRunner(String folder) throws FileNotFoundException {
         this(new File(folder));
     }
 
-    public ConsolePlayer(MusicPlayer musicPlayer) throws FileNotFoundException {
-        this.musicPlayer = musicPlayer;
-        interpreter = new ConsoleInterpreter(musicPlayer);
+    public ConsoleRunner(MusicPlayer player) throws FileNotFoundException {
+        this.player = player;
+        interpreter = new ConsoleInterpreter(player);
         scanner = new Scanner(System.in);
     }
 

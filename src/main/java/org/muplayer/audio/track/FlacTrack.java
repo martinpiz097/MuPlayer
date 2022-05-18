@@ -2,8 +2,6 @@ package org.muplayer.audio.track;
 
 import org.jflac.sound.spi.FlacAudioFileReader;
 import org.jflac.sound.spi.FlacFormatConversionProvider;
-import org.muplayer.info.TrackIO;
-import org.muplayer.audio.codec.DecodeManager;
 import org.muplayer.audio.player.Player;
 import org.muplayer.util.AudioUtil;
 
@@ -50,7 +48,7 @@ public class FlacTrack extends Track {
             final AudioInputStream flacEncodedStream = AudioUtil.instanceStream(trackIO.getAudioReader(),
                     dataSource);
             final AudioFormat format = flacEncodedStream.getFormat();
-            final AudioFormat decodedFormat = DecodeManager.getPcmFormatByFlac(format);
+            final AudioFormat decodedFormat = AudioUtil.getPcmFormatByFlac(format);
             trackIO.setDecodedStream(new FlacFormatConversionProvider().
                     getAudioInputStream(decodedFormat, flacEncodedStream));
         } catch (UnsupportedAudioFileException | IOException e) {

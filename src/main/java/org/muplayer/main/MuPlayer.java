@@ -1,10 +1,10 @@
 package org.muplayer.main;
 
 import org.muplayer.audio.player.MusicPlayer;
-import org.muplayer.console.ConsolePlayer;
+import org.muplayer.console.ConsoleRunner;
 import org.muplayer.net.DaemonService;
 import org.muplayer.properties.ConfigInfo;
-import org.muplayer.properties.AppInfoKeys;
+import org.muplayer.properties.ConfigInfoKeys;
 import org.muplayer.thread.TaskRunner;
 
 public class MuPlayer {
@@ -15,12 +15,12 @@ public class MuPlayer {
     public static void main(String[] args) {
         try {
             if (args.length == 0) {
-                final String defaultRootPath = ConfigInfo.getInstance().get(AppInfoKeys.DEFAULT_ROOT_FOLDER);
+                final String defaultRootPath = ConfigInfo.getInstance().get(ConfigInfoKeys.DEFAULT_ROOT_FOLDER);
                 if (defaultRootPath == null) {
                     throw new NullPointerException(PROPERTY_NOT_FOUND_MSG);
                 }
                 else
-                    TaskRunner.execute(new ConsolePlayer(defaultRootPath));
+                    TaskRunner.execute(new ConsoleRunner(defaultRootPath));
             }
             else switch (args.length) {
                 case 1:
@@ -28,13 +28,13 @@ public class MuPlayer {
                     if (firstArg.startsWith("-"))
                         throw new NullPointerException(PROPERTY_NOT_FOUND_MSG);
                     else
-                        TaskRunner.execute(new ConsolePlayer(firstArg));
+                        TaskRunner.execute(new ConsoleRunner(firstArg));
                     break;
                 case 2:
                     firstArg = args[0].trim();
                     if (firstArg.startsWith("-")) {
                         if (firstArg.equals("-l"))
-                            TaskRunner.execute(new ConsolePlayer(args[1]));
+                            TaskRunner.execute(new ConsoleRunner(args[1]));
                         else if (firstArg.equals("-d"))
                             TaskRunner.execute(new DaemonService(new MusicPlayer(args[1])));
                         else

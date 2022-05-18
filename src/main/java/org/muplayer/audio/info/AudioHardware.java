@@ -1,9 +1,8 @@
-package org.muplayer.info;
+package org.muplayer.audio.info;
 
 import org.muplayer.util.AudioUtil;
 
 import javax.sound.sampled.*;
-import javax.xml.crypto.Data;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;

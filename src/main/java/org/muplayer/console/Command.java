@@ -12,10 +12,10 @@ public class Command {
     }
 
     public Command(String strCmd) {
-        String[] splitcmd = strCmd.split(" ");
-        order = splitcmd[0];
-        if (splitcmd.length > 1)
-            options = Arrays.copyOfRange(splitcmd, 1, splitcmd.length);
+        String[] cmdSplit = strCmd.split(" ");
+        order = cmdSplit[0];
+        if (cmdSplit.length > 1)
+            options = Arrays.copyOfRange(cmdSplit, 1, cmdSplit.length);
         else
             options = null;
     }

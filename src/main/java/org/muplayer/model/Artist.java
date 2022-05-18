@@ -1,5 +1,7 @@
 package org.muplayer.model;
 
+import org.muplayer.interfaces.ReportableTrack;
+
 import java.util.LinkedHashSet;
 import java.util.Set;
 

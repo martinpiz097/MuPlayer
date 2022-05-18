@@ -1,4 +1,4 @@
-package org.muplayer.info;
+package org.muplayer.listener;
 
 public class ListenersNames {
     public static final String ONSTARTED = "onStarted";

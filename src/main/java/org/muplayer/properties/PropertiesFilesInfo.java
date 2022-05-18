@@ -14,16 +14,4 @@ public class PropertiesFilesInfo {
 
         return parentPath.endsWith("/") ? parentPath.substring(0, parentPath.length()-1) : parentPath;
     }
-
-    /*private static String readConfigPath() {
-        File jarPath = new File(getJarParentPath());
-        File infoFile = new File(jarPath.getParent(), INFO_FILE_PATH);
-        try {
-            return infoFile.exists() ? infoFile.getCanonicalPath() : "";
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }*/
-
 }

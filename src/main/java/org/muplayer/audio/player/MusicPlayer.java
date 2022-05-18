@@ -5,8 +5,7 @@ import org.muplayer.audio.track.Track;
 import org.muplayer.audio.track.states.TrackState;
 import org.muplayer.audio.track.states.UnknownState;
 import org.muplayer.exception.MuPlayerException;
-import org.muplayer.info.*;
-import org.muplayer.interfaces.PlayerListener;
+import org.muplayer.listener.PlayerListener;
 import org.muplayer.model.*;
 import org.muplayer.thread.ListenerRunner;
 import org.muplayer.thread.TaskRunner;
@@ -25,7 +24,7 @@ import java.util.*;
 import java.util.logging.LogManager;
 import java.util.stream.Collectors;
 
-import static org.muplayer.info.ListenersNames.*;
+import static org.muplayer.listener.ListenersNames.*;
 import static org.muplayer.properties.PropertiesFilesInfo.INFO_FILE_PATH;
 
 @Log

@@ -2,7 +2,7 @@ package org.muplayer.thread;
 
 import org.muplayer.audio.player.MusicPlayer;
 import org.muplayer.audio.track.Track;
-import org.muplayer.info.ListenersNames;
+import org.muplayer.listener.ListenersNames;
 
 import java.io.File;
 import java.io.IOException;

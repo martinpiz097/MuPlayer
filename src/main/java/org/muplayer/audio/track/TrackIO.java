@@ -1,4 +1,4 @@
-package org.muplayer.info;
+package org.muplayer.audio.track;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

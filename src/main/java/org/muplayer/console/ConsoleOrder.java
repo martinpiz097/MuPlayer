@@ -15,7 +15,6 @@ public class ConsoleOrder {
     public static final String PAUSE = "ps";
     public static final String NEXT = "n";
     public static final String PREV = "p";
-    //public static final String JUMP = "j";
     public static final String MUTE = "m";
     public static final String UNMUTE = "um";
     public static final String LIST1 = "l";
@@ -56,60 +55,4 @@ public class ConsoleOrder {
     public static final String LOAD = "load";
     public static final String LIST_ARTISTS = "arts";
     public static final String LIST_ALBUMS = "albs";
-
-    /*public static final Map<String, String> HELP_MAP;
-
-    static {
-        HELP_MAP = new TreeMap<>();
-        HELP_MAP.put(START, "Inicia el reproductor");
-        HELP_MAP.put(ISSTARTED, "Comprueba que el reproductor está iniciado");
-        HELP_MAP.put(PLAY, "Inicia la reproducción");
-        HELP_MAP.put(STOP, "Detiene la canción actual");
-        HELP_MAP.put(RESUME, "Inicia la canción actual si está pausada o detenida");
-        HELP_MAP.put(PAUSE, "Pausa la canción actual");
-        HELP_MAP.put(NEXT, "Reproduce la canción siguiente");
-        HELP_MAP.put(PREV, "Reproduce la canción anterior");
-        //HELP_MAP.put(JUMP, "Salta canciones con un valor determinado");
-        HELP_MAP.put(MUTE, "Silencia el reproductor");
-        HELP_MAP.put(UNMUTE, "Quita el silencio al reproductor");
-        HELP_MAP.put(LIST1, "Lista todas las canciones disponibles en el reproductor");
-        HELP_MAP.put(LIST2, "Lista todas las canciones disponibles en el reproductor");
-        HELP_MAP.put(LISTCURRENTFOLDER, "Lista todas las canciones de la carpeta actual el reproducción");
-        HELP_MAP.put(LISTFOLDERS, "Lista todas las carpetas leídas por el reproductor");
-        HELP_MAP.put(GETGAIN, "Obtiene el volumen actual del reproductor");
-        HELP_MAP.put(SETGAIN, "Cambia el volumen del reproductor (valor entre 0 y 100 ambos incluidos)");
-        HELP_MAP.put(GETSYSVOL, "Obtiene el volumen actual del sistema");
-        HELP_MAP.put(SETSYSVOL, "Cambia el volumen del sistema (valor entre 0 y 100 ambos incluidos)");
-        HELP_MAP.put(SHUTDOWN, "Apaga el reproductor");
-        HELP_MAP.put(EXIT, "Apaga el reproductor y finaliza la ejecución de MuPlayer");
-        HELP_MAP.put(QUIT, "Apaga el reproductor y finaliza la ejecución de MuPlayer");
-        HELP_MAP.put(SEEK, "Salta segundos de la canción actual");
-        HELP_MAP.put(SEEKFLD, "Salta carpetas");
-        HELP_MAP.put(RELOAD, "Vuelve a cargar las canciones nuevamente");
-        HELP_MAP.put(GOTOSEC, "Se dirige a un segundo específico de la canción actual");
-        HELP_MAP.put(SOUNDCOUNT, "Obtiene la cantidad de canciones cargadas");
-        HELP_MAP.put(DURATION, "Obtiene la duración de la canción actual");
-        HELP_MAP.put(GETCOVER, "Obtiene la carátula de la canción actual si existe " +
-                "y la guarda en la ruta seleccionada");
-        HELP_MAP.put(GETINFO, "Obtiene información de la canción actual");
-        HELP_MAP.put(GETPROGRESS, "Obtiene los segundos actuales reproducidos de la canción actual");
-        HELP_MAP.put(CLEAR1, "Limpia la pantalla");
-        HELP_MAP.put(CLEAR2, "Limpia la pantalla");
-        HELP_MAP.put(HELP1, "Despliega el menú de ayuda de comandos");
-        HELP_MAP.put(HELP2, "Despliega el menú de ayuda de comandos");
-        HELP_MAP.put(FORMAT, "Obtiene el formato de audio de la canción");
-        HELP_MAP.put(TITLE, "Obtiene el titulo de la canción");
-        HELP_MAP.put(NAME, "Obtiene el nombre del archivo de la canción");
-        HELP_MAP.put(SYSTEM1, "Ejecuta comandos del sistema");
-        HELP_MAP.put(SYSTEM2, "Ejecuta comandos del sistema");
-
-        HELP_MAP.put(SHOW_NEXT, "Muestra información de la canción siguiente");
-        HELP_MAP.put(SHOW_PREV, "Muestra información de la canción anterior");
-
-        HELP_MAP.put(PLAY_FOLDER, "Reproduce una carpeta según el índice entregado");
-        HELP_MAP.put(LOAD, "Reinicia reproductor cargando la carpeta segun la ruta indicada");
-        HELP_MAP.put(LIST_ARTISTS, "Lista todos los artistas con sus respectivas canciones");
-        HELP_MAP.put(LIST_ALBUMS, "Lista todos los álbums con sus respectivas canciones");
-    }*/
-
 }

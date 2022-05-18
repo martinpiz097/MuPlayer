@@ -1,5 +1,6 @@
 package org.muplayer.model;
 
+import org.muplayer.interfaces.ReportableTrack;
 import org.tritonus.share.ArraySet;
 
 import java.util.Set;

@@ -1,4 +1,4 @@
-package org.muplayer.interfaces;
+package org.muplayer.listener;
 
 import org.muplayer.audio.track.Track;
 

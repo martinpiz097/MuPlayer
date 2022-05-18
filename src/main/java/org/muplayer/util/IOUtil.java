@@ -33,7 +33,7 @@ public class IOUtil {
     }
 
     public static byte[] getBytesFromRes(String path) throws IOException {
-        return getBytesFromStream(IOUtil.class.getResourceAsStream(INFO_FILE_PATH));
+        return getBytesFromStream(IOUtil.class.getResourceAsStream(path));
     }
 
     public static InputStream getArrayStreamFromPath(String path) throws IOException {

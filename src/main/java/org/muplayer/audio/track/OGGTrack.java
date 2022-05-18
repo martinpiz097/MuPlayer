@@ -1,7 +1,5 @@
 package org.muplayer.audio.track;
 
-import org.muplayer.info.TrackIO;
-import org.muplayer.audio.codec.DecodeManager;
 import org.muplayer.audio.player.Player;
 import org.muplayer.util.AudioUtil;
 import org.tritonus.sampled.file.jorbis.JorbisAudioFileReader;
@@ -44,7 +42,7 @@ public class OGGTrack extends Track {
         trackIO.setAudioReader(new JorbisAudioFileReader());
         final AudioInputStream soundEncodedStream = AudioUtil.instanceStream(trackIO.getAudioReader(),
                 dataSource);
-        return DecodeManager.decodeToPcm(soundEncodedStream);
+        return AudioUtil.decodeToPcm(soundEncodedStream);
     }
 
     @Override

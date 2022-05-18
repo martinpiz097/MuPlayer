@@ -1,7 +1,7 @@
 package org.muplayer.audio.player;
 
 import org.muplayer.interfaces.ControllableMusic;
-import org.muplayer.interfaces.PlayerListener;
+import org.muplayer.listener.PlayerListener;
 import org.muplayer.interfaces.ReportablePlayer;
 import org.muplayer.model.SeekOption;
 

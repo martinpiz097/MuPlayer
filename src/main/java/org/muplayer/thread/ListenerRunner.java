@@ -1,11 +1,11 @@
 package org.muplayer.thread;
 
 import org.muplayer.audio.track.Track;
-import org.muplayer.interfaces.PlayerListener;
+import org.muplayer.listener.PlayerListener;
 
 import java.util.List;
 
-import static org.muplayer.info.ListenersNames.*;
+import static org.muplayer.listener.ListenersNames.*;
 
 public class ListenerRunner implements Runnable {
     private final List<PlayerListener> listListeners;

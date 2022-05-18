@@ -3,8 +3,6 @@ package org.muplayer.audio.track;
 import javazoom.spi.mpeg.sampled.file.MpegAudioFileReader;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.mp3.MP3AudioHeader;
-import org.muplayer.info.TrackIO;
-import org.muplayer.audio.codec.DecodeManager;
 import org.muplayer.audio.player.Player;
 import org.muplayer.util.AudioUtil;
 
@@ -67,7 +65,7 @@ public class MP3Track extends Track {
         final AudioInputStream trackStream = trackIO.getDecodedStream();
         if (trackStream != null)
             trackStream.close();
-        trackIO.setDecodedStream(DecodeManager.decodeToPcm(baseFormat, soundAis));
+        trackIO.setDecodedStream(AudioUtil.decodeToPcm(baseFormat, soundAis));
     }
 
     @Override

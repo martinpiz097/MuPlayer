@@ -1,7 +1,6 @@
 package org.muplayer.interfaces;
 
-import org.muplayer.info.AudioHardware;
-import org.muplayer.model.SeekOption;
+import org.muplayer.audio.info.AudioHardware;
 import org.muplayer.system.Time;
 
 public interface ControllableMusic {

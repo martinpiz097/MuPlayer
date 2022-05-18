@@ -1,7 +1,7 @@
 package org.muplayer.util;
 
 import org.muplayer.audio.track.Track;
-import org.muplayer.info.TrackIO;
+import org.muplayer.audio.track.TrackIO;
 import org.muplayer.audio.player.Player;
 
 import javax.sound.sampled.FloatControl;
@@ -11,10 +11,6 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 
 public class TrackUtil {
-    private static void appendSongData(StringBuilder sbTabs, StringBuilder sbInfo, String title, String data) {
-
-    }
-
     public static String getSongInfo(Track track) {
         final StringBuilder sbInfo = new StringBuilder();
         final String title = track.getTitle();

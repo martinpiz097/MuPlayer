@@ -1,4 +1,4 @@
-package org.muplayer.info;
+package org.muplayer.audio.info;
 
 import lombok.Data;
 import lombok.Getter;
