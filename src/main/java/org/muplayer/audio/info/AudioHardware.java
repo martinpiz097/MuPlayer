@@ -6,9 +6,46 @@ import javax.sound.sampled.*;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class AudioHardware {
+    public static List<Mixer> getMixers() {
+        return Arrays.stream(AudioSystem.getMixerInfo())
+                .map(AudioSystem::getMixer)
+                .collect(Collectors.toList());
+    }
+
+    public static boolean open(Line line) {
+        if (line.isOpen())
+            return false;
+        try {
+            line.open();
+        } catch (LineUnavailableException ex) {
+            return false;
+        }
+        return true;
+    }
+
+    private static Control findControl(Control.Type type, Control... controls) {
+        if (controls == null || controls.length == 0)
+            return null;
+
+        CompoundControl compoundControl;
+        Control member;
+        for (Control control : controls) {
+            if (control.getType().equals(type))
+                return control;
+            if (control instanceof CompoundControl) {
+                compoundControl = (CompoundControl) control;
+                member = findControl(type, compoundControl.getMemberControls());
+                if (member != null)
+                    return member;
+            }
+        }
+        return null;
+    }
+
     public static List<DataLine.Info> getAllSpeakerInfo() {
         final List<DataLine.Info> listInfo = new LinkedList<>();
         final Mixer.Info[] mixersInfo = AudioSystem.getMixerInfo();
@@ -50,10 +87,18 @@ public class AudioHardware {
         return listInfo;
     }
 
-    public static List<Mixer> getMixers() {
-        return Arrays.stream(AudioSystem.getMixerInfo())
-                .map(AudioSystem::getMixer)
-                .collect(Collectors.toList());
+    public static Float getMasterOutputVolume() {
+        final Line line = getMasterOutputLine();
+        if (line == null)
+            return null;
+        final boolean opened = open(line);
+        try {
+            final FloatControl control = getVolumeControl(line);
+            return control != null ? control.getValue() : null;
+        } finally {
+            if (opened)
+                line.close();
+        }
     }
 
     public static void setMasterOutputVolume(float value) {
@@ -76,20 +121,6 @@ public class AudioHardware {
         }
     }
 
-    public static Float getMasterOutputVolume() {
-        final Line line = getMasterOutputLine();
-        if (line == null)
-            return null;
-        final boolean opened = open(line);
-        try {
-            final FloatControl control = getVolumeControl(line);
-            return control != null ? control.getValue() : null;
-        } finally {
-            if (opened)
-                line.close();
-        }
-    }
-
     public static FloatControl getReadyVolumeControl() {
         final Line master = getMasterOutputLine();
         try {
@@ -101,6 +132,19 @@ public class AudioHardware {
     }
 
 
+    public static Boolean getMasterOutputMute() {
+        final Line line = getMasterOutputLine();
+        if (line == null)
+            return null;
+        final boolean opened = open(line);
+        try {
+            final BooleanControl control = getMuteControl(line);
+            return control != null ? control.getValue() : null;
+        } finally {
+            if (opened)
+                line.close();
+        }
+    }
 
     public static void setMasterOutputMute(boolean value) {
         final Line line = getMasterOutputLine();
@@ -118,20 +162,6 @@ public class AudioHardware {
         }
     }
 
-    public static Boolean getMasterOutputMute() {
-        final Line line = getMasterOutputLine();
-        if (line == null)
-            return null;
-        final boolean opened = open(line);
-        try {
-            final BooleanControl control = getMuteControl(line);
-            return control != null ? control.getValue() : null;
-        } finally {
-            if (opened)
-                line.close();
-        }
-    }
-
     public static Line getMasterOutputLine() {
         for (Mixer mixer : getMixers()) {
             for (Line line : getAvailableOutputLines(mixer)) {
@@ -140,6 +170,55 @@ public class AudioHardware {
             }
         }
         return null;
+    }
+
+    public static Line getSpeakerInUse() throws LineUnavailableException {
+        final String headphone = "Headphone";
+        final String speaker = "Speaker";
+
+        final Line headphoneLine = getMixers().parallelStream().map(mixer ->
+                getAvailableOutputLines(mixer).parallelStream()
+                        .filter(line -> line.getLineInfo().toString().contains(headphone))
+                        .findFirst().orElse(null)).filter(Objects::nonNull).findFirst().orElse(null);
+
+        final Line speakerLine = getMixers().parallelStream().map(mixer ->
+                getAvailableOutputLines(mixer).parallelStream()
+                        .filter(line -> line.getLineInfo().toString().contains(speaker))
+                        .findFirst().orElse(null)).filter(Objects::nonNull).findFirst().orElse(null);
+
+        if (headphoneLine == null || speakerLine == null) {
+            if (headphoneLine == null && speakerLine == null)
+                return null;
+            else
+                return Objects.requireNonNullElse(headphoneLine, speakerLine);
+        }
+        else {
+            headphoneLine.open();
+            final BooleanControl headphoneMute = getMuteControl(headphoneLine);
+
+            speakerLine.open();
+            final BooleanControl speakerMute = getMuteControl(speakerLine);
+
+            final Line toReturn;
+            if (headphoneMute.getValue() && speakerMute.getValue())
+                toReturn = getMasterOutputLine();
+
+            else if (headphoneMute.getValue())
+                toReturn = speakerLine;
+            else
+                toReturn = headphoneLine;
+
+            headphoneLine.close();
+            speakerLine.close();
+            toReturn.open();
+            return toReturn;
+        }
+    }
+
+    public static FloatControl getGainControl(Line line) {
+        if (!line.isOpen())
+            throw new RuntimeException("Line is closed: " + toString(line));
+        return (FloatControl) findControl(FloatControl.Type.MASTER_GAIN, line.getControls());
     }
 
     public static FloatControl getVolumeControl(Line line) {
@@ -154,23 +233,33 @@ public class AudioHardware {
         return (BooleanControl) findControl(BooleanControl.Type.MUTE, line.getControls());
     }
 
-    private static Control findControl(Control.Type type, Control... controls) {
-        if (controls == null || controls.length == 0)
-            return null;
+    public static float getFormattedMasterVolume() {
+        final FloatControl volumeControl = AudioHardware.getReadyVolumeControl();
+        return AudioUtil.convertLineRangeToVolRange(volumeControl.getValue(), volumeControl);
+    }
 
-        CompoundControl compoundControl;
-        Control member;
-        for (Control control : controls) {
-            if (control.getType().equals(type))
-                return control;
-            if (control instanceof CompoundControl) {
-                compoundControl = (CompoundControl) control;
-                member = findControl(type, compoundControl.getMemberControls());
-                if (member != null)
-                    return member;
-            }
+    public static void setFormattedMasterVolume(float volume) {
+        final FloatControl volumeControl = AudioHardware.getReadyVolumeControl();
+        volumeControl.setValue(AudioUtil.convertVolRangeToLineRange(volume, volumeControl));
+    }
+
+    public static float getFormattedSpeakerVolume() {
+        try {
+            final Line speaker = getSpeakerInUse();
+            final FloatControl volumeControl = getVolumeControl(speaker);
+            return AudioUtil.convertLineRangeToVolRange(volumeControl.getValue(), volumeControl);
+        } catch (LineUnavailableException e) {
+            return 0F;
         }
-        return null;
+    }
+
+    public static void setFormattedSpeakerVolume(float volume) {
+        try {
+            final Line speaker = getSpeakerInUse();
+            final FloatControl volumeControl = getVolumeControl(speaker);
+            volumeControl.setValue(AudioUtil.convertVolRangeToLineRange(volume, volumeControl));
+        } catch (LineUnavailableException e) {
+        }
     }
 
     public static List<Line> getAvailableOutputLines(Mixer mixer) {
@@ -236,27 +325,6 @@ public class AudioHardware {
             sb.append("\n");
         }
         return sb.toString();
-    }
-
-    public static boolean open(Line line) {
-        if (line.isOpen())
-            return false;
-        try {
-            line.open();
-        } catch (LineUnavailableException ex) {
-            return false;
-        }
-        return true;
-    }
-
-    public static float getFormattedMasterVolume() {
-        final FloatControl volumeControl = AudioHardware.getReadyVolumeControl();
-        return AudioUtil.convertLineRangeToVolRange(volumeControl.getValue(), volumeControl);
-    }
-
-    public static void setFormattedMasterVolume(float volume) {
-        final FloatControl volumeControl = AudioHardware.getReadyVolumeControl();
-        volumeControl.setValue(AudioUtil.convertVolRangeToLineRange(volume, volumeControl));
     }
 
     public static String toString(Control control) {

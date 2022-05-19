@@ -20,10 +20,10 @@ public interface ControllableMusic {
     float getGain();
     void setGain(float volume);
     default float getSystemVolume() {
-        return AudioHardware.getFormattedMasterVolume();
+        return AudioHardware.getFormattedSpeakerVolume();
     }
     default void setSystemVolume(float volume) {
-        AudioHardware.setFormattedMasterVolume(volume);
+        AudioHardware.setFormattedSpeakerVolume(volume);
     }
     void mute();
     void unMute();
