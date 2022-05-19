@@ -166,7 +166,8 @@ public class MusicPlayer extends Player {
     private void startTrackThread() {
         if (current != null) {
             current.setName(getThreadName());
-            current.setGain(playerData.isMute() ? 0 : playerData.getCurrentVolume());
+            if (isMute())
+                current.mute();
             current.start();
         }
     }
@@ -709,8 +710,8 @@ public class MusicPlayer extends Player {
     public synchronized void unMute() {
         playerData.setMute(false);
         if (current != null)
-            current.setGain(playerData.getCurrentVolume());
-        else
+            current.unMute();
+        else if (playerData.getCurrentVolume() == 0)
             playerData.setCurrentVolume(100);
     }
 

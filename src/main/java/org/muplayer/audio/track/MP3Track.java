@@ -5,12 +5,14 @@ import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.mp3.MP3AudioHeader;
 import org.muplayer.audio.player.Player;
 import org.muplayer.util.AudioUtil;
+import org.orangelogger.sys.Logger;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -59,13 +61,33 @@ public class MP3Track extends Track {
         // Ver si se escucha mejor en ogg utilizando la logica de mp3
         trackIO = new TrackIO();
         trackIO.setAudioReader(new MpegAudioFileReader());
-        final AudioInputStream soundAis = AudioUtil.instanceStream(trackIO.getAudioReader(), dataSource);
-        final AudioFormat baseFormat = soundAis.getFormat();
+        AudioInputStream encodedAudioStream = AudioUtil.instanceStream(trackIO.getAudioReader(), dataSource);
+        AudioFormat baseFormat = encodedAudioStream.getFormat();
 
-        final AudioInputStream trackStream = trackIO.getDecodedStream();
+        AudioInputStream trackStream = trackIO.getDecodedStream();
         if (trackStream != null)
             trackStream.close();
-        trackIO.setDecodedStream(AudioUtil.decodeToPcm(baseFormat, soundAis));
+        trackIO.setDecodedStream(AudioUtil.decodeToPcm(baseFormat, encodedAudioStream));
+
+        File test = new File("/home/martin/audio.wav");
+        if (test.exists()) {
+            trackIO = new TrackIO();
+            trackIO.setAudioReader(new MpegAudioFileReader());
+            encodedAudioStream = AudioUtil.instanceStream(trackIO.getAudioReader(), dataSource);
+            baseFormat = encodedAudioStream.getFormat();
+
+            trackStream = trackIO.getDecodedStream();
+            if (trackStream != null)
+                trackStream.close();
+            trackIO.setDecodedStream(AudioUtil.decodeToPcm(baseFormat, encodedAudioStream));
+
+        }
+        else {
+            test.createNewFile();
+            FileOutputStream fileOutputStream = new FileOutputStream(test);
+            trackIO.getDecodedStream().transferTo(fileOutputStream);
+            fileOutputStream.close();
+        }
     }
 
     @Override

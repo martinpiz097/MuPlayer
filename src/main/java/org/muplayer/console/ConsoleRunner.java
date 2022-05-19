@@ -71,11 +71,15 @@ public class ConsoleRunner extends Thread {
 
         ConsoleExecution consoleExecution;
 
+        String cmd;
         while (interpreter.isOn()) {
             printHeader();
-            consoleExecution = execCommand(scanner.nextLine().trim());
-            if (consoleExecution.hasOutput())
-                System.out.println(consoleExecution.getOutput());
+            cmd = scanner.nextLine().trim();
+            if (!cmd.isEmpty()) {
+                consoleExecution = execCommand(cmd);
+                if (consoleExecution.hasOutput())
+                    System.out.println(consoleExecution.getOutput());
+            }
         }
 
         System.exit(0);

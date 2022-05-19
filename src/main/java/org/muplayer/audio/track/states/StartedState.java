@@ -9,6 +9,9 @@ public class StartedState extends TrackState {
 
     @Override
     public void handle() {
+        //Logger.getLogger(this, "SpeakerLine", track.getTrackIO().getTrackLine().getDriverInfo()).rawInfo();
+        if (track.getPlayerControl().isMute())
+            track.mute();
         track.play();
         finish();
     }

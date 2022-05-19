@@ -24,70 +24,70 @@ public class TrackUtil {
 
         final StringBuilder sbTabs = new StringBuilder();
         String currentLine = "Song: "+title;
-        int biggerLenght = currentLine.length();
+        int biggerLength = currentLine.length();
         sbInfo.append(currentLine).append('\n');
 
         if (album != null) {
             sbTabs.append("    ");
             currentLine = sbTabs.toString()+"Album: "+album;
-            if (biggerLenght < currentLine.length())
-                biggerLenght = currentLine.length();
+            if (biggerLength < currentLine.length())
+                biggerLength = currentLine.length();
             sbInfo.append(currentLine).append('\n');
         }
 
         if (artist != null) {
             sbTabs.append("    ");
             currentLine = sbTabs.toString()+"Artist: "+artist;
-            if (biggerLenght < currentLine.length())
-                biggerLenght = currentLine.length();
+            if (biggerLength < currentLine.length())
+                biggerLength = currentLine.length();
             sbInfo.append(currentLine).append('\n');
         }
 
         if (date != null) {
             sbTabs.append("    ");
             currentLine = sbTabs.toString()+"Date: "+date;
-            if (biggerLenght < currentLine.length())
-                biggerLenght = currentLine.length();
+            if (biggerLength < currentLine.length())
+                biggerLength = currentLine.length();
             sbInfo.append(currentLine).append('\n');
         }
 
         if (duration != null) {
             sbTabs.append("    ");
             currentLine = sbTabs.toString()+"Duration: "+duration;
-            if (biggerLenght < currentLine.length())
-                biggerLenght = currentLine.length();
+            if (biggerLength < currentLine.length())
+                biggerLength = currentLine.length();
             sbInfo.append(currentLine).append('\n');
         }
 
         sbTabs.append("    ");
         currentLine = sbTabs.toString()+"Has Cover: "+hasCover;
-        if (biggerLenght < currentLine.length())
-            biggerLenght = currentLine.length();
+        if (biggerLength < currentLine.length())
+            biggerLength = currentLine.length();
         sbInfo.append(currentLine).append('\n');
 
         if (encoder != null) {
             sbTabs.append("    ");
             currentLine = sbTabs.toString()+"Encoder: "+encoder;
-            if (biggerLenght < currentLine.length())
-                biggerLenght = currentLine.length();
+            if (biggerLength < currentLine.length())
+                biggerLength = currentLine.length();
             sbInfo.append(currentLine).append('\n');
         }
 
         if (bitrate != null) {
             sbTabs.append("    ");
             currentLine = sbTabs.toString()+"Bitrate: "+bitrate+" kbps";
-            if (biggerLenght < currentLine.length())
-                biggerLenght = currentLine.length();
+            if (biggerLength < currentLine.length())
+                biggerLength = currentLine.length();
             sbInfo.append(currentLine).append('\n');
         }
 
         sbTabs.delete(0, sbTabs.length());
 
-        for (int i = 0; i < biggerLenght; i++)
+        for (int i = 0; i < biggerLength; i++)
             sbTabs.append('-');
         sbTabs.append('\n').append(sbInfo.toString());
 
-        for (int i = 0; i < biggerLenght; i++)
+        for (int i = 0; i < biggerLength; i++)
             sbTabs.append('-');
         sbTabs.append('\n');
 

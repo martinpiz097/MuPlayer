@@ -1,6 +1,7 @@
 package org.muplayer.audio.track;
 
 import org.jaudiotagger.tag.FieldKey;
+import org.muplayer.audio.info.AudioHardware;
 import org.muplayer.audio.player.Player;
 import org.muplayer.audio.track.states.*;
 import org.muplayer.audio.info.AudioTag;
@@ -10,6 +11,7 @@ import org.muplayer.interfaces.ReportableTrack;
 import org.muplayer.properties.AudioSupportInfo;
 import org.muplayer.util.AudioUtil;
 import org.muplayer.util.FileUtil;
+import org.orangelogger.sys.Logger;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -336,7 +338,8 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
         if (trackIO.isTrackStreamsOpened() && !trackData.isMute()) {
             trackData.setMute(true);
             if (trackIO.getTrackLine() != null)
-                trackIO.getTrackLine().setGain(AudioUtil.convertVolRangeToLineRange(0));
+                AudioHardware.getMuteControl(trackIO.getTrackLine().getDriver()).setValue(true);
+                //trackIO.getTrackLine().setGain(AudioUtil.convertVolRangeToLineRange(0));
         }
     }
 
@@ -344,7 +347,9 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     public void unMute() {
         if (trackIO.isTrackStreamsOpened() && trackData.isMute()) {
             trackData.setMute(false);
-            setGain(trackData.getVolume());
+            if (trackIO.getTrackLine() != null)
+                AudioHardware.getMuteControl(trackIO.getTrackLine().getDriver()).setValue(false);
+            //setGain(trackData.getVolume());
         }
     }
 
