@@ -3,10 +3,7 @@ package org.muplayer.audio.info;
 import org.muplayer.util.AudioUtil;
 
 import javax.sound.sampled.*;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AudioHardware {
@@ -44,6 +41,34 @@ public class AudioHardware {
             }
         }
         return null;
+    }
+
+    public static List<Control> getAllControls(Line line) throws LineUnavailableException {
+        final List<Control> listControls = new ArrayList<>();
+        boolean opened = false;
+        if (!line.isOpen()) {
+            line.open();
+            opened = true;
+        }
+        findAllControls(listControls, line.getControls());
+        if (opened)
+            line.close();
+        return listControls;
+    }
+
+    public static void findAllControls(List<Control> listControls, Control... controls) {
+        if (controls != null && controls.length > 0) {
+            CompoundControl compoundControl;
+            Control control;
+            for (int i = 0; i < controls.length; i++) {
+                control = controls[i];
+                if (control instanceof CompoundControl) {
+                    compoundControl = (CompoundControl) control;
+                    findAllControls(listControls, compoundControl.getMemberControls());
+                } else
+                    listControls.add(control);
+            }
+        }
     }
 
     public static List<DataLine.Info> getAllSpeakerInfo() {
@@ -191,16 +216,15 @@ public class AudioHardware {
                 return null;
             else
                 return Objects.requireNonNullElse(headphoneLine, speakerLine);
-        }
-        else {
+        } else {
             headphoneLine.open();
             final BooleanControl headphoneMute = getMuteControl(headphoneLine);
 
             speakerLine.open();
             final BooleanControl speakerMute = getMuteControl(speakerLine);
 
-            System.out.println("HeadphoneLine: "+Arrays.toString(headphoneLine.getControls()));
-            System.out.println("SpeakerLine: "+Arrays.toString(speakerLine.getControls()));
+            System.out.println("HeadphoneLine: " + Arrays.toString(headphoneLine.getControls()));
+            System.out.println("SpeakerLine: " + Arrays.toString(speakerLine.getControls()));
 
             final Line toReturn;
             if (headphoneMute.getValue() && speakerMute.getValue())
