@@ -17,6 +17,8 @@ public class ConsoleOrder {
     public static final String PREV = "p";
     public static final String MUTE = "m";
     public static final String UNMUTE = "um";
+    //public static final String MUTESYSVOL = "sm";
+    //public static final String UNMUTESYSVOL = "usm";
     public static final String LIST1 = "l";
     public static final String LIST2 = "list";
     public static final String LISTCURRENTFOLDER = "lc";

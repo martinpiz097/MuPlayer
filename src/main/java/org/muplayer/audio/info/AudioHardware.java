@@ -199,6 +199,9 @@ public class AudioHardware {
             speakerLine.open();
             final BooleanControl speakerMute = getMuteControl(speakerLine);
 
+            System.out.println("HeadphoneLine: "+Arrays.toString(headphoneLine.getControls()));
+            System.out.println("SpeakerLine: "+Arrays.toString(speakerLine.getControls()));
+
             final Line toReturn;
             if (headphoneMute.getValue() && speakerMute.getValue())
                 toReturn = getMasterOutputLine();
@@ -231,6 +234,27 @@ public class AudioHardware {
         if (!line.isOpen())
             throw new RuntimeException("Line is closed: " + toString(line));
         return (BooleanControl) findControl(BooleanControl.Type.MUTE, line.getControls());
+    }
+
+    public static void setMuteValue(Line line, boolean mute) {
+        if (!line.isOpen())
+            throw new RuntimeException("Line is closed: " + toString(line));
+        final BooleanControl muteControl = (BooleanControl) findControl(BooleanControl.Type.MUTE, line.getControls());
+
+        if (muteControl != null)
+            muteControl.setValue(mute);
+    }
+
+    public static void setSpeakerMuteValue(boolean mute) {
+        try {
+            Line speakerInUse = getSpeakerInUse();
+            if (!speakerInUse.isOpen())
+                speakerInUse.open();
+            setMuteValue(speakerInUse, mute);
+            speakerInUse.close();
+        } catch (Exception e) {
+
+        }
     }
 
     public static float getFormattedMasterVolume() {

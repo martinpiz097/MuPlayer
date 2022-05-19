@@ -382,6 +382,16 @@ public class ConsoleInterpreter implements CommandInterpreter {
                     player.unMute();
                 break;
 
+            /*case ConsoleOrder.MUTESYSVOL:
+                if (isPlayerOn())
+                    player.muteSystemVolume();
+                break;
+
+            case ConsoleOrder.UNMUTESYSVOL:
+                if (isPlayerOn())
+                    player.unmuteSystemVolume();
+                break;*/
+
             case ConsoleOrder.LIST1:
             case ConsoleOrder.LIST2:
                 if (player != null)

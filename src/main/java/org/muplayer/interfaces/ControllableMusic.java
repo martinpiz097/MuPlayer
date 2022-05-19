@@ -3,6 +3,9 @@ package org.muplayer.interfaces;
 import org.muplayer.audio.info.AudioHardware;
 import org.muplayer.system.Time;
 
+import javax.sound.sampled.Line;
+import javax.sound.sampled.LineUnavailableException;
+
 public interface ControllableMusic {
     boolean isPlaying() throws Exception;
     boolean isPaused() throws Exception;
@@ -27,6 +30,12 @@ public interface ControllableMusic {
     }
     void mute();
     void unMute();
+    /*default void muteSystemVolume() {
+        AudioHardware.setSpeakerMuteValue(true);
+    }
+    default void unmuteSystemVolume() {
+        AudioHardware.setSpeakerMuteValue(false);
+    }*/
 
     double getProgress();
     default String getFormattedProgress() {
