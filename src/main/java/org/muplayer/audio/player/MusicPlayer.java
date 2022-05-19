@@ -166,6 +166,7 @@ public class MusicPlayer extends Player {
     private void startTrackThread() {
         if (current != null) {
             current.setName(getThreadName());
+            current.setGain(playerData.getCurrentVolume());
             if (isMute())
                 current.mute();
             current.start();

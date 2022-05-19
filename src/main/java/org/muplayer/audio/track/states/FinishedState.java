@@ -4,7 +4,6 @@ import org.muplayer.audio.track.Track;
 import org.muplayer.audio.player.Player;
 
 public class FinishedState extends TrackState {
-
     private final Player player;
 
     public FinishedState(Track track) {

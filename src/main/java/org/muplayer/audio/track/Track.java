@@ -325,28 +325,27 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     // -80 to 5.5
     @Override
     public void setGain(float volume) {
+        trackData.setVolume(volume > 100 ? 100 : (volume < 0 ? 0 : volume));
+        trackData.setMute(trackData.getVolume() == 0);
         if (trackIO.isTrackStreamsOpened()) {
-            trackData.setVolume(volume > 100 ? 100 : (volume < 0 ? 0 : volume));
             if (trackIO.getTrackLine() != null)
                 trackIO.getTrackLine().setGain(AudioUtil.convertVolRangeToLineRange(volume));
-            trackData.setMute(trackData.getVolume() == 0);
         }
     }
 
     @Override
     public void mute() {
+        trackData.setMute(true);
         if (trackIO.isTrackStreamsOpened() && !trackData.isMute()) {
-            trackData.setMute(true);
             if (trackIO.getTrackLine() != null)
                 AudioHardware.getMuteControl(trackIO.getTrackLine().getDriver()).setValue(true);
-                //trackIO.getTrackLine().setGain(AudioUtil.convertVolRangeToLineRange(0));
         }
     }
 
     @Override
     public void unMute() {
+        trackData.setMute(false);
         if (trackIO.isTrackStreamsOpened() && trackData.isMute()) {
-            trackData.setMute(false);
             if (trackIO.getTrackLine() != null)
                 AudioHardware.getMuteControl(trackIO.getTrackLine().getDriver()).setValue(false);
             //setGain(trackData.getVolume());
