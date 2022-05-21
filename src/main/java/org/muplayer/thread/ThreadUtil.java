@@ -18,8 +18,8 @@ public class ThreadUtil {
         }
     }
 
-    public static void unfreezeThread(Thread thread) {
-        thread.interrupt();
+    public static synchronized void unfreezeThread(Thread thread) {
+        thread.notify();
     }
 
 }

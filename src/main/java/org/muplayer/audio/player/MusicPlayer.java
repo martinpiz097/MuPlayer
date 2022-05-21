@@ -179,7 +179,10 @@ public class MusicPlayer extends Player {
 
     private void shutdownCurrent() {
         if (current != null) {
-            current.kill();
+            if (current.isPaused() || current.isStopped())
+                current.interrupt();
+            else
+                current.kill();
             listTracks.set(playerData.getTrackIndex(),
                     Track.getTrack(current.getDataSourceAsFile(), this));
             current = null;
@@ -586,8 +589,13 @@ public class MusicPlayer extends Player {
         }
         else {
             playerData.setTrackIndex(indexOf);
-            if (current != null)
-                current.kill();
+            if (current != null) {
+                if (current.isPaused() || current.isStopped())
+                    current.interrupt();
+                else
+                    current.kill();
+            }
+
             current = listTracks.get(playerData.getTrackIndex());
             startTrackThread();
             loadListenerMethod(ONPLAYED, current);
@@ -613,8 +621,12 @@ public class MusicPlayer extends Player {
 
         if (indexOf != -1) {
             playerData.setTrackIndex(indexOf);
-            if (current != null)
-                current.kill();
+            if (current != null) {
+                if (current.isPaused() || current.isStopped())
+                    current.interrupt();
+                else
+                    current.kill();
+            }
             current = track;
             startTrackThread();
             loadListenerMethod(ONPLAYED, current);

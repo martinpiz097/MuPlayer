@@ -9,11 +9,8 @@ public class PausedState extends TrackState {
         super(track);
     }
 
-    // con thread.sleep tambien funciona porque se considera que lo ejecutado
-    // aca esta dentro del run de Track
     @Override
     public void handle() {
-        //track.suspend();
         synchronized (track) {
             try {
                 track.wait();
