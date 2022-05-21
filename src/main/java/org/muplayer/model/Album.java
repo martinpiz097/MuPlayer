@@ -54,4 +54,14 @@ public class Album {
     public void setTracksSet(Set<ReportableTrack> tracksSet) {
         this.tracksSet = tracksSet;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Album && (this == obj || name.equals(((Album) obj).getName()));
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
 }

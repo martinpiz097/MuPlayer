@@ -348,27 +348,21 @@ public class MusicPlayer extends Player {
     @Override
     public synchronized List<Artist> getArtists() {
         final List<Track> listTracks = getTracks();
-        final List<Artist> listArtists = new ArrayList<>(listTracks.size()+1);
+        final Set<Artist> setArtists = new HashSet<>(listTracks.size()+1);
 
         listTracks.parallelStream()
                 .forEach(track->{
                     String art = track.getArtist();
                     if (art == null)
                         art = "Unknown";
-                    synchronized (listArtists) {
-                        String finalArt = art;
-                        Artist artist = listArtists.parallelStream()
-                                .filter(a->a.getName().equalsIgnoreCase(finalArt))
-                                .findFirst().orElse(null);
-
-                        if (artist == null) {
-                            artist = new Artist();
-                            artist.setName(finalArt);
-                            listArtists.add(artist);
-                        }
+                    synchronized (setArtists) {
+                        Artist artist = new Artist();
+                        artist.setName(art);
                         artist.addTrack(track);
+                        setArtists.add(artist);
                     }
                 });
+        final List<Artist> listArtists = new ArrayList<>(setArtists);
         listArtists.sort(Comparator.comparing(Artist::getName));
         return listArtists;
     }
@@ -376,26 +370,21 @@ public class MusicPlayer extends Player {
     @Override
     public synchronized List<Album> getAlbums() {
         final List<Track> listTracks = getTracks();
-        final List<Album> listAlbums = new ArrayList<>(listTracks.size()+1);
+        final Set<Album> setAlbums = new HashSet<>(listTracks.size()+1);
 
         listTracks.parallelStream()
                 .forEach(track->{
                     String alb = track.getAlbum();
                     if (alb == null)
                         alb = "Unknown";
-                    synchronized (listAlbums) {
-                        String finalAlb = alb;
-                        Album album = listAlbums.parallelStream()
-                                .filter(a->a.getName().equalsIgnoreCase(finalAlb)).findFirst().orElse(null);
-
-                        if (album == null) {
-                            album = new Album();
-                            album.setName(finalAlb);
-                            listAlbums.add(album);
-                        }
+                    synchronized (setAlbums) {
+                        Album album = new Album();
+                        album.setName(alb);
                         album.addTrack(track);
+                        setAlbums.add(album);
                     }
                 });
+        final List<Album> listAlbums = new ArrayList<>(setAlbums);
         listAlbums.sort(Comparator.comparing(Album::getName));
         return listAlbums;
     }

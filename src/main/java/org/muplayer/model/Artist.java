@@ -43,4 +43,14 @@ public class Artist {
     public void setTracksSet(Set<ReportableTrack> tracksSet) {
         this.tracksSet = tracksSet;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Artist && (this == obj || name.equals(((Artist) obj).getName()));
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
 }
