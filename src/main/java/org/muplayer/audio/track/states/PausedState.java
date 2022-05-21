@@ -13,6 +13,13 @@ public class PausedState extends TrackState {
     // aca esta dentro del run de Track
     @Override
     public void handle() {
-        track.suspend();
+        //track.suspend();
+        synchronized (track) {
+            try {
+                track.wait();
+            } catch (InterruptedException e) {
+                track.kill();
+            }
+        }
     }
 }

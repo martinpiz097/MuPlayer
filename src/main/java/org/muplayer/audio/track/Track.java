@@ -257,7 +257,9 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     public void resumeTrack() {
         if (isAlive() && (isPaused() || isStopped())) {
             play();
-            resume();
+            synchronized (this) {
+                notify();
+            }
         }
     }
 
@@ -336,19 +338,18 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     @Override
     public void mute() {
         trackData.setMute(true);
-        if (trackIO.isTrackStreamsOpened() && !trackData.isMute()) {
+        if (trackIO.isTrackStreamsOpened()) {
             if (trackIO.getTrackLine() != null)
-                AudioHardware.getMuteControl(trackIO.getTrackLine().getDriver()).setValue(true);
+                AudioHardware.setMuteValue(trackIO.getTrackLine().getDriver(), true);
         }
     }
 
     @Override
     public void unMute() {
         trackData.setMute(false);
-        if (trackIO.isTrackStreamsOpened() && trackData.isMute()) {
+        if (trackIO.isTrackStreamsOpened()) {
             if (trackIO.getTrackLine() != null)
-                AudioHardware.getMuteControl(trackIO.getTrackLine().getDriver()).setValue(false);
-            //setGain(trackData.getVolume());
+                AudioHardware.setMuteValue(trackIO.getTrackLine().getDriver(), false);
         }
     }
 
