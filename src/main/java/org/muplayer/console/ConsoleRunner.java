@@ -78,7 +78,7 @@ public class ConsoleRunner extends Thread {
             if (!cmd.isEmpty()) {
                 consoleExecution = execCommand(cmd);
                 if (consoleExecution.hasOutput())
-                    System.out.println(consoleExecution.getOutput());
+                    System.out.println(consoleExecution.getOutputMsg());
             }
         }
 

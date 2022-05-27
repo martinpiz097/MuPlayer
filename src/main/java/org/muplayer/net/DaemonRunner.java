@@ -10,16 +10,13 @@ import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DaemonService extends Thread {
+public class DaemonRunner extends Thread {
     private final ConsoleInterpreter consoleInterpreter;
+    private final DaemonServer daemonServer;
 
-    private final ServerSocket serverSocket;
-    private final List<Client> listClients;
-
-    public DaemonService(Player player) throws IOException {
+    public DaemonRunner(Player player) throws IOException {
         this.consoleInterpreter = new ConsoleInterpreter(player);
-        serverSocket = new ServerSocket(Integer.parseInt(MuPlayerInfo.getInstance().getProperty("daemon.server.port")));
-        this.listClients = new ArrayList<>();
+        this.daemonServer = new DaemonServer();
     }
 
     @Override
@@ -28,7 +25,7 @@ public class DaemonService extends Thread {
         while (true) {
             try {
                 Logger.getLogger(this, "Waiting clients...").info();
-                listClients.add(new TCPClient(consoleInterpreter, serverSocket.accept()));
+                daemonServer.addClient(new TCPClient(consoleInterpreter, daemonServer.getSocketRequest()));
                 Thread.sleep(1);
             } catch (Exception e) {
                 throw new RuntimeException(e);

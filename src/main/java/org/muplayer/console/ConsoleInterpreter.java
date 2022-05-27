@@ -260,7 +260,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
             for (int i = 0; i < cmdSplit.length; i++) {
                 exec = executeCommand(cmdSplit[i].trim());
                 if (exec != null)
-                    listExec.add(exec.getOutput());
+                    listExec.add(exec.getOutputMsg());
             }
             consoleExecution.setCmd(cmd);
             consoleExecution.appendOutput(listExec.get(listExec.size()-1), "");
@@ -294,13 +294,12 @@ public class ConsoleInterpreter implements CommandInterpreter {
                 if (player.isAlive() && cmd.hasOptions()) {
                     File musicFolder = new File(cmd.getOptionAt(0));
                     if (musicFolder.exists()) {
-                        MusicPlayer newMusicPlayer = new MusicPlayer(musicFolder);
+                        Player newMusicPlayer = new MusicPlayer(musicFolder);
                         player.shutdown();
                         newMusicPlayer.start();
                         player = newMusicPlayer;
-                    } else {
+                    } else
                         execution.appendOutput("Folder not exists", ERROR);
-                    }
                 } else if (!player.isAlive())
                     player.start();
                 if (player.getCurrent() != null) {

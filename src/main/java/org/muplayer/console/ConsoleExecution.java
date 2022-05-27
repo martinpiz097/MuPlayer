@@ -9,6 +9,7 @@ import static org.muplayer.console.OutputType.*;
 @Data
 public class ConsoleExecution {
     private String cmd;
+    private Object outputObject;
     private final StringBuilder sbOutputMsg;
 
     public ConsoleExecution() {
@@ -34,7 +35,15 @@ public class ConsoleExecution {
         sbOutputMsg.append(output).append(ConsoleColor.RESET).append('\n');
     }
 
-    public String getOutput() {
-        return sbOutputMsg.toString();
+    public String getOutputMsg() {
+        return sbOutputMsg.length() > 0 ? sbOutputMsg.toString() : null;
+    }
+
+    public void setOutputObject(Object outputObject) {
+        this.outputObject = outputObject != null ? outputObject : getOutputMsg();
+    }
+
+    public void setOutputAsOutputMsg() {
+        setOutputObject(null);
     }
 }

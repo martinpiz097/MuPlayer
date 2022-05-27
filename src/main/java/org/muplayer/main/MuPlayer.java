@@ -2,7 +2,7 @@ package org.muplayer.main;
 
 import org.muplayer.audio.player.MusicPlayer;
 import org.muplayer.console.ConsoleRunner;
-import org.muplayer.net.DaemonService;
+import org.muplayer.net.DaemonRunner;
 import org.muplayer.properties.ConfigInfo;
 import org.muplayer.properties.ConfigInfoKeys;
 import org.muplayer.thread.TaskRunner;
@@ -36,7 +36,7 @@ public class MuPlayer {
                         if (firstArg.equals("-l"))
                             TaskRunner.execute(new ConsoleRunner(args[1]));
                         else if (firstArg.equals("-d"))
-                            TaskRunner.execute(new DaemonService(new MusicPlayer(args[1])));
+                            TaskRunner.execute(new DaemonRunner(new MusicPlayer(args[1])));
                         else
                             throw new NullPointerException("Arg "+firstArg +"not recognized");
                     }
