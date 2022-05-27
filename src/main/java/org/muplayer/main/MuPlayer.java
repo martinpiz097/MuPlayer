@@ -5,6 +5,7 @@ import org.muplayer.console.ConsoleRunner;
 import org.muplayer.net.DaemonRunner;
 import org.muplayer.properties.ConfigInfo;
 import org.muplayer.properties.ConfigInfoKeys;
+import org.muplayer.properties.PropertiesFilesInfo;
 import org.muplayer.thread.TaskRunner;
 
 public class MuPlayer {
@@ -13,6 +14,7 @@ public class MuPlayer {
             "the path of the jar file and set the root_folder property indicating the path of your music folder";
 
     public static void main(String[] args) {
+        PropertiesFilesInfo.getJarParentPath();
         try {
             if (args.length == 0) {
                 final String defaultRootPath = ConfigInfo.getInstance().get(ConfigInfoKeys.DEFAULT_ROOT_FOLDER);
