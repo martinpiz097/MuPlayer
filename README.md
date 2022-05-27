@@ -1,5 +1,6 @@
 # MuPlayer
-Music musicPlayer library in pure Java.
+#### Music Player library in pure Java.
+#### Min JDK Version: 11
 
 ## Note: 
     To compile the project you must execute "mvn clean install" command to
@@ -21,7 +22,7 @@ Music musicPlayer library in pure Java.
             <dependency>
                 <groupId>org.orangeplayer</groupId>
                 <artifactId>muplayer</artifactId>
-                <version>2.1.1</version>
+                <version>RELEASE</version>
             </dependency>
     Gradle:
         Add the repository:
@@ -33,7 +34,7 @@ Music musicPlayer library in pure Java.
             }
         Then add the dependency:
             dependencies {
-                implementation 'org.orangeplayer:muplayer:2.1.1'
+                implementation 'org.orangeplayer:muplayer'
             }
 # ------------------------------------------------------------------------------------
 
@@ -49,7 +50,7 @@ Music musicPlayer library in pure Java.
         Añade el repositorio:
             <repositories>
                 <repository>
-                    <id>jitpack.io</id>
+                    <id>clojars</id>
                     <url>https://clojars.org/repo</url>
                 </repository>
             </repositories>
@@ -58,7 +59,7 @@ Music musicPlayer library in pure Java.
             <dependency>
                 <groupId>org.orangeplayer</groupId>
                 <artifactId>muplayer</artifactId>
-                <version>2.1.1</version>
+                <version>RELEASE</version>
             </dependency>
     Gradle:
         Añade el repositorio:
@@ -70,6 +71,6 @@ Music musicPlayer library in pure Java.
             }
         Luego añade la dependencia:
             dependencies {
-                implementation 'org.orangeplayer:muplayer:2.1.1'
+                implementation 'org.orangeplayer:muplayer'
             }
     
