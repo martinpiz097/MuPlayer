@@ -3,23 +3,17 @@ package org.muplayer.main;
 import org.muplayer.audio.player.MusicPlayer;
 import org.muplayer.console.ConsoleRunner;
 import org.muplayer.net.DaemonRunner;
-import org.muplayer.properties.ConfigInfo;
-import org.muplayer.properties.ConfigInfoKeys;
-import org.muplayer.properties.PropertiesFilesInfo;
+import org.muplayer.properties.*;
 import org.muplayer.thread.TaskRunner;
 
 public class MuPlayer {
-    private static final String PROPERTY_NOT_FOUND_MSG = "Property 'root_folder' must be configured.\n" +
-            "If you want to load a folder path automatically, create a file called config.properties in " +
-            "the path of the jar file and set the root_folder property indicating the path of your music folder";
-
     public static void main(String[] args) {
         PropertiesFilesInfo.getJarParentPath();
         try {
             if (args.length == 0) {
                 final String defaultRootPath = ConfigInfo.getInstance().get(ConfigInfoKeys.DEFAULT_ROOT_FOLDER);
                 if (defaultRootPath == null) {
-                    throw new NullPointerException(PROPERTY_NOT_FOUND_MSG);
+                    throw new NullPointerException(MessagesInfo.getInstance().getProperty(MessagesInfoKeys.PROPERTY_NOT_FOUND_MSG));
                 }
                 else
                     TaskRunner.execute(new ConsoleRunner(defaultRootPath));
@@ -28,7 +22,7 @@ public class MuPlayer {
                 case 1:
                     String firstArg = args[0].trim();
                     if (firstArg.startsWith("-"))
-                        throw new NullPointerException(PROPERTY_NOT_FOUND_MSG);
+                        throw new NullPointerException(MessagesInfo.getInstance().getProperty(MessagesInfoKeys.PROPERTY_NOT_FOUND_MSG));
                     else
                         TaskRunner.execute(new ConsoleRunner(firstArg));
                     break;
