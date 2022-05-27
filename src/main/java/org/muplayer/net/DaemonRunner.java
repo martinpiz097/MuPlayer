@@ -2,13 +2,9 @@ package org.muplayer.net;
 
 import org.muplayer.audio.player.Player;
 import org.muplayer.console.ConsoleInterpreter;
-import org.muplayer.properties.MuPlayerInfo;
 import org.orangelogger.sys.Logger;
 
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.util.ArrayList;
-import java.util.List;
 
 public class DaemonRunner extends Thread {
     private final ConsoleInterpreter consoleInterpreter;

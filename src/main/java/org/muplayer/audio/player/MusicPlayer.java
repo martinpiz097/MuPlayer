@@ -25,7 +25,7 @@ import java.util.logging.LogManager;
 import java.util.stream.Collectors;
 
 import static org.muplayer.listener.ListenersNames.*;
-import static org.muplayer.properties.PropertiesFilesInfo.INFO_FILE_PATH;
+import static org.muplayer.properties.PropertiesFilesInfo.MUPLAYER_INFO_FILE_RES_PATH;
 
 @Log
 public class MusicPlayer extends Player {
@@ -43,9 +43,9 @@ public class MusicPlayer extends Player {
     static {
         final LogManager logManager = LogManager.getLogManager();
         try {
-            logManager.readConfiguration(IOUtil.getArrayStreamFromRes(INFO_FILE_PATH));
+            logManager.readConfiguration(IOUtil.getArrayStreamFromRes(MUPLAYER_INFO_FILE_RES_PATH));
         } catch (IOException e) {
-            log.warning("Cannot load "+INFO_FILE_PATH);
+            log.warning("Cannot load "+ MUPLAYER_INFO_FILE_RES_PATH);
         }
     }
 

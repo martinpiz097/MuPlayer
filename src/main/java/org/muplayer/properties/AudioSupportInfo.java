@@ -3,11 +3,9 @@ package org.muplayer.properties;
 import lombok.Getter;
 import org.muplayer.model.AudioSupport;
 import org.muplayer.util.DataUtil;
+import org.orangelogger.sys.Logger;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.LinkedHashSet;
@@ -30,7 +28,7 @@ public class AudioSupportInfo {
     }
 
     protected AudioSupportInfo() {
-        supportFile = new File("./", PropertiesFilesInfo.AUDIO_SUPPORT_FILE_NAME);
+        supportFile = new File(PropertiesFilesInfo.AUDIO_SUPPORT_FILE_NAME);
         properties = new Properties();
         loadDefaultData();
     }
@@ -51,8 +49,7 @@ public class AudioSupportInfo {
                 + ".properties");
 
         tempFile.createNewFile();
-        final String dataFromStream = DataUtil.getDataFromStream(
-                AudioSupportInfo.class.getResourceAsStream("/"+ PropertiesFilesInfo.AUDIO_SUPPORT_FILE_NAME));
+        final String dataFromStream = DataUtil.getDataFromResource(PropertiesFilesInfo.AUDIO_SUPPORT_FILE_RES_PATH);
         Files.write(tempFile.toPath(), dataFromStream.getBytes(StandardCharsets.UTF_8),
                 TRUNCATE_EXISTING);
         return new AudioSupportInfo(tempFile);
@@ -73,7 +70,7 @@ public class AudioSupportInfo {
                 Files.deleteIfExists(tempManager.supportFile.toPath());
             }
             else {
-                final String supportData = DataUtil.getDataFromResource("/audio-support.properties");
+                final String supportData = DataUtil.getDataFromResource(PropertiesFilesInfo.AUDIO_SUPPORT_FILE_RES_PATH);
                 supportFile.createNewFile();
                 Files.write(supportFile.toPath(), supportData.getBytes(StandardCharsets.UTF_8), TRUNCATE_EXISTING);
                 loadData();
@@ -88,6 +85,11 @@ public class AudioSupportInfo {
         try {
             validateFile();
             properties.load(new FileInputStream(supportFile));
+            if (properties.isEmpty()) {
+                Logger.getLogger(this, MessagesInfo.getInstance()
+                        .getProperty(MessagesInfoKeys.AUDIO_SUPPORT_FILE_ERROR_MSG)).rawError();
+                System.exit(0);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

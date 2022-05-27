@@ -1,5 +1,6 @@
 package org.muplayer.properties;
 
+import org.muplayer.util.DataUtil;
 import org.muplayer.util.IOUtil;
 
 import java.io.*;
@@ -11,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.muplayer.properties.PropertiesFilesInfo.HELP_FILE_PATH;
+import static org.muplayer.properties.PropertiesFilesInfo.HELP_FILE_RES_PATH;
 
 public class HelpInfo {
     private final Properties properties;
@@ -27,8 +29,7 @@ public class HelpInfo {
 
     private void loadData() {
         try {
-            final InputStream resStream = getClass().getResourceAsStream(HELP_FILE_PATH);
-            properties.load(new InputStreamReader(resStream));
+            properties.load(DataUtil.getResourceAsStream(HELP_FILE_RES_PATH));
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -6,11 +6,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-
-import static org.muplayer.properties.PropertiesFilesInfo.INFO_FILE_PATH;
 
 public class IOUtil {
     public static byte[] getBytesFromStream(InputStream inputStream) throws IOException {
@@ -33,7 +30,7 @@ public class IOUtil {
     }
 
     public static byte[] getBytesFromRes(String path) throws IOException {
-        return getBytesFromStream(IOUtil.class.getResourceAsStream(path));
+        return getBytesFromStream(DataUtil.getResourceAsStream(path));
     }
 
     public static InputStream getArrayStreamFromPath(String path) throws IOException {

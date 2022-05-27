@@ -1,12 +1,14 @@
 package org.muplayer.properties;
 
+import org.muplayer.util.DataUtil;
+
 import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.muplayer.properties.PropertiesFilesInfo.INFO_FILE_PATH;
+import static org.muplayer.properties.PropertiesFilesInfo.MUPLAYER_INFO_FILE_RES_PATH;
 
 public class MuPlayerInfo {
     private final Properties properties;
@@ -24,7 +26,7 @@ public class MuPlayerInfo {
 
     private void loadData() {
         try {
-            properties.load(getClass().getResourceAsStream(INFO_FILE_PATH));
+            properties.load(DataUtil.getResourceAsStream(MUPLAYER_INFO_FILE_RES_PATH));
         } catch (IOException e) {
             e.printStackTrace();
         }

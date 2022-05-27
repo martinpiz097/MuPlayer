@@ -1,5 +1,6 @@
 package org.muplayer.util;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -16,7 +17,15 @@ public class DataUtil {
     }
 
     public static String getDataFromResource(String path) throws IOException {
-        return getDataFromStream(DataUtil.class.getResourceAsStream(path));
+        return getDataFromStream(getResourceAsStream(path));
+    }
+
+    public static InputStream getResourceAsStream(String path) {
+        return DataUtil.class.getResourceAsStream(path);
+    }
+
+    public static BufferedInputStream getResourceAsBuffer(String path) {
+        return new BufferedInputStream(getResourceAsStream(path));
     }
 
 }
