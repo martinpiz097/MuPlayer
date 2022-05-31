@@ -17,10 +17,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static java.nio.file.StandardOpenOption.WRITE;
@@ -159,6 +157,33 @@ public class ConsoleInterpreter implements CommandInterpreter {
                                 +fileTrack.getName(), INFO);
                 }
             }
+            execution.appendOutput("------------------------------", INFO);
+        }
+    }
+
+    private synchronized void printFolderTracks(ConsoleExecution execution, int index) {
+        final File folder = player.getListFolders().get(index-1);
+        final File currentFile = player.getCurrent().getDataSourceAsFile();
+
+        execution.appendOutput("------------------------------", INFO);
+
+        if (folder != null) {
+            execution.appendOutput("Music in folder "+folder.getName(), INFO);
+            execution.appendOutput("------------------------------", INFO);
+
+            final AtomicInteger counter = new AtomicInteger(1);
+            player.getTracks().stream().filter(track->track.getDataSourceAsFile().getParent()
+                    .equals(folder.getPath())).forEach(track->{
+                        File fileTrack = track.getDataSourceAsFile();
+                        if (fileTrack.getParentFile().equals(folder)) {
+                            if (fileTrack.getPath().equals(currentFile.getPath()))
+                                execution.appendOutput("Track "+(counter.getAndIncrement())+": "
+                                        +fileTrack.getName(), WARNING);
+                            else
+                                execution.appendOutput("Track "+(counter.getAndIncrement())+": "
+                                        +fileTrack.getName(), INFO);
+                        }
+            });
             execution.appendOutput("------------------------------", INFO);
         }
     }
@@ -403,8 +428,17 @@ public class ConsoleInterpreter implements CommandInterpreter {
                 break;
 
             case ConsoleOrder.LISTFOLDERS:
-                if (isPlayerOn())
-                    printFolders(execution);
+                if (isPlayerOn()) {
+                    if (cmd.hasOptions()) {
+                        try {
+                            Number index = cmd.getOptionAsNumber(0);
+                            printFolderTracks(execution, index.intValue());
+                        } catch (NumberFormatException e) {
+                        }
+                    }
+                    else
+                        printFolders(execution);
+                }
                 break;
 
             case ConsoleOrder.LISTDETAILED:

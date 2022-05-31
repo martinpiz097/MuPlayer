@@ -1,7 +1,8 @@
 package org.muplayer.properties;
 
+import org.muplayer.util.IOUtil;
+
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 public class ConfigInfo {
@@ -39,12 +40,14 @@ public class ConfigInfo {
                 e.printStackTrace();
             }
         }
+        else
+            loadData();
     }
 
     private void loadData() {
         try {
             props = new Properties();
-            props.load(new InputStreamReader(new FileInputStream(fileProps), StandardCharsets.UTF_8));
+            props.load(IOUtil.getBufferedReader(fileProps));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -59,13 +62,8 @@ public class ConfigInfo {
     }
 
     public String get(String key) {
-        loadData();
         return props.getProperty(key);
     }
 
-    public void set(String key, String value) {
-        props.setProperty(key, value);
-        saveData();
-    }
-
 }
+

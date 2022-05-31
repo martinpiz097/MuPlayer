@@ -2,12 +2,13 @@ package org.muplayer.util;
 
 import org.bytebuffer.ByteBuffer;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.net.URI;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 public class IOUtil {
     public static byte[] getBytesFromStream(InputStream inputStream) throws IOException {
@@ -33,8 +34,12 @@ public class IOUtil {
         return getBytesFromStream(DataUtil.getResourceAsStream(path));
     }
 
-    public static InputStream getArrayStreamFromPath(String path) throws IOException {
-        return new ByteArrayInputStream(getBytesFromPath(path));
+    public static InputStream getInputStream(File file) throws IOException {
+        return Files.newInputStream(file.toPath(), StandardOpenOption.READ);
+    }
+
+    public static BufferedReader getBufferedReader(File file) throws IOException {
+        return Files.newBufferedReader(file.toPath(), Charset.defaultCharset());
     }
 
     public static InputStream getArrayStreamFromRes(String path) throws IOException {
