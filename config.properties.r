@@ -1,1 +1,0 @@
-root_folder=/home/martin/Escritorio/Música
