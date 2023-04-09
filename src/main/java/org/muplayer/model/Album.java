@@ -6,30 +6,16 @@ import org.tritonus.share.ArraySet;
 import java.util.Set;
 
 public class Album {
-    private String name;
-    private Set<ReportableTrack> tracksSet;
+    private final String name;
+    private final Set<ReportableTrack> tracksSet;
 
-    public Album() {
+    public Album(String name) {
+        this.name = name;
         tracksSet = new ArraySet<>();
     }
 
-    /*public Artist getArtist() {
-        if (tracksSet.isEmpty())
-            return null;
-        else {
-            Artist artist = new Artist();
-            artist.setName(tracksSet.iterator().next().getArtist());
-            artist.setTracksSet(tracksSet);
-            return artist;
-        }
-    }*/
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public byte[] getCover() {
@@ -49,10 +35,6 @@ public class Album {
 
     public Set<ReportableTrack> getTracksSet() {
         return tracksSet;
-    }
-
-    public void setTracksSet(Set<ReportableTrack> tracksSet) {
-        this.tracksSet = tracksSet;
     }
 
     @Override

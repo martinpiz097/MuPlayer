@@ -60,9 +60,12 @@ public class TCPClient extends Client {
             try {
                 command = recvString();
                 if (command != null && !command.trim().isEmpty()) {
+                    command = command.trim();
                     Logger.getLogger(this, getLoggerHeader()+"Command received: "+command).info();
+
                     consoleExecution = consoleInterpreter.executeCommand(command.toLowerCase());
                     Logger.getLogger(this, getLoggerHeader()+"Command executed. ").info();
+
                     if (consoleExecution != null && consoleExecution.hasOutput()) {
                         Logger.getLogger(this, getLoggerHeader()+"Waiting for command processing...").info();
                         sendString(consoleExecution.getOutputMsg().toString());

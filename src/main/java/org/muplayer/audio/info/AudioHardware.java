@@ -223,8 +223,8 @@ public class AudioHardware {
             speakerLine.open();
             final BooleanControl speakerMute = getMuteControl(speakerLine);
 
-            System.out.println("HeadphoneLine: " + Arrays.toString(headphoneLine.getControls()));
-            System.out.println("SpeakerLine: " + Arrays.toString(speakerLine.getControls()));
+            //System.out.println("HeadphoneLine: " + Arrays.toString(headphoneLine.getControls()));
+            //System.out.println("SpeakerLine: " + Arrays.toString(speakerLine.getControls()));
 
             final Line toReturn;
             if (headphoneMute.getValue() && speakerMute.getValue())

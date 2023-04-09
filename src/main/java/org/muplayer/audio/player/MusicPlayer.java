@@ -156,7 +156,7 @@ public class MusicPlayer extends Player {
     }
 
     private String getThreadName() {
-        File dataSource = current.getDataSourceAsFile();
+        final File dataSource = current.getDataSourceAsFile();
         final String trackName = dataSource != null ? dataSource.getName() : dataSource.toString();
         final int strLimit = Math.min(trackName.length(), 10);
         return "ThreadTrack: " + trackName.substring(0, strLimit);
@@ -294,18 +294,6 @@ public class MusicPlayer extends Player {
         return listFolders.parallelStream().anyMatch(fp->fp.getPath().equals(folderPath));
     }
 
-    private boolean existsFolder(File folder) {
-        return existsFolder(folder.getPath());
-    }
-
-    private boolean existsParent(String childPath) {
-        return existsParent(new File(childPath));
-    }
-
-    private boolean existsParent(File child) {
-        return existsFolder(child.getParent());
-    }
-
     @Override
     public TrackState getCurrentTrackState() {
         return current == null ? new UnknownState(current) : current.getTrackState();
@@ -359,14 +347,18 @@ public class MusicPlayer extends Player {
 
         listTracks.parallelStream()
                 .forEach(track->{
-                    String art = track.getArtist();
-                    if (art == null)
-                        art = "Unknown";
+                    final String artistName = track.getArtist() != null ? track.getArtist() : "Unknown";
                     synchronized (setArtists) {
-                        Artist artist = new Artist();
-                        artist.setName(art);
-                        artist.addTrack(track);
-                        setArtists.add(artist);
+                        Artist artist = setArtists.parallelStream()
+                                        .filter(art -> art.getName().equals(artistName))
+                                                .findFirst().orElse(null);
+                        if (artist != null)
+                            artist.addTrack(track);
+                        else {
+                            artist = new Artist(artistName);
+                            artist.addTrack(track);
+                            setArtists.add(artist);
+                        }
                     }
                 });
         final List<Artist> listArtists = new ArrayList<>(setArtists);
@@ -381,14 +373,18 @@ public class MusicPlayer extends Player {
 
         listTracks.parallelStream()
                 .forEach(track->{
-                    String alb = track.getAlbum();
-                    if (alb == null)
-                        alb = "Unknown";
+                    final String albumName = track.getAlbum() != null ? track.getAlbum() : "Unknown";
                     synchronized (setAlbums) {
-                        Album album = new Album();
-                        album.setName(alb);
-                        album.addTrack(track);
-                        setAlbums.add(album);
+                        Album album = setAlbums.parallelStream()
+                                .filter(alb -> alb.getName().equals(albumName))
+                                .findFirst().orElse(null);
+                        if (album != null)
+                            album.addTrack(track);
+                        else {
+                            album = new Album(albumName);
+                            album.addTrack(track);
+                            setAlbums.add(album);
+                        }
                     }
                 });
         final List<Album> listAlbums = new ArrayList<>(setAlbums);

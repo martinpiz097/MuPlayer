@@ -1,24 +1,22 @@
 package org.muplayer.model;
 
 import org.muplayer.interfaces.ReportableTrack;
+import org.tritonus.share.ArraySet;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class Artist {
-    private String name;
-    private Set<ReportableTrack> tracksSet;
+    private final String name;
+    private final Set<ReportableTrack> tracksSet;
 
-    public Artist() {
-        tracksSet = new LinkedHashSet<>();
+    public Artist(String name) {
+        this.name = name;
+        tracksSet = new ArraySet<>();
     }
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public byte[] getCover() {
@@ -38,10 +36,6 @@ public class Artist {
 
     public Set<ReportableTrack> getTracksSet() {
         return tracksSet;
-    }
-
-    public void setTracksSet(Set<ReportableTrack> tracksSet) {
-        this.tracksSet = tracksSet;
     }
 
     @Override
