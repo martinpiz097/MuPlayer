@@ -482,12 +482,6 @@ public class ConsoleInterpreter implements CommandInterpreter {
                 break;
 
             case ConsoleOrder.SHUTDOWN:
-                if (isPlayerOn()) {
-                    player.shutdown();
-                    player = null;
-                }
-                break;
-
             case ConsoleOrder.EXIT:
             case ConsoleOrder.QUIT:
                 if (isPlayerOn()) {
