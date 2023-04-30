@@ -99,4 +99,16 @@ public class TrackIO {
     public AudioFormat getAudioFormat() {
         return decodedStream.getFormat();
     }
+
+    public float getGain() {
+        return trackLine.getGain();
+    }
+
+    public void setGain(float gain) {
+        trackLine.setGain(gain);
+    }
+
+    public SourceDataLine getLineDriver() {
+        return trackLine.getDriver();
+    }
 }

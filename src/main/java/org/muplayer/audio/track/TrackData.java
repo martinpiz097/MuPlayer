@@ -21,6 +21,7 @@ public class TrackData {
         return isMute ? 0 : volume;
     }
 
+    // muchas llamadas a setVolume en un comienzo?
     public synchronized void setVolume(float volume) {
         this.volume = volume > 100 ? 100 : (volume < 0 ? 0 : volume);
         isMute = isVolumeZero();

@@ -701,11 +701,12 @@ public class MusicPlayer extends Player {
 
     @Override
     public synchronized void unMute() {
-        playerData.setMute(false);
+        if (playerData.isVolumeZero())
+            playerData.setVolume(100);
+        else
+            playerData.setMute(false);
         if (current != null)
             current.unMute();
-        else if (playerData.getVolume() == 0)
-            playerData.setVolume(100);
     }
 
     @Override

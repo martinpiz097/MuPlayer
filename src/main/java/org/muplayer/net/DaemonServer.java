@@ -21,7 +21,7 @@ public class DaemonServer {
         this.listClients = new ArrayList<>();
     }
 
-    public Socket getSocketRequest() throws IOException {
+    public Socket getRequestSocket() throws IOException {
         return serverSocket.accept();
     }
 

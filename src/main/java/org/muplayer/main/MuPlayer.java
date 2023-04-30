@@ -2,6 +2,7 @@ package org.muplayer.main;
 
 import org.muplayer.audio.player.MusicPlayer;
 import org.muplayer.console.ConsoleRunner;
+import org.muplayer.console.LocalRunner;
 import org.muplayer.net.DaemonRunner;
 import org.muplayer.properties.*;
 import org.muplayer.thread.TaskRunner;
@@ -9,13 +10,14 @@ import org.muplayer.thread.TaskRunner;
 public class MuPlayer {
     public static void main(String[] args) {
         try {
+            ConsoleRunner consoleRunner = null;
             if (args.length == 0) {
                 final String defaultRootPath = ConfigInfo.getInstance().get(ConfigInfoKeys.DEFAULT_ROOT_FOLDER);
                 if (defaultRootPath == null) {
                     throw new NullPointerException(MessagesInfo.getInstance().getProperty(MessagesInfoKeys.PROPERTY_NOT_FOUND_MSG));
                 }
                 else
-                    TaskRunner.execute(new ConsoleRunner(defaultRootPath));
+                    consoleRunner = new LocalRunner(defaultRootPath);
             }
             else switch (args.length) {
                 case 1:
@@ -23,24 +25,24 @@ public class MuPlayer {
                     if (firstArg.startsWith("-"))
                         throw new NullPointerException(MessagesInfo.getInstance().getProperty(MessagesInfoKeys.PROPERTY_NOT_FOUND_MSG));
                     else
-                        TaskRunner.execute(new ConsoleRunner(firstArg));
+                        consoleRunner = new LocalRunner(firstArg);
                     break;
                 case 2:
                     firstArg = args[0].trim();
                     if (firstArg.startsWith("-")) {
                         if (firstArg.equals("-l"))
-                            TaskRunner.execute(new ConsoleRunner(args[1]));
+                            consoleRunner = new LocalRunner(args[1]);
                         else if (firstArg.equals("-d"))
-                            TaskRunner.execute(new DaemonRunner(new MusicPlayer(args[1])));
+                            consoleRunner = new DaemonRunner(args[1]);
                         else
                             throw new NullPointerException("Arg "+firstArg +"not recognized");
                     }
-                    else {
+                    else
                         throw new NullPointerException("Arg "+firstArg +"not recognized");
-                    }
                     break;
-
             }
+            if (consoleRunner != null)
+                TaskRunner.execute(consoleRunner);
         } catch (Exception e) {
             e.printStackTrace();
             //Logger.getLogger(ConsolePlayer.class, e.getClass().getSimpleName(), e.getMessage()).error();
