@@ -1,16 +1,17 @@
 package org.muplayer.audio.player;
 
-import org.muplayer.audio.player.MusicPlayer;
+import lombok.Data;
 import org.muplayer.audio.track.Track;
 
 import java.io.File;
 import java.text.DecimalFormat;
 
+@Data
 public class PlayerInfo {
     private final Track current;
     private final File trackFolder;
     private final File rootFolder;
-    private final float gain;
+    private final float volume;
 
     private final int songsCount;
     private final int foldersCount;
@@ -20,13 +21,9 @@ public class PlayerInfo {
         trackFolder = current != null && current.getDataSourceAsFile() != null
                 ? current.getDataSourceAsFile().getParentFile() : null;
         rootFolder = musicPlayer.getRootFolder();
-        gain = musicPlayer.getGain();
+        volume = musicPlayer.getVolume();
         songsCount = musicPlayer.getSongsCount();
         foldersCount = musicPlayer.getFoldersCount();
-    }
-
-    public Track getCurrentTrack() {
-        return current;
     }
 
     public String getCurrentTrackTitle() {
@@ -42,26 +39,6 @@ public class PlayerInfo {
         }
     }
 
-    public File getTrackFolder() {
-        return trackFolder;
-    }
-
-    public File getRootFolder() {
-        return rootFolder;
-    }
-
-    public float getVolume() {
-        return gain;
-    }
-
-    public int getSongsCount() {
-        return songsCount;
-    }
-
-    public int getFoldersCount() {
-        return foldersCount;
-    }
-
     @Override
     public String toString() {
         return new StringBuilder().append("{\n\t")
@@ -69,7 +46,7 @@ public class PlayerInfo {
                 .append("Track Format: ").append(getCurrentTrackFormat()).append(",\n\t")
                 .append("Track Folder: ").append(trackFolder==null?"Unknown":trackFolder.getPath()).append(",\n\t")
                 .append("Root Folder: ").append(rootFolder==null?"Unknown":rootFolder.getPath()).append(",\n\t")
-                .append("Volume: ").append(new DecimalFormat("#0.0").format(gain)).append(",\n\t")
+                .append("Volume: ").append(new DecimalFormat("#0.0").format(volume)).append(",\n\t")
                 .append("Songs Count: ").append(songsCount).append(",\n\t")
                 .append("Folder Count: ").append(foldersCount).append("\n}")
                 .toString();

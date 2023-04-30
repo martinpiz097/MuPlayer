@@ -2,16 +2,15 @@ package org.muplayer.audio.track;
 
 import org.jaudiotagger.tag.FieldKey;
 import org.muplayer.audio.info.AudioHardware;
-import org.muplayer.audio.player.Player;
-import org.muplayer.audio.track.states.*;
 import org.muplayer.audio.info.AudioTag;
+import org.muplayer.audio.player.Player;
 import org.muplayer.audio.player.PlayerData;
+import org.muplayer.audio.track.states.*;
 import org.muplayer.interfaces.ControllableMusic;
 import org.muplayer.interfaces.ReportableTrack;
 import org.muplayer.properties.AudioSupportInfo;
 import org.muplayer.util.AudioUtil;
 import org.muplayer.util.FileUtil;
-import org.orangelogger.sys.Logger;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -134,7 +133,7 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     public void initLine() throws LineUnavailableException {
         final boolean initialized = trackIO.initLine();
         if (initialized)
-            setGain(trackData.getVolume());
+            setVolume(trackData.getVolume());
     }
 
     public void closeAllStreams() {
@@ -320,15 +319,14 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     }
 
     @Override
-    public float getGain() {
+    public float getVolume() {
         return trackData.isMute() ? 0 : trackData.getVolume();
     }
 
     // -80 to 5.5
     @Override
-    public void setGain(float volume) {
-        trackData.setVolume(volume > 100 ? 100 : (volume < 0 ? 0 : volume));
-        trackData.setMute(trackData.getVolume() == 0);
+    public void setVolume(float volume) {
+        trackData.setVolume(volume);
         if (trackIO.isTrackStreamsOpened()) {
             if (trackIO.getTrackLine() != null)
                 trackIO.getTrackLine().setGain(AudioUtil.convertVolRangeToLineRange(volume));

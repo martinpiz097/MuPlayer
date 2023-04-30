@@ -448,7 +448,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
 
             case ConsoleOrder.GETGAIN:
                 if (player != null)
-                    execution.appendOutput("Player Volume(0-100): " + player.getGain(), WARNING);
+                    execution.appendOutput("Player Volume(0-100): " + player.getVolume(), WARNING);
                 break;
 
             case ConsoleOrder.SETGAIN:
@@ -458,7 +458,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
                         if (volume == null)
                             execution.appendOutput("Volume value incorrect", ERROR);
                         else {
-                            player.setGain(volume.floatValue());
+                            player.setVolume(volume.floatValue());
                             execution.appendOutput("Volume value changed", WARNING);
                         }
                     }

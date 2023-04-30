@@ -16,7 +16,7 @@ public class StartedState extends TrackState {
         final TrackData trackData = track.getTrackData();
         if (trackData.isMute())
             track.mute();
-        track.setGain(trackData.getGain());
+        track.setVolume(trackData.getVolume());
         track.play();
         finish();
     }

@@ -3,9 +3,6 @@ package org.muplayer.interfaces;
 import org.muplayer.audio.info.AudioHardware;
 import org.muplayer.system.Time;
 
-import javax.sound.sampled.Line;
-import javax.sound.sampled.LineUnavailableException;
-
 public interface ControllableMusic {
     boolean isPlaying() throws Exception;
     boolean isPaused() throws Exception;
@@ -20,8 +17,8 @@ public interface ControllableMusic {
     void finish() throws Exception;
     void seek(double seconds) throws Exception;
     void gotoSecond(double second) throws Exception;
-    float getGain();
-    void setGain(float volume);
+    float getVolume();
+    void setVolume(float volume);
     default float getSystemVolume() {
         return AudioHardware.getFormattedSpeakerVolume();
     }
