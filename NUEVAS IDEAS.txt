@@ -27,3 +27,4 @@
 Agregar comando para ver cancion actual indicando el indice, mas que la info en si
 Arreglar recarga de canciones, comando load no reconoce carpeta a cargar y si no se le indica deberia poder recargar la misma o mismas que esta usando
 Cuando inicio el reproductor y cambio rapido a la siguiente cancion, se reproducen dos canciones a la vez, podria solucionarse con un line unico a nivel de reproductor y no a nivel de track
+Agregar comando para mostrar info de un comando especifico como -> h ORDEN
