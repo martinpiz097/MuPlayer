@@ -171,10 +171,11 @@
             <version>0.4.1</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.gitlab.9lukas5/jaad -->
         <dependency>
-            <groupId>io.vacco.jaad</groupId>
+            <groupId>com.gitlab.9lukas5</groupId>
             <artifactId>jaad</artifactId>
-            <version>0.8.8-MILESTONE-202111270642</version>
+            <version>0.8.8</version>
         </dependency>
 
         <dependency>
