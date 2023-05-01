@@ -160,12 +160,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <version>2.17.2</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.aucom</groupId>
             <artifactId>aucom</artifactId>
             <version>1.0</version>
@@ -177,7 +171,6 @@
             <version>0.4.1</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/io.vacco.jaad/jaad -->
         <dependency>
             <groupId>io.vacco.jaad</groupId>
             <artifactId>jaad</artifactId>
@@ -194,18 +187,6 @@
             <groupId>com.gitlab.audiolibs</groupId>
             <artifactId>jspeex-codec</artifactId>
             <version>0.9.8</version>
-        </dependency>
-
-        <!--<dependency>
-            <groupId>org</groupId>
-            <artifactId>jaudiotagger</artifactId>
-            <version>2.0.3</version>
-        </dependency>-->
-
-        <dependency>
-            <groupId>net.jthink</groupId>
-            <artifactId>jaudiotagger</artifactId>
-            <version>3.0.1</version>
         </dependency>
 
         <dependency>
@@ -238,11 +219,11 @@
             <version>1.5.2</version>
         </dependency>
 
-        <!--<dependency>
-            <groupId>org.bytebuffer</groupId>
-            <artifactId>bytebuffer</artifactId>
-            <version>0.2</version>
-        </dependency>-->
+        <dependency>
+            <groupId>net.jthink</groupId>
+            <artifactId>jaudiotagger</artifactId>
+            <version>3.0.1</version>
+        </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
