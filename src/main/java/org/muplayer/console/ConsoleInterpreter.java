@@ -6,8 +6,10 @@ import org.muplayer.audio.player.Player;
 import org.muplayer.model.Album;
 import org.muplayer.model.Artist;
 import org.muplayer.model.SeekOption;
+import org.muplayer.net.DaemonRunner;
 import org.muplayer.properties.HelpInfo;
 import org.muplayer.system.*;
+import org.muplayer.thread.TaskRunner;
 import org.muplayer.util.TrackUtil;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 
 import static java.nio.file.StandardOpenOption.WRITE;
 import static org.muplayer.console.OutputType.*;
+import static org.muplayer.system.GlobalVar.RUNNER;
 
 public class ConsoleInterpreter implements CommandInterpreter {
     private Player player;
@@ -699,6 +702,19 @@ public class ConsoleInterpreter implements CommandInterpreter {
                 }
                 else
                     execution.appendOutput("The player is not active", WARNING);
+                break;
+
+            case ConsoleOrder.CHANGE_TO_DAEMON:
+                final ConsoleRunner consoleRunner = Global.getInstance().getVar(RUNNER);
+                if (consoleRunner instanceof LocalRunner) {
+                    ((LocalRunner)consoleRunner).shutdown();
+                    final DaemonRunner daemonRunner = new DaemonRunner(player);
+                    TaskRunner.execute(daemonRunner);
+                    Global.getInstance().setVar(RUNNER, daemonRunner);
+                    execution.appendOutput("MuPlayer changed from LOCAL to DAEMON mode!", INFO);
+                }
+                else
+                    execution.appendOutput("MuPlayer already working with DAEMON mode", WARNING);
                 break;
 
             default:

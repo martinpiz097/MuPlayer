@@ -1,8 +1,9 @@
 package org.muplayer.console;
 
-import lombok.Getter;
 import org.muplayer.audio.player.MusicPlayer;
 import org.muplayer.audio.player.Player;
+import org.muplayer.system.Global;
+import org.muplayer.system.GlobalVar;
 import org.muplayer.system.SysInfo;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
@@ -53,6 +54,10 @@ public class LocalRunner extends ConsoleRunner {
         return null;
     }
 
+    public void shutdown() {
+        interpreter.setOn(false);
+    }
+
     @Override
     public void run() {
         final String appVersion = SysInfo.readVersion();
@@ -75,6 +80,8 @@ public class LocalRunner extends ConsoleRunner {
             }
         }
 
-        System.exit(0);
+        final ConsoleRunner runner = Global.getInstance().getVar(GlobalVar.RUNNER);
+        if (runner == null || runner instanceof LocalRunner)
+            System.exit(0);
     }
 }

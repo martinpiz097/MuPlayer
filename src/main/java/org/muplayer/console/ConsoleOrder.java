@@ -57,4 +57,6 @@ public class ConsoleOrder {
     public static final String LOAD = "load";
     public static final String LIST_ARTISTS = "arts";
     public static final String LIST_ALBUMS = "albs";
+
+    public static final String CHANGE_TO_DAEMON = "chd";
 }

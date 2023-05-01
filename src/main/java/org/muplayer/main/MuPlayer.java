@@ -1,10 +1,14 @@
 package org.muplayer.main;
 
-import org.muplayer.audio.player.MusicPlayer;
 import org.muplayer.console.ConsoleRunner;
 import org.muplayer.console.LocalRunner;
 import org.muplayer.net.DaemonRunner;
-import org.muplayer.properties.*;
+import org.muplayer.properties.ConfigInfo;
+import org.muplayer.properties.ConfigInfoKeys;
+import org.muplayer.properties.MessagesInfo;
+import org.muplayer.properties.MessagesInfoKeys;
+import org.muplayer.system.Global;
+import org.muplayer.system.GlobalVar;
 import org.muplayer.thread.TaskRunner;
 
 public class MuPlayer {
@@ -41,8 +45,10 @@ public class MuPlayer {
                         throw new NullPointerException("Arg "+firstArg +"not recognized");
                     break;
             }
-            if (consoleRunner != null)
+            if (consoleRunner != null) {
                 TaskRunner.execute(consoleRunner);
+                Global.getInstance().setVar(GlobalVar.RUNNER, consoleRunner);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             //Logger.getLogger(ConsolePlayer.class, e.getClass().getSimpleName(), e.getMessage()).error();
