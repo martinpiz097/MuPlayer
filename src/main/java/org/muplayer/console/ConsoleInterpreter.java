@@ -3,10 +3,13 @@ package org.muplayer.console;
 import org.muplayer.audio.player.MusicPlayer;
 import org.muplayer.audio.track.Track;
 import org.muplayer.audio.player.Player;
+import org.muplayer.console.runner.ConsoleRunner;
+import org.muplayer.console.runner.LocalRunner;
+import org.muplayer.console.runner.RunnerMode;
 import org.muplayer.model.Album;
 import org.muplayer.model.Artist;
 import org.muplayer.model.SeekOption;
-import org.muplayer.net.DaemonRunner;
+import org.muplayer.console.runner.DaemonRunner;
 import org.muplayer.properties.HelpInfo;
 import org.muplayer.system.*;
 import org.muplayer.thread.TaskRunner;
@@ -39,7 +42,6 @@ public class ConsoleInterpreter implements CommandInterpreter {
     public ConsoleInterpreter(Player player) {
         this.player = player;
         this.playerFolder = player.getRootFolder();
-        on = false;
         helpInfo = HelpInfo.getInstance();
     }
 
@@ -704,17 +706,37 @@ public class ConsoleInterpreter implements CommandInterpreter {
                     execution.appendOutput("The player is not active", WARNING);
                 break;
 
-            case ConsoleOrder.CHANGE_TO_DAEMON:
-                final ConsoleRunner consoleRunner = Global.getInstance().getVar(RUNNER);
-                if (consoleRunner instanceof LocalRunner) {
-                    ((LocalRunner)consoleRunner).shutdown();
-                    final DaemonRunner daemonRunner = new DaemonRunner(player);
-                    TaskRunner.execute(daemonRunner);
-                    Global.getInstance().setVar(RUNNER, daemonRunner);
-                    execution.appendOutput("MuPlayer changed from LOCAL to DAEMON mode!", INFO);
+            case ConsoleOrder.CHANGE_MODE:
+                if (cmd.hasOptions()) {
+                    final String firstOpt = cmd.getOptionAt(0);
+                    final ConsoleRunner consoleRunner = Global.getInstance().getVar(RUNNER);
+                    if (firstOpt.equalsIgnoreCase(RunnerMode.LOCAL.name())) {
+                        if (consoleRunner instanceof DaemonRunner) {
+                            final LocalRunner localRunner = new LocalRunner(player);
+                            TaskRunner.execute(localRunner);
+                            Global.getInstance().setVar(RUNNER, localRunner);
+                            ((DaemonRunner)consoleRunner).shutdown();
+                            execution.appendOutput("MuPlayer changed from DAEMON to LOCAL mode!", INFO);
+                        }
+                        else
+                            execution.appendOutput("MuPlayer already working with LOCAL mode", WARNING);
+                    }
+                    else if (firstOpt.equalsIgnoreCase(RunnerMode.DAEMON.name())) {
+                        if (consoleRunner instanceof LocalRunner) {
+                            final DaemonRunner daemonRunner = new DaemonRunner(player);
+                            TaskRunner.execute(daemonRunner);
+                            Global.getInstance().setVar(RUNNER, daemonRunner);
+                            ((LocalRunner)consoleRunner).shutdown();
+                            execution.appendOutput("MuPlayer changed from LOCAL to DAEMON mode!", INFO);
+                        }
+                        else
+                            execution.appendOutput("MuPlayer already working with DAEMON mode", WARNING);
+                    }
+                    else
+                        execution.appendOutput("Option selected unknown, the options must be LOCAL or DAEMON", WARNING);
                 }
                 else
-                    execution.appendOutput("MuPlayer already working with DAEMON mode", WARNING);
+                    execution.appendOutput("No options selected, the options must be LOCAL or DAEMON", WARNING);
                 break;
 
             default:

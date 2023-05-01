@@ -16,15 +16,15 @@ public class Global {
         mapGlobals = new HashMap<>();
     }
 
-    public boolean hasVar(GlobalVar globalVar) {
+    public synchronized boolean hasVar(GlobalVar globalVar) {
         return mapGlobals.containsKey(globalVar);
     }
 
-    public <T> T getVar(GlobalVar name) {
+    public synchronized <T> T getVar(GlobalVar name) {
         return (T) mapGlobals.get(name);
     }
 
-    public void setVar(GlobalVar name, Object value) {
+    public synchronized void setVar(GlobalVar name, Object value) {
         mapGlobals.put(name, value);
     }
 

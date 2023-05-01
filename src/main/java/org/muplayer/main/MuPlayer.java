@@ -1,8 +1,8 @@
 package org.muplayer.main;
 
-import org.muplayer.console.ConsoleRunner;
-import org.muplayer.console.LocalRunner;
-import org.muplayer.net.DaemonRunner;
+import org.muplayer.console.runner.ConsoleRunner;
+import org.muplayer.console.runner.LocalRunner;
+import org.muplayer.console.runner.DaemonRunner;
 import org.muplayer.properties.ConfigInfo;
 import org.muplayer.properties.ConfigInfoKeys;
 import org.muplayer.properties.MessagesInfo;

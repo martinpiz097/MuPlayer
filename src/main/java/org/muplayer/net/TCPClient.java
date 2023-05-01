@@ -9,7 +9,6 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
 public class TCPClient extends Client {
-    private final ConsoleInterpreter consoleInterpreter;
     private final Socket clientSocket;
     private final InputStream inputStream;
     private final OutputStream outputStream;
@@ -19,7 +18,7 @@ public class TCPClient extends Client {
     }
 
     public TCPClient(ConsoleInterpreter consoleInterpreter, Socket clientSocket, InputStream inputStream, OutputStream outputStream) {
-        this.consoleInterpreter = consoleInterpreter;
+        super(consoleInterpreter);
         this.clientSocket = clientSocket;
         this.inputStream = inputStream;
         this.outputStream = outputStream;
@@ -28,6 +27,8 @@ public class TCPClient extends Client {
 
     @Override
     public void close() throws IOException {
+        outputStream.close();
+        inputStream.close();
         clientSocket.close();
     }
 
@@ -55,7 +56,7 @@ public class TCPClient extends Client {
     public void run() {
         String command;
         ConsoleExecution consoleExecution;
-        Logger.getLogger(this, getLoggerHeader()+"Client connected.").info();
+        Logger.getLogger(this, "Client connected from IP "+clientSocket.getRemoteSocketAddress().toString());
         while (true) {
             try {
                 command = recvString();
@@ -74,8 +75,12 @@ public class TCPClient extends Client {
                 }
                 Thread.sleep(1);
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                if (e.getMessage().equalsIgnoreCase("Socket closed"))
+                    break;
+                else
+                    e.printStackTrace();
             }
         }
+        Logger.getLogger(this, "Client with IP "+clientSocket.getRemoteSocketAddress().toString() + " closed");
     }
 }

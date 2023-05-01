@@ -1,11 +1,5 @@
 package org.muplayer.console;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.Socket;
-import java.util.Map;
-import java.util.TreeMap;
-
 public class ConsoleOrder {
     public static final String START = "st";
     public static final String ISSTARTED = "ist";
@@ -58,5 +52,5 @@ public class ConsoleOrder {
     public static final String LIST_ARTISTS = "arts";
     public static final String LIST_ALBUMS = "albs";
 
-    public static final String CHANGE_TO_DAEMON = "chd";
+    public static final String CHANGE_MODE = "chm";
 }

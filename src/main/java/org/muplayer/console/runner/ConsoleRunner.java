@@ -1,8 +1,10 @@
-package org.muplayer.console;
+package org.muplayer.console.runner;
 
 import lombok.Getter;
 import org.muplayer.audio.player.MusicPlayer;
 import org.muplayer.audio.player.Player;
+import org.muplayer.console.ConsoleExecution;
+import org.muplayer.console.ConsoleInterpreter;
 import org.muplayer.system.SysInfo;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;

@@ -1,7 +1,8 @@
-package org.muplayer.console;
+package org.muplayer.console.runner;
 
 import org.muplayer.audio.player.MusicPlayer;
 import org.muplayer.audio.player.Player;
+import org.muplayer.console.ConsoleExecution;
 import org.muplayer.system.Global;
 import org.muplayer.system.GlobalVar;
 import org.muplayer.system.SysInfo;
