@@ -43,14 +43,11 @@ public class ConsoleOrder {
     public static final String HELP2 = "help";
     public static final String SYSTEM1 = "system";
     public static final String SYSTEM2 = "sys";
-
     public static final String SHOW_NEXT = "sn";
     public static final String SHOW_PREV = "sp";
-
     public static final String PLAY_FOLDER = "pf";
     public static final String LOAD = "load";
     public static final String LIST_ARTISTS = "arts";
     public static final String LIST_ALBUMS = "albs";
-
     public static final String CHANGE_MODE = "chm";
 }
