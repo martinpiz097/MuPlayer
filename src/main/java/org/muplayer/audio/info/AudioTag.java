@@ -1,7 +1,6 @@
 package org.muplayer.audio.info;
 
 import lombok.Data;
-import lombok.Getter;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
@@ -12,7 +11,7 @@ import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
 import org.jaudiotagger.tag.TagField;
-import org.jaudiotagger.tag.datatype.Artwork;
+import org.jaudiotagger.tag.images.Artwork;
 
 import java.io.File;
 import java.io.IOException;
