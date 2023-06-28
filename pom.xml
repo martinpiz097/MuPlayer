@@ -6,7 +6,7 @@
 
     <groupId>org.orangeplayer</groupId>
     <artifactId>muplayer</artifactId>
-    <version>3.2</version>
+    <version>3.2.1</version>
     <packaging>jar</packaging>
 
     <name>muplayer</name>
@@ -158,7 +158,14 @@
         <dependency>
             <groupId>org.aucom</groupId>
             <artifactId>aucom</artifactId>
-            <version>1.0</version>
+            <version>1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.bytebuffer</groupId>
+            <artifactId>bytebuffer</artifactId>
+            <version>0.2.1</version>
+            <optional>true</optional>
         </dependency>
 
         <dependency>

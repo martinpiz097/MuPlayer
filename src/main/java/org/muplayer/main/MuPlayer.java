@@ -1,8 +1,8 @@
 package org.muplayer.main;
 
 import org.muplayer.console.runner.ConsoleRunner;
-import org.muplayer.console.runner.LocalRunner;
 import org.muplayer.console.runner.DaemonRunner;
+import org.muplayer.console.runner.LocalRunner;
 import org.muplayer.properties.ConfigInfo;
 import org.muplayer.properties.ConfigInfoKeys;
 import org.muplayer.properties.MessagesInfo;
@@ -17,9 +17,8 @@ public class MuPlayer {
             ConsoleRunner consoleRunner = null;
             if (args.length == 0) {
                 final String defaultRootPath = ConfigInfo.getInstance().get(ConfigInfoKeys.DEFAULT_ROOT_FOLDER);
-                if (defaultRootPath == null) {
+                if (defaultRootPath == null)
                     throw new NullPointerException(MessagesInfo.getInstance().getProperty(MessagesInfoKeys.PROPERTY_NOT_FOUND_MSG));
-                }
                 else
                     consoleRunner = new LocalRunner(defaultRootPath);
             }

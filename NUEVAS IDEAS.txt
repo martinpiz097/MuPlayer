@@ -29,3 +29,5 @@ Arreglar recarga de canciones, comando load no reconoce carpeta a cargar y si no
 Cuando inicio el reproductor y cambio rapido a la siguiente cancion, se reproducen dos canciones a la vez, podria solucionarse con un line unico a nivel de reproductor y no a nivel de track
 Agregar comando para mostrar info de un comando especifico como -> h ORDEN
 Problemas al reproducir los aac de prueba
+Si hay subcarpetas, al listar mostrar el nombre de la carpetas padres desde la ruta principal
+Cuando cambio de modo daemon a local la cancion actual deja de escucharse

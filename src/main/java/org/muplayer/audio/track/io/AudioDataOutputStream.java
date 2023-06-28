@@ -7,7 +7,7 @@ import java.io.OutputStream;
 
 public class AudioDataOutputStream extends OutputStream {
 
-    private ByteBuffer byteBuffer;
+    private final ByteBuffer byteBuffer;
     private boolean isClosed;
 
     public AudioDataOutputStream() {
