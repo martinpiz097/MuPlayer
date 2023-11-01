@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 
-public class AudioSupportInfo {
+public class AudioSupportInfo extends PropertiesInfo<File>{
     @Getter
     private final File supportFile;
     private final Properties properties;
@@ -27,13 +27,18 @@ public class AudioSupportInfo {
         return singleton;
     }
 
-    protected AudioSupportInfo() {
-        supportFile = new File(PropertiesFilesInfo.AUDIO_SUPPORT_FILE_NAME);
+    private AudioSupportInfo() {
+        supportFile = new File(PropertiesFiles.AUDIO_SUPPORT_FILE_PATH);
+        try {
+            System.out.println("Support File Path: " +supportFile.getCanonicalPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         properties = new Properties();
         loadDefaultData();
     }
 
-    protected AudioSupportInfo(File supportFile) {
+    private AudioSupportInfo(File supportFile) {
         this.supportFile = supportFile;
         properties = new Properties();
         loadData();
@@ -49,7 +54,7 @@ public class AudioSupportInfo {
                 + ".properties");
 
         tempFile.createNewFile();
-        final String dataFromStream = DataUtil.getDataFromResource(PropertiesFilesInfo.AUDIO_SUPPORT_FILE_RES_PATH);
+        final String dataFromStream = DataUtil.getDataFromResource(PropertiesFiles.AUDIO_SUPPORT_RES_PATH);
         Files.write(tempFile.toPath(), dataFromStream.getBytes(StandardCharsets.UTF_8),
                 TRUNCATE_EXISTING);
         return new AudioSupportInfo(tempFile);
@@ -70,7 +75,7 @@ public class AudioSupportInfo {
                 Files.deleteIfExists(tempManager.supportFile.toPath());
             }
             else {
-                final String supportData = DataUtil.getDataFromResource(PropertiesFilesInfo.AUDIO_SUPPORT_FILE_RES_PATH);
+                final String supportData = DataUtil.getDataFromResource(PropertiesFiles.AUDIO_SUPPORT_RES_PATH);
                 supportFile.createNewFile();
                 Files.write(supportFile.toPath(), supportData.getBytes(StandardCharsets.UTF_8), TRUNCATE_EXISTING);
                 loadData();
