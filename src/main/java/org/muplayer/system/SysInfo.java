@@ -1,8 +1,7 @@
 package org.muplayer.system;
 
-import org.muplayer.properties.MuPlayerInfo;
-import org.muplayer.properties.ConfigInfoKeys;
-import org.muplayer.properties.MuPlayerInfoKeys;
+import org.muplayer.properties.info.MuPlayerInfo;
+import org.muplayer.properties.info.MuPlayerInfoKeys;
 
 public class SysInfo {
     public static final String OS_NAME = System.getProperty("os.name").toLowerCase();

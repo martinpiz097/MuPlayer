@@ -13,10 +13,10 @@ public class PlayerData {
     public static final float DEFAULT_VOLUME = AudioUtil.convertLineRangeToVolRange(AudioUtil.MiDDLE_VOL);
 
     public PlayerData() {
-        trackIndex = -1;
-        volume = DEFAULT_VOLUME;
-        on = false;
-        isMute = false;
+        this.trackIndex = -1;
+        this.volume = DEFAULT_VOLUME;
+        this.on = false;
+        this.isMute = false;
     }
 
     public synchronized boolean isVolumeZero() {

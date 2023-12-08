@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 public class Command {
     private final String order;
+    //private final String consoleCode;
     private final String[] options;
 
     public Command(String order, String... options) {

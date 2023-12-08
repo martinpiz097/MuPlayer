@@ -10,7 +10,7 @@ import org.muplayer.model.Album;
 import org.muplayer.model.Artist;
 import org.muplayer.model.SeekOption;
 import org.muplayer.console.runner.DaemonRunner;
-import org.muplayer.properties.HelpInfo;
+import org.muplayer.properties.help.HelpInfo;
 import org.muplayer.system.*;
 import org.muplayer.thread.TaskRunner;
 import org.muplayer.util.TrackUtil;
@@ -96,8 +96,8 @@ public class ConsoleInterpreter implements CommandInterpreter {
     private void printDetailedTracks(ConsoleExecution execution) {
         final File rootFolder = player.getRootFolder();
         final List<Track> listTracks = player.getTracks();
-        final List<String> listFolderPaths = player.getListFolders().stream()
-                .map(File::getPath).collect(Collectors.toList());
+        //final List<String> listFolderPaths = player.getListFolders().stream()
+        //        .map(File::getPath).collect(Collectors.toList());
         final Track current = player.getCurrent();
 
         execution.appendOutput("------------------------------", INFO);

@@ -1,6 +1,6 @@
 package org.muplayer.util;
 
-import org.muplayer.properties.AudioSupportInfo;
+import org.muplayer.properties.support.AudioSupportInfo;
 
 import javax.sound.sampled.*;
 import javax.sound.sampled.spi.AudioFileReader;

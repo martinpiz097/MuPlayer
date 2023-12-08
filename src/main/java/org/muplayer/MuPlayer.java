@@ -1,4 +1,4 @@
-package org.muplayer.main;
+package org.muplayer;
 
 import org.muplayer.console.runner.ConsoleRunner;
 import org.muplayer.console.runner.DaemonRunner;

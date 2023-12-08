@@ -1,15 +1,23 @@
-package org.muplayer.properties;
+package org.muplayer.properties.config;
 
-public class ConfigInfo extends PropertiesInfo {
-    private static ConfigInfo singleton = new ConfigInfo();
+import lombok.Getter;
+import org.muplayer.properties.FilePropertiesSource;
+import org.muplayer.properties.PropertiesFiles;
+import org.muplayer.properties.PropertiesInfo;
 
-    public static ConfigInfo getInstance() {
-        return singleton;
-    }
+import java.io.File;
+
+public class ConfigInfo extends PropertiesInfo<File> {
+    @Getter
+    private static ConfigInfo instance = new ConfigInfo();
 
     protected ConfigInfo() {
-        super(PropertiesFiles.CONFIG_FILE_PATH);
+        super(new FilePropertiesSource(PropertiesFiles.CONFIG_FILE_PATH));
     }
 
+    @Override
+    protected void loadDefaultData() {
+
+    }
 }
 

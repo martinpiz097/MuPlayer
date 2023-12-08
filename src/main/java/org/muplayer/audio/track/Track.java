@@ -8,7 +8,7 @@ import org.muplayer.audio.player.PlayerData;
 import org.muplayer.audio.track.states.*;
 import org.muplayer.interfaces.ControllableMusic;
 import org.muplayer.interfaces.ReportableTrack;
-import org.muplayer.properties.AudioSupportInfo;
+import org.muplayer.properties.support.AudioSupportInfo;
 import org.muplayer.util.AudioUtil;
 import org.muplayer.util.FileUtil;
 
@@ -33,7 +33,7 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
 
     protected volatile TrackState state;
     protected final Player player;
-    protected final AudioSupportInfo audioSupportInfo = AudioSupportInfo.getInstance();
+    //protected final AudioSupportInfo audioSupportInfo = AudioSupportInfo.getInstance();
 
     public static Track getTrack(Object dataSource) {
         return getTrack(dataSource, null);
@@ -47,8 +47,8 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
 
             Track result = null;
             final String formatName = FileUtil.getFormatName(fileSource.getName());
-            final AudioSupportInfo supportManager = AudioSupportInfo.getInstance();
-            final String formatClass = supportManager.getProperty(formatName);
+            final AudioSupportInfo audioSupportInfo = AudioSupportInfo.getInstance();
+            final String formatClass = audioSupportInfo.getProperty(formatName);
 
             // ojo que puede faltar un throws para mas adelante
             // avisando que se intenta cargar un archivo que no es audio

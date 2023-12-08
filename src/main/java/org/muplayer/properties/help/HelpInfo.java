@@ -1,14 +1,22 @@
-package org.muplayer.properties;
+package org.muplayer.properties.help;
 
-public class HelpInfo extends PropertiesInfo {
+import lombok.Getter;
+import org.muplayer.properties.PropertiesFiles;
+import org.muplayer.properties.PropertiesInfo;
+import org.muplayer.properties.StreamPropertiesSource;
+
+import java.io.InputStream;
+
+public class HelpInfo extends PropertiesInfo<InputStream> {
+    @Getter
     private static final HelpInfo instance = new HelpInfo();
 
     protected HelpInfo() {
-        super(PropertiesFiles.HELP_RES_PATH);
+        super(new StreamPropertiesSource(PropertiesFiles.HELP_RES_PATH));
     }
 
-    public static HelpInfo getInstance() {
-        return instance;
-    }
+    @Override
+    protected void loadDefaultData() {
 
+    }
 }
