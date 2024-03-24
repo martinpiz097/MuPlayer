@@ -8,7 +8,7 @@ import org.muplayer.audio.track.Track;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TrackSearch {
+public class TrackIndexed {
     private Track track;
     private int index;
 }
