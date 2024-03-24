@@ -22,7 +22,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -78,6 +80,10 @@ public class MusicPlayer extends Player {
                 timeTester.finish();
                 timeTester.logTimeDifference("Sort tracks time");
 
+                timeTester.start();
+                loadSortedFolders();
+                timeTester.finish();
+                timeTester.logTimeDifference("Load sorted folders time");
             }
         }
     }
@@ -87,7 +93,7 @@ public class MusicPlayer extends Player {
             throw new MuPlayerException("folderToLoad is not readable");
 
         CompletableFuture<File[]> dirsTask = CompletableFuture.supplyAsync(() -> folderToLoad.listFiles(File::isDirectory))
-                .whenCompleteAsync((dirs, throwable) -> {
+                .whenComplete((dirs, throwable) -> {
                     if (throwable == null && dirs != null) {
                         File dir;
                         for (int i = 0; i < dirs.length; i++) {
@@ -100,7 +106,7 @@ public class MusicPlayer extends Player {
 
         CompletableFuture<File[]> filesTask = CompletableFuture.supplyAsync(() -> folderToLoad.listFiles(pathname ->
                         !pathname.isDirectory()))
-                .whenCompleteAsync((files, throwable) -> {
+                .whenComplete((files, throwable) -> {
                     if (throwable == null && files != null) {
                         AtomicBoolean hasTracks = new AtomicBoolean(false);
 
@@ -129,9 +135,17 @@ public class MusicPlayer extends Player {
                         }
                     }
                 });
-        CompletableFuture.allOf(dirsTask, filesTask);
+
+        while (!dirsTask.isDone() || !filesTask.isDone()) {
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
+    // TODO revisar considerando nuevo estandar para leer archivos de audio
     private void loadTracks(List<File> listFiles) {
         listFiles.forEach(file->{
             if (file.isDirectory())
@@ -144,17 +158,35 @@ public class MusicPlayer extends Player {
         });
     }
 
+    private Comparator<File> getTracksSorter() {
+        return (o1, o2) -> {
+            if (o1 == null || o2 == null) {
+                return 0;
+            }
+            else {
+                return o1.getPath().compareTo(o2.getPath());
+            }
+        };
+    }
+
+    private void loadSortedFolders() {
+        listFolders.clear();
+        listTracks.parallelStream()
+                .map(track -> track.getDataSourceAsFile().getParentFile())
+                .sorted(getTracksSorter())
+                .forEach(listFolders::add);
+    }
+
     private void sortTracks() {
+        final Comparator<File> tracksSorter = getTracksSorter();;
         listTracks.sort((o1, o2) -> {
-            if (o1 == null || o2 == null)
+            if (o1 == null || o2 == null) {
                 return 0;
-            final File dataSource1 = o1.getDataSourceAsFile();
-            final File dataSource2 = o2.getDataSourceAsFile();
-            if (dataSource1 == null || dataSource2 == null)
-                return 0;
-            return dataSource1.getParentFile().getName().compareTo(dataSource2.getParentFile().getName());
+            }
+            else {
+                return tracksSorter.compare(o1.getDataSourceAsFile(), o2.getDataSourceAsFile());
+            }
         });
-        listFolders.sort(Comparator.comparing(File::getName));
     }
 
     private int getFolderIndex() {
