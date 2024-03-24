@@ -21,13 +21,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.muplayer.listener.ListenersNames.*;
+import static org.muplayer.thread.ThreadUtil.generateTrackThreadName;
 
 @Log
 public class MusicPlayer extends Player {
@@ -84,7 +84,7 @@ public class MusicPlayer extends Player {
 
     private void loadTracks(File folderToLoad) {
         if (!Files.isReadable(folderToLoad.toPath()))
-            throw new MuPlayerException("folderToLoad is not readable");
+            throw new MuPlayerException("folderToLoad "+ folderToLoad.getPath() +" is not readable");
 
         final File[] fldFiles = folderToLoad.listFiles();
         if (fldFiles != null) {
@@ -112,16 +112,18 @@ public class MusicPlayer extends Player {
 
             // si la carpeta tiene sonidos se agrega a la lista de carpetas
             if (hasTracks.get()) {
-                if (listFolders.parallelStream().noneMatch(
-                        folder -> folder.getPath().equals(folderToLoad.getPath()))) {
-                    listFolders.add(folderToLoad);
+                synchronized (listFolders) {
+                    if (listFolders.parallelStream().noneMatch(
+                            folder -> folder.getPath().equals(folderToLoad.getPath()))) {
+                        listFolders.add(folderToLoad);
+                    }
                 }
             }
         }
     }
 
     private void loadTracks(List<File> listFiles) {
-        listFiles.forEach(file->{
+        listFiles.parallelStream().forEach(file->{
             if (file.isDirectory())
                 loadTracks(file);
             else {
@@ -163,17 +165,10 @@ public class MusicPlayer extends Player {
         }
     }
 
-    private String getThreadName() {
-        final File dataSource = current.getDataSourceAsFile();
-        final String trackName = dataSource != null ? dataSource.getName() : dataSource.toString();
-        final int strLimit = Math.min(trackName.length(), 10);
-        return "ThreadTrack: " + trackName.substring(0, strLimit);
-    }
-
     // ojo aqui con los errores que puedan suceder
     private void startTrackThread() {
         if (current != null) {
-            current.setName(getThreadName());
+            current.setName(generateTrackThreadName(current));
             current.setVolume(playerData.getVolume());
             if (isMute())
                 current.mute();

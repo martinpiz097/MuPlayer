@@ -1,7 +1,10 @@
 package org.muplayer.thread;
 
+import org.muplayer.audio.track.Track;
 import org.muplayer.system.Time;
 import org.orangelogger.sys.Logger;
+
+import java.io.File;
 
 public class ThreadUtil {
 
@@ -20,6 +23,13 @@ public class ThreadUtil {
 
     public static synchronized void unfreezeThread(Thread thread) {
         thread.notify();
+    }
+
+    public static String generateTrackThreadName(Track track) {
+        final File dataSource = track.getDataSourceAsFile();
+        final String trackName = dataSource != null ? dataSource.getName() : dataSource.toString();
+        final int lengthLimit = Math.min(trackName.length(), 20);
+        return "Thread (track=" + trackName.substring(0, lengthLimit) + ")";
     }
 
 }

@@ -1,5 +1,6 @@
 package org.muplayer.audio.track;
 
+import lombok.Getter;
 import org.jaudiotagger.tag.FieldKey;
 import org.muplayer.audio.info.AudioHardware;
 import org.muplayer.audio.info.AudioTag;
@@ -17,17 +18,14 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
 
 public abstract class Track extends Thread implements ControllableMusic, ReportableTrack {
     protected volatile Object dataSource;
     protected volatile AudioTag tagInfo;
 
+    @Getter
     protected volatile TrackIO trackIO;
+    @Getter
     protected volatile TrackData trackData;
 
     protected volatile TrackState state;
@@ -55,7 +53,7 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
                 result = TrackUtil.getTrackFromClass(formatClass, fileSource, player);
             return result;
         }
-        else if (dataSource instanceof InputStream) {
+        /*else if (dataSource instanceof InputStream) {
             final InputStream inputStream = (InputStream) dataSource;
             final AudioSupportInfo supportManager = AudioSupportInfo.getInstance();
             final Set<String> propertyNames = supportManager.getPropertyNames();
@@ -67,7 +65,7 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
                     .findFirst();
             return optionalTrack.orElse(null);
         }
-        /*else if (dataSource instanceof URL) {
+        else if (dataSource instanceof URL) {
             // not supported yet
             return null;
         }*/
@@ -81,9 +79,9 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
         this(dataSource, null);
     }
 
-    protected Track(InputStream inputStream) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    /*protected Track(InputStream inputStream) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         this(inputStream, null);
-    }
+    }*/
 
     protected Track(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this(new File(trackPath), null);
@@ -101,14 +99,14 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     }
 
     // ojo con los mp3
-    protected Track(InputStream inputStream, Player player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    /*protected Track(InputStream inputStream, Player player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         this.dataSource = inputStream;
         trackIO = new TrackIO();
         state = new StoppedState(this);
         this.trackData = new TrackData(0, 0, PlayerData.DEFAULT_VOLUME, false);
         this.player = player;
         setPriority(MAX_PRIORITY);
-    }
+    }*/
 
     protected Track(String trackPath, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this(new File(trackPath), player);
@@ -165,14 +163,6 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
         return frameLen > 0 ? (int) (frameLen / 1024) : BUFFSIZE;
     }*/
 
-    public TrackIO getTrackIO() {
-        return trackIO;
-    }
-
-    public TrackData getTrackData() {
-        return trackData;
-    }
-
     public TrackState getTrackState() {
         return state;
     }
@@ -189,13 +179,13 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
         return dataSource instanceof File ? (File) dataSource : null;
     }
 
-    public InputStream getDataSourceAsStream() {
+    /*public InputStream getDataSourceAsStream() {
         return dataSource instanceof InputStream ? (InputStream) dataSource : null;
     }
 
     public URL getDataSourceAsURL() {
         return dataSource instanceof URL ? (URL) dataSource : null;
-    }
+    }*/
 
     public AudioTag getTagInfo() {
         return tagInfo;
@@ -208,7 +198,7 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
 
     @Override
     public synchronized double getProgress() {
-        return trackIO.getSecondsPosition()+trackData.getSecsSeeked();
+        return trackIO.getSecondsPosition() + trackData.getSecsSeeked();
     }
 
     @Override
@@ -287,13 +277,11 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
             final double skippedSeconds = convertBytesToSeconds(skip);
 
             if (skip > 0)
-                trackData.setSecsSeeked(trackData.getSecsSeeked()+skippedSeconds);
+                trackData.setSecsSeeked(trackData.getSecsSeeked() + skippedSeconds);
 
             // se deben sumar los segundos que realmente se saltaron
             // o saltar bytes hasta completar esos segundos
-        }
-
-        else if (seconds < 0) {
+        } else if (seconds < 0) {
             try {
                 gotoSecond(getProgress() + seconds);
             } catch (LineUnavailableException | UnsupportedAudioFileException e) {
@@ -311,10 +299,9 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
             final int duration = (int) getDuration();
             if (second > duration)
                 second = duration;
-            final int gt = (int) Math.round(second-getProgress());
+            final int gt = (int) Math.round(second - getProgress());
             seek(gt);
-        }
-        else
+        } else
             state = new ReverberatedState(this, second);
     }
 
@@ -347,8 +334,7 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
             trackData.setVolume(100);
             if (trackIO.isTrackStreamsOpened())
                 trackIO.setGain(AudioUtil.convertVolRangeToLineRange(trackData.getVolume()));
-        }
-        else
+        } else
             trackData.setMute(false);
         if (trackIO.isTrackStreamsOpened())
             AudioHardware.setMuteValue(trackIO.getLineDriver(), false);
