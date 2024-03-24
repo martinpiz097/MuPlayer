@@ -1,7 +1,6 @@
 package org.muplayer.properties;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Properties;
 
 public class StreamPropertiesSource extends PropertiesSource<InputStream> {
@@ -19,17 +18,15 @@ public class StreamPropertiesSource extends PropertiesSource<InputStream> {
     }
 
     @Override
-    public void validate() throws Exception {
-
-    }
-
-    @Override
     public void loadData(Properties properties) throws Exception {
         properties.load(source);
     }
 
     @Override
     public void saveData(Properties properties, String comments) throws Exception {
-
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        baos.writeBytes(source.readAllBytes());
+//        properties.store(baos, comments);
+//        baos.close();
     }
 }

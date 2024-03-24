@@ -1,7 +1,10 @@
 package org.muplayer.properties;
 
+import lombok.extern.java.Log;
+
 import java.util.Properties;
 
+@Log
 public abstract class PropertiesSource<T> {
     protected final T source;
 
@@ -9,24 +12,27 @@ public abstract class PropertiesSource<T> {
         this.source = source;
     }
 
-    public Properties loadData() throws Exception {
-        final Properties props = new Properties();
-        loadData(props);
-        return props;
+    public boolean validate(Properties properties) {
+        try {
+            boolean valid = exists();
+            if (valid) {
+                loadData(properties);
+            } else {
+                saveData(properties);
+            }
+            return valid;
+        } catch (Exception e) {
+            log.severe("Error on PropertiesSource: " + e);
+            return false;
+        }
     }
 
     public abstract boolean exists();
 
-    public abstract void validate() throws Exception;
-
     public abstract void loadData(Properties properties) throws Exception;
 
-    public void saveData() throws Exception {
-        saveData(new Properties(), null);
-    }
-
-    public void saveData(String comments) throws Exception {
-        saveData(new Properties(), comments);
+    public void saveData(Properties properties) throws Exception {
+        saveData(properties, null);
     }
 
     public abstract void saveData(Properties properties, String comments) throws Exception;

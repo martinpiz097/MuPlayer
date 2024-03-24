@@ -33,3 +33,6 @@ Si hay subcarpetas, al listar mostrar el nombre de la carpetas padres desde la r
 Cuando cambio de modo daemon a local la cancion actual deja de escucharse
 
 - En el comando g y k poder usar segundos y minutos pero con formato cronologico -> 01:30
+
+
+- En vez de guardar las canciones en una lista usar un hashmap para ordenarlas por carpetas, asi es mas facil hacer busquedas

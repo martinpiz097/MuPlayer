@@ -22,7 +22,7 @@ public class AudioSupportInfo extends PropertiesInfo<File> {
 
     @Override
     public void loadDefaultData() {
-        if (props.isEmpty()) {
+        if (properties.isEmpty()) {
             final ResAudioSupportInfo resAudioSupportInfo = ResAudioSupportInfo.getInstance();
             resAudioSupportInfo.getPropertyNames().forEach(
                     name -> {
@@ -33,7 +33,7 @@ public class AudioSupportInfo extends PropertiesInfo<File> {
                         }
                     });
             try {
-                propsSource.saveData("Audio formats support");
+                propertiesSource.saveData(properties, "Audio formats support");
             } catch (Exception e) {
                 e.printStackTrace();
             }

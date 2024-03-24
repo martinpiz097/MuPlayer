@@ -11,6 +11,7 @@ import org.muplayer.interfaces.ReportableTrack;
 import org.muplayer.properties.support.AudioSupportInfo;
 import org.muplayer.util.AudioUtil;
 import org.muplayer.util.FileUtil;
+import org.muplayer.util.TrackUtil;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -21,8 +22,6 @@ import java.net.URL;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-
-import static org.muplayer.util.TrackUtil.getTrackFromClass;
 
 public abstract class Track extends Thread implements ControllableMusic, ReportableTrack {
     protected volatile Object dataSource;
@@ -53,7 +52,7 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
             // ojo que puede faltar un throws para mas adelante
             // avisando que se intenta cargar un archivo que no es audio
             if (AudioUtil.isSupportedFile(fileSource))
-                result = getTrackFromClass(formatClass, fileSource, player);
+                result = TrackUtil.getTrackFromClass(formatClass, fileSource, player);
             return result;
         }
         else if (dataSource instanceof InputStream) {
@@ -62,7 +61,8 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
             final Set<String> propertyNames = supportManager.getPropertyNames();
 
             final Optional<Track> optionalTrack = propertyNames.stream()
-                    .map(propName -> getTrackFromClass(supportManager.getProperty(propName), inputStream, player))
+                    .map(propName -> TrackUtil.getTrackFromClass(
+                            supportManager.getProperty(propName), inputStream, player))
                     .filter(Objects::nonNull)
                     .findFirst();
             return optionalTrack.orElse(null);

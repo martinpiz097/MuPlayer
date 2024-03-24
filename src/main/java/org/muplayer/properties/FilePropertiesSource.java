@@ -21,23 +21,13 @@ public class FilePropertiesSource extends PropertiesSource<File> {
     }
 
     @Override
-    public void validate() throws Exception {
-        if (!exists()) {
-            source.createNewFile();
-            saveData();
-        }
-        else
-            loadData();
-    }
-
-    @Override
     public void loadData(Properties properties) throws Exception {
         properties.load(IOUtil.getBufferedReader(source));
     }
-
 
     @Override
     public void saveData(Properties properties, String comments) throws Exception {
         properties.store(new FileOutputStream(source), comments);
     }
+
 }
