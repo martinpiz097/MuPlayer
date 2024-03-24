@@ -60,15 +60,18 @@ public class MusicPlayer extends Player {
     }
 
     private void checkRootFolder() throws FileNotFoundException {
-        if(rootFolder != null) {
-            if (!rootFolder.exists())
-                throw new FileNotFoundException(rootFolder.getPath());
-            else {
-                TimeTester.measureTaskTime(TimeUnit.MILLISECONDS, "Load tracks time",
-                        () -> loadTracks(rootFolder));
-                TimeTester.measureTaskTime(TimeUnit.MILLISECONDS, "Sort tracks time",
-                        this::sortTracks);
-            }
+        if(rootFolder != null && rootFolder.exists()) {
+            TimeTester.measureTaskTime(TimeUnit.MILLISECONDS, "Load tracks time",
+                    () -> loadTracks(rootFolder));
+
+            TimeTester.measureTaskTime(TimeUnit.MILLISECONDS, "Sort tracks time",
+                    this::sortTracks);
+        }
+        else if (rootFolder == null) {
+            throw new MuPlayerException("The root folder is null");
+        }
+        else {
+            throw new FileNotFoundException(rootFolder.getPath());
         }
     }
 
@@ -80,7 +83,6 @@ public class MusicPlayer extends Player {
         if (fldFiles != null) {
             // se analiza carpeta y se agregan sonidos recursivamente
             AtomicBoolean hasTracks = new AtomicBoolean(false);
-            //File file;
 
             List<File> listFiles = new LinkedList<>(Arrays.asList(fldFiles));
             listFiles.parallelStream()
@@ -103,10 +105,7 @@ public class MusicPlayer extends Player {
             // si la carpeta tiene sonidos se agrega a la lista de carpetas
             if (hasTracks.get()) {
                 synchronized (listFolders) {
-                    if (listFolders.parallelStream().noneMatch(
-                            folder -> folder.getPath().equals(folderToLoad.getPath()))) {
-                        listFolders.add(folderToLoad);
-                    }
+                    listFolders.add(folderToLoad);
                 }
             }
         }
@@ -123,6 +122,13 @@ public class MusicPlayer extends Player {
             }
         });
     }
+
+    /*private void clearFolderList() {
+        List<File> listUnique = listFolders.parallelStream()
+                .distinct().collect(Collectors.toList());
+        listFolders.clear();
+        listFolders.addAll(listUnique);
+    }*/
 
     private void sortTracks() {
         listTracks.sort((o1, o2) -> {
