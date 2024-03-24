@@ -25,6 +25,7 @@ import java.util.logging.LogManager;
 import java.util.stream.Collectors;
 
 import static org.muplayer.listener.ListenersNames.*;
+import static org.muplayer.properties.PropertiesFiles.LOG_CONFIG_RES_PATH;
 import static org.muplayer.properties.PropertiesFiles.MUPLAYER_INFO_RES_PATH;
 
 @Log
@@ -39,15 +40,6 @@ public class MusicPlayer extends Player {
     private final PlayerData playerData;
 
     private static final int DEFAULT_INITIAL_LIST_CAPACITY = 500;
-
-    static {
-        final LogManager logManager = LogManager.getLogManager();
-        try {
-            logManager.readConfiguration(IOUtil.getArrayStreamFromRes(MUPLAYER_INFO_RES_PATH));
-        } catch (IOException e) {
-            log.warning("Cannot load "+ MUPLAYER_INFO_RES_PATH);
-        }
-    }
 
     public MusicPlayer() throws FileNotFoundException {
         this((File) null);

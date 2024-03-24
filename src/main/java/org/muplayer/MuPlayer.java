@@ -1,5 +1,6 @@
 package org.muplayer;
 
+import lombok.extern.java.Log;
 import org.muplayer.console.runner.ConsoleRunner;
 import org.muplayer.console.runner.DaemonRunner;
 import org.muplayer.console.runner.LocalRunner;
@@ -10,10 +11,18 @@ import org.muplayer.properties.msg.MessagesInfoKeys;
 import org.muplayer.system.Global;
 import org.muplayer.system.GlobalVar;
 import org.muplayer.thread.TaskRunner;
+import org.muplayer.util.IOUtil;
 
+import java.io.IOException;
+import java.util.logging.LogManager;
+
+import static org.muplayer.properties.PropertiesFiles.LOG_CONFIG_RES_PATH;
+
+@Log
 public class MuPlayer {
     public static void main(String[] args) {
         try {
+            loadLogConfig();
             ConsoleRunner consoleRunner = null;
             if (args.length == 0) {
                 final String defaultRootPath = ConfigInfo.getInstance().getProperty(ConfigInfoKeys.DEFAULT_MUSIC_FOLDER);
@@ -50,7 +59,17 @@ public class MuPlayer {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            log.severe("Error on MuPlayer class: " + e);
             //Logger.getLogger(ConsolePlayer.class, e.getClass().getSimpleName(), e.getMessage()).error();
+        }
+    }
+
+    private static void loadLogConfig() {
+        final LogManager logManager = LogManager.getLogManager();
+        try {
+            logManager.readConfiguration(IOUtil.getArrayStreamFromRes(LOG_CONFIG_RES_PATH));
+        } catch (IOException e) {
+            log.warning("Cannot load "+ LOG_CONFIG_RES_PATH);
         }
     }
 }

@@ -19,6 +19,8 @@ public class PropertiesFiles {
 
     public static final String CONSOLE_CODES_RES_PATH = "/console-codes.properties";
 
+    public static final String LOG_CONFIG_RES_PATH = "/log-config.properties";
+
     private static String getFilePath(String fileName) {
         return getJarParentPath() + fileName;
     }
@@ -27,7 +29,6 @@ public class PropertiesFiles {
         final String parentPath = new File(PropertiesFiles.class.getProtectionDomain()
                 .getCodeSource().getLocation().getFile()).getParent();
         final String jarParentPath = parentPath.endsWith("/") ? parentPath.substring(0, parentPath.length() - 1) : parentPath;
-        System.out.println("TEST: " + jarParentPath);
 
         if (jarParentPath.contains("!")) {
             String path = jarParentPath.split("!")[0];
