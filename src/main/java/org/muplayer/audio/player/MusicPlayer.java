@@ -21,7 +21,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -68,10 +70,13 @@ public class MusicPlayer extends Player {
 
                 timeTester.start();
                 loadTracks(rootFolder);
+                timeTester.finish();
+                timeTester.logTimeDifference("Load tracks time");
+
+                timeTester.start();
                 sortTracks();
                 timeTester.finish();
-
-                timeTester.logTimeDifference("Load and sort tracks time");
+                timeTester.logTimeDifference("Sort tracks time");
 
             }
         }
@@ -84,26 +89,29 @@ public class MusicPlayer extends Player {
         final File[] fldFiles = folderToLoad.listFiles();
         if (fldFiles != null) {
             // se analiza carpeta y se agregan sonidos recursivamente
-            boolean hasTracks = false;
-            File file;
+            AtomicBoolean hasTracks = new AtomicBoolean(false);
+            //File file;
 
-            for (int i = 0; i < fldFiles.length; i++) {
-                file = fldFiles[i];
-                log.info("Track file to read: " + file.getPath());
-                if (file.isDirectory())
-                    loadTracks(file);
-                else {
-                    log.info("Track file IS FILE");
-                    final Track track = Track.getTrack(FileUtil.getPath(file), this);
-                    if (track != null) {
-                        listTracks.add(track);
-                        hasTracks = true;
-                    }
-                }
-            }
+            List<File> listFiles = new LinkedList<>(Arrays.asList(fldFiles));
+            listFiles.parallelStream()
+                    .forEach(file -> {
+                        log.info("Track file to read: " + file.getPath());
+                        if (file.isDirectory()) {
+                            loadTracks(file);
+                        } else {
+                            log.info("Track file IS FILE");
+                            final Track track = Track.getTrack(FileUtil.getPath(file), this);
+                            if (track != null) {
+                                hasTracks.set(true);
+                                synchronized (listTracks) {
+                                    listTracks.add(track);
+                                }
+                            }
+                        }
+                    });
 
             // si la carpeta tiene sonidos se agrega a la lista de carpetas
-            if (hasTracks) {
+            if (hasTracks.get()) {
                 if (listFolders.parallelStream().noneMatch(
                         folder -> folder.getPath().equals(folderToLoad.getPath()))) {
                     listFolders.add(folderToLoad);
