@@ -52,7 +52,7 @@ public class MusicPlayer extends Player {
         playerData = new PlayerData();
 
         checkRootFolder();
-        setName("ThreadPlayer "+getId());
+        setName("ThreadPlayer " + getId());
     }
 
     public MusicPlayer(String folderPath) throws FileNotFoundException {
@@ -60,24 +60,22 @@ public class MusicPlayer extends Player {
     }
 
     private void checkRootFolder() throws FileNotFoundException {
-        if(rootFolder != null && rootFolder.exists()) {
+        if (rootFolder != null && rootFolder.exists()) {
             TimeTester.measureTaskTime(TimeUnit.MILLISECONDS, "Load tracks time",
                     () -> loadTracks(rootFolder));
 
             TimeTester.measureTaskTime(TimeUnit.MILLISECONDS, "Sort tracks time",
                     this::sortTracks);
-        }
-        else if (rootFolder == null) {
+        } else if (rootFolder == null) {
             throw new MuPlayerException("The root folder is null");
-        }
-        else {
+        } else {
             throw new FileNotFoundException(rootFolder.getPath());
         }
     }
 
     private void loadTracks(File folderToLoad) {
         if (!Files.isReadable(folderToLoad.toPath()))
-            throw new MuPlayerException("folderToLoad "+ folderToLoad.getPath() +" is not readable");
+            throw new MuPlayerException("folderToLoad " + folderToLoad.getPath() + " is not readable");
 
         final File[] fldFiles = folderToLoad.listFiles();
         if (fldFiles != null) {
@@ -112,7 +110,7 @@ public class MusicPlayer extends Player {
     }
 
     private void loadTracks(List<File> listFiles) {
-        listFiles.parallelStream().forEach(file->{
+        listFiles.parallelStream().forEach(file -> {
             if (file.isDirectory())
                 loadTracks(file);
             else {
@@ -122,13 +120,6 @@ public class MusicPlayer extends Player {
             }
         });
     }
-
-    /*private void clearFolderList() {
-        List<File> listUnique = listFolders.parallelStream()
-                .distinct().collect(Collectors.toList());
-        listFolders.clear();
-        listFolders.addAll(listUnique);
-    }*/
 
     private void sortTracks() {
         listTracks.sort((o1, o2) -> {
@@ -149,14 +140,14 @@ public class MusicPlayer extends Player {
         return currentParent != null ? listFolders.indexOf(currentParent) : -1;
     }
 
-    private Track getValidTrackBy(int index) {
+    private Track getValidTrack(int index) {
         Track track = listTracks.get(index);
         try {
             track.validateTrack();
             return track;
         } catch (Exception e) {
-            log.info("Error on getTrack: "+(track != null ? track.getTitle() : "Unknown; index="
-                    +playerData.getTrackIndex()));
+            log.info("Error on getTrack: " + (track != null ? track.getTitle() : "Unknown; index="
+                    + playerData.getTrackIndex()));
             return null;
         }
     }
@@ -204,11 +195,13 @@ public class MusicPlayer extends Player {
         }
     }
 
-    private TrackSearch getTrackWithIndexFromCondition(Predicate<Track> filter) {
+    // si incluyo paralelismo en este metodo, debo crear otro o gestionar con parametro boolean,
+    // ya que hay algunos casos en los que si necesito secuencialidad
+    private TrackIndexed getTrackIndexedFromCondition(Predicate<Track> filter) {
         int index = 0;
         for (Track track : listTracks) {
             if (filter.test(track)) {
-                return new TrackSearch(track, index);
+                return new TrackIndexed(track, index);
             }
             index++;
         }
@@ -218,32 +211,29 @@ public class MusicPlayer extends Player {
     // Se supone que para buscar una cancion a traves de la ruta del padre
     // este ya debe haber sido validado por indexOf para saber
     // si existe o no en la ruta padre
-    private TrackSearch findFirstIn(String folderPath) {
+    private TrackIndexed findFirstIn(String folderPath) {
         final File parentFile = new File(folderPath);
 
         Predicate<Track> filter = track -> {
             File dataSource = track.getDataSourceAsFile();
             return dataSource != null && dataSource.getParentFile().equals(parentFile);
         };
-
-        return getTrackWithIndexFromCondition(filter);
+        return getTrackIndexedFromCondition(filter);
     }
 
     private int seekToFolder(String folderPath) {
         final File parentFile = new File(folderPath);
-        final int trackCount = listTracks.size();
         int newTrackIndex = -1;
 
         // idea para electrolist -> Indexof con predicate
-
         Predicate<Track> filter = track -> {
             File fileTrack = track.getDataSourceAsFile();
             return fileTrack != null && fileTrack.getParentFile().equals(parentFile);
         };
 
-        TrackSearch trackSearch = getTrackWithIndexFromCondition(filter);
-        if (trackSearch != null) {
-            newTrackIndex = trackSearch.getIndex();
+        TrackIndexed trackIndexed = getTrackIndexedFromCondition(filter);
+        if (trackIndexed != null) {
+            newTrackIndex = trackIndexed.getIndex();
         }
         return newTrackIndex;
     }
@@ -260,9 +250,9 @@ public class MusicPlayer extends Player {
             return dataSource != null && dataSource.getParent().equals(fldPath);
         };
 
-        TrackSearch trackSearch = getTrackWithIndexFromCondition(filter);
-        if (trackSearch != null) {
-            play(trackSearch);
+        TrackIndexed trackIndexed = getTrackIndexedFromCondition(filter);
+        if (trackIndexed != null) {
+            play(trackIndexed);
         }
     }
 
@@ -270,25 +260,25 @@ public class MusicPlayer extends Player {
         final int currentIndex = playerData.getTrackIndex();
         final int newIndex;
         if (seekOption == SeekOption.NEXT)
-            newIndex = currentIndex == listTracks.size() - 1 ? 0 : currentIndex+1;
+            newIndex = currentIndex == listTracks.size() - 1 ? 0 : currentIndex + 1;
         else
-            newIndex = currentIndex == 0 ? listTracks.size()-1 : currentIndex-1;
+            newIndex = currentIndex == 0 ? listTracks.size() - 1 : currentIndex - 1;
         changeTrack(newIndex);
     }
 
     private synchronized void changeTrack(int trackIndex) {
-        shutdownCurrent();
-        playerData.setTrackIndex(trackIndex);
-        current = getValidTrackBy(playerData.getTrackIndex());
-        startTrackThread();
-        loadListenerMethod(ONSONGCHANGE, current);
+        Track track = getValidTrack(trackIndex);
+        if (track != null) {
+            TrackIndexed trackIndexed = new TrackIndexed(track, trackIndex);
+            changeTrack(trackIndexed);
+        }
     }
 
-    private synchronized void changeTrack(TrackSearch trackSearch) {
-        if (trackSearch != null) {
+    private synchronized void changeTrack(TrackIndexed trackIndexed) {
+        if (trackIndexed != null) {
             shutdownCurrent();
-            playerData.setTrackIndex(trackSearch.getIndex());
-            current = trackSearch.getTrack();
+            playerData.setTrackIndex(trackIndexed.getIndex());
+            current = trackIndexed.getTrack();
             startTrackThread();
             loadListenerMethod(ONSONGCHANGE, current);
         }
@@ -300,7 +290,7 @@ public class MusicPlayer extends Player {
     }
 
     private boolean existsFolder(String folderPath) {
-        return listFolders.parallelStream().anyMatch(fp->fp.getPath().equals(folderPath));
+        return listFolders.parallelStream().anyMatch(fp -> fp.getPath().equals(folderPath));
     }
 
     @Override
@@ -308,6 +298,7 @@ public class MusicPlayer extends Player {
         return current == null ? new UnknownState(current) : current.getTrackState();
     }
 
+    @Override
     public int getFoldersCount() {
         return listFolders.size();
     }
@@ -326,14 +317,13 @@ public class MusicPlayer extends Player {
     public synchronized void jumpTrack(int jumps, SeekOption option) {
         int newIndex;
         if (option == SeekOption.NEXT) {
-            newIndex = playerData.getTrackIndex()+jumps;
+            newIndex = playerData.getTrackIndex() + jumps;
             if (newIndex >= listTracks.size())
                 newIndex = 0;
-        }
-        else {
+        } else {
             newIndex = playerData.getTrackIndex() - jumps;
             if (newIndex < 0)
-                newIndex = listTracks.size()-1;
+                newIndex = listTracks.size() - 1;
         }
         play(newIndex);
     }
@@ -341,7 +331,7 @@ public class MusicPlayer extends Player {
     @Override
     public synchronized List<File> getListSoundFiles() {
         return listTracks.stream().filter(track -> track.getDataSourceAsFile() != null)
-                .map(track -> (File)track.getDataSourceAsFile()).collect(Collectors.toList());
+                .map(track -> (File) track.getDataSourceAsFile()).collect(Collectors.toList());
     }
 
     @Override
@@ -352,15 +342,15 @@ public class MusicPlayer extends Player {
     @Override
     public synchronized List<Artist> getArtists() {
         final List<Track> listTracks = getTracks();
-        final Set<Artist> setArtists = new HashSet<>(listTracks.size()+1);
+        final Set<Artist> setArtists = new HashSet<>(listTracks.size() + 1);
 
         listTracks.parallelStream()
-                .forEach(track->{
+                .forEach(track -> {
                     final String artistName = track.getArtist() != null ? track.getArtist() : "Unknown";
                     synchronized (setArtists) {
                         Artist artist = setArtists.parallelStream()
-                                        .filter(art -> art.getName().equals(artistName))
-                                                .findFirst().orElse(null);
+                                .filter(art -> art.getName().equals(artistName))
+                                .findFirst().orElse(null);
                         if (artist != null)
                             artist.addTrack(track);
                         else {
@@ -378,10 +368,10 @@ public class MusicPlayer extends Player {
     @Override
     public synchronized List<Album> getAlbums() {
         final List<Track> listTracks = getTracks();
-        final Set<Album> setAlbums = new HashSet<>(listTracks.size()+1);
+        final Set<Album> setAlbums = new HashSet<>(listTracks.size() + 1);
 
         listTracks.parallelStream()
-                .forEach(track->{
+                .forEach(track -> {
                     final String albumName = track.getAlbum() != null ? track.getAlbum() : "Unknown";
                     synchronized (setAlbums) {
                         Album album = setAlbums.parallelStream()
@@ -413,7 +403,7 @@ public class MusicPlayer extends Player {
 
     @Override
     public synchronized void removePlayerListener(PlayerListener reference) {
-        listListeners.removeIf(listener->listener.equals(reference));
+        listListeners.removeIf(listener -> listener.equals(reference));
     }
 
     @Override
@@ -431,7 +421,7 @@ public class MusicPlayer extends Player {
             sortTracks();
 
             final int songCount = getSongsCount();
-            playerData.setTrackIndex(songCount > currentIndex ? currentIndex : songCount-1);
+            playerData.setTrackIndex(songCount > currentIndex ? currentIndex : songCount - 1);
         }
     }
 
@@ -449,7 +439,7 @@ public class MusicPlayer extends Player {
     public synchronized Track getNext() {
         final int trackIndex = playerData.getTrackIndex();
         final int songsCount = getSongsCount();
-        final int nextIndex = trackIndex == -1 ? 0 : (trackIndex == songsCount-1 ? 0 : trackIndex+1);
+        final int nextIndex = trackIndex == -1 ? 0 : (trackIndex == songsCount - 1 ? 0 : trackIndex + 1);
         return listTracks.get(nextIndex);
     }
 
@@ -457,7 +447,7 @@ public class MusicPlayer extends Player {
     public synchronized Track getPrevious() {
         final int trackIndex = playerData.getTrackIndex();
         final int songsCount = getSongsCount();
-        final int prevIndex = trackIndex == -1 ? songsCount-1 : (trackIndex == 0 ? songsCount-1 : trackIndex-1);
+        final int prevIndex = trackIndex == -1 ? songsCount - 1 : (trackIndex == 0 ? songsCount - 1 : trackIndex - 1);
         return listTracks.get(prevIndex);
     }
 
@@ -518,8 +508,7 @@ public class MusicPlayer extends Player {
             loadTracks(folderOrFile);
             if (validSort)
                 sortTracks();
-        }
-        else if (AudioUtil.isSupportedFile(folderOrFile)) {
+        } else if (AudioUtil.isSupportedFile(folderOrFile)) {
             final Track track = Track.getTrack(folderOrFile, this);
             if (track != null) {
                 listTracks.add(track);
@@ -543,14 +532,13 @@ public class MusicPlayer extends Player {
             final File parentToFind;
 
             if (option == SeekOption.NEXT) {
-                newFolderIndex = folderIndex+jumps;
+                newFolderIndex = folderIndex + jumps;
                 parentToFind = listFolders.get(newFolderIndex >= getFoldersCount()
                         ? 0 : newFolderIndex);
-            }
-            else {
+            } else {
                 newFolderIndex = folderIndex - jumps;
                 parentToFind = listFolders.get(newFolderIndex < 0
-                        ? listFolders.size()-1 : newFolderIndex);
+                        ? listFolders.size() - 1 : newFolderIndex);
             }
             changeTrack(findFirstIn(parentToFind.getPath()));
         }
@@ -566,9 +554,9 @@ public class MusicPlayer extends Player {
         }
     }
 
-    private void play(TrackSearch trackSearch) {
-        int index = trackSearch.getIndex();
-        Track track = trackSearch.getTrack();
+    private void play(TrackIndexed trackIndexed) {
+        int index = trackIndexed.getIndex();
+        Track track = trackIndexed.getTrack();
 
         if (current != null)
             shutdownCurrent();
@@ -584,7 +572,7 @@ public class MusicPlayer extends Player {
     public void play(int index) {
         if (index > -1 && index < getSongsCount()) {
             final Track track = listTracks.get(index);
-            play(new TrackSearch(track, index));
+            play(new TrackIndexed(track, index));
         }
     }
 
@@ -592,19 +580,20 @@ public class MusicPlayer extends Player {
     // (is alive)
     @Override
     public synchronized void play(File track) {
-        final int indexOf = listTracks.indexOf(listTracks.parallelStream().filter(
-                        t->t.getDataSourceAsFile() != null &&
-                                ((File)t.getDataSourceAsFile()).getPath().equals(track.getPath()))
-                .findFirst().orElse(null));
-        if (indexOf == -1) {
+        Predicate<Track> filter = trackElement -> {
+            File dataSource = trackElement.getDataSourceAsFile();
+            return dataSource != null && dataSource.getPath().equals(track.getPath());
+        };
+
+        TrackIndexed trackIndexed = getTrackIndexedFromCondition(filter);
+        if (trackIndexed == null) {
             if (AudioUtil.isSupportedFile(track)) {
                 listTracks.add(Track.getTrack(track, this));
                 if (!existsFolder(track.getParent()))
                     listFolders.add(track.getParentFile());
             }
-        }
-        else {
-            playerData.setTrackIndex(indexOf);
+        } else {
+            playerData.setTrackIndex(playerData.getTrackIndex());
             if (current != null)
                 killCurrent();
 
@@ -616,19 +605,17 @@ public class MusicPlayer extends Player {
 
     @Override
     public synchronized void play(String trackName) {
-
         Predicate<Track> filter = track -> {
             File trackFile = track.getDataSourceAsFile();
             return trackFile != null && trackFile.getName().equals(trackName);
         };
 
-        TrackSearch trackSearch = getTrackWithIndexFromCondition(filter);
-
-        if (trackSearch != null) {
-            playerData.setTrackIndex(trackSearch.getIndex());
+        TrackIndexed trackIndexed = getTrackIndexedFromCondition(filter);
+        if (trackIndexed != null) {
+            playerData.setTrackIndex(trackIndexed.getIndex());
             if (current != null)
                 killCurrent();
-            current = trackSearch.getTrack();
+            current = trackIndexed.getTrack();
             startTrackThread();
             loadListenerMethod(ONPLAYED, current);
         }
@@ -749,7 +736,7 @@ public class MusicPlayer extends Player {
     public void playFolder(int folderIndex) {
         final int foldersCount = getFoldersCount();
         if (folderIndex >= foldersCount)
-            folderIndex = foldersCount-1;
+            folderIndex = foldersCount - 1;
         final int newIndex = seekToFolder(listFolders.get(folderIndex).getPath());
         changeTrack(newIndex);
     }
