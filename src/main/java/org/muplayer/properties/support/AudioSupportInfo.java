@@ -15,6 +15,7 @@ public class AudioSupportInfo extends PropertiesInfo<File> {
     private static final AudioSupportInfo instance = new AudioSupportInfo();
 
     public static final String KEY_PREFFIX = "audio.format.class.";
+    private static final String DEFAULT_COMMENT = "Audio formats support";
 
     private AudioSupportInfo() {
         super(new FilePropertiesSource(PropertiesFiles.AUDIO_SUPPORT_FILE_PATH));
@@ -33,7 +34,7 @@ public class AudioSupportInfo extends PropertiesInfo<File> {
                         }
                     });
             try {
-                propertiesSource.saveData(properties, "Audio formats support");
+                propertiesSource.saveData(properties, DEFAULT_COMMENT);
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -18,6 +18,7 @@ public abstract class PropertiesSource<T> {
             if (valid) {
                 loadData(properties);
             } else {
+                // se crea la fuente de properties
                 saveData(properties);
             }
             return valid;
