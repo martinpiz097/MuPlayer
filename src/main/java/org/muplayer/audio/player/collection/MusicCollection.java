@@ -1,4 +1,4 @@
-package org.muplayer.audio.player.collection;
+/*package org.muplayer.audio.player.collection;
 
 import org.muplayer.audio.track.Track;
 
@@ -21,3 +21,4 @@ public abstract class MusicCollection<T> {
 
     public abstract Track getTrackBy(int index);
 }
+*/

@@ -40,8 +40,6 @@ public class MusicPlayer extends Player {
 
     private final PlayerData playerData;
 
-    private static final int DEFAULT_INITIAL_LIST_CAPACITY = 500;
-
     public MusicPlayer() throws FileNotFoundException {
         this((File) null);
     }
@@ -66,18 +64,10 @@ public class MusicPlayer extends Player {
             if (!rootFolder.exists())
                 throw new FileNotFoundException(rootFolder.getPath());
             else {
-                TimeTester timeTester = new TimeTester(TimeUnit.MILLISECONDS);
-
-                timeTester.start();
-                loadTracks(rootFolder);
-                timeTester.finish();
-                timeTester.logTimeDifference("Load tracks time");
-
-                timeTester.start();
-                sortTracks();
-                timeTester.finish();
-                timeTester.logTimeDifference("Sort tracks time");
-
+                TimeTester.measureTaskTime(TimeUnit.MILLISECONDS, "Load tracks time",
+                        () -> loadTracks(rootFolder));
+                TimeTester.measureTaskTime(TimeUnit.MILLISECONDS, "Sort tracks time",
+                        this::sortTracks);
             }
         }
     }

@@ -46,16 +46,6 @@ public class MP3Track extends Track {
         this(new File(trackPath), player);
     }
 
-    public MP3Track(InputStream inputStream) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-        this(inputStream, null);
-    }
-
-    public MP3Track(InputStream inputStream, Player player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-        super(inputStream, player);
-        this.frameSize = 0;
-        this.frameDurationInSec = 0;
-    }
-
     @Override
     protected void loadAudioStream() throws IOException, UnsupportedAudioFileException {
         // Ver si se escucha mejor en ogg utilizando la logica de mp3

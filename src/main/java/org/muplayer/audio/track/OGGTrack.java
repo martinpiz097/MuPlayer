@@ -18,20 +18,12 @@ public class OGGTrack extends Track {
         super(dataSource);
     }
 
-    public OGGTrack(InputStream inputStream) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-        super(inputStream);
-    }
-
     public OGGTrack(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         super(trackPath);
     }
 
     public OGGTrack(File dataSource, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         super(dataSource, player);
-    }
-
-    public OGGTrack(InputStream inputStream, Player player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-        super(inputStream, player);
     }
 
     public OGGTrack(String trackPath, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {

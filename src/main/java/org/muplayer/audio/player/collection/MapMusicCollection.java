@@ -1,4 +1,4 @@
-package org.muplayer.audio.player.collection;
+/*package org.muplayer.audio.player.collection;
 
 import org.muplayer.audio.track.Track;
 
@@ -7,7 +7,6 @@ import java.util.*;
 
 public class MapMusicCollection extends MusicCollection<HashMap<String, List<Track>>> {
 
-    /*
     private void sortTracks() {
         listTracks.sort((o1, o2) -> {
             if (o1 == null || o2 == null)
@@ -20,7 +19,6 @@ public class MapMusicCollection extends MusicCollection<HashMap<String, List<Tra
         });
         listFolders.sort(Comparator.comparing(File::getPath));
     }
-    */
 
     @Override
     public void sortTracks() {
@@ -72,3 +70,4 @@ public class MapMusicCollection extends MusicCollection<HashMap<String, List<Tra
         return null;
     }
 }
+*/

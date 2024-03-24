@@ -60,4 +60,13 @@ public class TimeTester {
             System.out.println(msg + ": " + getTimeDifference());
         }
     }
+
+    public static void measureTaskTime(TimeUnit timeUnit, String msg, Runnable task) {
+        TimeTester timeTester = new TimeTester(timeUnit);
+
+        timeTester.start();
+        task.run();
+        timeTester.finish();
+        timeTester.logTimeDifference(msg);
+    }
 }
