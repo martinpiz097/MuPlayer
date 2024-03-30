@@ -7,6 +7,7 @@ import org.muplayer.console.runner.LocalRunner;
 import org.muplayer.properties.config.ConfigInfo;
 import org.muplayer.properties.config.ConfigInfoKeys;
 import org.muplayer.properties.log.LogConfig;
+import org.muplayer.properties.log.LogConfigKeys;
 import org.muplayer.properties.msg.MessagesInfo;
 import org.muplayer.properties.msg.MessagesInfoKeys;
 import org.muplayer.system.Global;
@@ -14,7 +15,9 @@ import org.muplayer.system.GlobalVar;
 import org.muplayer.thread.TaskRunner;
 import org.muplayer.util.IOUtil;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.LogManager;
 
 import static org.muplayer.properties.PropertiesFiles.LOG_CONFIG_RES_PATH;
@@ -66,11 +69,12 @@ public class MuPlayer {
     }
 
     private static void loadLogConfig() {
+        final LogConfig logConfig = LogConfig.getInstance();
+        final Level logLevel = Level.parse(logConfig.getProperty(LogConfigKeys.JAVA_LOG_LEVEL));
         final LogManager logManager = LogManager.getLogManager();
-        try {
-            logManager.readConfiguration(IOUtil.getArrayStreamFromRes(LOG_CONFIG_RES_PATH));
-        } catch (IOException e) {
-            log.warning("Cannot load "+ LOG_CONFIG_RES_PATH);
-        }
+
+        logManager.getLoggerNames().asIterator().forEachRemaining(logName ->
+            logManager.getLogger(logName).setLevel(logLevel)
+        );
     }
 }
