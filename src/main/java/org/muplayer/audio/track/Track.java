@@ -101,7 +101,7 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
             throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this.dataSource = dataSource;
         this.player = player;
-        this.trackState = new InitializedState(this);
+        this.trackState = new InitializedState(player, this);
         setPriority(MAX_PRIORITY);
     }
 
@@ -109,7 +109,7 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     /*protected Track(InputStream inputStream, Player player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         this.dataSource = inputStream;
         trackIO = new TrackIO();
-        state = new StoppedState(this);
+        state = new StoppedState(player, this);
         this.trackData = new TrackData(0, 0, PlayerData.DEFAULT_VOLUME, false);
         this.player = player;
         setPriority(MAX_PRIORITY);
@@ -211,13 +211,13 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     @Override
     public void play() {
         if (isAlive())
-            trackState = new PlayingState(this, player);
+            trackState = new PlayingState(player, this);
     }
 
     @Override
     public void pause() {
         if (isPlaying())
-            trackState = new PausedState(this);
+            trackState = new PausedState(player, this);
     }
 
     @Override
@@ -233,21 +233,21 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     @Override
     public synchronized void stopTrack() {
         if (isAlive() && (isPlaying() || isPaused()))
-            trackState = new StoppedState(this);
+            trackState = new StoppedState(player, this);
     }
 
     @Override
     public void reload() throws Exception {
-        trackState = new ReloadedState(this);
+        trackState = new ReloadedState(player, this);
     }
 
     /*@Override
     public void replace() {
-        state = new ReplacedState(this);
+        state = new ReplacedState(player, this);
     }*/
 
     public void kill() {
-        trackState = new KilledState(this, player);
+        trackState = new KilledState(player, this);
     }
 
     // en este caso pasan a ser seconds
@@ -285,7 +285,7 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
             final int gt = (int) Math.round(second - getProgress());
             seek(gt);
         } else
-            trackState = new ReverberatedState(this, second);
+            trackState = new ReverberatedState(player, this, second);
     }
 
     @Override
@@ -389,14 +389,15 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
         if (getState() == State.NEW) {
             super.start();
         } else {
-            trackState = new StartedState(this);
+            trackState = new StartedState(player, this);
         }
     }
 
     @Override
     public void run() {
-        trackState = new StartedState(this);
-        while (trackData.canTrackContinue())
-            trackState.execute();
+        trackState = new StartedState(player, this);
+        while (trackData.canTrackContinue()) {
+            trackState.handle();
+        }
     }
 }

@@ -1,6 +1,7 @@
 package org.muplayer.audio.track.states;
 
 import lombok.extern.java.Log;
+import org.muplayer.audio.player.Player;
 import org.muplayer.audio.track.Track;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -11,8 +12,8 @@ import java.util.logging.Level;
 @Log
 public class StoppedState extends TrackState {
 
-    public StoppedState(Track track) {
-        super(track);
+    public StoppedState(Player player, Track track) {
+        super(player, track);
     }
 
     private void resetStream() throws IOException, LineUnavailableException, UnsupportedAudioFileException {
@@ -22,11 +23,9 @@ public class StoppedState extends TrackState {
     @Override
     public void handle() {
         try {
-            synchronized (track) {
-                track.resetStream();
-                trackData.setSecsSeeked(0);
-                track.wait();
-            }
+            track.resetStream();
+            trackData.setSecsSeeked(0);
+            track.wait();
         } catch (Exception e) {
             log.log(Level.SEVERE, e.getMessage());
             track.kill();

@@ -1,6 +1,7 @@
 package org.muplayer.audio.track.states;
 
 import lombok.extern.java.Log;
+import org.muplayer.audio.player.Player;
 import org.muplayer.audio.player.PlayerData;
 import org.muplayer.audio.track.Track;
 import org.muplayer.audio.track.TrackData;
@@ -9,8 +10,8 @@ import java.util.logging.Level;
 
 @Log
 public class InitializedState extends TrackState {
-    public InitializedState(Track track) {
-        super(track);
+    public InitializedState(Player player, Track track) {
+        super(player, track);
         handle();
     }
 

@@ -21,8 +21,8 @@ public class PlayingState extends TrackState {
 
     private final Player player;
 
-    public PlayingState(Track track, Player player) {
-        super(track);
+    public PlayingState(Player player, Track track) {
+        super(player, track);
         this.trackLine = track.getTrackIO().getSpeaker();
         this.trackThread = new TPlayingTrack(track);
         this.player = player;
@@ -34,11 +34,6 @@ public class PlayingState extends TrackState {
 
     private int readNextBytes() throws IOException {
         return track.getTrackIO().getDecodedStream().read(audioBuffer);
-    }
-
-    private void killAndPlayNext() {
-        track.kill();
-        player.playNext();;
     }
 
     @Override

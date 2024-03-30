@@ -277,7 +277,7 @@ public class MusicPlayer extends Player {
 
     @Override
     public TrackState getCurrentTrackState() {
-        return current == null ? new UnknownState(current) : current.getTrackState();
+        return current == null ? new UnknownState(this, current) : current.getTrackState();
     }
 
     @Override

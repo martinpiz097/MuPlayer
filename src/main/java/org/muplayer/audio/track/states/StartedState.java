@@ -1,5 +1,6 @@
 package org.muplayer.audio.track.states;
 
+import org.muplayer.audio.player.Player;
 import org.muplayer.audio.track.Track;
 import org.muplayer.audio.track.TrackData;
 
@@ -10,8 +11,8 @@ import java.io.IOException;
 public class StartedState extends TrackState {
     private final TrackData trackData;
 
-    public StartedState(Track track) {
-        super(track);
+    public StartedState(Player player, Track track) {
+        super(player, track);
         this.trackData = track.getTrackData();
     }
 
@@ -19,8 +20,9 @@ public class StartedState extends TrackState {
     public void handle() {
         try {
             track.initStreamAndLine();
-            if (trackData.isMute())
+            if (trackData.isMute()) {
                 track.mute();
+            }
             track.setVolume(trackData.getVolume());
             track.play();
         } catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {

@@ -4,11 +4,9 @@ import org.muplayer.audio.player.Player;
 import org.muplayer.audio.track.Track;
 
 public class KilledState extends TrackState {
-    private final Player player;
 
-    public KilledState(Track track, Player player) {
-        super(track);
-        this.player = player;
+    public KilledState(Player player, Track track) {
+        super(player, track);
     }
 
     @Override

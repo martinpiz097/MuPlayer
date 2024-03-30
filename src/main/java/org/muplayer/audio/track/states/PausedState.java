@@ -1,12 +1,11 @@
 package org.muplayer.audio.track.states;
 
+import org.muplayer.audio.player.Player;
 import org.muplayer.audio.track.Track;
-import org.muplayer.audio.track.TrackIO;
-import org.muplayer.util.AudioUtil;
 
 public class PausedState extends TrackState {
-    public PausedState(Track track) {
-        super(track);
+    public PausedState(Player player, Track track) {
+        super(player, track);
     }
 
     @Override
