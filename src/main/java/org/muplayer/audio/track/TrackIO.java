@@ -122,4 +122,8 @@ public class TrackIO {
     public SourceDataLine getSpeakerDriver() {
         return speaker.getDriver();
     }
+
+    public void playAudio(byte[] audioData) {
+        speaker.playAudio(audioData);
+    }
 }

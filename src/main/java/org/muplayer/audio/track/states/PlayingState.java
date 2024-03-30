@@ -12,28 +12,24 @@ import java.util.logging.Level;
 
 @Log
 public class PlayingState extends TrackState {
-    private final Speaker trackLine;
-    private final short BUFF_SIZE = 4096;
-    private final byte[] audioBuffer = new byte[BUFF_SIZE];
-
-    private final int EOF = -1;
+    private final byte[] audioBuffer;
     private final TPlayingTrack trackThread;
 
-    private final Player player;
+    private static final short BUFF_SIZE = 4096;
+    private static final int EOF = -1;
 
     public PlayingState(Player player, Track track) {
         super(player, track);
-        this.trackLine = track.getTrackIO().getSpeaker();
+        this.audioBuffer = new byte[BUFF_SIZE];
         this.trackThread = new TPlayingTrack(track);
-        this.player = player;
     }
 
     private boolean canPlay() throws IOException {
-        return trackLine != null && readNextBytes() != EOF;
+        return trackIO.getSpeaker() != null && readNextBytes() != EOF;
     }
 
     private int readNextBytes() throws IOException {
-        return track.getTrackIO().getDecodedStream().read(audioBuffer);
+        return trackIO.getDecodedStream().read(audioBuffer);
     }
 
     @Override
@@ -42,7 +38,7 @@ public class PlayingState extends TrackState {
             TaskRunner.execute(trackThread);
             while (track.isPlaying())
                 if (canPlay()) {
-                    trackLine.playAudio(audioBuffer);
+                    trackIO.playAudio(audioBuffer);
                 }
                 else {
                     player.playNext();
