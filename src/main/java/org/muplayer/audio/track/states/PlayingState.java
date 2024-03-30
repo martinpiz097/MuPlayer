@@ -40,7 +40,7 @@ public class PlayingState extends TrackState {
                 if (canPlay()) {
                     trackIO.playAudio(audioBuffer);
                 }
-                else {
+                else if (player != null) {
                     player.playNext();
                 }
         } catch (IOException | IndexOutOfBoundsException | IllegalArgumentException e) {

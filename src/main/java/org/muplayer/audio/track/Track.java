@@ -1,7 +1,9 @@
 package org.muplayer.audio.track;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.java.Log;
 import org.jaudiotagger.tag.FieldKey;
 import org.muplayer.audio.info.AudioHardware;
 import org.muplayer.audio.info.AudioTag;
@@ -19,28 +21,16 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
 
+@Data
+@Log
 public abstract class Track extends Thread implements ControllableMusic, ReportableTrack {
     protected volatile Object dataSource;
-
-    @Getter
-    @Setter
     protected volatile AudioTag tagInfo;
-
-    @Getter
-    @Setter
     protected volatile TrackIO trackIO;
-
-    @Getter
-    @Setter
     protected volatile TrackData trackData;
-
-    @Getter
-    @Setter
     protected volatile TrackState trackState;
 
-    @Getter
     protected final Player player;
-    //protected final AudioSupportInfo audioSupportInfo = AudioSupportInfo.getInstance();
 
     public static Track getTrack(Object dataSource) {
         return getTrack(dataSource, null);
@@ -241,11 +231,6 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
         trackState = new ReloadedState(player, this);
     }
 
-    /*@Override
-    public void replace() {
-        state = new ReplacedState(player, this);
-    }*/
-
     public void kill() {
         trackState = new KilledState(player, this);
     }
@@ -268,7 +253,7 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
             try {
                 gotoSecond(getProgress() + seconds);
             } catch (LineUnavailableException | UnsupportedAudioFileException e) {
-                e.printStackTrace();
+                log.severe(e.getMessage());
             }
         }
 
