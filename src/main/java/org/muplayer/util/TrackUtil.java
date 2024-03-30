@@ -126,7 +126,7 @@ public class TrackUtil {
 
     public static String getLineInfo(Track track) {
         final TrackIO trackIO = track.getTrackIO();
-        final SourceDataLine driver = trackIO.getTrackLine().getDriver();
+        final SourceDataLine driver = trackIO.getSpeaker().getDriver();
 
         return new StringBuilder().append("Soporte de controles en line")
                 .append("---------------")

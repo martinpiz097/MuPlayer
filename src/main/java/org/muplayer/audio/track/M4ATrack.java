@@ -16,7 +16,6 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
-import java.nio.file.Files;
 import java.util.List;
 
 public class M4ATrack extends Track {
@@ -157,7 +156,7 @@ public class M4ATrack extends Track {
                 resetStream();
             else {
                 trackIO.getDecodedStream().reset();
-                initLine();
+                initSpeaker();
             }
             resumeTrack();
             trackData.setSecsSeeked(0);

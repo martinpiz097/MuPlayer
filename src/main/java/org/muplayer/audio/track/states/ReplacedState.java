@@ -1,12 +1,12 @@
-package org.muplayer.audio.track.states;
+/*package org.muplayer.audio.track.states;
 
 import org.muplayer.audio.track.Track;
 import org.muplayer.audio.player.Player;
 
-public class FinishedState extends TrackState {
+public class ReplacedState extends TrackState {
     private final Player player;
 
-    public FinishedState(Track track) {
+    public ReplacedState(Track track) {
         super(track);
         player = track.getPlayerControl();
     }
@@ -18,3 +18,4 @@ public class FinishedState extends TrackState {
             player.playNext();
     }
 }
+*/

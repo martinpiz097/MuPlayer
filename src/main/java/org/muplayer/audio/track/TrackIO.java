@@ -3,6 +3,7 @@ package org.muplayer.audio.track;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.java.Log;
 import org.aucom.sound.Speaker;
 
 import javax.sound.sampled.*;
@@ -15,34 +16,26 @@ import java.net.URL;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Log
 public class TrackIO {
-    private volatile Speaker trackLine;
+    private volatile Speaker speaker;
     private volatile AudioInputStream decodedStream;
     private volatile AudioFileReader audioReader;
 
-    public synchronized boolean hasValidTrackLine() {
-        return trackLine != null;
+    public Speaker createSpeaker() throws LineUnavailableException {
+        final Speaker speaker = new Speaker(decodedStream.getFormat());
+        speaker.open();
+        return speaker;
     }
 
-    public void resetLine() throws LineUnavailableException {
-        trackLine.stop();
-        trackLine.open();
-    }
-
-    public Speaker createLine() throws LineUnavailableException {
-        final Speaker line = new Speaker(decodedStream.getFormat());
-        line.open();
-        return line;
-    }
-
-    public boolean initLine() throws LineUnavailableException {
+    public boolean initSpeaker() throws LineUnavailableException {
         if (decodedStream != null) {
-            if (trackLine != null) {
-                trackLine.stop();
-                trackLine.close();
+            if (speaker != null && speaker.isOpen()) {
+                speaker.stop();
+                speaker.close();
             }
             try {
-                this.trackLine = createLine();
+                this.speaker = createSpeaker();
                 return true;
             } catch (IllegalArgumentException e1) {
                 System.err.println("Error: "+e1.getMessage());
@@ -50,38 +43,46 @@ public class TrackIO {
             }
         }
         else {
-            System.out.println("TrackStream & TrackLine null");
+            log.severe("TrackStream & TrackLine null");
             return false;
         }
     }
 
-    public void closeLine() {
-        if (trackLine != null) {
-            trackLine.stop();
-            trackLine.close();
-            trackLine = null;
+    public boolean closeSpeaker() {
+        if (speaker != null) {
+            speaker.stop();
+            speaker.close();
+            speaker = null;
+            return true;
+        }
+        else {
+            return false;
         }
     }
 
-    public boolean closeAllStreams() {
-        closeLine();
+    public boolean closeStream() {
         try {
-            decodedStream.close();
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
+            if (decodedStream != null) {
+                decodedStream.close();
+                return true;
+            }
+            else {
+                return false;
+            }
+        } catch (Exception e) {
+            log.severe(e.getMessage());
             return false;
         }
     }
 
     public double getSecondsPosition() {
-        if (trackLine == null)
+        if (speaker == null)
             return 0;
-        return ((double)trackLine.getDriver().getMicrosecondPosition()) / 1000000;
+        return ((double) speaker.getDriver().getMicrosecondPosition()) / 1000000;
     }
 
     public boolean isTrackStreamsOpened() {
-        return decodedStream != null && trackLine != null;
+        return decodedStream != null && speaker != null;
     }
 
     public AudioFileFormat getAudioFileFormat(Object dataSource) throws IOException, UnsupportedAudioFileException {
@@ -101,14 +102,14 @@ public class TrackIO {
     }
 
     public float getGain() {
-        return trackLine.getGain();
+        return speaker.getGain();
     }
 
     public void setGain(float gain) {
-        trackLine.setGain(gain);
+        speaker.setGain(gain);
     }
 
-    public SourceDataLine getLineDriver() {
-        return trackLine.getDriver();
+    public SourceDataLine getSpeakerDriver() {
+        return speaker.getDriver();
     }
 }

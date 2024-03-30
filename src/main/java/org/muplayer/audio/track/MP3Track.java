@@ -58,26 +58,6 @@ public class MP3Track extends Track {
         if (trackStream != null)
             trackStream.close();
         trackIO.setDecodedStream(AudioUtil.decodeToPcm(baseFormat, encodedAudioStream));
-
-        File test = new File("/home/martin/audio.wav");
-        if (test.exists()) {
-            trackIO = new TrackIO();
-            trackIO.setAudioReader(new MpegAudioFileReader());
-            encodedAudioStream = AudioUtil.instanceStream(trackIO.getAudioReader(), dataSource);
-            baseFormat = encodedAudioStream.getFormat();
-
-            trackStream = trackIO.getDecodedStream();
-            if (trackStream != null)
-                trackStream.close();
-            trackIO.setDecodedStream(AudioUtil.decodeToPcm(baseFormat, encodedAudioStream));
-
-        }
-        else {
-            test.createNewFile();
-            FileOutputStream fileOutputStream = new FileOutputStream(test);
-            trackIO.getDecodedStream().transferTo(fileOutputStream);
-            fileOutputStream.close();
-        }
     }
 
     @Override

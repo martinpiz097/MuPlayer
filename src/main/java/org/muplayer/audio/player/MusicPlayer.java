@@ -140,18 +140,6 @@ public class MusicPlayer extends Player {
         return currentParent != null ? listFolders.indexOf(currentParent) : -1;
     }
 
-    private Track getValidTrack(int index) {
-        Track track = listTracks.get(index);
-        try {
-            track.validateTrack();
-            return track;
-        } catch (Exception e) {
-            log.info("Error on getTrack: " + (track != null ? track.getTitle() : "Unknown; index="
-                    + playerData.getTrackIndex()));
-            return null;
-        }
-    }
-
     // ojo aqui con los errores que puedan suceder
     private void startTrackThread() {
         if (current != null) {
@@ -167,19 +155,13 @@ public class MusicPlayer extends Player {
         ThreadUtil.freezeThread(this);
     }
 
-    private void killCurrent() {
-        if (current.isPaused() || current.isStopped())
-            current.interrupt();
-        else
-            current.kill();
-    }
-
-    private void shutdownCurrent() {
-        if (current != null) {
-            killCurrent();
-            listTracks.set(playerData.getTrackIndex(),
-                    Track.getTrack(current.getDataSourceAsFile(), this));
-            current = null;
+    private void reloadCurrent() {
+        try {
+            if (current != null) {
+                current.reload();
+            }
+        } catch (Exception e) {
+            log.severe(e.getMessage());
         }
     }
 
@@ -267,7 +249,7 @@ public class MusicPlayer extends Player {
     }
 
     private synchronized void changeTrack(int trackIndex) {
-        Track track = getValidTrack(trackIndex);
+        Track track = listTracks.get(trackIndex);
         if (track != null) {
             TrackIndexed trackIndexed = new TrackIndexed(track, trackIndex);
             changeTrack(trackIndexed);
@@ -276,7 +258,7 @@ public class MusicPlayer extends Player {
 
     private synchronized void changeTrack(TrackIndexed trackIndexed) {
         if (trackIndexed != null) {
-            shutdownCurrent();
+            reloadCurrent();
             playerData.setTrackIndex(trackIndexed.getIndex());
             current = trackIndexed.getTrack();
             startTrackThread();
@@ -412,20 +394,6 @@ public class MusicPlayer extends Player {
     }
 
     @Override
-    public synchronized void reloadTracks() {
-        if (rootFolder != null) {
-            final int currentIndex = playerData.getTrackIndex();
-            listTracks.clear();
-            listFolders.clear();
-            loadTracks(rootFolder);
-            sortTracks();
-
-            final int songCount = getSongsCount();
-            playerData.setTrackIndex(songCount > currentIndex ? currentIndex : songCount - 1);
-        }
-    }
-
-    @Override
     public PlayerInfo getInfo() {
         return new PlayerInfo(this);
     }
@@ -481,10 +449,10 @@ public class MusicPlayer extends Player {
         return current != null && current.isStopped();
     }
 
-    @Override
+    /*@Override
     public synchronized boolean isFinished() {
         return current != null && current.isFinished();
-    }
+    }*/
 
     @Override
     public synchronized boolean isMute() {
@@ -558,8 +526,9 @@ public class MusicPlayer extends Player {
         int index = trackIndexed.getIndex();
         Track track = trackIndexed.getTrack();
 
-        if (current != null)
-            shutdownCurrent();
+        if (current != null) {
+            reloadCurrent();
+        }
         if (track != null) {
             current = track;
             startTrackThread();
@@ -595,7 +564,7 @@ public class MusicPlayer extends Player {
         } else {
             playerData.setTrackIndex(playerData.getTrackIndex());
             if (current != null)
-                killCurrent();
+                reloadCurrent();
 
             current = listTracks.get(playerData.getTrackIndex());
             startTrackThread();
@@ -614,7 +583,7 @@ public class MusicPlayer extends Player {
         if (trackIndexed != null) {
             playerData.setTrackIndex(trackIndexed.getIndex());
             if (current != null)
-                killCurrent();
+                reloadCurrent();
             current = trackIndexed.getTrack();
             startTrackThread();
             loadListenerMethod(ONPLAYED, current);
@@ -646,9 +615,23 @@ public class MusicPlayer extends Player {
     }
 
     @Override
-    public synchronized void finish() {
-        shutdown();
+    public void reload() throws Exception {
+        if (rootFolder != null) {
+            final int currentIndex = playerData.getTrackIndex();
+            listTracks.clear();
+            listFolders.clear();
+            loadTracks(rootFolder);
+            sortTracks();
+
+            final int songCount = getSongsCount();
+            playerData.setTrackIndex(songCount > currentIndex ? currentIndex : songCount - 1);
+        }
     }
+
+    /*@Override
+    public synchronized void replace() {
+        shutdown();
+    }*/
 
     @Override
     public synchronized void seek(double seconds) {
@@ -728,7 +711,7 @@ public class MusicPlayer extends Player {
 
     @Override
     public void playFolder(String path) {
-        shutdownCurrent();
+        reloadCurrent();
         playFolderSongs(path);
     }
 
@@ -744,7 +727,7 @@ public class MusicPlayer extends Player {
     @Override
     public synchronized void shutdown() {
         playerData.setOn(false);
-        shutdownCurrent();
+        reloadCurrent();
         this.interrupt();
         loadListenerMethod(ONSHUTDOWN, null);
     }

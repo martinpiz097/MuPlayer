@@ -24,7 +24,7 @@ public class StoppedState extends TrackState {
         try {
             synchronized (track) {
                 track.resetStream();
-                track.getTrackData().setSecsSeeked(0);
+                trackData.setSecsSeeked(0);
                 track.wait();
             }
         } catch (Exception e) {

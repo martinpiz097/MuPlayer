@@ -1,9 +1,6 @@
 package org.muplayer.audio.track;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
@@ -15,8 +12,15 @@ public class TrackData {
     private volatile float volume;
     private volatile boolean isMute;
 
+    @Getter(AccessLevel.NONE)
+    private volatile boolean canTrackContinue;
+
     public synchronized boolean isVolumeZero() {
         return volume == 0;
+    }
+
+    public boolean canTrackContinue() {
+        return canTrackContinue;
     }
 
     public synchronized float getVolume() {

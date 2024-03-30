@@ -1,11 +1,11 @@
 package org.muplayer.audio.track;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.jaudiotagger.tag.FieldKey;
 import org.muplayer.audio.info.AudioHardware;
 import org.muplayer.audio.info.AudioTag;
 import org.muplayer.audio.player.Player;
-import org.muplayer.audio.player.PlayerData;
 import org.muplayer.audio.track.states.*;
 import org.muplayer.interfaces.ControllableMusic;
 import org.muplayer.interfaces.ReportableTrack;
@@ -21,14 +21,24 @@ import java.io.IOException;
 
 public abstract class Track extends Thread implements ControllableMusic, ReportableTrack {
     protected volatile Object dataSource;
+
+    @Getter
+    @Setter
     protected volatile AudioTag tagInfo;
 
     @Getter
+    @Setter
     protected volatile TrackIO trackIO;
+
     @Getter
+    @Setter
     protected volatile TrackData trackData;
 
-    protected volatile TrackState state;
+    @Getter
+    @Setter
+    protected volatile TrackState trackState;
+
+    @Getter
     protected final Player player;
     //protected final AudioSupportInfo audioSupportInfo = AudioSupportInfo.getInstance();
 
@@ -90,16 +100,8 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     protected Track(File dataSource, Player player)
             throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this.dataSource = dataSource;
-        this.trackIO = new TrackIO();
-        this.state = new StoppedState(this);
-        this.trackData = TrackData.builder()
-                .secsSeeked(0)
-                .bytesPerSecond(0)
-                .volume(PlayerData.DEFAULT_VOLUME)
-                .isMute(false)
-                .build();
         this.player = player;
-        tagInfo = loadTagInfo(dataSource);
+        this.trackState = new InitializedState(this);
         setPriority(MAX_PRIORITY);
     }
 
@@ -124,7 +126,7 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
 
     protected abstract double convertBytesToSeconds(Number bytes);
 
-    protected AudioTag loadTagInfo(File dataSource) {
+    public AudioTag loadTagInfo(File dataSource) {
         try {
             final AudioTag audioTag = new AudioTag(dataSource);
             return audioTag.isValidFile() ? audioTag : null;
@@ -133,32 +135,20 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
         }
     }
 
-    public void initLine() throws LineUnavailableException {
-        final boolean initialized = trackIO.initLine();
+    public void initSpeaker() throws LineUnavailableException {
+        final boolean initialized = trackIO.initSpeaker();
         if (initialized)
             setVolume(trackData.getVolume());
     }
 
-    public void closeAllStreams() {
-        final boolean closed = trackIO.closeAllStreams();
-        if (closed)
-            trackData.setSecsSeeked(0);
-    }
-
-    public void initAll() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+    public void initStreamAndLine() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         loadAudioStream();
-        initLine();
+        initSpeaker();
     }
 
     public void resetStream() throws IOException, LineUnavailableException, UnsupportedAudioFileException {
-        closeAllStreams();
-        initAll();
-    }
-
-    public void validateTrack() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
-        if (!trackIO.isTrackStreamsOpened()) {
-            initAll();
-            closeAllStreams();
+        if (trackIO.closeStream() && trackIO.closeSpeaker()) {
+            initStreamAndLine();
         }
     }
 
@@ -168,16 +158,8 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
         return frameLen > 0 ? (int) (frameLen / 1024) : BUFFSIZE;
     }*/
 
-    public TrackState getTrackState() {
-        return state;
-    }
-
     public String getStateToString() {
-        return state.getName();
-    }
-
-    public Player getPlayerControl() {
-        return player;
+        return trackState.getName();
     }
 
     public File getDataSourceAsFile() {
@@ -192,10 +174,6 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
         return dataSource instanceof URL ? (URL) dataSource : null;
     }*/
 
-    public AudioTag getTagInfo() {
-        return tagInfo;
-    }
-
     @Override
     public long getDuration() {
         return tagInfo != null ? tagInfo.getDuration() : 0;
@@ -208,26 +186,26 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
 
     @Override
     public synchronized boolean isPlaying() {
-        return state instanceof PlayingState;
+        return trackState instanceof PlayingState;
     }
 
     @Override
     public synchronized boolean isPaused() {
-        return state instanceof PausedState;
+        return trackState instanceof PausedState;
     }
 
     @Override
     public synchronized boolean isStopped() {
-        return state instanceof StoppedState;
+        return trackState instanceof StoppedState;
     }
 
-    @Override
+    /*@Override
     public synchronized boolean isFinished() {
-        return state instanceof FinishedState;
-    }
+        return state instanceof ReplacedState;
+    }*/
 
     public synchronized boolean isKilled() {
-        return state instanceof KilledState;
+        return trackState instanceof KilledState;
     }
 
     @Override
@@ -238,13 +216,13 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     @Override
     public void play() {
         if (isAlive())
-            state = new PlayingState(this);
+            trackState = new PlayingState(this, player);
     }
 
     @Override
     public void pause() {
         if (isPlaying())
-            state = new PausedState(this);
+            trackState = new PausedState(this);
     }
 
     @Override
@@ -260,16 +238,21 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     @Override
     public synchronized void stopTrack() {
         if (isAlive() && (isPlaying() || isPaused()))
-            state = new StoppedState(this);
+            trackState = new StoppedState(this);
     }
 
     @Override
-    public void finish() {
-        state = new FinishedState(this);
+    public void reload() throws Exception {
+        trackState = new ReloadedState(this);
     }
 
+    /*@Override
+    public void replace() {
+        state = new ReplacedState(this);
+    }*/
+
     public void kill() {
-        state = new KilledState(this);
+        trackState = new KilledState(this, player);
     }
 
     // en este caso pasan a ser seconds
@@ -307,7 +290,7 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
             final int gt = (int) Math.round(second - getProgress());
             seek(gt);
         } else
-            state = new ReverberatedState(this, second);
+            trackState = new ReverberatedState(this, second);
     }
 
     @Override
@@ -319,30 +302,30 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     @Override
     public void setVolume(float volume) {
         trackData.setVolume(volume);
-        if (trackIO.isTrackStreamsOpened()) {
+        if (trackIO != null && trackIO.isTrackStreamsOpened()) {
             trackIO.setGain(AudioUtil.convertVolRangeToLineRange(volume));
             if (trackData.isVolumeZero())
-                AudioHardware.setMuteValue(trackIO.getLineDriver(), true);
+                AudioHardware.setMuteValue(trackIO.getSpeakerDriver(), true);
         }
     }
 
     @Override
     public void mute() {
         trackData.setMute(true);
-        if (trackIO.isTrackStreamsOpened())
-            AudioHardware.setMuteValue(trackIO.getLineDriver(), trackData.isMute());
+        if (trackIO != null && trackIO.isTrackStreamsOpened())
+            AudioHardware.setMuteValue(trackIO.getSpeakerDriver(), trackData.isMute());
     }
 
     @Override
     public void unMute() {
         if (trackData.isVolumeZero()) {
             trackData.setVolume(100);
-            if (trackIO.isTrackStreamsOpened())
+            if (trackIO != null && trackIO.isTrackStreamsOpened())
                 trackIO.setGain(AudioUtil.convertVolRangeToLineRange(trackData.getVolume()));
         } else
             trackData.setMute(false);
-        if (trackIO.isTrackStreamsOpened())
-            AudioHardware.setMuteValue(trackIO.getLineDriver(), false);
+        if (trackIO != null && trackIO.isTrackStreamsOpened())
+            AudioHardware.setMuteValue(trackIO.getSpeakerDriver(), false);
     }
 
     @Override
@@ -407,14 +390,18 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     }
 
     @Override
-    public void run() {
-        try {
-            initAll();
-            state = new StartedState(this);
-            while (state.canTrackContinue())
-                state.execute();
-        } catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
-            e.printStackTrace();
+    public synchronized void start() {
+        if (getState() == State.NEW) {
+            super.start();
+        } else {
+            trackState = new StartedState(this);
         }
+    }
+
+    @Override
+    public void run() {
+        trackState = new StartedState(this);
+        while (trackData.canTrackContinue())
+            trackState.execute();
     }
 }

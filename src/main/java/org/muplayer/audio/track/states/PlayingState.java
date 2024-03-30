@@ -2,6 +2,7 @@ package org.muplayer.audio.track.states;
 
 import lombok.extern.java.Log;
 import org.aucom.sound.Speaker;
+import org.muplayer.audio.player.Player;
 import org.muplayer.audio.track.Track;
 import org.muplayer.thread.TPlayingTrack;
 import org.muplayer.thread.TaskRunner;
@@ -18,10 +19,13 @@ public class PlayingState extends TrackState {
     private final int EOF = -1;
     private final TPlayingTrack trackThread;
 
-    public PlayingState(Track track) {
+    private final Player player;
+
+    public PlayingState(Track track, Player player) {
         super(track);
-        trackLine = track.getTrackIO().getTrackLine();
-        trackThread = new TPlayingTrack(track);
+        this.trackLine = track.getTrackIO().getSpeaker();
+        this.trackThread = new TPlayingTrack(track);
+        this.player = player;
     }
 
     private boolean canPlay() throws IOException {
@@ -32,19 +36,25 @@ public class PlayingState extends TrackState {
         return track.getTrackIO().getDecodedStream().read(audioBuffer);
     }
 
+    private void killAndPlayNext() {
+        track.kill();
+        player.playNext();;
+    }
+
     @Override
     public void handle() {
         try {
             TaskRunner.execute(trackThread);
             while (track.isPlaying())
-                if (canPlay())
+                if (canPlay()) {
                     trackLine.playAudio(audioBuffer);
-                else
-                    track.finish();
+                }
+                else {
+                    player.playNext();
+                }
         } catch (IOException | IndexOutOfBoundsException | IllegalArgumentException e) {
             log.log(Level.SEVERE, "Error on playing sound "+track.getTitle()+": ", e);
-            track.finish();
-            final String exClassName = e.getClass().getSimpleName();
+            player.playNext();
         }
     }
 

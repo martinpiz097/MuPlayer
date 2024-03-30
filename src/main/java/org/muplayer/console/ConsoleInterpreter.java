@@ -536,7 +536,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
 
             case ConsoleOrder.RELOAD:
                 if (player != null)
-                    player.reloadTracks();
+                    player.reload();
                 break;
             case ConsoleOrder.GOTOSEC:
                 if (player != null)

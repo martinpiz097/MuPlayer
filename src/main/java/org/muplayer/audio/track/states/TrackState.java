@@ -3,21 +3,21 @@ package org.muplayer.audio.track.states;
 import lombok.Data;
 import lombok.extern.java.Log;
 import org.muplayer.audio.track.Track;
+import org.muplayer.audio.track.TrackData;
+import org.muplayer.audio.track.TrackIO;
 
 // podria mas adelante el estado ser un hilo
 @Data
 public abstract class TrackState {
     protected final Track track;
-    protected volatile boolean canTrackContinue;
+    protected volatile TrackData trackData;
+    protected volatile TrackIO trackIO;
     protected volatile Runnable preTask;
 
     public TrackState(Track track) {
         this.track = track;
-        this.canTrackContinue = true;
-    }
-
-    public boolean canTrackContinue() {
-        return canTrackContinue;
+        this.trackData = track.getTrackData();
+        this.trackIO = track.getTrackIO();
     }
 
     public String getName() {
@@ -32,7 +32,4 @@ public abstract class TrackState {
     }
 
     public abstract void handle();
-    public synchronized void finish() {
-        canTrackContinue = false;
-    }
 }

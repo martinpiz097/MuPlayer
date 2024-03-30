@@ -33,6 +33,6 @@ public abstract class Player extends Thread implements ControllableMusic, Report
     public abstract List<PlayerListener> getListeners();
     public abstract void removePlayerListener(PlayerListener reference);
     public abstract void removeAllListeners();
-    public abstract void reloadTracks();
+    //public abstract void reloadTracks();
 
 }
