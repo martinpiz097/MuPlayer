@@ -57,7 +57,7 @@ public class TimeTester {
         String logLevel = logConfig.getProperty(LogConfigKeys.JAVA_LOG_LEVEL);
 
         if (!logLevel.equals(Level.OFF.getName())) {
-            System.out.println(msg + ": " + getTimeDifference());
+            log.info(msg + ": " + getTimeDifference());
         }
     }
 

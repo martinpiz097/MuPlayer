@@ -33,7 +33,6 @@ public class PropertiesFiles {
         if (jarParentPath.contains("!")) {
             String path = jarParentPath.split("!")[0];
             path = path.substring(0, path.lastIndexOf("/"));
-            System.out.println("TEST 2: "+path);
             return path;
         }
         else
