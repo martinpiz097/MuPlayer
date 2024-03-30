@@ -6,7 +6,7 @@
 
     <groupId>org.orangeplayer</groupId>
     <artifactId>muplayer</artifactId>
-    <version>3.3</version>
+    <version>3.4</version>
     <packaging>jar</packaging>
 
     <name>muplayer</name>
@@ -194,7 +194,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.30</version>
+            <version>1.18.32</version>
             <scope>provided</scope>
         </dependency>
 

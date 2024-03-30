@@ -1,4 +1,4 @@
-package org.muplayer.audio.track;
+/*package org.muplayer.audio.track;
 
 import org.muplayer.audio.player.Player;
 import org.muplayer.util.AudioUtil;
@@ -70,3 +70,4 @@ public class SpeexTrack extends Track {
         }
     }
 }
+*/

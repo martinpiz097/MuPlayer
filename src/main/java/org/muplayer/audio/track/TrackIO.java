@@ -75,6 +75,16 @@ public class TrackIO {
         }
     }
 
+    public boolean resetDecodedStream() {
+        try {
+            decodedStream.reset();
+            return true;
+        } catch (IOException e) {
+            log.severe(e.getMessage());
+            return false;
+        }
+    }
+
     public double getSecondsPosition() {
         if (speaker == null)
             return 0;

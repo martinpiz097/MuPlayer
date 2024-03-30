@@ -4,6 +4,7 @@ import com.sun.media.sound.AiffFileReader;
 import com.sun.media.sound.AuFileReader;
 import com.sun.media.sound.WaveFileReader;
 import org.muplayer.audio.player.Player;
+import org.muplayer.model.PCMFormat;
 import org.muplayer.util.AudioUtil;
 import org.muplayer.util.FileUtil;
 
@@ -14,13 +15,8 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.sound.sampled.spi.AudioFileReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 
 public class PCMTrack extends Track {
-
-    private static final String WAVE = "wav";
-    private static final String AIFF = "aiff";
-    private static final String AIFC = "aifc";
 
     public PCMTrack(File dataSource) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         super(dataSource);
@@ -43,22 +39,29 @@ public class PCMTrack extends Track {
         trackIO = new TrackIO();
         final String extension = FileUtil.getFormatName(dataSource instanceof File
                 ? ((File) dataSource).getName() : "");
+        PCMFormat pcmFormat = PCMFormat.valueOf(extension.toLowerCase());
         AudioFileReader audioReader;
-        switch (extension) {
-            case WAVE:
+
+        switch (pcmFormat) {
+            case wav:
                 audioReader = new WaveFileReader();
                 break;
-            case AIFF:
-            case AIFC:
+            case aiff:
+            case aifc:
                 audioReader = new AiffFileReader();
                 break;
-            default:
+            case au:
                 audioReader = new AuFileReader();
                 break;
+            default:
+                audioReader = null;
         }
-        AudioInputStream trackStream = AudioUtil.instanceStream(audioReader, dataSource);
-        trackIO.setAudioReader(audioReader);
-        trackIO.setDecodedStream(trackStream);
+
+        if (audioReader != null) {
+            AudioInputStream trackStream = AudioUtil.instanceStream(audioReader, dataSource);
+            trackIO.setAudioReader(audioReader);
+            trackIO.setDecodedStream(trackStream);
+        }
     }
 
     @Override

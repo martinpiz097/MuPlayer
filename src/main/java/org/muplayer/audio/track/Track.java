@@ -136,9 +136,9 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     }
 
     public void initSpeaker() throws LineUnavailableException {
-        final boolean initialized = trackIO.initSpeaker();
-        if (initialized)
+        if (trackIO.initSpeaker()) {
             setVolume(trackData.getVolume());
+        }
     }
 
     public void initStreamAndLine() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
@@ -198,11 +198,6 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     public synchronized boolean isStopped() {
         return trackState instanceof StoppedState;
     }
-
-    /*@Override
-    public synchronized boolean isFinished() {
-        return state instanceof ReplacedState;
-    }*/
 
     public synchronized boolean isKilled() {
         return trackState instanceof KilledState;

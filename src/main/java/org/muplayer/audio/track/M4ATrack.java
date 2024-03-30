@@ -152,10 +152,10 @@ public class M4ATrack extends Track {
         }
         else {
             pause();
-            if (isAac)
+            if (isAac) {
                 resetStream();
-            else {
-                trackIO.getDecodedStream().reset();
+            }
+            else if (trackIO.resetDecodedStream()) {
                 initSpeaker();
             }
             resumeTrack();
