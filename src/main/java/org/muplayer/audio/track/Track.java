@@ -90,9 +90,14 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     protected Track(File dataSource, Player player)
             throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this.dataSource = dataSource;
-        trackIO = new TrackIO();
-        state = new StoppedState(this);
-        this.trackData = new TrackData(0, 0, PlayerData.DEFAULT_VOLUME, false);
+        this.trackIO = new TrackIO();
+        this.state = new StoppedState(this);
+        this.trackData = TrackData.builder()
+                .secsSeeked(0)
+                .bytesPerSecond(0)
+                .volume(PlayerData.DEFAULT_VOLUME)
+                .isMute(false)
+                .build();
         this.player = player;
         tagInfo = loadTagInfo(dataSource);
         setPriority(MAX_PRIORITY);

@@ -1,29 +1,23 @@
 package org.muplayer.audio.track.states;
 
+import lombok.Data;
+import lombok.extern.java.Log;
 import org.muplayer.audio.track.Track;
 
 // podria mas adelante el estado ser un hilo
+@Data
 public abstract class TrackState {
-
     protected final Track track;
     protected volatile boolean canTrackContinue;
     protected volatile Runnable preTask;
 
     public TrackState(Track track) {
         this.track = track;
-        canTrackContinue = true;
+        this.canTrackContinue = true;
     }
 
     public boolean canTrackContinue() {
         return canTrackContinue;
-    }
-
-    public Runnable getPreTask() {
-        return preTask;
-    }
-
-    public void setPreTask(Runnable preTask) {
-        this.preTask = preTask;
     }
 
     public String getName() {
