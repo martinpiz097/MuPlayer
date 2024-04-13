@@ -713,7 +713,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
                     if (firstOpt.equalsIgnoreCase(RunnerMode.LOCAL.name())) {
                         if (consoleRunner instanceof DaemonRunner) {
                             final LocalRunner localRunner = new LocalRunner(player);
-                            TaskRunner.execute(localRunner);
+                            TaskRunner.execute(localRunner, localRunner.getClass().getSimpleName());
                             Global.getInstance().setVar(RUNNER, localRunner);
                             ((DaemonRunner)consoleRunner).shutdown();
                             execution.appendOutput("MuPlayer changed from DAEMON to LOCAL mode!", INFO);
@@ -724,7 +724,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
                     else if (firstOpt.equalsIgnoreCase(RunnerMode.DAEMON.name())) {
                         if (consoleRunner instanceof LocalRunner) {
                             final DaemonRunner daemonRunner = new DaemonRunner(player);
-                            TaskRunner.execute(daemonRunner);
+                            TaskRunner.execute(daemonRunner, daemonRunner.getClass().getSimpleName());
                             Global.getInstance().setVar(RUNNER, daemonRunner);
                             ((LocalRunner)consoleRunner).shutdown();
                             execution.appendOutput("MuPlayer changed from LOCAL to DAEMON mode!", INFO);

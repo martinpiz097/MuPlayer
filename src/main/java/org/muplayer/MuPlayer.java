@@ -58,7 +58,7 @@ public class MuPlayer {
                     break;
             }
             if (consoleRunner != null) {
-                TaskRunner.execute(consoleRunner);
+                TaskRunner.execute(consoleRunner, consoleRunner.getClass().getSimpleName());
                 Global.getInstance().setVar(GlobalVar.RUNNER, consoleRunner);
             }
         } catch (Exception e) {

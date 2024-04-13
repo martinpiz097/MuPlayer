@@ -226,10 +226,10 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
             trackState = new StoppedState(player, this);
     }
 
-    @Override
+    /*@Override
     public void reload() throws Exception {
-        trackState = new ReloadedState(player, this);
-    }
+        //trackState = new ReloadedState(player, this);
+    }*/
 
     public void kill() {
         trackState = new KilledState(player, this);

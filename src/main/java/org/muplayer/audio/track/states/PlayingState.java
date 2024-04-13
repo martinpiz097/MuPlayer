@@ -6,6 +6,7 @@ import org.muplayer.audio.player.Player;
 import org.muplayer.audio.track.Track;
 import org.muplayer.thread.TPlayingTrack;
 import org.muplayer.thread.TaskRunner;
+import org.muplayer.thread.ThreadUtil;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -35,7 +36,8 @@ public class PlayingState extends TrackState {
     @Override
     public void handle() {
         try {
-            TaskRunner.execute(trackThread);
+            String trackThreadName = ThreadUtil.generateTrackThreadName(trackThread.getClass(), track);
+            TaskRunner.execute(trackThread, trackThreadName);
             while (track.isPlaying())
                 if (canPlay()) {
                     trackIO.playAudio(audioBuffer);

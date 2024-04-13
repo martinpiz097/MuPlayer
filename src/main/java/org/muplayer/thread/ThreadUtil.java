@@ -25,11 +25,11 @@ public class ThreadUtil {
         thread.notify();
     }
 
-    public static String generateTrackThreadName(Track track) {
+    public static String generateTrackThreadName(Class threadClass, Track track) {
         final File dataSource = track.getDataSourceAsFile();
         final String trackName = dataSource != null ? dataSource.getName() : dataSource.toString();
-        final int lengthLimit = Math.min(trackName.length(), 20);
-        return "Thread (track=" + trackName.substring(0, lengthLimit) + ")";
+        final int lengthLimit = Math.min(trackName.length(), 10);
+        return threadClass.getSimpleName()+" (track=" + trackName.substring(0, lengthLimit) + ")";
     }
 
 }
