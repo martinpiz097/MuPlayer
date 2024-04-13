@@ -637,7 +637,7 @@ public class MusicPlayer extends Player {
         }
     }
 
-    /*@Override
+    //@Override
     public void reload() throws Exception {
         if (rootFolder != null) {
             final int currentIndex = playerData.getTrackIndex();
@@ -648,7 +648,7 @@ public class MusicPlayer extends Player {
             final int songCount = getSongsCount();
             playerData.setTrackIndex(songCount > currentIndex ? currentIndex : songCount - 1);
         }
-    }*/
+    }
 
     /*@Override
     public synchronized void replace() {

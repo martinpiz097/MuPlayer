@@ -13,7 +13,7 @@ public interface ControllableMusic {
     void pause() throws Exception;
     void resumeTrack() throws Exception;
     void stopTrack() throws Exception;
-    //void reload() throws Exception;
+    void reload() throws Exception;
     void seek(double seconds) throws Exception;
     void gotoSecond(double second) throws Exception;
     float getVolume();
