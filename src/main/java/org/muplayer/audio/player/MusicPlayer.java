@@ -131,7 +131,6 @@ public class MusicPlayer extends Player {
         }
     }
 
-    // OJO con Indexoutofbound
     private void sortTracks() {
         listTracks.sort((o1, o2) -> {
             if (o1 == null || o2 == null)
