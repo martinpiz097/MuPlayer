@@ -7,10 +7,7 @@ import org.muplayer.audio.track.states.UnknownState;
 import org.muplayer.exception.MuPlayerException;
 import org.muplayer.listener.PlayerListener;
 import org.muplayer.model.*;
-import org.muplayer.thread.ListenerRunner;
-import org.muplayer.thread.TaskRunner;
-import org.muplayer.thread.ThreadUtil;
-import org.muplayer.thread.TracksLoader;
+import org.muplayer.thread.*;
 import org.muplayer.util.AudioUtil;
 import org.muplayer.util.FileUtil;
 import org.muplayer.util.TimeTester;
@@ -22,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
@@ -71,7 +69,7 @@ public class MusicPlayer extends Player {
     }
 
     private void loadTracks(File folderToLoad) {
-        TracksLoader.getInstance().addTask(() -> {
+        CompletableFuture<Void> completableFuture = TracksLoader.getInstance().addTask(() -> {
             if (!Files.isReadable(folderToLoad.toPath()))
                 throw new MuPlayerException("folderToLoad " + folderToLoad.getPath() + " is not readable");
 
@@ -106,6 +104,8 @@ public class MusicPlayer extends Player {
                 }
             }
         });
+
+        new TracksLoaderCleaner(completableFuture).start();
     }
 
     private void loadTracks(List<File> listFiles) {
@@ -123,7 +123,7 @@ public class MusicPlayer extends Player {
     }
 
     private void waitForTracksLoading() {
-        while (!TracksLoader.getInstance().areAllCompleted()) {
+        while (TracksLoader.getInstance().hasPendingTasks()) {
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
