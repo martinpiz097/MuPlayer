@@ -71,37 +71,41 @@ public class MusicPlayer extends Player {
     }
 
     private void loadTracks(File folderToLoad) {
-        if (!Files.isReadable(folderToLoad.toPath()))
-            throw new MuPlayerException("folderToLoad " + folderToLoad.getPath() + " is not readable");
+        TracksLoader.getInstance().addTask(() -> {
+            if (!Files.isReadable(folderToLoad.toPath()))
+                throw new MuPlayerException("folderToLoad " + folderToLoad.getPath() + " is not readable");
 
-        final File[] fldFiles = folderToLoad.listFiles();
-        if (fldFiles != null) {
-            // se analiza carpeta y se agregan sonidos recursivamente
-            AtomicBoolean hasTracks = new AtomicBoolean(false);
+            final File[] fldFiles = folderToLoad.listFiles();
+            if (fldFiles != null) {
+                // se analiza carpeta y se agregan sonidos recursivamente
+                AtomicBoolean hasTracks = new AtomicBoolean(false);
+                List<File> listFiles = new LinkedList<>(Arrays.asList(fldFiles));
 
-            List<File> listFiles = new LinkedList<>(Arrays.asList(fldFiles));
-            listFiles.parallelStream()
-                    .forEach(file -> {
-                        if (file.isDirectory()) {
-                            TracksLoader.getInstance().addTask(() -> loadTracks(file));
-                        } else {
-                            final Track track = Track.getTrack(FileUtil.getPath(file), this);
-                            if (track != null) {
-                                hasTracks.set(true);
-                                synchronized (listTracks) {
-                                    listTracks.add(track);
+                listFiles.parallelStream()
+                        .forEach(file -> {
+                            if (file.isDirectory()) {
+                                loadTracks(file);
+                            } else {
+                                final Track track = Track.getTrack(FileUtil.getPath(file), this);
+                                if (track != null) {
+                                    synchronized (hasTracks) {
+                                        hasTracks.set(true);
+                                    }
+                                    synchronized (listTracks) {
+                                        listTracks.add(track);
+                                    }
                                 }
                             }
-                        }
-                    });
+                        });
 
-            // si la carpeta tiene sonidos se agrega a la lista de carpetas
-            if (hasTracks.get()) {
-                synchronized (listFolders) {
-                    listFolders.add(folderToLoad);
+                // si la carpeta tiene sonidos se agrega a la lista de carpetas
+                if (hasTracks.get()) {
+                    synchronized (listFolders) {
+                        listFolders.add(folderToLoad);
+                    }
                 }
             }
-        }
+        });
     }
 
     private void loadTracks(List<File> listFiles) {

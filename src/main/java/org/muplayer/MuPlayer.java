@@ -34,8 +34,7 @@ public class MuPlayer {
                     throw new NullPointerException(MessagesInfo.getInstance().getProperty(MessagesInfoKeys.PROPERTY_NOT_FOUND_MSG));
                 else
                     consoleRunner = new LocalRunner(defaultRootPath);
-            }
-            else switch (args.length) {
+            } else switch (args.length) {
                 case 1:
                     String firstArg = args[0].trim();
                     if (firstArg.startsWith("-"))
@@ -51,10 +50,9 @@ public class MuPlayer {
                         else if (firstArg.equals("-d"))
                             consoleRunner = new DaemonRunner(args[1]);
                         else
-                            throw new NullPointerException("Arg "+firstArg +"not recognized");
-                    }
-                    else
-                        throw new NullPointerException("Arg "+firstArg +"not recognized");
+                            throw new NullPointerException("Arg " + firstArg + "not recognized");
+                    } else
+                        throw new NullPointerException("Arg " + firstArg + "not recognized");
                     break;
             }
             if (consoleRunner != null) {
@@ -74,7 +72,7 @@ public class MuPlayer {
         final LogManager logManager = LogManager.getLogManager();
 
         logManager.getLoggerNames().asIterator().forEachRemaining(logName ->
-            logManager.getLogger(logName).setLevel(logLevel)
+                logManager.getLogger(logName).setLevel(logLevel)
         );
     }
 }

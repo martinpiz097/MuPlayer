@@ -2,6 +2,7 @@ package org.muplayer.system;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class Global {
     private final Map<GlobalVar, Object> mapGlobals;
@@ -13,7 +14,7 @@ public class Global {
     }
 
     public Global() {
-        mapGlobals = new HashMap<>();
+        mapGlobals = new TreeMap<>();
     }
 
     public synchronized boolean hasVar(GlobalVar globalVar) {
