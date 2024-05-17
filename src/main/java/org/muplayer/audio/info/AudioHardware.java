@@ -1,6 +1,7 @@
 package org.muplayer.audio.info;
 
 import org.muplayer.util.AudioUtil;
+import org.muplayer.util.CollectionUtil;
 
 import javax.sound.sampled.*;
 import java.util.*;
