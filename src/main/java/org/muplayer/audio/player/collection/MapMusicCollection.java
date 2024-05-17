@@ -27,7 +27,7 @@ public class MapMusicCollection extends MusicCollection<HashMap<String, List<Tra
     @Override
     public void addTrack(Track track) {
         String key = track.getDataSourceAsFile().getParent();
-        List<Track> listTracks = collection.getOrDefault(key, new LinkedList<>());
+        List<Track> listTracks = collection.getOrDefault(key, CollectionUtil.newFastList());
 
         listTracks.add(track);
         if (listTracks.size() == 1) {

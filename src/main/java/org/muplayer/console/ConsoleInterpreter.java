@@ -284,7 +284,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
             final String[] cmdSplit = cmd.split(CMD_DIVISOR);
             ConsoleExecution consoleExecution = new ConsoleExecution();
 
-            final List<String> listExec = new ArrayList<>();
+            final List<String> listExec = CollectionUtil.newFastList();
             ConsoleExecution exec;
 
             for (int i = 0; i < cmdSplit.length; i++) {

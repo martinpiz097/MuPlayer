@@ -9,6 +9,7 @@ import org.muplayer.listener.PlayerListener;
 import org.muplayer.model.*;
 import org.muplayer.thread.*;
 import org.muplayer.util.AudioUtil;
+import org.muplayer.util.CollectionUtil;
 import org.muplayer.util.FileUtil;
 import org.muplayer.util.TimeTester;
 
@@ -45,9 +46,9 @@ public class MusicPlayer extends Player {
 
     public MusicPlayer(File rootFolder) throws FileNotFoundException {
         this.rootFolder = rootFolder;
-        listTracks = new LinkedList<>();
-        listFolders = new LinkedList<>();
-        listListeners = new LinkedList<>();
+        listTracks = CollectionUtil.newFastList();
+        listFolders = CollectionUtil.newFastList();
+        listListeners = CollectionUtil.newFastList();
         playerData = new PlayerData();
 
         checkRootFolder();

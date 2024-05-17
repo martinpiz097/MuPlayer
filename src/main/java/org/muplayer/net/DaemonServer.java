@@ -21,7 +21,7 @@ public class DaemonServer {
         serverSocket = new ServerSocket(Integer.parseInt(MuPlayerInfo.getInstance().getProperty(
                 MuPlayerInfoKeys.DAEMON_SERVER_PORT)));
         serverSocket.setSoTimeout(3000);
-        this.listClients = new ArrayList<>();
+        this.listClients = CollectionUtil.newFastList();
     }
 
     public boolean isAlive() {

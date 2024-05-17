@@ -44,7 +44,7 @@ public class AudioHardware {
     }
 
     public static List<Control> getAllControls(Line line) throws LineUnavailableException {
-        final List<Control> listControls = new ArrayList<>();
+        final List<Control> listControls = CollectionUtil.newFastList();
         boolean opened = false;
         if (!line.isOpen()) {
             line.open();
@@ -72,7 +72,7 @@ public class AudioHardware {
     }
 
     public static List<DataLine.Info> getAllSpeakerInfo() {
-        final List<DataLine.Info> listInfo = new LinkedList<>();
+        final List<DataLine.Info> listInfo = CollectionUtil.newFastList();
         final Mixer.Info[] mixersInfo = AudioSystem.getMixerInfo();
 
         Mixer mixer;
@@ -93,7 +93,7 @@ public class AudioHardware {
     }
 
     public static List<DataLine.Info> getAllMicrophoneInfo() {
-        final List<DataLine.Info> listInfo = new LinkedList<>();
+        final List<DataLine.Info> listInfo = CollectionUtil.newFastList();
         final Mixer.Info[] mixersInfo = AudioSystem.getMixerInfo();
 
         Mixer mixer;
@@ -319,7 +319,7 @@ public class AudioHardware {
     }
 
     private static List<Line> getAvailableLines(Mixer mixer, Line.Info[] lineInfos) {
-        final List<Line> lines = new LinkedList<>();
+        final List<Line> lines = CollectionUtil.newFastList();
         Line.Info lineInfo;
         Line line;
         for (int i = 0; i < lineInfos.length; i++) {
