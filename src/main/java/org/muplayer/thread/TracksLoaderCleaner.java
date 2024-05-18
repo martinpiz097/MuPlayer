@@ -17,7 +17,6 @@ public class TracksLoaderCleaner extends Thread {
 
     @Override
     public void run() {
-        //log.info(getName() + " started");
         while (!task.isDone()) {
             try {
                 Thread.sleep(1);
@@ -25,8 +24,6 @@ public class TracksLoaderCleaner extends Thread {
                 throw new RuntimeException(e);
             }
         }
-        //log.info("track " + task.hashCode() +" completed and removed!");
         tracksLoader.removeTask(task);
-        //log.info(getName() + " finished");
     }
 }

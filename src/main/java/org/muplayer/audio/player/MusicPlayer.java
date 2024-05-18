@@ -8,10 +8,7 @@ import org.muplayer.exception.MuPlayerException;
 import org.muplayer.listener.PlayerListener;
 import org.muplayer.model.*;
 import org.muplayer.thread.*;
-import org.muplayer.util.AudioUtil;
-import org.muplayer.util.CollectionUtil;
-import org.muplayer.util.FileUtil;
-import org.muplayer.util.TimeTester;
+import org.muplayer.util.*;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -71,9 +68,9 @@ public class MusicPlayer extends Player {
 
     private void loadTracks(File folderToLoad) {
         CompletableFuture<Void> completableFuture = TracksLoader.getInstance().addTask(() -> {
-            if (!Files.isReadable(folderToLoad.toPath()))
+            if (!Files.isReadable(folderToLoad.toPath())) {
                 throw new MuPlayerException("folderToLoad " + folderToLoad.getPath() + " is not readable");
-
+            }
             final File[] fldFiles = folderToLoad.listFiles();
             if (fldFiles != null) {
                 // se analiza carpeta y se agregan sonidos recursivamente
@@ -117,8 +114,9 @@ public class MusicPlayer extends Player {
             }
             else {
                 final Track track = Track.getTrack(FileUtil.getPath(file), this);
-                if (track != null)
+                if (track != null) {
                     listTracks.add(track);
+                }
             }
         });
     }
@@ -134,12 +132,14 @@ public class MusicPlayer extends Player {
 
     private void sortTracks() {
         listTracks.sort((o1, o2) -> {
-            if (o1 == null || o2 == null)
+            if (o1 == null || o2 == null) {
                 return 0;
+            }
             final File dataSource1 = o1.getDataSourceAsFile();
             final File dataSource2 = o2.getDataSourceAsFile();
-            if (dataSource1 == null || dataSource2 == null)
+            if (dataSource1 == null || dataSource2 == null) {
                 return 0;
+            }
             return dataSource1.getPath().compareTo(dataSource2.getPath());
         });
         listFolders.sort(Comparator.comparing(File::getPath));
@@ -166,8 +166,9 @@ public class MusicPlayer extends Player {
         if (current != null) {
             current.setName(generateTrackThreadName(current.getClass(), current));
             current.setVolume(playerData.getVolume());
-            if (isMute())
+            if (isMute()) {
                 current.mute();
+            }
             current.start();
         }
     }
@@ -179,7 +180,6 @@ public class MusicPlayer extends Player {
     private void restartCurrent() {
         try {
             if (current != null) {
-                //current.reload();
                 Track cur = Track.getTrack(current.getDataSource());
                 current.kill();
                 listTracks.set(playerData.getTrackIndex(), cur);
@@ -219,11 +219,8 @@ public class MusicPlayer extends Player {
     // si existe o no en la ruta padre
     private TrackIndexed findFirstIn(String folderPath) {
         final File parentFile = new File(folderPath);
+        final Predicate<Track> filter = FilterUtil.getFindFirstInFilter(parentFile);
 
-        Predicate<Track> filter = track -> {
-            File dataSource = track.getDataSourceAsFile();
-            return dataSource != null && dataSource.getParentFile().equals(parentFile);
-        };
         return getTrackIndexedFromCondition(filter);
     }
 
@@ -232,12 +229,9 @@ public class MusicPlayer extends Player {
         int newTrackIndex = -1;
 
         // idea para electrolist -> Indexof con predicate
-        Predicate<Track> filter = track -> {
-            File fileTrack = track.getDataSourceAsFile();
-            return fileTrack != null && fileTrack.getParentFile().equals(parentFile);
-        };
-
+        Predicate<Track> filter = FilterUtil.newSeekToFolderFilter(parentFile);
         TrackIndexed trackIndexed = getTrackIndexedFromCondition(filter);
+
         if (trackIndexed != null) {
             newTrackIndex = trackIndexed.getIndex();
         }
@@ -251,12 +245,9 @@ public class MusicPlayer extends Player {
     }
 
     private void playFolderSongs(String fldPath) {
-        Predicate<Track> filter = track -> {
-            File dataSource = track.getDataSourceAsFile();
-            return dataSource != null && dataSource.getParent().equals(fldPath);
-        };
-
+        Predicate<Track> filter = FilterUtil.getPlayFolderFilter(fldPath);
         TrackIndexed trackIndexed = getTrackIndexedFromCondition(filter);
+
         if (trackIndexed != null) {
             play(trackIndexed);
         }
@@ -576,12 +567,9 @@ public class MusicPlayer extends Player {
     // (is alive)
     @Override
     public synchronized void play(File track) {
-        Predicate<Track> filter = trackElement -> {
-            File dataSource = trackElement.getDataSourceAsFile();
-            return dataSource != null && dataSource.getPath().equals(track.getPath());
-        };
-
+        Predicate<Track> filter = FilterUtil.getPlayByPathFilter(track.getPath());
         TrackIndexed trackIndexed = getTrackIndexedFromCondition(filter);
+
         if (trackIndexed == null) {
             if (AudioUtil.isSupportedFile(track)) {
                 listTracks.add(Track.getTrack(track, this));
@@ -590,9 +578,9 @@ public class MusicPlayer extends Player {
             }
         } else {
             playerData.setTrackIndex(playerData.getTrackIndex());
-            if (current != null)
+            if (current != null) {
                 restartCurrent();
-
+            }
             current = listTracks.get(playerData.getTrackIndex());
             startTrackThread();
             loadListenerMethod(ONPLAYED, current);
@@ -601,16 +589,14 @@ public class MusicPlayer extends Player {
 
     @Override
     public synchronized void play(String trackName) {
-        Predicate<Track> filter = track -> {
-            File trackFile = track.getDataSourceAsFile();
-            return trackFile != null && trackFile.getName().equals(trackName);
-        };
-
+        Predicate<Track> filter = FilterUtil.getPlayByNameFilter(trackName);
         TrackIndexed trackIndexed = getTrackIndexedFromCondition(filter);
+
         if (trackIndexed != null) {
             playerData.setTrackIndex(trackIndexed.getIndex());
-            if (current != null)
+            if (current != null) {
                 restartCurrent();
+            }
             current = trackIndexed.getTrack();
             startTrackThread();
             loadListenerMethod(ONPLAYED, current);

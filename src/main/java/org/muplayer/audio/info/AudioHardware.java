@@ -15,20 +15,25 @@ public class AudioHardware {
     }
 
     public static boolean open(Line line) {
-        if (line.isOpen())
-            return false;
+        boolean successful;
         try {
-            line.open();
+            if (!line.isOpen()) {
+                line.open();
+                successful = true;
+            }
+            else {
+                successful = false;
+            }
         } catch (LineUnavailableException ex) {
-            return false;
+            successful = false;
         }
-        return true;
+        return successful;
     }
 
     private static Control findControl(Control.Type type, Control... controls) {
-        if (controls == null || controls.length == 0)
+        if (controls == null || controls.length == 0) {
             return null;
-
+        }
         CompoundControl compoundControl;
         Control member;
         for (Control control : controls) {
@@ -46,14 +51,19 @@ public class AudioHardware {
 
     public static List<Control> getAllControls(Line line) throws LineUnavailableException {
         final List<Control> listControls = CollectionUtil.newFastList();
-        boolean opened = false;
+        boolean opened;
         if (!line.isOpen()) {
             line.open();
             opened = true;
         }
+        else {
+            opened = false;
+        }
+
         findAllControls(listControls, line.getControls());
-        if (opened)
+        if (opened) {
             line.close();
+        }
         return listControls;
     }
 
@@ -66,8 +76,9 @@ public class AudioHardware {
                 if (control instanceof CompoundControl) {
                     compoundControl = (CompoundControl) control;
                     findAllControls(listControls, compoundControl.getMemberControls());
-                } else
+                } else {
                     listControls.add(control);
+                }
             }
         }
     }
@@ -395,4 +406,5 @@ public class AudioHardware {
         sb.append(mixer.isOpen() ? " [open]" : " [closed]");
         return sb.toString();
     }
+
 }
