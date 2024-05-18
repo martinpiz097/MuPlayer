@@ -17,7 +17,7 @@ public class PropertiesFiles {
     public static final String MESSAGES_RES_PATH = "/messages.properties";
     public static final String MESSAGES_FILE_PATH = getFilePath(MESSAGES_RES_PATH);
 
-    public static final String CONSOLE_CODES_RES_PATH = "/console-codes.properties";
+    public static final String CONSOLE_PLAYER_CODES_RES_PATH = "/console-player-codes.properties";
 
     public static final String LOG_CONFIG_RES_PATH = "/log-config.properties";
 
