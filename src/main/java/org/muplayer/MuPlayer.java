@@ -6,6 +6,7 @@ import org.muplayer.console.runner.DaemonRunner;
 import org.muplayer.console.runner.LocalRunner;
 import org.muplayer.properties.config.ConfigInfo;
 import org.muplayer.properties.config.ConfigInfoKeys;
+import org.muplayer.properties.console.ConsolePlayerCodesInfo;
 import org.muplayer.properties.log.LogConfig;
 import org.muplayer.properties.log.LogConfigKeys;
 import org.muplayer.properties.msg.MessagesInfo;
@@ -26,6 +27,7 @@ import static org.muplayer.properties.PropertiesFiles.LOG_CONFIG_RES_PATH;
 public class MuPlayer {
     public static void main(String[] args) {
         try {
+            ConsolePlayerCodesInfo.getInstance().getProperties();
             loadLogConfig();
             ConsoleRunner consoleRunner = null;
             if (args.length == 0) {
@@ -68,7 +70,8 @@ public class MuPlayer {
 
     private static void loadLogConfig() {
         final LogConfig logConfig = LogConfig.getInstance();
-        final Level logLevel = Level.parse(logConfig.getProperty(LogConfigKeys.JAVA_LOG_LEVEL));
+        final String levelName = logConfig.getProperty(LogConfigKeys.JAVA_LOG_LEVEL);
+        final Level logLevel = Level.parse(levelName);
         final LogManager logManager = LogManager.getLogManager();
 
         logManager.getLoggerNames().asIterator().forEachRemaining(logName ->

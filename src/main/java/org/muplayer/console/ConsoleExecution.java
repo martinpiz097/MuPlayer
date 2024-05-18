@@ -20,17 +20,19 @@ public class ConsoleExecution {
         return sbOutputMsg.length() > 0;
     }
 
-    public void appendOutput(Object output, String outputType) {
-        switch (outputType) {
-            case INFO:
-                sbOutputMsg.append(Logger.INFOCOLOR);
-                break;
-            case WARNING:
-                sbOutputMsg.append(Logger.WARNINGCOLOR);
-                break;
-            case ERROR:
-                sbOutputMsg.append(Logger.ERRORCOLOR);
-                break;
+    public void appendOutput(Object output, OutputType outputType) {
+        if (outputType != null) {
+            switch (outputType) {
+                case info:
+                    sbOutputMsg.append(Logger.INFOCOLOR);
+                    break;
+                case warn:
+                    sbOutputMsg.append(Logger.WARNINGCOLOR);
+                    break;
+                case error:
+                    sbOutputMsg.append(Logger.ERRORCOLOR);
+                    break;
+            }
         }
         sbOutputMsg.append(output).append(ConsoleColor.RESET).append('\n');
     }
