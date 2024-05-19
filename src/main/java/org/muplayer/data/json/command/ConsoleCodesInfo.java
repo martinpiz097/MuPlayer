@@ -5,13 +5,18 @@ import lombok.Getter;
 import org.muplayer.console.ConsoleOrderCode;
 import org.muplayer.data.json.JsonInfo;
 import org.muplayer.data.json.InternalJsonSource;
+import org.muplayer.data.json.command.model.ConsoleCodeResult;
 import org.muplayer.data.json.command.model.ConsoleCodesData;
 import org.muplayer.data.properties.ResourceFiles;
 
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class ConsoleCodesInfo extends JsonInfo<String, TreeMap<String, ConsoleCodesData>> {
+public class ConsoleCodesInfo extends JsonInfo<String, LinkedList<ConsoleCodesData>> {
+
+    private final ConsoleCodeResult consoleCodeResult;
+
     @Getter
     private static final ConsoleCodesInfo instance = new ConsoleCodesInfo();
 
@@ -19,6 +24,7 @@ public class ConsoleCodesInfo extends JsonInfo<String, TreeMap<String, ConsoleCo
         super(new InternalJsonSource<>(
                 ResourceFiles.CONSOLE_PLAYER_CODES_RES_PATH,
                 new TypeReference<>() {}, false));
+        this.consoleCodeResult = new ConsoleCodeResult();
     }
 
     @Override
@@ -28,41 +34,23 @@ public class ConsoleCodesInfo extends JsonInfo<String, TreeMap<String, ConsoleCo
 
     public ConsoleOrderCode getConsoleOrderCodeByCmdOrder(String order) {
         try {
-            Map<String, ConsoleCodesData> data = jsonSource.getData();
+            ConsoleOrderCode consoleOrderCode = consoleCodeResult.getOrderCodeByOrder(order);
+            if (consoleOrderCode == null) {
+                var data = jsonSource.getData();
+                consoleOrderCode = data.parallelStream()
+                        .filter(consoleCodesData -> consoleCodesData.hasOrder(order))
+                        .findFirst()
+                        .map(ConsoleCodesData::getCode)
+                        .orElse(null);
 
-            return data.entrySet()
-                    .parallelStream()
-                    .filter(entry -> entry.getValue().hasOrder(order))
-                    .findFirst()
-                    .map(entry -> ConsoleOrderCode.valueOf(entry.getKey()))
-                    .orElse(null);
+                if (consoleOrderCode != null) {
+                    consoleCodeResult.addCodeSearchResult(order, consoleOrderCode.name());
+                }
+            }
+            return consoleOrderCode;
         } catch (Exception e) {
             return null;
         }
     }
 
-    public ConsoleCodesData getCodesData(ConsoleOrderCode consoleOrderCode) {
-        Map<String, ConsoleCodesData> data = jsonSource.getData();
-        return data.get(consoleOrderCode.name());
-    }
-
-    public String getCodesByOrderCode(ConsoleOrderCode consoleOrderCode) {
-        ConsoleCodesData consoleCodesData = getCodesData(consoleOrderCode);
-        if (consoleCodesData != null) {
-            return consoleCodesData.getJoinedOrders(",");
-        }
-        else {
-            return null;
-        }
-    }
-    
-    private String getHelpInfoByOrderCode(ConsoleOrderCode consoleOrderCode) {
-        ConsoleCodesData consoleCodesData = getCodesData(consoleOrderCode);
-        if (consoleCodesData != null) {
-            return consoleCodesData.getHelpInfo();
-        }
-        else {
-            return null;
-        }
-    }
 }

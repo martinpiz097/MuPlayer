@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.muplayer.console.ConsoleOrderCode;
 
 import java.util.StringJoiner;
 
@@ -11,6 +12,9 @@ import java.util.StringJoiner;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ConsoleCodesData {
+    @JsonProperty("code")
+    private ConsoleOrderCode code;
+
     @JsonProperty("orders")
     private String[] orders;
 

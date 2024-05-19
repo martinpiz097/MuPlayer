@@ -258,16 +258,13 @@ public class ConsoleInterpreter implements CommandInterpreter {
         final String helpElementSeparator = "\n\n";
         final String orderSelementsSeparator = ",";
 
-        Map<String, ConsoleCodesData> consoleCodesDataMap = consoleCodesInfo.getJsonSource().getData();
-        String helpInfoData = consoleCodesDataMap.entrySet().parallelStream()
-                .sorted(Map.Entry.comparingByKey())
+        var consoleCodesDataMap = consoleCodesInfo.getJsonSource().getData();
+        String helpInfoData = consoleCodesDataMap.parallelStream()
+                .sorted(Comparator.comparing(ConsoleCodesData::getCode))
                 .sequential()
-                .map(entry -> {
-                    ConsoleCodesData consoleCodesData = entry.getValue();
-                    return consoleCodesData.getJoinedOrders(orderSelementsSeparator)
-                            + keyValueSeparator
-                            + consoleCodesData.getHelpInfo();
-                })
+                .map(consoleCodesData -> consoleCodesData.getJoinedOrders(orderSelementsSeparator)
+                        + keyValueSeparator
+                        + consoleCodesData.getHelpInfo())
                 .collect(Collectors.joining(helpElementSeparator));
 
         execution.appendOutput("---------", info);
