@@ -10,8 +10,6 @@ import org.muplayer.data.json.command.model.ConsoleCodesData;
 import org.muplayer.data.properties.ResourceFiles;
 
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.TreeMap;
 
 public class ConsoleCodesInfo extends JsonInfo<String, LinkedList<ConsoleCodesData>> {
 
