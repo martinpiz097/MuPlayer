@@ -1,11 +1,11 @@
-package org.muplayer.properties;
+package org.muplayer.data.properties;
 
 import java.io.*;
 import java.util.Properties;
 
 public class StreamPropertiesSource extends PropertiesSource<InputStream> {
     public StreamPropertiesSource(String sourcePath) {
-        super(PropertiesFiles.getResStream(sourcePath));
+        super(ResourceFiles.getResStream(sourcePath));
     }
 
     @Override

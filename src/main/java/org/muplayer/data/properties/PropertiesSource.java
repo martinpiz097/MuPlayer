@@ -1,4 +1,4 @@
-package org.muplayer.properties;
+package org.muplayer.data.properties;
 
 import lombok.extern.java.Log;
 

@@ -1,10 +1,10 @@
-package org.muplayer.properties.support;
+package org.muplayer.data.properties.support;
 
 import lombok.Getter;
+import org.muplayer.data.properties.FilePropertiesSource;
+import org.muplayer.data.properties.ResourceFiles;
+import org.muplayer.data.properties.PropertiesInfo;
 import org.muplayer.model.AudioSupport;
-import org.muplayer.properties.FilePropertiesSource;
-import org.muplayer.properties.PropertiesFiles;
-import org.muplayer.properties.PropertiesInfo;
 
 import java.io.*;
 import java.util.*;
@@ -18,7 +18,7 @@ public class AudioSupportInfo extends PropertiesInfo<File> {
     private static final String DEFAULT_COMMENT = "Audio formats support";
 
     private AudioSupportInfo() {
-        super(new FilePropertiesSource(PropertiesFiles.AUDIO_SUPPORT_FILE_PATH));
+        super(new FilePropertiesSource(ResourceFiles.AUDIO_SUPPORT_FILE_PATH));
     }
 
     @Override

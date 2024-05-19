@@ -1,4 +1,4 @@
-package org.muplayer.properties.info;
+package org.muplayer.data.properties.info;
 
 public class MuPlayerInfoKeys {
     public static final String MUPLAYER_VERSION = "muplayer.version";

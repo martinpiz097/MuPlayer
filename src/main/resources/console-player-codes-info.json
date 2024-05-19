@@ -1,0 +1,166 @@
+{
+  "albs": {
+    "orders": ["albs", "albums", "get-albums"],
+    "helpInfo": "Lista todos los álbums con sus respectivas canciones"
+  },
+  "arts": {
+    "orders": ["arts", "get-artists", "get-all-artists"],
+    "helpInfo": "Lista todos los artistas con sus respectivas canciones"
+  },
+  "chm": {
+    "orders": ["chm", "change-mode", "change-player-mode"],
+    "helpInfo": "Cambia el modo de configuración de MuPlayer, las opciones son LOCAL o DAEMON"
+  },
+  "cls": {
+    "orders": ["cls", "clear", "clear-console"],
+    "helpInfo": "Limpia la pantalla"
+  },
+  "cover": {
+    "orders": ["cover", "get-cover", "get-track-cover", "get-song-cover"],
+    "helpInfo": "Obtiene la carátula de la canción actual si existe y la guarda en la ruta seleccionada"
+  },
+  "c": {
+    "orders": ["c", "count", "songs-count"],
+    "helpInfo": "Obtiene la cantidad de canciones cargadas"
+  },
+  "d": {
+    "orders": ["d", "duration", "get-duration", "get-track-duration", "get-song-duration"],
+    "helpInfo": "Obtiene la duración de la canción actual"
+  },
+  "format": {
+    "orders": ["format", "get-format", "get-track-format", "get-song-format"],
+    "helpInfo": "Obtiene el formato de audio de la canción"
+  },
+  "g": {
+    "orders": ["g", "goto", "go-to-second"],
+    "helpInfo": "Se dirige a un segundo específico de la canción actual"
+  },
+  "gsv": {
+    "orders": ["gsv", "get-system-vol"],
+    "helpInfo": "Obtiene el volumen actual del sistema"
+  },
+  "gv": {
+    "orders": ["gv", "get-vol", "get-volume", "get-player-volume"],
+    "helpInfo": "Obtiene el volumen actual del reproductor"
+  },
+  "h": {
+    "orders": ["h", "help"],
+    "helpInfo": "Despliega el menú de ayuda de comandos"
+  },
+  "info": {
+    "orders": ["info", "show-track-info", "show-song-info"],
+    "helpInfo": "Obtiene información de la canción actual"
+  },
+  "ist": {
+    "orders": ["ist", "is-started"],
+    "helpInfo": "Comprueba que el reproductor está iniciado"
+  },
+  "k": {
+    "orders": ["k", "seek", "seek-seconds", "seek-track-seconds", "seek-song-seconds"],
+    "helpInfo": "Salta segundos de la canción actual"
+  },
+  "l": {
+    "orders": ["l", "list", "list-songs", "list-tracks"],
+    "helpInfo": "Lista todas las canciones disponibles en el reproductor"
+  },
+  "lc": {
+    "orders": ["lc", "list-current-folder", "list-current-folder-tracks"],
+    "helpInfo": "Lista todas las canciones de la carpeta actual en reproducción"
+  },
+  "ld": {
+    "orders": ["ld", "list-detail", "list-detailed-folders"],
+    "helpInfo": "Lista las carpetas con sus canciones de manera detallada"
+  },
+  "lf": {
+    "orders": ["lf", "list-folders", "list-folder-names"],
+    "helpInfo": "Lista todas las carpetas leídas por el reproductor"
+  },
+  "load": {
+    "orders": ["load", "load-player"],
+    "helpInfo": "Reinicia reproductor cargando la carpeta según la ruta indicada"
+  },
+  "m": {
+    "orders": ["m", "mute"],
+    "helpInfo": "Silencia el reproductor"
+  },
+  "name": {
+    "orders": ["name", "get-current-filename"],
+    "helpInfo": "Obtiene el nombre del archivo correspondiente a la canción que se está reproduciendo"
+  },
+  "n": {
+    "orders": ["n", "next", "play-next"],
+    "helpInfo": "Reproduce la canción siguiente"
+  },
+  "p": {
+    "orders": ["p", "prev", "previous", "play-prev", "play-previous"],
+    "helpInfo": "Reproduce la canción anterior"
+  },
+  "pf": {
+    "orders": ["pf", "play-folder"],
+    "helpInfo": "Reproduce una carpeta según el índice entregado"
+  },
+  "pl": {
+    "orders": ["pl", "play", "play-track", "play-song"],
+    "helpInfo": "Inicia la reproducción o reproduce una canción según el índice indicado"
+  },
+  "prog": {
+    "orders": ["prog", "get-progress", "get-current-progress", "get-track-progress", "get-song-progress"],
+    "helpInfo": "Obtiene los segundos actuales reproducidos de la canción actual"
+  },
+  "ps": {
+    "orders": ["ps", "pause"],
+    "helpInfo": "Pausa la canción actual"
+  },
+  "r": {
+    "orders": ["r", "resume", "resume-track", "resume-song"],
+    "helpInfo": "Inicia la canción actual si está pausada o detenida"
+  },
+  "s": {
+    "orders": ["s", "stop", "stop-track", "stop-song"],
+    "helpInfo": "Detiene la canción actual"
+  },
+  "sh": {
+    "orders": ["sh", "shutdown", "exit", "quit"],
+    "helpInfo": "Apaga el reproductor"
+  },
+  "skf": {
+    "orders": ["skf", "seek-folder"],
+    "helpInfo": "Salta carpetas (ej: skf next/prev [jumps])"
+  },
+  "sn": {
+    "orders": ["sn", "show-next-info", "show-next-song-info"],
+    "helpInfo": "Muestra información de la canción siguiente"
+  },
+  "sp": {
+    "orders": ["sp", "show-prev-info", "show-prev-song-info"],
+    "helpInfo": "Muestra información de la canción anterior"
+  },
+  "st": {
+    "orders": ["st", "start", "start-player"],
+    "helpInfo": "Inicia el reproductor"
+  },
+  "sv": {
+    "orders": ["sv", "set-sys-vol", "set-system-vol"],
+    "helpInfo": "Cambia el volumen del sistema (valor entre 0 y 100 ambos incluidos)"
+  },
+  "sys": {
+    "orders": ["sys", "system", "exec-system-cmd", "exec-sys-cmd"],
+    "helpInfo": "Ejecuta comandos del sistema"
+  },
+  "title": {
+    "orders": ["title", "get-title", "get-track-title", "get-song-title"],
+    "helpInfo": "Obtiene el título de la canción"
+  },
+  "u": {
+    "orders": ["u", "update"],
+    "helpInfo": "Vuelve a cargar las canciones nuevamente"
+  },
+  "um": {
+    "orders": ["um", "unmute", "unmute-player"],
+    "helpInfo": "Quita el silencio al reproductor"
+  },
+  "v": {
+    "orders": ["v", "set-vol", "set-volume", "set-player-volume"],
+    "helpInfo": "Cambia el volumen del reproductor (valor entre 0 y 100 ambos incluidos)"
+  }
+}

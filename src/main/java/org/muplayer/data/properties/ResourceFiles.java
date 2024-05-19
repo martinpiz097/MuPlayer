@@ -1,9 +1,9 @@
-package org.muplayer.properties;
+package org.muplayer.data.properties;
 
 import java.io.File;
 import java.io.InputStream;
 
-public class PropertiesFiles {
+public class ResourceFiles {
     public static final String CONFIG_FILE_PATH = getJarParentPath()+"/config.properties";
 
     public static final String AUDIO_SUPPORT_RES_PATH = "/audio-support.properties";
@@ -17,7 +17,7 @@ public class PropertiesFiles {
     public static final String MESSAGES_RES_PATH = "/messages.properties";
     public static final String MESSAGES_FILE_PATH = getFilePath(MESSAGES_RES_PATH);
 
-    public static final String CONSOLE_PLAYER_CODES_RES_PATH = "/console-player-codes.properties";
+    public static final String CONSOLE_PLAYER_CODES_RES_PATH = "/console-player-codes-info.json";
 
     public static final String LOG_CONFIG_RES_PATH = "/log-config.properties";
 
@@ -26,7 +26,7 @@ public class PropertiesFiles {
     }
 
     public static String getJarParentPath() {
-        final String parentPath = new File(PropertiesFiles.class.getProtectionDomain()
+        final String parentPath = new File(ResourceFiles.class.getProtectionDomain()
                 .getCodeSource().getLocation().getFile()).getParent();
         final String jarParentPath = parentPath.endsWith("/") ? parentPath.substring(0, parentPath.length() - 1) : parentPath;
 
@@ -40,6 +40,6 @@ public class PropertiesFiles {
     }
 
     public static InputStream getResStream(String path) {
-        return PropertiesFiles.class.getResourceAsStream(path);
+        return ResourceFiles.class.getResourceAsStream(path);
     }
 }

@@ -1,8 +1,8 @@
 package org.muplayer.net;
 
 import lombok.Data;
-import org.muplayer.properties.info.MuPlayerInfo;
-import org.muplayer.properties.info.MuPlayerInfoKeys;
+import org.muplayer.data.properties.info.MuPlayerInfo;
+import org.muplayer.data.properties.info.MuPlayerInfoKeys;
 import org.muplayer.util.CollectionUtil;
 
 import java.io.IOException;
@@ -10,7 +10,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Data

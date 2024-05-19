@@ -6,12 +6,12 @@ import org.muplayer.audio.player.Player;
 import org.muplayer.console.runner.ConsoleRunner;
 import org.muplayer.console.runner.LocalRunner;
 import org.muplayer.console.runner.RunnerMode;
+import org.muplayer.data.json.command.model.ConsoleCodesData;
 import org.muplayer.model.Album;
 import org.muplayer.model.Artist;
 import org.muplayer.model.SeekOption;
 import org.muplayer.console.runner.DaemonRunner;
-import org.muplayer.properties.console.ConsolePlayerCodesInfo;
-import org.muplayer.properties.help.HelpInfo;
+import org.muplayer.data.json.command.ConsoleCodesInfo;
 import org.muplayer.system.*;
 import org.muplayer.thread.TaskRunner;
 import org.muplayer.util.CollectionUtil;
@@ -37,16 +37,14 @@ public class ConsoleInterpreter implements CommandInterpreter {
     private final File playerFolder;
     private boolean on;
 
-    private final HelpInfo helpInfo;
-    private final ConsolePlayerCodesInfo consolePlayerCodesInfo;
+    private final ConsoleCodesInfo consoleCodesInfo;
 
     private static final String CMD_DIVISOR = " && ";
 
     public ConsoleInterpreter(Player player) {
         this.player = player;
         this.playerFolder = player.getRootFolder();
-        this.consolePlayerCodesInfo = ConsolePlayerCodesInfo.getInstance();
-        this.helpInfo = HelpInfo.getInstance();
+        this.consoleCodesInfo = ConsoleCodesInfo.getInstance();
     }
 
     private boolean isPlayerOn() {
@@ -256,23 +254,21 @@ public class ConsoleInterpreter implements CommandInterpreter {
     }
 
     protected void printHelp(ConsoleExecution execution) {
-        final Set<String> helpInfoCode = helpInfo.getPropertyNames();
-
         final String keyValueSeparator = ":\n\t";
-        String helpInfoData = helpInfoCode.parallelStream()
-                .map(propertyName -> {
-                    ConsolePlayerOrderCode consolePlayerOrderCode = ConsolePlayerOrderCode.valueOf(propertyName);
-                    String codesByOrderCode = consolePlayerCodesInfo.getCodesByOrderCode(consolePlayerOrderCode);
+        final String helpElementSeparator = "\n\n";
+        final String orderSelementsSeparator = ",";
 
-                    return codesByOrderCode + keyValueSeparator + helpInfo.getProperty(propertyName);
+        Map<String, ConsoleCodesData> consoleCodesDataMap = consoleCodesInfo.getJsonSource().getData();
+        String helpInfoData = consoleCodesDataMap.entrySet().parallelStream()
+                .sorted(Map.Entry.comparingByKey())
+                .sequential()
+                .map(entry -> {
+                    ConsoleCodesData consoleCodesData = entry.getValue();
+                    return consoleCodesData.getJoinedOrders(orderSelementsSeparator)
+                            + keyValueSeparator
+                            + consoleCodesData.getHelpInfo();
                 })
-                .sorted((o1, o2) -> {
-                    String o1Compare = o1.split(keyValueSeparator)[0].trim();
-                    String o2Compare = o2.split(keyValueSeparator)[0].trim();
-
-                    return o1Compare.compareTo(o2Compare);
-                })
-                .collect(Collectors.joining("\n\n"));
+                .collect(Collectors.joining(helpElementSeparator));
 
         execution.appendOutput("---------", info);
         execution.appendOutput("Help Info", info);
@@ -320,15 +316,15 @@ public class ConsoleInterpreter implements CommandInterpreter {
     public ConsoleExecution executeCommand(Command cmd) throws Exception {
 
         final String cmdOrder = cmd.getOrder();
-        final ConsolePlayerOrderCode consolePlayerOrderCode = consolePlayerCodesInfo.getConsoleOrderCodeByCmdOrder(cmdOrder);
+        final ConsoleOrderCode consoleOrderCode = consoleCodesInfo.getConsoleOrderCodeByCmdOrder(cmdOrder);
         Track current;
 
         final ConsoleExecution execution = new ConsoleExecution();
         execution.setCmd(cmd.toString());
         // imprimir output de este objeto no mas
 
-        if (consolePlayerOrderCode != null) {
-            switch (consolePlayerOrderCode) {
+        if (consoleOrderCode != null) {
+            switch (consoleOrderCode) {
                 case st:
                     if (player == null)
                         player = new MusicPlayer(playerFolder);

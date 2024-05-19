@@ -5,7 +5,6 @@ import org.muplayer.audio.player.MusicPlayer;
 import org.muplayer.audio.player.Player;
 import org.muplayer.console.ConsoleExecution;
 import org.muplayer.console.ConsoleInterpreter;
-import org.muplayer.system.SysInfo;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
 
@@ -39,8 +38,8 @@ public abstract class ConsoleRunner implements Runnable {
     }
 
     protected void printHeader() {
-        final FileOutputStream stdout = SystemUtil.getStdout();
         try {
+            final FileOutputStream stdout = SystemUtil.getStdout();
             stdout.write(Logger.getLogger(this, LINEHEADER)
                     .getColoredMsg(Logger.INFOCOLOR).getBytes());
             stdout.flush();

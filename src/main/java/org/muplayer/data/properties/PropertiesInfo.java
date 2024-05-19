@@ -1,4 +1,4 @@
-package org.muplayer.properties;
+package org.muplayer.data.properties;
 
 import lombok.Getter;
 
@@ -14,8 +14,9 @@ public abstract class PropertiesInfo<T> {
         this.propertiesSource = propertiesSource;
         this.properties = new Properties();
         try {
-            if (!this.propertiesSource.validate(properties))
+            if (!this.propertiesSource.validate(properties)) {
                 loadDefaultData();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

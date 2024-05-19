@@ -1,8 +1,6 @@
 package org.muplayer.audio.track;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.java.Log;
 import org.jaudiotagger.tag.FieldKey;
 import org.muplayer.audio.info.AudioHardware;
@@ -11,7 +9,7 @@ import org.muplayer.audio.player.Player;
 import org.muplayer.audio.track.states.*;
 import org.muplayer.interfaces.ControllableMusic;
 import org.muplayer.interfaces.ReportableTrack;
-import org.muplayer.properties.support.AudioSupportInfo;
+import org.muplayer.data.properties.support.AudioSupportInfo;
 import org.muplayer.util.AudioUtil;
 import org.muplayer.util.FileUtil;
 import org.muplayer.util.TrackUtil;

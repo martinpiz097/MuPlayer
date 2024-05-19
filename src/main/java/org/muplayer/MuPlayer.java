@@ -4,30 +4,24 @@ import lombok.extern.java.Log;
 import org.muplayer.console.runner.ConsoleRunner;
 import org.muplayer.console.runner.DaemonRunner;
 import org.muplayer.console.runner.LocalRunner;
-import org.muplayer.properties.config.ConfigInfo;
-import org.muplayer.properties.config.ConfigInfoKeys;
-import org.muplayer.properties.console.ConsolePlayerCodesInfo;
-import org.muplayer.properties.log.LogConfig;
-import org.muplayer.properties.log.LogConfigKeys;
-import org.muplayer.properties.msg.MessagesInfo;
-import org.muplayer.properties.msg.MessagesInfoKeys;
+import org.muplayer.data.properties.config.ConfigInfo;
+import org.muplayer.data.properties.config.ConfigInfoKeys;
+import org.muplayer.data.json.command.ConsoleCodesInfo;
+import org.muplayer.data.properties.log.LogConfig;
+import org.muplayer.data.properties.log.LogConfigKeys;
+import org.muplayer.data.properties.msg.MessagesInfo;
+import org.muplayer.data.properties.msg.MessagesInfoKeys;
 import org.muplayer.system.Global;
 import org.muplayer.system.GlobalVar;
 import org.muplayer.thread.TaskRunner;
-import org.muplayer.util.IOUtil;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
-
-import static org.muplayer.properties.PropertiesFiles.LOG_CONFIG_RES_PATH;
 
 @Log
 public class MuPlayer {
     public static void main(String[] args) {
         try {
-            ConsolePlayerCodesInfo.getInstance().getProperties();
             loadLogConfig();
             ConsoleRunner consoleRunner = null;
             if (args.length == 0) {

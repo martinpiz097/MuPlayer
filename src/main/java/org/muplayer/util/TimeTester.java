@@ -1,14 +1,13 @@
 package org.muplayer.util;
 
 import lombok.extern.java.Log;
-import org.muplayer.properties.log.LogConfig;
-import org.muplayer.properties.log.LogConfigKeys;
+import org.muplayer.data.properties.log.LogConfig;
+import org.muplayer.data.properties.log.LogConfigKeys;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 
 @Log
 public class TimeTester {

@@ -1,8 +1,8 @@
-package org.muplayer.properties.support;
+package org.muplayer.data.properties.support;
 
-import org.muplayer.properties.PropertiesFiles;
-import org.muplayer.properties.PropertiesInfo;
-import org.muplayer.properties.StreamPropertiesSource;
+import org.muplayer.data.properties.ResourceFiles;
+import org.muplayer.data.properties.PropertiesInfo;
+import org.muplayer.data.properties.StreamPropertiesSource;
 
 import java.io.InputStream;
 import java.util.LinkedHashSet;
@@ -19,12 +19,12 @@ public class ResAudioSupportInfo extends PropertiesInfo<InputStream> {
     }
 
     private ResAudioSupportInfo() {
-        super(new StreamPropertiesSource(PropertiesFiles.AUDIO_SUPPORT_RES_PATH));
+        super(new StreamPropertiesSource(ResourceFiles.AUDIO_SUPPORT_RES_PATH));
     }
 
     @Override
     public void loadDefaultData() {
-        // load data por defecto desde codigo
+        // load model por defecto desde codigo
     }
 
     public Set<String> getAudioExtensions() {
