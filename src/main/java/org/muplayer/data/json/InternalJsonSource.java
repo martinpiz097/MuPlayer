@@ -11,8 +11,8 @@ import java.io.InputStream;
 @Log
 public class InternalJsonSource<O> extends JsonSource<String, O> {
 
-    public InternalJsonSource(String sourcePath, TypeReference<O> dataType) {
-        super(sourcePath, dataType);
+    public InternalJsonSource(String sourcePath, TypeReference<O> dataType, boolean enableCache) {
+        super(sourcePath, dataType, enableCache);
     }
 
     @Override
@@ -41,9 +41,15 @@ public class InternalJsonSource<O> extends JsonSource<String, O> {
 
     @Override
     public void loadData() throws Exception {
-        InputStream resStream = ResourceFiles.getResStream(source);
-        ObjectReader reader = objectMapper.readerFor(dataType);
-        this.data = reader.readValue(resStream);
+        O cacheData;
+        if (!enableCache || (cacheData = getCacheData()) == null) {
+            InputStream resStream = ResourceFiles.getResStream(source);
+            ObjectReader reader = objectMapper.readerFor(dataType);
+            this.data = reader.readValue(resStream);
+        }
+        else {
+            this.data = cacheData;
+        }
     }
 
     @Override

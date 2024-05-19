@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.extern.java.Log;
+import org.muplayer.data.CacheManager;
+import org.muplayer.data.CacheVar;
 
 @Log
 public abstract class JsonSource<T, O> {
@@ -14,14 +16,27 @@ public abstract class JsonSource<T, O> {
     protected volatile O data;
     protected final ObjectMapper objectMapper;
 
+    protected final CacheManager cacheManager;
+    protected volatile boolean enableCache;
+
     public JsonSource(T source, TypeReference<O> dataType) {
+        this(source, dataType, false);
+    }
+
+    public JsonSource(T source, TypeReference<O> dataType, boolean enableCache) {
         this.source = source;
         this.dataType = dataType;
         this.objectMapper = createObjectMapper();
+        this.cacheManager = new CacheManager();
+        this.enableCache = enableCache;
     }
 
     protected ObjectMapper createObjectMapper() {
         return new ObjectMapper();
+    }
+
+    protected O getCacheData() {
+        return cacheManager.loadValue(CacheVar.SOURCE_DATA);
     }
 
     public abstract boolean validate();

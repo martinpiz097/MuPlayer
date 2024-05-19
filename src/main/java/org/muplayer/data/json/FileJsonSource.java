@@ -3,8 +3,10 @@ package org.muplayer.data.json;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectReader;
 import lombok.extern.java.Log;
+import org.muplayer.data.properties.ResourceFiles;
 
 import java.io.File;
+import java.io.InputStream;
 
 // Falta validar comportamiento
 @Log
@@ -41,8 +43,14 @@ public class FileJsonSource<O> extends JsonSource<File, O> {
 
     @Override
     public void loadData() throws Exception {
-        ObjectReader reader = objectMapper.readerFor(dataType);
-        this.data = reader.readValue(source);
+        O cacheData;
+        if (!enableCache || (cacheData = getCacheData()) == null) {
+            ObjectReader reader = objectMapper.readerFor(dataType);
+            this.data = reader.readValue(source);
+        }
+        else {
+            this.data = cacheData;
+        }
     }
 
     @Override

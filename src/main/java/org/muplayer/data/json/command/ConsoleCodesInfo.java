@@ -18,7 +18,7 @@ public class ConsoleCodesInfo extends JsonInfo<String, TreeMap<String, ConsoleCo
     private ConsoleCodesInfo() {
         super(new InternalJsonSource<>(
                 ResourceFiles.CONSOLE_PLAYER_CODES_RES_PATH,
-                new TypeReference<>() {}));
+                new TypeReference<>() {}, false));
     }
 
     @Override
