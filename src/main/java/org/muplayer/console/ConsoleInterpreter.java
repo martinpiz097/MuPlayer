@@ -6,6 +6,7 @@ import org.muplayer.audio.player.Player;
 import org.muplayer.console.runner.ConsoleRunner;
 import org.muplayer.console.runner.LocalRunner;
 import org.muplayer.console.runner.RunnerMode;
+import org.muplayer.data.CacheManager;
 import org.muplayer.data.json.command.model.ConsoleCodesData;
 import org.muplayer.model.Album;
 import org.muplayer.model.Artist;
@@ -30,13 +31,14 @@ import java.util.stream.Collectors;
 
 import static java.nio.file.StandardOpenOption.WRITE;
 import static org.muplayer.console.OutputType.*;
-import static org.muplayer.system.GlobalVar.RUNNER;
+import static org.muplayer.data.CacheVar.RUNNER;
 
 public class ConsoleInterpreter implements CommandInterpreter {
     private Player player;
     private final File playerFolder;
     private boolean on;
 
+    private final CacheManager globalCacheManager;
     private final ConsoleCodesInfo consoleCodesInfo;
 
     private static final String CMD_DIVISOR = " && ";
@@ -44,6 +46,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
     public ConsoleInterpreter(Player player) {
         this.player = player;
         this.playerFolder = player.getRootFolder();
+        this.globalCacheManager = CacheManager.getGlobalCache();
         this.consoleCodesInfo = ConsoleCodesInfo.getInstance();
     }
 
@@ -697,12 +700,12 @@ public class ConsoleInterpreter implements CommandInterpreter {
                 case chm:
                     if (cmd.hasOptions()) {
                         final String firstOpt = cmd.getOptionAt(0);
-                        final ConsoleRunner consoleRunner = Global.getInstance().getVar(RUNNER);
+                        final ConsoleRunner consoleRunner = globalCacheManager.loadValue(RUNNER);
                         if (firstOpt.equalsIgnoreCase(RunnerMode.LOCAL.name())) {
                             if (consoleRunner instanceof DaemonRunner) {
                                 final LocalRunner localRunner = new LocalRunner(player);
                                 TaskRunner.execute(localRunner, localRunner.getClass().getSimpleName());
-                                Global.getInstance().setVar(RUNNER, localRunner);
+                                globalCacheManager.saveValue(RUNNER, localRunner);
                                 ((DaemonRunner)consoleRunner).shutdown();
                                 execution.appendOutput("MuPlayer changed from DAEMON to LOCAL mode!", info);
                             }
@@ -713,7 +716,7 @@ public class ConsoleInterpreter implements CommandInterpreter {
                             if (consoleRunner instanceof LocalRunner) {
                                 final DaemonRunner daemonRunner = new DaemonRunner(player);
                                 TaskRunner.execute(daemonRunner, daemonRunner.getClass().getSimpleName());
-                                Global.getInstance().setVar(RUNNER, daemonRunner);
+                                globalCacheManager.saveValue(RUNNER, daemonRunner);
                                 ((LocalRunner)consoleRunner).shutdown();
                                 execution.appendOutput("MuPlayer changed from LOCAL to DAEMON mode!", info);
                             }

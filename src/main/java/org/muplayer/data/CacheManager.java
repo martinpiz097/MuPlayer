@@ -6,12 +6,26 @@ import java.util.TreeMap;
 public class CacheManager {
     private final Map<String, Object> mapCache;
 
-    public CacheManager() {
+    private static final CacheManager globalCacheManager = new CacheManager();
+
+    public static CacheManager getGlobalCache() {
+        return globalCacheManager;
+    }
+
+    public static CacheManager newLocalCacheManager() {
+        return new CacheManager();
+    }
+
+    private CacheManager() {
         this.mapCache = new TreeMap<>();
     }
 
     public void saveValue(CacheVar cacheVar, Object value) {
-        mapCache.put(cacheVar.name(), value);
+        saveValue(cacheVar.name(), value);
+    }
+
+    public void saveValue(String cacheVarName, Object value) {
+        mapCache.put(cacheVarName, value);
     }
 
     public <T> T loadValue(CacheVar cacheVar) {

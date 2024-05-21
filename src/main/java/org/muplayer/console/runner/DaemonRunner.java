@@ -2,16 +2,15 @@ package org.muplayer.console.runner;
 
 import org.muplayer.audio.player.MusicPlayer;
 import org.muplayer.audio.player.Player;
+import org.muplayer.data.CacheManager;
+import org.muplayer.data.CacheVar;
 import org.muplayer.net.DaemonServer;
 import org.muplayer.net.TCPClient;
-import org.muplayer.system.Global;
-import org.muplayer.system.GlobalVar;
 import org.orangelogger.sys.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Scanner;
 
 public class DaemonRunner extends ConsoleRunner {
     private final DaemonServer daemonServer;
@@ -64,7 +63,7 @@ public class DaemonRunner extends ConsoleRunner {
         Logger.getLogger(this, "Daemon server closed!");
         try {
             daemonServer.shutdownServer();
-            final ConsoleRunner runner = Global.getInstance().getVar(GlobalVar.RUNNER);
+            final ConsoleRunner runner = globalCacheManager.loadValue(CacheVar.RUNNER);
             if (runner == null || runner instanceof DaemonRunner)
                 System.exit(0);
         } catch (IOException e) {

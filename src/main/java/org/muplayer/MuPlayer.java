@@ -4,15 +4,14 @@ import lombok.extern.java.Log;
 import org.muplayer.console.runner.ConsoleRunner;
 import org.muplayer.console.runner.DaemonRunner;
 import org.muplayer.console.runner.LocalRunner;
+import org.muplayer.data.CacheManager;
+import org.muplayer.data.CacheVar;
 import org.muplayer.data.properties.config.ConfigInfo;
 import org.muplayer.data.properties.config.ConfigInfoKeys;
-import org.muplayer.data.json.command.ConsoleCodesInfo;
 import org.muplayer.data.properties.log.LogConfig;
 import org.muplayer.data.properties.log.LogConfigKeys;
 import org.muplayer.data.properties.msg.MessagesInfo;
 import org.muplayer.data.properties.msg.MessagesInfoKeys;
-import org.muplayer.system.Global;
-import org.muplayer.system.GlobalVar;
 import org.muplayer.thread.TaskRunner;
 
 import java.util.logging.Level;
@@ -53,7 +52,7 @@ public class MuPlayer {
             }
             if (consoleRunner != null) {
                 TaskRunner.execute(consoleRunner, consoleRunner.getClass().getSimpleName());
-                Global.getInstance().setVar(GlobalVar.RUNNER, consoleRunner);
+                CacheManager.getGlobalCache().saveValue(CacheVar.RUNNER, consoleRunner);
             }
         } catch (Exception e) {
             e.printStackTrace();

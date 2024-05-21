@@ -3,8 +3,7 @@ package org.muplayer.console.runner;
 import org.muplayer.audio.player.MusicPlayer;
 import org.muplayer.audio.player.Player;
 import org.muplayer.console.ConsoleExecution;
-import org.muplayer.system.Global;
-import org.muplayer.system.GlobalVar;
+import org.muplayer.data.CacheVar;
 import org.muplayer.system.SysInfo;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
@@ -81,7 +80,7 @@ public class LocalRunner extends ConsoleRunner {
             }
         }
 
-        final ConsoleRunner runner = Global.getInstance().getVar(GlobalVar.RUNNER);
+        final ConsoleRunner runner = globalCacheManager.loadValue(CacheVar.RUNNER);
         if (runner == null || runner instanceof LocalRunner)
             System.exit(0);
     }

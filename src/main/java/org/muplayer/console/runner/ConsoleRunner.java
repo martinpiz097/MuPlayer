@@ -5,6 +5,7 @@ import org.muplayer.audio.player.MusicPlayer;
 import org.muplayer.audio.player.Player;
 import org.muplayer.console.ConsoleExecution;
 import org.muplayer.console.ConsoleInterpreter;
+import org.muplayer.data.CacheManager;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
 
@@ -16,6 +17,7 @@ public abstract class ConsoleRunner implements Runnable {
     protected final Player player;
     protected final ConsoleInterpreter interpreter;
     protected final Scanner scanner;
+    protected final CacheManager globalCacheManager;
 
     protected static final String LINEHEADER = "[MuPlayer]> ";
 
@@ -35,6 +37,7 @@ public abstract class ConsoleRunner implements Runnable {
         this.player = player;
         interpreter = new ConsoleInterpreter(player);
         scanner = new Scanner(System.in);
+        globalCacheManager = CacheManager.getGlobalCache();
     }
 
     protected void printHeader() {
