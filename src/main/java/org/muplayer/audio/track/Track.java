@@ -33,37 +33,31 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
 
     protected static final AudioSupportInfo audioSupportInfo = AudioSupportInfo.getInstance();
 
-    public static Track getTrack(Object dataSource) {
+    public static Track getTrack(File dataSource) {
         return getTrack(dataSource, null);
     }
 
-    public static Track getTrack(Object dataSource, Player player) {
-        if (dataSource != null) {
-            final File fileSource;
-            if (dataSource instanceof File) {
-                fileSource = (File) dataSource;
-            }
-            else if (dataSource instanceof String) {
-                fileSource = new File((String) dataSource);
-            }
-            else {
-                throw new MuPlayerException("The dataSource object is not File or String instance");
-            }
+    public static Track getTrack(String dataSource) {
+        return getTrack(new File(dataSource));
+    }
 
-            Track result = null;
-            if (fileSource.exists()) {
-                final String formatName = FileUtil.getFormatName(fileSource.getName());
+    public static Track getTrack(File dataSource, Player player) {
+        if (dataSource != null) {
+            Track result;
+
+            if (dataSource.exists()) {
+                final String formatName = FileUtil.getFormatName(dataSource.getName());
                 final String formatClass = audioSupportInfo.getProperty(formatName);
 
                 if (formatClass != null) {
-                    result = TrackUtil.getTrackFromClass(formatClass, fileSource, player);
+                    result = TrackUtil.getTrackFromClass(formatClass, dataSource, player);
                 }
                 else {
                     throw new MuPlayerException("Audio format " + formatName + " not supported!");
                 }
             }
             else {
-                throw new MuPlayerException("The dataSource file for path "+fileSource.getPath()+" not exists");
+                throw new MuPlayerException("The dataSource file for path "+dataSource.getPath()+" not exists");
             }
 
             return result;
@@ -71,6 +65,10 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
         else {
             throw new MuPlayerException("The dataSource object is null");
         }
+    }
+
+    public static Track getTrack(String dataSource, Player player) {
+        return getTrack(new File(dataSource), player);
     }
 
     protected Track(File dataSource)
@@ -140,14 +138,6 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     public File getDataSourceAsFile() {
         return dataSource instanceof File ? (File) dataSource : null;
     }
-
-    /*public InputStream getDataSourceAsStream() {
-        return dataSource instanceof InputStream ? (InputStream) dataSource : null;
-    }
-
-    public URL getDataSourceAsURL() {
-        return dataSource instanceof URL ? (URL) dataSource : null;
-    }*/
 
     @Override
     public long getDuration() {
@@ -229,9 +219,9 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
             final long skip = trackIO.getDecodedStream().skip(bytesToSeek);
             final double skippedSeconds = convertBytesToSeconds(skip);
 
-            if (skip > 0)
+            if (skip > 0) {
                 trackData.setSecsSeeked(trackData.getSecsSeeked() + skippedSeconds);
-
+            }
             // se deben sumar los segundos que realmente se saltaron
             // o saltar bytes hasta completar esos segundos
         } else if (seconds < 0) {
@@ -250,10 +240,11 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
         final double progress = getProgress();
         if (second >= progress) {
             final int duration = (int) getDuration();
-            if (second > duration)
+            if (second > duration) {
                 second = duration;
-            final int gt = (int) Math.round(second - getProgress());
-            seek(gt);
+            }
+            final int gotoValue = (int) Math.round(second - getProgress());
+            seek(gotoValue);
         } else
             trackState = new ReverberatedState(player, this, second);
     }
@@ -285,12 +276,15 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     public void unMute() {
         if (trackData.isVolumeZero()) {
             trackData.setVolume(100);
-            if (trackIO != null && trackIO.isTrackStreamsOpened())
+            if (trackIO != null && trackIO.isTrackStreamsOpened()) {
                 trackIO.setGain(AudioUtil.convertVolRangeToLineRange(trackData.getVolume()));
-        } else
+            }
+        } else {
             trackData.setMute(false);
-        if (trackIO != null && trackIO.isTrackStreamsOpened())
+        }
+        if (trackIO != null && trackIO.isTrackStreamsOpened()) {
             AudioHardware.setMuteValue(trackIO.getSpeakerDriver(), false);
+        }
     }
 
     @Override

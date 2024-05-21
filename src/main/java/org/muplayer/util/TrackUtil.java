@@ -95,9 +95,9 @@ public class TrackUtil {
     }
 
     public static Constructor<? extends Track> getTrackClassConstructor(String formatClass, Class<?>... paramsClasses) {
-        final Class<? extends Track> trackClass;
         try {
-            trackClass = (Class<? extends Track>) Class.forName(formatClass);
+            final Class<? extends Track> trackClass = (Class<? extends Track>)
+                    Class.forName(formatClass);
             return trackClass.getConstructor(paramsClasses);
         } catch (Exception e) {
             return null;
@@ -106,18 +106,8 @@ public class TrackUtil {
 
     public static Track getTrackFromClass(String formatClass, File dataSource, Player player) {
         try {
-            final Constructor<? extends Track> constructor
-                    = getTrackClassConstructor(formatClass, dataSource.getClass(), Player.class);
-            return constructor != null ? constructor.newInstance(dataSource, player) : null;
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public static Track getTrackFromClass(String formatClass, InputStream dataSource, Player player) {
-        try {
-            final Constructor<? extends Track> constructor
-                    = getTrackClassConstructor(formatClass, dataSource.getClass(), Player.class);
+            final Constructor<? extends Track> constructor = getTrackClassConstructor(
+                    formatClass, dataSource.getClass(), Player.class);
             return constructor != null ? constructor.newInstance(dataSource, player) : null;
         } catch (Exception e) {
             return null;
