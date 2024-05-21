@@ -7,7 +7,7 @@ import org.muplayer.audio.info.AudioHardware;
 import org.muplayer.audio.info.AudioTag;
 import org.muplayer.audio.player.Player;
 import org.muplayer.audio.track.state.*;
-import org.muplayer.audio.track.states.*;
+import org.muplayer.exception.MuPlayerException;
 import org.muplayer.interfaces.ControllableMusic;
 import org.muplayer.interfaces.ReportableTrack;
 import org.muplayer.data.properties.support.AudioSupportInfo;
@@ -31,56 +31,52 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
 
     protected final Player player;
 
+    protected static final AudioSupportInfo audioSupportInfo = AudioSupportInfo.getInstance();
+
     public static Track getTrack(Object dataSource) {
         return getTrack(dataSource, null);
     }
 
     public static Track getTrack(Object dataSource, Player player) {
-        if (dataSource instanceof File || dataSource instanceof String) {
-            final File fileSource = dataSource instanceof File ? (File) dataSource : new File((String) dataSource);
-            if (!fileSource.exists())
-                return null;
+        if (dataSource != null) {
+            final File fileSource;
+            if (dataSource instanceof File) {
+                fileSource = (File) dataSource;
+            }
+            else if (dataSource instanceof String) {
+                fileSource = new File((String) dataSource);
+            }
+            else {
+                throw new MuPlayerException("The dataSource object is not File or String instance");
+            }
 
             Track result = null;
-            final String formatName = FileUtil.getFormatName(fileSource.getName());
-            final AudioSupportInfo audioSupportInfo = AudioSupportInfo.getInstance();
-            final String formatClass = audioSupportInfo.getProperty(formatName);
+            if (fileSource.exists()) {
+                final String formatName = FileUtil.getFormatName(fileSource.getName());
+                final String formatClass = audioSupportInfo.getProperty(formatName);
 
-            // ojo que puede faltar un throws para mas adelante
-            // avisando que se intenta cargar un archivo que no es audio
-            if (AudioUtil.isSupportedFile(fileSource))
-                result = TrackUtil.getTrackFromClass(formatClass, fileSource, player);
+                if (formatClass != null) {
+                    result = TrackUtil.getTrackFromClass(formatClass, fileSource, player);
+                }
+                else {
+                    throw new MuPlayerException("Audio format " + formatName + " not supported!");
+                }
+            }
+            else {
+                throw new MuPlayerException("The dataSource file for path "+fileSource.getPath()+" not exists");
+            }
+
             return result;
         }
-        /*else if (dataSource instanceof InputStream) {
-            final InputStream inputStream = (InputStream) dataSource;
-            final AudioSupportInfo supportManager = AudioSupportInfo.getInstance();
-            final Set<String> propertyNames = supportManager.getPropertyNames();
-
-            final Optional<Track> optionalTrack = propertyNames.stream()
-                    .map(propName -> TrackUtil.getTrackFromClass(
-                            supportManager.getProperty(propName), inputStream, player))
-                    .filter(Objects::nonNull)
-                    .findFirst();
-            return optionalTrack.orElse(null);
+        else {
+            throw new MuPlayerException("The dataSource object is null");
         }
-        else if (dataSource instanceof URL) {
-            // not supported yet
-            return null;
-        }*/
-        else
-            return null;
-
     }
 
     protected Track(File dataSource)
             throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this(dataSource, null);
     }
-
-    /*protected Track(InputStream inputStream) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-        this(inputStream, null);
-    }*/
 
     protected Track(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this(new File(trackPath), null);
@@ -93,16 +89,6 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
         this.trackState = new InitializedState(player, this);
         setPriority(MAX_PRIORITY);
     }
-
-    // ojo con los mp3
-    /*protected Track(InputStream inputStream, Player player) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-        this.dataSource = inputStream;
-        trackIO = new TrackIO();
-        state = new StoppedState(player, this);
-        this.trackData = new TrackData(0, 0, PlayerData.DEFAULT_VOLUME, false);
-        this.player = player;
-        setPriority(MAX_PRIORITY);
-    }*/
 
     protected Track(String trackPath, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this(new File(trackPath), player);
