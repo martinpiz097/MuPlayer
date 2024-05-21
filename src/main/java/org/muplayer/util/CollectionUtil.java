@@ -1,10 +1,12 @@
 package org.muplayer.util;
 
-import java.util.LinkedList;
-import java.util.List;
+import org.tritonus.share.ArraySet;
+
+import java.util.*;
 
 public class CollectionUtil {
     public static <T> List<T> newFastList() {
         return new LinkedList<>();
     }
+
 }
