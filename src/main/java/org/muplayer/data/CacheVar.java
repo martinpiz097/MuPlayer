@@ -1,5 +1,5 @@
 package org.muplayer.data;
 
 public enum CacheVar {
-    SOURCE_DATA, RUNNER
+    SOURCE_DATA, RUNNER, PLAYER
 }

@@ -19,14 +19,6 @@ public class Time {
         timeFormatter = new TimeFormatter();
     }
 
-    private Calendar getCalendar() {
-        return new GregorianCalendar();
-    }
-
-    /*private long getHours(Calendar cal) {
-        int hours = cal.get(Calendar.HOUR_OF_DAY);
-    }*/
-
     public long getTime() {
         return new GregorianCalendar().getTimeInMillis();
     }

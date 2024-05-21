@@ -18,10 +18,19 @@ public class DaemonServer {
     private final List<Client> listClients;
 
     public DaemonServer() throws IOException {
-        serverSocket = new ServerSocket(Integer.parseInt(MuPlayerInfo.getInstance().getProperty(
-                MuPlayerInfoKeys.DAEMON_SERVER_PORT)));
-        serverSocket.setSoTimeout(3000);
+        this.serverSocket = new ServerSocket(getServerSetupPort());
+        this.serverSocket.setSoTimeout(getSetSoTimeout());
         this.listClients = CollectionUtil.newFastList();
+    }
+
+    private int getServerSetupPort() {
+        String portProperty = MuPlayerInfo.getInstance().getProperty(
+                MuPlayerInfoKeys.DAEMON_SERVER_PORT);
+        return portProperty != null ? Integer.parseInt(portProperty) : 0;
+    }
+
+    private int getSetSoTimeout() {
+        return 3000;
     }
 
     public boolean isAlive() {
@@ -37,8 +46,9 @@ public class DaemonServer {
                     && e.getMessage().equalsIgnoreCase("Socket closed"))) {
                 return null;
             }
-            else
+            else {
                 throw e;
+            }
         }
     }
 

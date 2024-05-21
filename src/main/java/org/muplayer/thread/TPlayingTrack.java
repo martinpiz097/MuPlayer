@@ -1,7 +1,6 @@
 package org.muplayer.thread;
 
 import org.muplayer.audio.player.MusicPlayer;
-import org.muplayer.audio.player.Player;
 import org.muplayer.audio.track.Track;
 import org.muplayer.listener.ListenersNames;
 
@@ -19,7 +18,7 @@ public class TPlayingTrack implements Runnable {
 
     public boolean hasTrack(Track track) {
         try {
-            File dataSource = this.track.getDataSourceAsFile();
+            File dataSource = this.track.getDataSource();
             final String dataSourcePath = dataSource.getCanonicalPath();
             final String anotherSourcePath = dataSource.getCanonicalPath();
             return dataSourcePath.equals(anotherSourcePath);

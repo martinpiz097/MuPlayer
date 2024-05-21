@@ -1,7 +1,6 @@
 package org.muplayer.thread;
 
 public class TaskRunner {
-
     public static void execute(Runnable runnable, String threadName) {
         execute(new Thread(runnable), threadName);
     }

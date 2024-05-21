@@ -26,7 +26,7 @@ public class InitializedState extends TrackState {
                     .canTrackContinue(true)
                     .build();
             track.setTrackData(trackData);
-            track.setTagInfo(track.loadTagInfo(track.getDataSourceAsFile()));
+            track.setTagInfo(track.loadTagInfo(track.getDataSource()));
         } catch (Exception e) {
             log.log(Level.SEVERE, e.getMessage());
             track.kill();

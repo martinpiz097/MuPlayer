@@ -22,7 +22,7 @@ public class FilePropertiesSource extends PropertiesSource<File> {
 
     @Override
     public void loadData(Properties properties) throws Exception {
-        properties.load(IOUtil.getBufferedReader(source));
+        properties.load(IOUtil.getFileBufferedReader(source));
     }
 
     @Override

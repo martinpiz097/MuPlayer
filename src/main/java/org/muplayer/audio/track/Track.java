@@ -23,10 +23,10 @@ import java.io.IOException;
 @Data
 @Log
 public abstract class Track extends Thread implements ControllableMusic, ReportableTrack {
-    protected volatile Object dataSource;
+    protected final File dataSource;
     protected volatile AudioTag tagInfo;
     protected volatile TrackIO trackIO;
-    protected volatile TrackData trackData;
+    protected final TrackData trackData;
     protected volatile TrackState trackState;
 
     protected final Player player;
@@ -71,13 +71,17 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
         return getTrack(new File(dataSource), player);
     }
 
+    protected Track(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        this(new File(trackPath), null);
+    }
+
     protected Track(File dataSource)
             throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this(dataSource, null);
     }
 
-    protected Track(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        this(new File(trackPath), null);
+    protected Track(String trackPath, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        this(new File(trackPath), player);
     }
 
     protected Track(File dataSource, Player player)
@@ -85,11 +89,8 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
         this.dataSource = dataSource;
         this.player = player;
         this.trackState = new InitializedState(player, this);
+        this.trackData = new TrackData();
         setPriority(MAX_PRIORITY);
-    }
-
-    protected Track(String trackPath, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        this(new File(trackPath), player);
     }
 
     // Ver opcion de usar archivo temporal y leer desde ahi
@@ -133,10 +134,6 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
 
     public String getStateToString() {
         return trackState.getName();
-    }
-
-    public File getDataSourceAsFile() {
-        return dataSource instanceof File ? (File) dataSource : null;
     }
 
     @Override

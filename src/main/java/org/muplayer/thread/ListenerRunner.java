@@ -16,7 +16,6 @@ public class ListenerRunner implements Runnable {
         this.listListeners = listListeners;
         this.methodName = methodName;
         this.track = track;
-        //setName("ListenerRunner "+getId());
     }
 
     @Override

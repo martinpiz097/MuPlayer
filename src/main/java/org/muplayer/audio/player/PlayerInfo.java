@@ -18,8 +18,8 @@ public class PlayerInfo {
 
     public PlayerInfo(MusicPlayer musicPlayer) {
         this.current = musicPlayer.getCurrent();
-        trackFolder = current != null && current.getDataSourceAsFile() != null
-                ? current.getDataSourceAsFile().getParentFile() : null;
+        trackFolder = current != null && current.getDataSource() != null
+                ? current.getDataSource().getParentFile() : null;
         rootFolder = musicPlayer.getRootFolder();
         volume = musicPlayer.getVolume();
         songsCount = musicPlayer.getSongsCount();

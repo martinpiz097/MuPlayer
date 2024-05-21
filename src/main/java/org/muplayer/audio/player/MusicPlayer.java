@@ -135,8 +135,8 @@ public class MusicPlayer extends Player {
             if (o1 == null || o2 == null) {
                 return 0;
             }
-            final File dataSource1 = o1.getDataSourceAsFile();
-            final File dataSource2 = o2.getDataSourceAsFile();
+            final File dataSource1 = o1.getDataSource();
+            final File dataSource2 = o2.getDataSource();
             if (dataSource1 == null || dataSource2 == null) {
                 return 0;
             }
@@ -156,7 +156,7 @@ public class MusicPlayer extends Player {
     }
 
     private int getFolderIndex() {
-        final File dataSource = current.getDataSourceAsFile();
+        final File dataSource = current.getDataSource();
         final File currentParent = current != null ? dataSource.getParentFile() : null;
         return currentParent != null ? listFolders.indexOf(currentParent) : -1;
     }
@@ -327,8 +327,8 @@ public class MusicPlayer extends Player {
 
     @Override
     public synchronized List<File> getListSoundFiles() {
-        return listTracks.stream().filter(track -> track.getDataSourceAsFile() != null)
-                .map(track -> (File) track.getDataSourceAsFile()).collect(Collectors.toList());
+        return listTracks.stream().filter(track -> track.getDataSource() != null)
+                .map(track -> (File) track.getDataSource()).collect(Collectors.toList());
     }
 
     @Override

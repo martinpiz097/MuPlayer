@@ -11,7 +11,6 @@ import java.net.URL;
 import java.nio.file.Path;
 
 public class AudioUtil {
-
     private static final float MAX_VOL = 0.855f;
     private static final float MIN_VOL = -80f;
     public static final float VOL_RANGE = MAX_VOL-MIN_VOL;
@@ -22,14 +21,14 @@ public class AudioUtil {
     private static final float DEFAULT_VOL_RANGE = DEFAULT_MAX_VOL-DEFAULT_MIN_VOL;
 
     private static float convertVolRangeToLineRange(float volume, float minLineVol, float maxLineVol) {
-        float volRange = maxLineVol-minLineVol;
+        float volRange = maxLineVol - minLineVol;
         float volScale = 1 / (DEFAULT_VOL_RANGE / volRange);
 
-        float result = (volume * volScale)+minLineVol;
+        float result = (volume * volScale) + minLineVol;
         return result < minLineVol ? minLineVol : (Math.min(result, maxLineVol));
     }
     private static float convertLineRangeToVolRange(float volume, float minLineVol, float maxLineVol) {
-        float volRange = maxLineVol-minLineVol;
+        float volRange = maxLineVol - minLineVol;
         float volScale = 1 / (DEFAULT_VOL_RANGE / volRange);
 
         float result = (volume - minLineVol) / volScale;
@@ -53,24 +52,28 @@ public class AudioUtil {
     }
 
     public static AudioInputStream instanceStream(AudioFileReader audioReader, Object source) throws IOException, UnsupportedAudioFileException {
-        if (source instanceof URL)
+        if (source instanceof URL) {
             return audioReader.getAudioInputStream((URL) source);
-        else if (source instanceof InputStream)
+        } else if (source instanceof InputStream) {
             return audioReader.getAudioInputStream((InputStream) source);
-        else
+        } else {
             return audioReader.getAudioInputStream((File) source);
+        }
     }
 
     public static AudioFileFormat getAudioFileFormat(Object dataSource) throws UnsupportedAudioFileException, IOException {
         if (dataSource != null) {
-            if (dataSource instanceof File)
+            if (dataSource instanceof File) {
                 return AudioSystem.getAudioFileFormat((File) dataSource);
-            else if (dataSource instanceof InputStream)
+            } else if (dataSource instanceof InputStream) {
                 return AudioSystem.getAudioFileFormat((InputStream) dataSource);
-            else
+            } else {
                 return AudioSystem.getAudioFileFormat((URL) dataSource);
+            }
         }
-        return null;
+        else {
+            return null;
+        }
     }
 
     public static boolean isSupportedFile(File trackFile) {
@@ -87,24 +90,6 @@ public class AudioUtil {
     }
 
     public static AudioFormat getPcmFormatByMpeg(AudioFormat baseFormat) {
-        /*Logger.getLogger(DecodeManager.class, "SampleRate: "+baseFormat.getSampleRate())
-                .info();AudioU
-        Logger.getLogger(DecodeManager.class, "FrameRate: "+baseFormat.getFrameRate())
-                .info();
-        Logger.getLogger(DecodeManager.class, "FrameSize: "+baseFormat.getFrameSize())
-                .info();
-        */
-
-        /*System.out.println("BaseSampleRate: "+baseFormat.getSampleRate());
-        System.out.println("BaseSampleSize: "+baseFormat.getSampleSizeInBits());
-        System.out.println("BaseChannels: "+baseFormat.getChannels());
-        System.out.println("BaseEncoding: "+baseFormat.getEncoding().toString());
-        System.out.println("BaseFrameRate: "+baseFormat.getFrameRate());
-        System.out.println("BaseFrameSize: "+baseFormat.getFrameSize());
-        System.out.println("-----------------------------");*/
-
-        /*return new AudioFormat(baseFormat.getSampleRate(), 16, baseFormat.getChannels(),
-                true, baseFormat.isBigEndian());*/
         return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
                 baseFormat.getSampleRate(),
                 16,
@@ -128,12 +113,11 @@ public class AudioUtil {
     public static AudioInputStream decodeToPcm(
             AudioFormat baseFormat, AudioInputStream encodedAis) {
         final AudioFormat decodedFormat = getPcmFormatByMpeg(baseFormat);
-        // Es preferible realizar la comprobacion aca y en java interno
-        // que tener una excepcion
-        if (AudioSystem.isConversionSupported(decodedFormat, baseFormat))
+        if (AudioSystem.isConversionSupported(decodedFormat, baseFormat)) {
             return AudioSystem.getAudioInputStream(decodedFormat, encodedAis);
-        else
+        } else {
             return null;
+        }
     }
 
     public static AudioInputStream decodeToPcm(AudioInputStream sourceAis) {

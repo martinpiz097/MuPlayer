@@ -7,8 +7,6 @@ import org.orangelogger.sys.Logger;
 import java.io.File;
 
 public class ThreadUtil {
-
-    // paso un segundo ?
     public static boolean hasOneSecond(long ti) {
         return Time.getInstance().getTime() - ti >= 1000;
     }
@@ -26,7 +24,7 @@ public class ThreadUtil {
     }
 
     public static String generateTrackThreadName(Class threadClass, Track track) {
-        final File dataSource = track.getDataSourceAsFile();
+        final File dataSource = track.getDataSource();
         final String trackName = dataSource != null ? dataSource.getName() : dataSource.toString();
         final int lengthLimit = Math.min(trackName.length(), 10);
         return threadClass.getSimpleName()+" (track=" + trackName.substring(0, lengthLimit) + ")";
