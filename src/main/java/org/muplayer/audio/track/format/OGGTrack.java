@@ -1,6 +1,8 @@
-package org.muplayer.audio.track;
+package org.muplayer.audio.track.format;
 
 import org.muplayer.audio.player.Player;
+import org.muplayer.audio.track.Track;
+import org.muplayer.audio.track.TrackIO;
 import org.muplayer.util.AudioUtil;
 import org.tritonus.sampled.file.jorbis.JorbisAudioFileReader;
 
@@ -10,7 +12,6 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 
 public class OGGTrack extends Track {
 

@@ -1,4 +1,4 @@
-package org.muplayer.audio.track.states;
+package org.muplayer.audio.track.state;
 
 import lombok.Data;
 import org.muplayer.audio.player.Player;

@@ -1,7 +1,6 @@
-package org.muplayer.audio.track.states;
+package org.muplayer.audio.track.state;
 
 import lombok.extern.java.Log;
-import org.aucom.sound.Speaker;
 import org.muplayer.audio.player.Player;
 import org.muplayer.audio.track.Track;
 import org.muplayer.thread.TPlayingTrack;

@@ -1,20 +1,19 @@
-package org.muplayer.audio.track;
+package org.muplayer.audio.track.format;
 
 import javazoom.spi.mpeg.sampled.file.MpegAudioFileReader;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.mp3.MP3AudioHeader;
 import org.muplayer.audio.player.Player;
+import org.muplayer.audio.track.Track;
+import org.muplayer.audio.track.TrackIO;
 import org.muplayer.util.AudioUtil;
-import org.orangelogger.sys.Logger;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 public class MP3Track extends Track {
     private final long frameSize;

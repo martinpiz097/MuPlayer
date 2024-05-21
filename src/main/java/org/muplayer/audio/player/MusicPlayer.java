@@ -2,8 +2,8 @@ package org.muplayer.audio.player;
 
 import lombok.extern.java.Log;
 import org.muplayer.audio.track.Track;
-import org.muplayer.audio.track.states.TrackState;
-import org.muplayer.audio.track.states.UnknownState;
+import org.muplayer.audio.track.state.TrackState;
+import org.muplayer.audio.track.state.UnknownState;
 import org.muplayer.exception.MuPlayerException;
 import org.muplayer.listener.PlayerListener;
 import org.muplayer.model.*;
