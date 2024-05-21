@@ -66,14 +66,15 @@ public class FlacTrack extends Track {
 
     @Override
     public synchronized void seek(double seconds) throws IOException {
-        if (seconds == 0)
-            return;
-        trackData.setSecsSeeked(trackData.getSecsSeeked()+seconds);
-        final int bytesToSeek = (int) Math.round(convertSecondsToBytes(seconds));
+       if (seconds != 0) {
+           trackData.setSecsSeeked(trackData.getSecsSeeked()+seconds);
+           final int bytesToSeek = (int) Math.round(convertSecondsToBytes(seconds));
 
-        AudioInputStream decodedStream = trackIO.getDecodedStream();
-        if (decodedStream != null)
-            decodedStream.read(new byte[bytesToSeek]);
+           AudioInputStream decodedStream = trackIO.getDecodedStream();
+           if (decodedStream != null) {
+               decodedStream.read(new byte[bytesToSeek]);
+           }
+       }
     }
 
 }

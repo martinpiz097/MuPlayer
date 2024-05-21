@@ -54,8 +54,9 @@ public class MP3Track extends Track {
         AudioFormat baseFormat = encodedAudioStream.getFormat();
 
         AudioInputStream trackStream = trackIO.getDecodedStream();
-        if (trackStream != null)
+        if (trackStream != null) {
             trackStream.close();
+        }
         trackIO.setDecodedStream(AudioUtil.decodeToPcm(baseFormat, encodedAudioStream));
     }
 
