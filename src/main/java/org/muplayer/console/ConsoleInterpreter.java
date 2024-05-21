@@ -283,25 +283,25 @@ public class ConsoleInterpreter implements CommandInterpreter {
             execution.appendOutput(TrackUtil.getSongInfo(track), warn);
     }
 
-    public ConsoleExecution executeCommand(String cmd) throws Exception {
-        if (cmd.contains(CMD_DIVISOR)) {
-            final String[] cmdSplit = cmd.split(CMD_DIVISOR);
-            ConsoleExecution consoleExecution = new ConsoleExecution();
-
+    public ConsoleExecution executeCommand(String cmdString) throws Exception {
+        if (cmdString.contains(CMD_DIVISOR)) {
+            final String[] cmdSplit = cmdString.split(CMD_DIVISOR);
             final List<String> listExec = CollectionUtil.newFastList();
             ConsoleExecution exec;
 
             for (int i = 0; i < cmdSplit.length; i++) {
-                exec = executeCommand(cmdSplit[i].trim());
+                exec = executeCommand(new Command(cmdSplit[i].trim()));
                 if (exec != null)
                     listExec.add(exec.getOutputMsg());
             }
-            consoleExecution.setCmd(cmd);
+
+            ConsoleExecution consoleExecution = new ConsoleExecution(cmdString);
             consoleExecution.appendOutput(listExec.get(listExec.size()-1), null);
             return consoleExecution;
         }
-        else
-            return executeCommand(new Command(cmd));
+        else {
+            return executeCommand(new Command(cmdString));
+        }
     }
 
     public boolean isOn() {
@@ -314,13 +314,11 @@ public class ConsoleInterpreter implements CommandInterpreter {
 
     @Override
     public ConsoleExecution executeCommand(Command cmd) throws Exception {
-
         final String cmdOrder = cmd.getOrder();
         final ConsoleOrderCode consoleOrderCode = consoleCodesInfo.getConsoleOrderCodeByCmdOrder(cmdOrder);
         Track current;
 
-        final ConsoleExecution execution = new ConsoleExecution();
-        execution.setCmd(cmd.toString());
+        final ConsoleExecution execution = new ConsoleExecution(cmd);
         // imprimir output de este objeto no mas
 
         if (consoleOrderCode != null) {

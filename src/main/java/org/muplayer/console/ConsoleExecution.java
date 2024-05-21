@@ -8,12 +8,17 @@ import static org.muplayer.console.OutputType.*;
 
 @Data
 public class ConsoleExecution {
-    private String cmd;
+    private final Command cmd;
     private Object outputObject;
     private final StringBuilder sbOutputMsg;
 
-    public ConsoleExecution() {
-        sbOutputMsg = new StringBuilder();
+    public ConsoleExecution(String cmdString) {
+        this(new Command(cmdString));
+    }
+
+    public ConsoleExecution(Command cmd) {
+        this.cmd = cmd;
+        this.sbOutputMsg = new StringBuilder();
     }
 
     public boolean hasOutput() {
