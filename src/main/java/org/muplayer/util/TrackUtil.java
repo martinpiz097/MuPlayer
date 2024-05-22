@@ -7,10 +7,12 @@ import org.muplayer.audio.player.Player;
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.SourceDataLine;
 import java.io.File;
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.util.Map;
 
 public class TrackUtil {
+    private static final Map<String, Constructor<? extends Track>> mapTrackConstructors = CollectionUtil.newFastMap();
+
     public static String getSongInfo(Track track) {
         final StringBuilder sbInfo = new StringBuilder();
         final String title = track.getTitle();
@@ -96,9 +98,14 @@ public class TrackUtil {
 
     public static Constructor<? extends Track> getTrackClassConstructor(String formatClass, Class<?>... paramsClasses) {
         try {
-            final Class<? extends Track> trackClass = (Class<? extends Track>)
-                    Class.forName(formatClass);
-            return trackClass.getConstructor(paramsClasses);
+            Constructor<? extends Track> constructor = mapTrackConstructors.get(formatClass);
+            if (constructor == null) {
+                final Class<? extends Track> trackClass = (Class<? extends Track>)
+                        Class.forName(formatClass);
+                constructor = trackClass.getConstructor(paramsClasses);
+                mapTrackConstructors.put(formatClass, constructor);
+            }
+            return constructor;
         } catch (Exception e) {
             return null;
         }
