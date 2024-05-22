@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.muplayer.audio.player.MusicPlayer;
 import org.muplayer.audio.player.Player;
 import org.muplayer.console.ConsoleExecution;
-import org.muplayer.console.ConsoleInterpreter;
+import org.muplayer.console.PlayerCommandInterpreter;
 import org.muplayer.data.CacheManager;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
@@ -15,7 +15,7 @@ import java.util.Scanner;
 public abstract class ConsoleRunner implements Runnable {
     @Getter
     protected final Player player;
-    protected final ConsoleInterpreter interpreter;
+    protected final PlayerCommandInterpreter interpreter;
     protected final Scanner scanner;
     protected final CacheManager globalCacheManager;
 
@@ -35,7 +35,7 @@ public abstract class ConsoleRunner implements Runnable {
 
     public ConsoleRunner(Player player) {
         this.player = player;
-        interpreter = new ConsoleInterpreter(player);
+        interpreter = new PlayerCommandInterpreter(player);
         scanner = new Scanner(System.in);
         globalCacheManager = CacheManager.getGlobalCache();
     }

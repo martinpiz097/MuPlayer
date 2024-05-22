@@ -7,6 +7,7 @@ import org.muplayer.audio.info.AudioHardware;
 import org.muplayer.audio.info.AudioTag;
 import org.muplayer.audio.player.Player;
 import org.muplayer.audio.track.state.*;
+import org.muplayer.exception.FormatNotSupportedException;
 import org.muplayer.exception.MuPlayerException;
 import org.muplayer.interfaces.ControllableMusic;
 import org.muplayer.interfaces.ReportableTrack;
@@ -33,12 +34,16 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
 
     protected static final AudioSupportInfo audioSupportInfo = AudioSupportInfo.getInstance();
 
+    public static Track getTrack(String dataSource) {
+        return getTrack(new File(dataSource));
+    }
+
     public static Track getTrack(File dataSource) {
         return getTrack(dataSource, null);
     }
 
-    public static Track getTrack(String dataSource) {
-        return getTrack(new File(dataSource));
+    public static Track getTrack(String dataSource, Player player) {
+        return getTrack(new File(dataSource), player);
     }
 
     public static Track getTrack(File dataSource, Player player) {
@@ -51,24 +56,17 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
 
                 if (formatClass != null) {
                     result = TrackUtil.getTrackFromClass(formatClass, dataSource, player);
+                } else {
+                    throw new FormatNotSupportedException("Audio format " + formatName + " not supported!");
                 }
-                else {
-                    throw new MuPlayerException("Audio format " + formatName + " not supported!");
-                }
-            }
-            else {
-                throw new MuPlayerException("The dataSource file for path "+dataSource.getPath()+" not exists");
+            } else {
+                throw new MuPlayerException("The dataSource file for path " + dataSource.getPath() + " not exists");
             }
 
             return result;
-        }
-        else {
+        } else {
             throw new MuPlayerException("The dataSource object is null");
         }
-    }
-
-    public static Track getTrack(String dataSource, Player player) {
-        return getTrack(new File(dataSource), player);
     }
 
     protected Track(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
@@ -88,8 +86,8 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
             throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this.dataSource = dataSource;
         this.player = player;
-        this.trackState = new InitializedState(player, this);
         this.trackData = new TrackData();
+        this.trackState = new InitializedState(player, this);
         setPriority(MAX_PRIORITY);
     }
 
@@ -172,14 +170,16 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
 
     @Override
     public void play() {
-        if (isAlive())
+        if (isAlive()) {
             trackState = new PlayingState(player, this);
+        }
     }
 
     @Override
     public void pause() {
-        if (isPlaying())
+        if (isPlaying()) {
             trackState = new PausedState(player, this);
+        }
     }
 
     @Override
@@ -194,8 +194,9 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
 
     @Override
     public synchronized void stopTrack() {
-        if (isAlive() && (isPlaying() || isPaused()))
+        if (isAlive() && (isPlaying() || isPaused())) {
             trackState = new StoppedState(player, this);
+        }
     }
 
     @Override
@@ -242,8 +243,9 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
             }
             final int gotoValue = (int) Math.round(second - getProgress());
             seek(gotoValue);
-        } else
+        } else {
             trackState = new ReverberatedState(player, this, second);
+        }
     }
 
     @Override
@@ -257,16 +259,18 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
         trackData.setVolume(volume);
         if (trackIO != null && trackIO.isTrackStreamsOpened()) {
             trackIO.setGain(AudioUtil.convertVolRangeToLineRange(volume));
-            if (trackData.isVolumeZero())
+            if (trackData.isVolumeZero()) {
                 AudioHardware.setMuteValue(trackIO.getSpeakerDriver(), true);
+            }
         }
     }
 
     @Override
     public void mute() {
         trackData.setMute(true);
-        if (trackIO != null && trackIO.isTrackStreamsOpened())
+        if (trackIO != null && trackIO.isTrackStreamsOpened()) {
             AudioHardware.setMuteValue(trackIO.getSpeakerDriver(), trackData.isMute());
+        }
     }
 
     @Override

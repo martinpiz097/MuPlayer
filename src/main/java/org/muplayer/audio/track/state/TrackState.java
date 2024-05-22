@@ -10,7 +10,7 @@ import org.muplayer.audio.track.TrackIO;
 public abstract class TrackState {
     protected final Player player;
     protected final Track track;
-    protected volatile TrackData trackData;
+    protected final TrackData trackData;
     protected volatile TrackIO trackIO;
 
     public TrackState(Player player, Track track) {

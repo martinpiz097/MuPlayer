@@ -9,11 +9,8 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 
 public class StartedState extends TrackState {
-    private final TrackData trackData;
-
     public StartedState(Player player, Track track) {
         super(player, track);
-        this.trackData = track.getTrackData();
     }
 
     @Override

@@ -1,11 +1,11 @@
 package org.muplayer.net;
 
-import org.muplayer.console.ConsoleInterpreter;
+import org.muplayer.console.PlayerCommandInterpreter;
 
 public abstract class Client extends Thread implements Connectable {
-    protected final ConsoleInterpreter consoleInterpreter;
+    protected final PlayerCommandInterpreter playerCommandInterpreter;
 
-    protected Client(ConsoleInterpreter consoleInterpreter) {
-        this.consoleInterpreter = consoleInterpreter;
+    protected Client(PlayerCommandInterpreter playerCommandInterpreter) {
+        this.playerCommandInterpreter = playerCommandInterpreter;
     }
 }

@@ -1,7 +1,7 @@
 package org.muplayer.net;
 
 import org.muplayer.console.ConsoleExecution;
-import org.muplayer.console.ConsoleInterpreter;
+import org.muplayer.console.PlayerCommandInterpreter;
 import org.orangelogger.sys.Logger;
 
 import java.io.*;
@@ -13,12 +13,12 @@ public class TCPClient extends Client {
     private final InputStream inputStream;
     private final OutputStream outputStream;
 
-    public TCPClient(ConsoleInterpreter consoleInterpreter, Socket clientSocket) throws IOException {
-        this(consoleInterpreter, clientSocket, clientSocket.getInputStream(), clientSocket.getOutputStream());
+    public TCPClient(PlayerCommandInterpreter playerCommandInterpreter, Socket clientSocket) throws IOException {
+        this(playerCommandInterpreter, clientSocket, clientSocket.getInputStream(), clientSocket.getOutputStream());
     }
 
-    public TCPClient(ConsoleInterpreter consoleInterpreter, Socket clientSocket, InputStream inputStream, OutputStream outputStream) {
-        super(consoleInterpreter);
+    public TCPClient(PlayerCommandInterpreter playerCommandInterpreter, Socket clientSocket, InputStream inputStream, OutputStream outputStream) {
+        super(playerCommandInterpreter);
         this.clientSocket = clientSocket;
         this.inputStream = inputStream;
         this.outputStream = outputStream;
@@ -64,7 +64,7 @@ public class TCPClient extends Client {
                     command = command.trim();
                     Logger.getLogger(this, getLoggerHeader()+"Command received: "+command).info();
 
-                    consoleExecution = consoleInterpreter.executeCommand(command.toLowerCase());
+                    consoleExecution = playerCommandInterpreter.executeCommand(command.toLowerCase());
                     Logger.getLogger(this, getLoggerHeader()+"Command executed. ").info();
 
                     if (consoleExecution != null && consoleExecution.hasOutput()) {

@@ -1,6 +1,7 @@
 package org.muplayer.thread;
 
 import lombok.Getter;
+import lombok.Synchronized;
 import org.muplayer.util.CollectionUtil;
 
 import java.util.Collections;
@@ -18,8 +19,13 @@ public class TracksLoader {
         this.listLoadTasks = Collections.synchronizedList(CollectionUtil.newFastList());
     }
 
-    public boolean hasPendingTasks() {
-        return listLoadTasks.parallelStream().anyMatch(task -> !task.isDone());
+    private void startTaskCleaner(CompletableFuture<?> task) {
+        TracksLoaderCleaner cleaner = new TracksLoaderCleaner(task);
+        cleaner.start();
+    }
+
+    public synchronized boolean hasPendingTasks() {
+        return listLoadTasks.parallelStream().anyMatch(task -> task != null && !task.isDone());
     }
 
     public void deleteFirstCompletedTask() {
@@ -28,19 +34,20 @@ public class TracksLoader {
         }
     }
 
-    public CompletableFuture<Void> addTask(Runnable task) {
+    public synchronized CompletableFuture<Void> addTask(Runnable task) {
         CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(task);
         listLoadTasks.add(completableFuture);
+        startTaskCleaner(completableFuture);
         return completableFuture;
     }
 
-    public <T> CompletableFuture<T> addTask(Supplier<T> task) {
+    public synchronized <T> CompletableFuture<T> addTask(Supplier<T> task) {
         CompletableFuture<T> tCompletableFuture = CompletableFuture.supplyAsync(task);
         listLoadTasks.add(tCompletableFuture);
         return tCompletableFuture;
     }
 
-    public void removeTask(CompletableFuture<?> task) {
+    public synchronized void removeTask(CompletableFuture<?> task) {
         listLoadTasks.remove(task);
     }
 }

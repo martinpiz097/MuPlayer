@@ -13,12 +13,12 @@ import java.nio.file.Path;
 public class AudioUtil {
     private static final float MAX_VOL = 0.855f;
     private static final float MIN_VOL = -80f;
-    public static final float VOL_RANGE = MAX_VOL-MIN_VOL;
+    public static final float VOL_RANGE = MAX_VOL - MIN_VOL;
     public static final float MiDDLE_VOL = VOL_RANGE / 2;
 
     private static final float DEFAULT_MIN_VOL = 0;
     private static final float DEFAULT_MAX_VOL = 100;
-    private static final float DEFAULT_VOL_RANGE = DEFAULT_MAX_VOL-DEFAULT_MIN_VOL;
+    private static final float DEFAULT_VOL_RANGE = DEFAULT_MAX_VOL - DEFAULT_MIN_VOL;
 
     private static float convertVolRangeToLineRange(float volume, float minLineVol, float maxLineVol) {
         float volRange = maxLineVol - minLineVol;
@@ -27,6 +27,7 @@ public class AudioUtil {
         float result = (volume * volScale) + minLineVol;
         return result < minLineVol ? minLineVol : (Math.min(result, maxLineVol));
     }
+
     private static float convertLineRangeToVolRange(float volume, float minLineVol, float maxLineVol) {
         float volRange = maxLineVol - minLineVol;
         float volScale = 1 / (DEFAULT_VOL_RANGE / volRange);
@@ -70,8 +71,7 @@ public class AudioUtil {
             } else {
                 return AudioSystem.getAudioFileFormat((URL) dataSource);
             }
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -94,8 +94,8 @@ public class AudioUtil {
                 baseFormat.getSampleRate(),
                 16,
                 baseFormat.getChannels(),
-                baseFormat.getChannels()*2,
-                baseFormat.getFrameRate()*1000,
+                baseFormat.getChannels() * 2,
+                baseFormat.getFrameRate() * 1000,
                 baseFormat.isBigEndian());
     }
 
@@ -104,7 +104,7 @@ public class AudioUtil {
                 baseFormat.getSampleRate(),
                 baseFormat.getSampleSizeInBits(),
                 baseFormat.getChannels(),
-                baseFormat.getChannels()*2,
+                baseFormat.getChannels() * 2,
                 //baseFormat.getFrameRate() == -1.0 ? baseFormat.getSampleRate() : baseFormat.getSampleRate() * 1000,
                 baseFormat.getSampleRate(),
                 baseFormat.isBigEndian());

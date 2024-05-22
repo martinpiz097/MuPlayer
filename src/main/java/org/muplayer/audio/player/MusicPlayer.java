@@ -1,9 +1,11 @@
 package org.muplayer.audio.player;
 
 import lombok.extern.java.Log;
+import org.jaudiotagger.audio.AudioFileFilter;
 import org.muplayer.audio.track.Track;
 import org.muplayer.audio.track.state.TrackState;
 import org.muplayer.audio.track.state.UnknownState;
+import org.muplayer.exception.FormatNotSupportedException;
 import org.muplayer.exception.MuPlayerException;
 import org.muplayer.listener.PlayerListener;
 import org.muplayer.model.*;
@@ -67,55 +69,48 @@ public class MusicPlayer extends Player {
     }
 
     private void loadTracks(File folderToLoad) {
-        CompletableFuture<Void> completableFuture = TracksLoader.getInstance().addTask(() -> {
+        TracksLoader.getInstance().addTask(() -> {
             if (!Files.isReadable(folderToLoad.toPath())) {
                 throw new MuPlayerException("folderToLoad " + folderToLoad.getPath() + " is not readable");
             }
             final File[] fldFiles = folderToLoad.listFiles();
             if (fldFiles != null) {
-                // se analiza carpeta y se agregan sonidos recursivamente
                 AtomicBoolean hasTracks = new AtomicBoolean(false);
                 List<File> listFiles = new LinkedList<>(Arrays.asList(fldFiles));
+
+//                if (folderToLoad.getName().toLowerCase().contains("4k")) {
+//                    System.out.println("");
+//                }
 
                 listFiles.parallelStream()
                         .forEach(file -> {
                             if (file.isDirectory()) {
                                 loadTracks(file);
                             } else {
-                                final Track track = Track.getTrack(FileUtil.getPath(file), this);
-                                if (track != null) {
-                                    synchronized (hasTracks) {
-                                        hasTracks.set(true);
+                                final Track track;
+                                try {
+                                    track = Track.getTrack(file, this);
+                                    if (track != null) {
+                                        synchronized (hasTracks) {
+                                            hasTracks.set(true);
+                                        }
+                                        synchronized (listTracks) {
+                                            listTracks.add(track);
+                                        }
                                     }
-                                    synchronized (listTracks) {
-                                        listTracks.add(track);
-                                    }
+                                } catch (FormatNotSupportedException e) {
                                 }
                             }
                         });
 
+//                if (folderToLoad.getName().toLowerCase().contains("4k")) {
+//                    System.out.println("");
+//                }
                 // si la carpeta tiene sonidos se agrega a la lista de carpetas
                 if (hasTracks.get()) {
                     synchronized (listFolders) {
                         listFolders.add(folderToLoad);
                     }
-                }
-            }
-        });
-
-        new TracksLoaderCleaner(completableFuture).start();
-    }
-
-    private void loadTracks(List<File> listFiles) {
-        listFiles.parallelStream().forEach(file -> {
-            if (file.isDirectory()) {
-                loadTracks(file);
-                waitForTracksLoading();
-            }
-            else {
-                final Track track = Track.getTrack(FileUtil.getPath(file), this);
-                if (track != null) {
-                    listTracks.add(track);
                 }
             }
         });
@@ -137,20 +132,13 @@ public class MusicPlayer extends Player {
             }
             final File dataSource1 = o1.getDataSource();
             final File dataSource2 = o2.getDataSource();
-            if (dataSource1 == null || dataSource2 == null) {
-                return 0;
-            }
             return dataSource1.getPath().compareTo(dataSource2.getPath());
         });
         listFolders.sort(Comparator.comparing(File::getPath));
     }
 
     private void setupTracksList() {
-        setupTracksList(rootFolder);
-    }
-
-    private void setupTracksList(File folder) {
-        TimeTester.measureTaskTime(TimeUnit.MILLISECONDS, "loadTracks task: ", () -> loadTracks(folder));
+        TimeTester.measureTaskTime(TimeUnit.MILLISECONDS, "loadTracks task: ", () -> loadTracks(rootFolder));
         TimeTester.measureTaskTime(TimeUnit.MILLISECONDS, "waitForTracksLoading task: ", this::waitForTracksLoading);
         TimeTester.measureTaskTime(TimeUnit.MILLISECONDS, "sortTracks task: ", this::sortTracks);
     }
@@ -256,10 +244,11 @@ public class MusicPlayer extends Player {
     private synchronized void changeTrack(SeekOption seekOption) {
         final int currentIndex = playerData.getTrackIndex();
         final int newIndex;
-        if (seekOption == SeekOption.NEXT)
+        if (seekOption == SeekOption.NEXT) {
             newIndex = currentIndex == listTracks.size() - 1 ? 0 : currentIndex + 1;
-        else
+        } else {
             newIndex = currentIndex == 0 ? listTracks.size() - 1 : currentIndex - 1;
+        }
         changeTrack(newIndex);
     }
 
@@ -282,8 +271,9 @@ public class MusicPlayer extends Player {
     }
 
     public void loadListenerMethod(String methodName, Track track) {
-        if (!listListeners.isEmpty())
+        if (!listListeners.isEmpty()) {
             TaskRunner.execute(new ListenerRunner(listListeners, methodName, track), "ListenerRunner");
+        }
     }
 
     private boolean existsFolder(String folderPath) {
@@ -315,12 +305,14 @@ public class MusicPlayer extends Player {
         int newIndex;
         if (option == SeekOption.NEXT) {
             newIndex = playerData.getTrackIndex() + jumps;
-            if (newIndex >= listTracks.size())
+            if (newIndex >= listTracks.size()) {
                 newIndex = 0;
+            }
         } else {
             newIndex = playerData.getTrackIndex() - jumps;
-            if (newIndex < 0)
+            if (newIndex < 0) {
                 newIndex = listTracks.size() - 1;
+            }
         }
         play(newIndex);
     }
@@ -348,9 +340,9 @@ public class MusicPlayer extends Player {
                         Artist artist = setArtists.parallelStream()
                                 .filter(art -> art.getName().equals(artistName))
                                 .findFirst().orElse(null);
-                        if (artist != null)
+                        if (artist != null) {
                             artist.addTrack(track);
-                        else {
+                        } else {
                             artist = new Artist(artistName);
                             artist.addTrack(track);
                             setArtists.add(artist);
@@ -374,9 +366,9 @@ public class MusicPlayer extends Player {
                         Album album = setAlbums.parallelStream()
                                 .filter(alb -> alb.getName().equals(albumName))
                                 .findFirst().orElse(null);
-                        if (album != null)
+                        if (album != null) {
                             album.addTrack(track);
-                        else {
+                        } else {
                             album = new Album(albumName);
                             album.addTrack(track);
                             setAlbums.add(album);
@@ -487,20 +479,23 @@ public class MusicPlayer extends Player {
     @Override
     public synchronized void addMusic(File folderOrFile) {
         if (folderOrFile.isDirectory()) {
-            if (rootFolder == null)
+            if (rootFolder == null) {
                 rootFolder = folderOrFile;
+            }
             final boolean validSort = !hasSounds();
             loadTracks(folderOrFile);
             waitForTracksLoading();
-            if (validSort)
+            if (validSort) {
                 sortTracks();
+            }
         } else if (AudioUtil.isSupportedFile(folderOrFile)) {
             final Track track = Track.getTrack(folderOrFile, this);
             if (track != null) {
                 listTracks.add(track);
                 final File parent = folderOrFile.getParentFile();
-                if (listFolders.parallelStream().noneMatch(parent::equals))
+                if (listFolders.parallelStream().noneMatch(parent::equals)) {
                     listFolders.add(parent);
+                }
             }
         }
     }
@@ -532,9 +527,9 @@ public class MusicPlayer extends Player {
 
     @Override
     public synchronized void play() {
-        if (!isAlive())
+        if (!isAlive()) {
             start();
-        else if (current != null) {
+        } else if (current != null) {
             current.play();
             loadListenerMethod(ONPLAYED, current);
         }
@@ -573,8 +568,9 @@ public class MusicPlayer extends Player {
         if (trackIndexed == null) {
             if (AudioUtil.isSupportedFile(track)) {
                 listTracks.add(Track.getTrack(track, this));
-                if (!existsFolder(track.getParent()))
+                if (!existsFolder(track.getParent())) {
                     listFolders.add(track.getParentFile());
+                }
             }
         } else {
             playerData.setTrackIndex(playerData.getTrackIndex());
@@ -679,25 +675,29 @@ public class MusicPlayer extends Player {
     @Override
     public synchronized void setVolume(float volume) {
         playerData.setVolume(volume);
-        if (current != null)
+        if (current != null) {
             current.setVolume(volume);
+        }
     }
 
     @Override
     public synchronized void mute() {
         playerData.setMute(true);
-        if (current != null)
+        if (current != null) {
             current.mute();
+        }
     }
 
     @Override
     public synchronized void unMute() {
-        if (playerData.isVolumeZero())
+        if (playerData.isVolumeZero()) {
             playerData.setVolume(100);
-        else
+        } else {
             playerData.setMute(false);
-        if (current != null)
+        }
+        if (current != null) {
             current.unMute();
+        }
     }
 
     @Override
@@ -730,8 +730,9 @@ public class MusicPlayer extends Player {
     @Override
     public void playFolder(int folderIndex) {
         final int foldersCount = getFoldersCount();
-        if (folderIndex >= foldersCount)
+        if (folderIndex >= foldersCount) {
             folderIndex = foldersCount - 1;
+        }
         final int newIndex = seekToFolder(listFolders.get(folderIndex).getPath());
         changeTrack(newIndex);
     }

@@ -18,14 +18,13 @@ public class InitializedState extends TrackState {
     @Override
     public void handle() {
         try {
-            this.trackData = TrackData.builder()
-                    .secsSeeked(0)
-                    .bytesPerSecond(0)
-                    .volume(PlayerData.DEFAULT_VOLUME)
-                    .isMute(false)
-                    .canTrackContinue(true)
-                    .build();
-            track.setTrackData(trackData);
+            synchronized (trackData) {
+                trackData.setSecsSeeked(0);
+                trackData.setBytesPerSecond(0);
+                trackData.setVolume(PlayerData.DEFAULT_VOLUME);
+                trackData.setMute(false);
+                trackData.setCanTrackContinue(true);
+            }
             track.setTagInfo(track.loadTagInfo(track.getDataSource()));
         } catch (Exception e) {
             log.log(Level.SEVERE, e.getMessage());

@@ -3,6 +3,7 @@ package org.muplayer.util;
 import org.muplayer.audio.track.Track;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.function.Predicate;
 
 public class FilterUtil {
@@ -39,6 +40,18 @@ public class FilterUtil {
             File dataSource = track.getDataSource();
             return dataSource != null && dataSource.getParentFile().equals(parentFile);
         };
+    }
+
+    public static FileFilter getBaseFilter() {
+        return pathname -> pathname.canRead() && !pathname.isHidden();
+    }
+
+    public static FileFilter getDirectoriesFilter() {
+        return pathname -> getBaseFilter().accept(pathname) && pathname.isDirectory();
+    }
+
+    public static FileFilter getAudioFileFilter() {
+        return pathname -> getBaseFilter().accept(pathname) && AudioUtil.isSupportedFile(pathname);
     }
 
 }

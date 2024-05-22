@@ -20,77 +20,86 @@ public class TrackUtil {
         final String artist = track.getArtist();
         final String date = track.getDate();
         final String duration = track.getFormattedDuration();
-        final String hasCover = track.hasCover()?"Yes":"No";
+        final String hasCover = track.hasCover() ? "Yes" : "No";
         final String encoder = track.getEncoder();
         final String bitrate = track.getBitrate();
 
         final StringBuilder sbTabs = new StringBuilder();
-        String currentLine = "Song: "+title;
+        String currentLine = "Song: " + title;
         int biggerLength = currentLine.length();
         sbInfo.append(currentLine).append('\n');
 
         if (album != null) {
             sbTabs.append("    ");
-            currentLine = sbTabs.toString()+"Album: "+album;
-            if (biggerLength < currentLine.length())
+            currentLine = sbTabs.toString() + "Album: " + album;
+            if (biggerLength < currentLine.length()) {
                 biggerLength = currentLine.length();
+            }
             sbInfo.append(currentLine).append('\n');
         }
 
         if (artist != null) {
             sbTabs.append("    ");
-            currentLine = sbTabs.toString()+"Artist: "+artist;
-            if (biggerLength < currentLine.length())
+            currentLine = sbTabs.toString() + "Artist: " + artist;
+            if (biggerLength < currentLine.length()) {
                 biggerLength = currentLine.length();
+            }
             sbInfo.append(currentLine).append('\n');
         }
 
         if (date != null) {
             sbTabs.append("    ");
-            currentLine = sbTabs.toString()+"Date: "+date;
-            if (biggerLength < currentLine.length())
+            currentLine = sbTabs.toString() + "Date: " + date;
+            if (biggerLength < currentLine.length()) {
                 biggerLength = currentLine.length();
+            }
             sbInfo.append(currentLine).append('\n');
         }
 
         if (duration != null) {
             sbTabs.append("    ");
-            currentLine = sbTabs.toString()+"Duration: "+duration;
-            if (biggerLength < currentLine.length())
+            currentLine = sbTabs.toString() + "Duration: " + duration;
+            if (biggerLength < currentLine.length()) {
                 biggerLength = currentLine.length();
+            }
             sbInfo.append(currentLine).append('\n');
         }
 
         sbTabs.append("    ");
-        currentLine = sbTabs.toString()+"Has Cover: "+hasCover;
-        if (biggerLength < currentLine.length())
+        currentLine = sbTabs.toString() + "Has Cover: " + hasCover;
+        if (biggerLength < currentLine.length()) {
             biggerLength = currentLine.length();
+        }
         sbInfo.append(currentLine).append('\n');
 
         if (encoder != null) {
             sbTabs.append("    ");
-            currentLine = sbTabs.toString()+"Encoder: "+encoder;
-            if (biggerLength < currentLine.length())
+            currentLine = sbTabs.toString() + "Encoder: " + encoder;
+            if (biggerLength < currentLine.length()) {
                 biggerLength = currentLine.length();
+            }
             sbInfo.append(currentLine).append('\n');
         }
 
         if (bitrate != null) {
             sbTabs.append("    ");
-            currentLine = sbTabs.toString()+"Bitrate: "+bitrate+" kbps";
-            if (biggerLength < currentLine.length())
+            currentLine = sbTabs.toString() + "Bitrate: " + bitrate + " kbps";
+            if (biggerLength < currentLine.length()) {
                 biggerLength = currentLine.length();
+            }
             sbInfo.append(currentLine).append('\n');
         }
 
         sbTabs.delete(0, sbTabs.length());
 
-        for (int i = 0; i < biggerLength; i++)
+        for (int i = 0; i < biggerLength; i++) {
             sbTabs.append('-');
+        }
         sbTabs.append('\n').append(sbInfo.toString());
 
-        for (int i = 0; i < biggerLength; i++)
+        for (int i = 0; i < biggerLength; i++) {
             sbTabs.append('-');
+        }
         sbTabs.append('\n');
 
         return sbTabs.toString();
