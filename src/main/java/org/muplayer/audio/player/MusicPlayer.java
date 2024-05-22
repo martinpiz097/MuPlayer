@@ -62,7 +62,8 @@ public class MusicPlayer extends Player {
     }
 
     private void checkRootFolder() throws FileNotFoundException {
-        if (rootFolder != null && rootFolder.exists()) {
+        if (rootFolder != null && rootFolder.exists()
+                && FilterUtil.getDirectoriesFilter().accept(rootFolder)) {
             setupTracksList();
         } else if (rootFolder == null) {
             throw new MuPlayerException("The root folder is null");
@@ -73,10 +74,6 @@ public class MusicPlayer extends Player {
 
     private void loadTracks(File folderToLoad) {
         tracksLoader.addTask(() -> {
-            if (!Files.isReadable(folderToLoad.toPath())) {
-                throw new MuPlayerException("folderToLoad " + folderToLoad.getPath() + " is not readable");
-            }
-
             tracksLoader.addTask(() -> {
                 final File[] fldDirs = folderToLoad.listFiles(FilterUtil.getDirectoriesFilter());
                 if (fldDirs != null && fldDirs.length > 0) {

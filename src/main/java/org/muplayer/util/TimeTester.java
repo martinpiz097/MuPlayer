@@ -55,10 +55,9 @@ public class TimeTester {
         LogConfig logConfig = LogConfig.getInstance();
         String logLevel = logConfig.getProperty(LogConfigKeys.JAVA_LOG_LEVEL);
 
-//        if (!logLevel.equals(Level.OFF.getName())) {
-//            log.info(msg + ": " + getTimeDifference());
-//        }
-        System.out.println(msg + ": " + getTimeDifference());
+        if (!logLevel.equals(Level.OFF.getName())) {
+            log.info(msg + ": " + getTimeDifference());
+        }
     }
 
     public static void measureTaskTime(TimeUnit timeUnit, String msg, Runnable task) {
