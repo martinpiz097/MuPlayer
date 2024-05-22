@@ -39,6 +39,8 @@ public class MusicPlayer extends Player {
 
     private final PlayerData playerData;
 
+    private final TracksLoader tracksLoader;
+
     public MusicPlayer() throws FileNotFoundException {
         this((File) null);
     }
@@ -49,6 +51,7 @@ public class MusicPlayer extends Player {
         listFolders = CollectionUtil.newFastList();
         listListeners = CollectionUtil.newFastList();
         playerData = new PlayerData();
+        this.tracksLoader = TracksLoader.getInstance();
 
         checkRootFolder();
         setName("MusicPlayer " + getId());
@@ -69,50 +72,39 @@ public class MusicPlayer extends Player {
     }
 
     private void loadTracks(File folderToLoad) {
-        TracksLoader.getInstance().addTask(() -> {
+        tracksLoader.addTask(() -> {
             if (!Files.isReadable(folderToLoad.toPath())) {
                 throw new MuPlayerException("folderToLoad " + folderToLoad.getPath() + " is not readable");
             }
-            final File[] fldFiles = folderToLoad.listFiles();
-            if (fldFiles != null) {
-                AtomicBoolean hasTracks = new AtomicBoolean(false);
-                List<File> listFiles = new LinkedList<>(Arrays.asList(fldFiles));
 
-//                if (folderToLoad.getName().toLowerCase().contains("4k")) {
-//                    System.out.println("");
-//                }
+            tracksLoader.addTask(() -> {
+                final File[] fldDirs = folderToLoad.listFiles(FilterUtil.getDirectoriesFilter());
+                if (fldDirs != null && fldDirs.length > 0) {
+                    Arrays.stream(fldDirs).parallel().forEach(this::loadTracks);
+                }
+            });
 
-                listFiles.parallelStream()
-                        .forEach(file -> {
-                            if (file.isDirectory()) {
-                                loadTracks(file);
-                            } else {
+            tracksLoader.addTask(() -> {
+                final File[] fldAudioFiles = folderToLoad.listFiles(FilterUtil.getAudioFileFilter());
+                if (fldAudioFiles != null && fldAudioFiles.length > 0) {
+                    synchronized (listFolders) {
+                        listFolders.add(folderToLoad);
+                    }
+                    Arrays.stream(fldAudioFiles).parallel()
+                            .forEach(audioFile -> {
                                 final Track track;
                                 try {
-                                    track = Track.getTrack(file, this);
+                                    track = Track.getTrack(audioFile, this);
                                     if (track != null) {
-                                        synchronized (hasTracks) {
-                                            hasTracks.set(true);
-                                        }
                                         synchronized (listTracks) {
                                             listTracks.add(track);
                                         }
                                     }
                                 } catch (FormatNotSupportedException e) {
                                 }
-                            }
-                        });
-
-//                if (folderToLoad.getName().toLowerCase().contains("4k")) {
-//                    System.out.println("");
-//                }
-                // si la carpeta tiene sonidos se agrega a la lista de carpetas
-                if (hasTracks.get()) {
-                    synchronized (listFolders) {
-                        listFolders.add(folderToLoad);
-                    }
+                            });
                 }
-            }
+            });
         });
     }
 
