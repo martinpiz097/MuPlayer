@@ -5,6 +5,7 @@ import org.jflac.sound.spi.FlacFormatConversionProvider;
 import org.muplayer.audio.player.Player;
 import org.muplayer.audio.track.Track;
 import org.muplayer.audio.track.TrackIO;
+import org.muplayer.model.MuPlayerAudioFormat;
 import org.muplayer.util.AudioUtil;
 
 import javax.sound.sampled.AudioFormat;
@@ -62,6 +63,11 @@ public class FlacTrack extends Track {
     protected double convertBytesToSeconds(Number bytes) {
         final AudioFormat audioFormat = trackIO.getAudioFormat();
         return bytes.doubleValue() / audioFormat.getFrameSize() / audioFormat.getFrameRate();
+    }
+
+    @Override
+    protected MuPlayerAudioFormat[] getAudioFileFormats() {
+        return new MuPlayerAudioFormat[] {MuPlayerAudioFormat.flac};
     }
 
     @Override

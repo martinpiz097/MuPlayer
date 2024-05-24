@@ -6,6 +6,7 @@ import org.jaudiotagger.audio.mp3.MP3AudioHeader;
 import org.muplayer.audio.player.Player;
 import org.muplayer.audio.track.Track;
 import org.muplayer.audio.track.TrackIO;
+import org.muplayer.model.MuPlayerAudioFormat;
 import org.muplayer.util.AudioUtil;
 
 import javax.sound.sampled.AudioFormat;
@@ -69,6 +70,11 @@ public class MP3Track extends Track {
     @Override
     protected double convertBytesToSeconds(Number bytes) {
         return (bytes.doubleValue() / frameSize) * frameDurationInSec;
+    }
+
+    @Override
+    protected MuPlayerAudioFormat[] getAudioFileFormats() {
+        return new MuPlayerAudioFormat[] {MuPlayerAudioFormat.mp3};
     }
 
     // bytesLeidos -> bytesTotales

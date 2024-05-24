@@ -6,11 +6,10 @@ import com.sun.media.sound.WaveFileReader;
 import org.muplayer.audio.player.Player;
 import org.muplayer.audio.track.Track;
 import org.muplayer.audio.track.TrackIO;
-import org.muplayer.model.PCMFormat;
+import org.muplayer.model.MuPlayerAudioFormat;
 import org.muplayer.util.AudioUtil;
 import org.muplayer.util.FileUtil;
 
-import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -39,12 +38,12 @@ public class PCMTrack extends Track {
     @Override
     protected void loadAudioStream() throws IOException, UnsupportedAudioFileException {
         trackIO = new TrackIO();
-        final String extension = FileUtil.getFormatName(dataSource instanceof File
-                ? ((File) dataSource).getName() : "");
-        PCMFormat pcmFormat = PCMFormat.valueOf(extension.toLowerCase());
+        final String extension = FileUtil.getFormatName(dataSource != null
+                ? dataSource.getName() : "");
+        MuPlayerAudioFormat muPlayerAudioFormat = MuPlayerAudioFormat.valueOf(extension.toLowerCase());
         AudioFileReader audioReader;
 
-        switch (pcmFormat) {
+        switch (muPlayerAudioFormat) {
             case wav:
                 audioReader = new WaveFileReader();
                 break;
@@ -68,7 +67,7 @@ public class PCMTrack extends Track {
 
     @Override
     protected double convertSecondsToBytes(Number seconds) {
-        final AudioFormat audioFormat = trackIO.getAudioFormat();
+        final javax.sound.sampled.AudioFormat audioFormat = trackIO.getAudioFormat();
         final float frameRate = audioFormat.getFrameRate();
         final int frameSize = audioFormat.getFrameSize();
         final double framesToSeek = frameRate*seconds.doubleValue();
@@ -77,7 +76,13 @@ public class PCMTrack extends Track {
 
     @Override
     protected double convertBytesToSeconds(Number bytes) {
-        final AudioFormat audioFormat = trackIO.getAudioFormat();
+        final javax.sound.sampled.AudioFormat audioFormat = trackIO.getAudioFormat();
         return bytes.doubleValue() / audioFormat.getFrameSize() / audioFormat.getFrameRate();
+    }
+
+    @Override
+    protected MuPlayerAudioFormat[] getAudioFileFormats() {
+        return new MuPlayerAudioFormat[] {MuPlayerAudioFormat.wav, MuPlayerAudioFormat.aiff,
+                MuPlayerAudioFormat.aifc, MuPlayerAudioFormat.au};
     }
 }

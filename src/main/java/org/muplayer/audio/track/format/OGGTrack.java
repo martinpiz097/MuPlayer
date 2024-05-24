@@ -3,6 +3,7 @@ package org.muplayer.audio.track.format;
 import org.muplayer.audio.player.Player;
 import org.muplayer.audio.track.Track;
 import org.muplayer.audio.track.TrackIO;
+import org.muplayer.model.MuPlayerAudioFormat;
 import org.muplayer.util.AudioUtil;
 import org.tritonus.sampled.file.jorbis.JorbisAudioFileReader;
 
@@ -57,6 +58,11 @@ public class OGGTrack extends Track {
     protected double convertBytesToSeconds(Number bytes) {
         final AudioFormat audioFormat = trackIO.getAudioFormat();
         return bytes.doubleValue() / audioFormat.getFrameSize() / audioFormat.getFrameRate();
+    }
+
+    @Override
+    protected MuPlayerAudioFormat[] getAudioFileFormats() {
+        return new MuPlayerAudioFormat[] {MuPlayerAudioFormat.ogg};
     }
 
 }
