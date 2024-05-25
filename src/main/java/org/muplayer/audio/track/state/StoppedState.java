@@ -16,10 +16,6 @@ public class StoppedState extends TrackState {
         super(player, track);
     }
 
-    private void resetStream() throws IOException, LineUnavailableException, UnsupportedAudioFileException {
-        track.resetStream();
-    }
-
     @Override
     public void handle() {
         try {

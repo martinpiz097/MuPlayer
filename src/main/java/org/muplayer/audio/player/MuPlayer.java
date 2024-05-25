@@ -1,7 +1,7 @@
 package org.muplayer.audio.player;
 
 import lombok.extern.java.Log;
-import org.jaudiotagger.audio.AudioFileFilter;
+import org.muplayer.audio.io.AudioIO;
 import org.muplayer.audio.track.Track;
 import org.muplayer.audio.track.state.TrackState;
 import org.muplayer.audio.track.state.UnknownState;
@@ -17,11 +17,8 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -29,7 +26,7 @@ import static org.muplayer.listener.ListenersNames.*;
 import static org.muplayer.thread.ThreadUtil.generateTrackThreadName;
 
 @Log
-public class MusicPlayer extends Player {
+public class MuPlayer extends Player {
     private volatile File rootFolder;
     private volatile Track current;
 
@@ -41,11 +38,11 @@ public class MusicPlayer extends Player {
 
     private final TracksLoader tracksLoader;
 
-    public MusicPlayer() throws FileNotFoundException {
+    public MuPlayer() throws FileNotFoundException {
         this((File) null);
     }
 
-    public MusicPlayer(File rootFolder) throws FileNotFoundException {
+    public MuPlayer(File rootFolder) throws FileNotFoundException {
         this.rootFolder = rootFolder;
         listTracks = CollectionUtil.newFastList();
         listFolders = CollectionUtil.newFastList();
@@ -57,7 +54,7 @@ public class MusicPlayer extends Player {
         setName("MusicPlayer " + getId());
     }
 
-    public MusicPlayer(String folderPath) throws FileNotFoundException {
+    public MuPlayer(String folderPath) throws FileNotFoundException {
         this(new File(folderPath));
     }
 
@@ -477,7 +474,7 @@ public class MusicPlayer extends Player {
             if (validSort) {
                 sortTracks();
             }
-        } else if (AudioUtil.isSupportedFile(folderOrFile)) {
+        } else if (AudioIO.isSupportedFile(folderOrFile)) {
             final Track track = Track.getTrack(folderOrFile, this);
             if (track != null) {
                 listTracks.add(track);
@@ -555,7 +552,7 @@ public class MusicPlayer extends Player {
         TrackIndexed trackIndexed = getTrackIndexedFromCondition(filter);
 
         if (trackIndexed == null) {
-            if (AudioUtil.isSupportedFile(track)) {
+            if (AudioIO.isSupportedFile(track)) {
                 listTracks.add(Track.getTrack(track, this));
                 if (!existsFolder(track.getParent())) {
                     listFolders.add(track.getParentFile());

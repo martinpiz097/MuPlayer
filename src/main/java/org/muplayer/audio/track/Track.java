@@ -14,6 +14,7 @@ import org.muplayer.interfaces.ReportableTrack;
 import org.muplayer.data.properties.support.AudioSupportInfo;
 import org.muplayer.model.MuPlayerAudioFormat;
 import org.muplayer.audio.io.AudioIO;
+import org.muplayer.util.AudioConversionUtil;
 import org.muplayer.util.FileUtil;
 import org.muplayer.util.TrackUtil;
 
@@ -265,7 +266,7 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     public void setVolume(float volume) {
         trackData.setVolume(volume);
         if (trackIO != null && trackIO.isTrackStreamsOpened()) {
-            trackIO.setGain(audioIO.convertVolRangeToLineRange(volume));
+            trackIO.setGain(AudioConversionUtil.convertVolRangeToLineRange(volume));
             if (trackData.isVolumeZero()) {
                 AudioHardware.setMuteValue(trackIO.getSpeakerDriver(), true);
             }
@@ -285,7 +286,7 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
         if (trackData.isVolumeZero()) {
             trackData.setVolume(100);
             if (trackIO != null && trackIO.isTrackStreamsOpened()) {
-                trackIO.setGain(audioIO.convertVolRangeToLineRange(trackData.getVolume()));
+                trackIO.setGain(AudioConversionUtil.convertVolRangeToLineRange(trackData.getVolume()));
             }
         } else {
             trackData.setMute(false);

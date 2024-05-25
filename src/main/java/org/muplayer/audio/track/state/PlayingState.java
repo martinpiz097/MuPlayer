@@ -37,15 +37,15 @@ public class PlayingState extends TrackState {
         try {
             String trackThreadName = ThreadUtil.generateTrackThreadName(trackThread.getClass(), track);
             TaskRunner.execute(trackThread, trackThreadName);
-            while (track.isPlaying())
+            while (track.isPlaying()) {
                 if (canPlay()) {
                     trackIO.playAudio(audioBuffer);
-                }
-                else if (player != null) {
+                } else if (player != null) {
                     player.playNext();
                 }
+            }
         } catch (IOException | IndexOutOfBoundsException | IllegalArgumentException e) {
-            log.log(Level.SEVERE, "Error on playing sound "+track.getTitle()+": ", e);
+            log.log(Level.SEVERE, "Error on playing sound " + track.getTitle() + ": ", e);
             player.playNext();
         }
     }

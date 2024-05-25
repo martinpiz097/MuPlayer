@@ -2,7 +2,7 @@ package org.muplayer.console;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.muplayer.audio.player.MusicPlayer;
+import org.muplayer.audio.player.MuPlayer;
 import org.muplayer.audio.track.Track;
 import org.muplayer.audio.player.Player;
 import org.muplayer.console.runner.ConsoleRunner;
@@ -152,7 +152,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
         final Track current = player.getCurrent();
         final int songsCount = player.getSongsCount();
 
-        File parentFolder = current == null ? null : current.getDataSource().getParentFile();
+            File parentFolder = current == null ? null : current.getDataSource().getParentFile();
 
         execution.appendOutput("------------------------------", info);
         if (parentFolder == null) {
@@ -328,12 +328,12 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
             switch (consoleOrderCode) {
                 case st:
                     if (player == null) {
-                        player = new MusicPlayer(playerFolder);
+                        player = new MuPlayer(playerFolder);
                     }
                     if (player.isAlive() && cmd.hasOptions()) {
                         File musicFolder = new File(cmd.getOptionAt(0));
                         if (musicFolder.exists()) {
-                            Player newMusicPlayer = new MusicPlayer(musicFolder);
+                            Player newMusicPlayer = new MuPlayer(musicFolder);
                             player.shutdown();
                             newMusicPlayer.start();
                             player = newMusicPlayer;
@@ -683,7 +683,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                                 if (folder.list() == null) {
                                     execution.appendOutput("Folder is empty", error);
                                 } else {
-                                    final Player newMusicPlayer = new MusicPlayer(folder);
+                                    final Player newMusicPlayer = new MuPlayer(folder);
                                     newMusicPlayer.start();
                                     if (isPlayerOn()) {
                                         player.shutdown();

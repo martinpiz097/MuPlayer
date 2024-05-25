@@ -6,9 +6,14 @@ import org.muplayer.audio.player.Player;
 
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.SourceDataLine;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class TrackUtil {
     private static final Map<String, Constructor<? extends Track>> mapTrackConstructors = CollectionUtil.newFastMap();
@@ -31,7 +36,7 @@ public class TrackUtil {
 
         if (album != null) {
             sbTabs.append("    ");
-            currentLine = sbTabs.toString() + "Album: " + album;
+            currentLine = sbTabs + "Album: " + album;
             if (biggerLength < currentLine.length()) {
                 biggerLength = currentLine.length();
             }
@@ -40,7 +45,7 @@ public class TrackUtil {
 
         if (artist != null) {
             sbTabs.append("    ");
-            currentLine = sbTabs.toString() + "Artist: " + artist;
+            currentLine = sbTabs + "Artist: " + artist;
             if (biggerLength < currentLine.length()) {
                 biggerLength = currentLine.length();
             }
@@ -49,7 +54,7 @@ public class TrackUtil {
 
         if (date != null) {
             sbTabs.append("    ");
-            currentLine = sbTabs.toString() + "Date: " + date;
+            currentLine = sbTabs + "Date: " + date;
             if (biggerLength < currentLine.length()) {
                 biggerLength = currentLine.length();
             }
@@ -58,7 +63,7 @@ public class TrackUtil {
 
         if (duration != null) {
             sbTabs.append("    ");
-            currentLine = sbTabs.toString() + "Duration: " + duration;
+            currentLine = sbTabs + "Duration: " + duration;
             if (biggerLength < currentLine.length()) {
                 biggerLength = currentLine.length();
             }
@@ -66,7 +71,7 @@ public class TrackUtil {
         }
 
         sbTabs.append("    ");
-        currentLine = sbTabs.toString() + "Has Cover: " + hasCover;
+        currentLine = sbTabs + "Has Cover: " + hasCover;
         if (biggerLength < currentLine.length()) {
             biggerLength = currentLine.length();
         }
@@ -74,7 +79,7 @@ public class TrackUtil {
 
         if (encoder != null) {
             sbTabs.append("    ");
-            currentLine = sbTabs.toString() + "Encoder: " + encoder;
+            currentLine = sbTabs + "Encoder: " + encoder;
             if (biggerLength < currentLine.length()) {
                 biggerLength = currentLine.length();
             }
@@ -83,7 +88,7 @@ public class TrackUtil {
 
         if (bitrate != null) {
             sbTabs.append("    ");
-            currentLine = sbTabs.toString() + "Bitrate: " + bitrate + " kbps";
+            currentLine = sbTabs + "Bitrate: " + bitrate + " kbps";
             if (biggerLength < currentLine.length()) {
                 biggerLength = currentLine.length();
             }
@@ -95,7 +100,7 @@ public class TrackUtil {
         for (int i = 0; i < biggerLength; i++) {
             sbTabs.append('-');
         }
-        sbTabs.append('\n').append(sbInfo.toString());
+        sbTabs.append('\n').append(sbInfo);
 
         for (int i = 0; i < biggerLength; i++) {
             sbTabs.append('-');
@@ -103,6 +108,25 @@ public class TrackUtil {
         sbTabs.append('\n');
 
         return sbTabs.toString();
+    }
+
+    private static Class<?> getClassByPackage(String className, String packageName) {
+        try {
+            return Class.forName(packageName + "."
+                    + className.substring(0, className.lastIndexOf('.')));
+        } catch (ClassNotFoundException e) {
+        }
+        return null;
+    }
+
+    public static Set<Class<?>> findAllClassesUsingClassLoader(String packageName) {
+        InputStream inputStream = ClassLoader.getSystemClassLoader()
+                .getResourceAsStream(packageName.replaceAll("[.]", "/"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        return reader.lines()
+                .filter(line -> line.endsWith(".class"))
+                .map(line -> getClassByPackage(line, packageName))
+                .collect(Collectors.toSet());
     }
 
     public static Constructor<? extends Track> getTrackClassConstructor(String formatClass, Class<?>... paramsClasses) {
@@ -147,6 +171,5 @@ public class TrackUtil {
                 .append("MasterGain: ").append(driver.isControlSupported(FloatControl.Type.MASTER_GAIN))
                 .toString();
     }
-
 
 }

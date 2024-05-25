@@ -18,37 +18,43 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 
 @Log
-public class MuPlayer {
+public class Main {
     public static void main(String[] args) {
         try {
             loadLogConfig();
             ConsoleRunner consoleRunner = null;
             if (args.length == 0) {
                 final String defaultRootPath = ConfigInfo.getInstance().getProperty(ConfigInfoKeys.DEFAULT_MUSIC_FOLDER);
-                if (defaultRootPath == null)
+                if (defaultRootPath == null) {
                     throw new NullPointerException(MessagesInfo.getInstance().getProperty(MessagesInfoKeys.PROPERTY_NOT_FOUND_MSG));
-                else
+                } else {
                     consoleRunner = new LocalRunner(defaultRootPath);
-            } else switch (args.length) {
-                case 1:
-                    String firstArg = args[0].trim();
-                    if (firstArg.startsWith("-"))
-                        throw new NullPointerException(MessagesInfo.getInstance().getProperty(MessagesInfoKeys.PROPERTY_NOT_FOUND_MSG));
-                    else
-                        consoleRunner = new LocalRunner(firstArg);
-                    break;
-                case 2:
-                    firstArg = args[0].trim();
-                    if (firstArg.startsWith("-")) {
-                        if (firstArg.equals("-l"))
-                            consoleRunner = new LocalRunner(args[1]);
-                        else if (firstArg.equals("-d"))
-                            consoleRunner = new DaemonRunner(args[1]);
-                        else
+                }
+            } else {
+                switch (args.length) {
+                    case 1:
+                        String firstArg = args[0].trim();
+                        if (firstArg.startsWith("-")) {
+                            throw new NullPointerException(MessagesInfo.getInstance().getProperty(MessagesInfoKeys.PROPERTY_NOT_FOUND_MSG));
+                        } else {
+                            consoleRunner = new LocalRunner(firstArg);
+                        }
+                        break;
+                    case 2:
+                        firstArg = args[0].trim();
+                        if (firstArg.startsWith("-")) {
+                            if (firstArg.equals("-l")) {
+                                consoleRunner = new LocalRunner(args[1]);
+                            } else if (firstArg.equals("-d")) {
+                                consoleRunner = new DaemonRunner(args[1]);
+                            } else {
+                                throw new NullPointerException("Arg " + firstArg + "not recognized");
+                            }
+                        } else {
                             throw new NullPointerException("Arg " + firstArg + "not recognized");
-                    } else
-                        throw new NullPointerException("Arg " + firstArg + "not recognized");
-                    break;
+                        }
+                        break;
+                }
             }
             if (consoleRunner != null) {
                 TaskRunner.execute(consoleRunner, consoleRunner.getClass().getSimpleName());

@@ -1,6 +1,6 @@
 package org.muplayer.audio.info;
 
-import org.muplayer.util.AudioUtil;
+import org.muplayer.util.AudioConversionUtil;
 import org.muplayer.util.CollectionUtil;
 
 import javax.sound.sampled.*;
@@ -295,19 +295,19 @@ public class AudioHardware {
 
     public static float getFormattedMasterVolume() {
         final FloatControl volumeControl = AudioHardware.getReadyVolumeControl();
-        return AudioUtil.convertLineRangeToVolRange(volumeControl.getValue(), volumeControl);
+        return AudioConversionUtil.convertLineRangeToVolRange(volumeControl.getValue(), volumeControl);
     }
 
     public static void setFormattedMasterVolume(float volume) {
         final FloatControl volumeControl = AudioHardware.getReadyVolumeControl();
-        volumeControl.setValue(AudioUtil.convertVolRangeToLineRange(volume, volumeControl));
+        volumeControl.setValue(AudioConversionUtil.convertVolRangeToLineRange(volume, volumeControl));
     }
 
     public static float getFormattedSpeakerVolume() {
         try {
             final Line speaker = getSpeakerInUse();
             final FloatControl volumeControl = getVolumeControl(speaker);
-            return AudioUtil.convertLineRangeToVolRange(volumeControl.getValue(), volumeControl);
+            return AudioConversionUtil.convertLineRangeToVolRange(volumeControl.getValue(), volumeControl);
         } catch (LineUnavailableException e) {
             return 0F;
         }
@@ -317,7 +317,7 @@ public class AudioHardware {
         try {
             final Line speaker = getSpeakerInUse();
             final FloatControl volumeControl = getVolumeControl(speaker);
-            volumeControl.setValue(AudioUtil.convertVolRangeToLineRange(volume, volumeControl));
+            volumeControl.setValue(AudioConversionUtil.convertVolRangeToLineRange(volume, volumeControl));
         } catch (LineUnavailableException e) {
         }
     }

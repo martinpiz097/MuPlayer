@@ -1,5 +1,6 @@
 package org.muplayer.util;
 
+import org.muplayer.audio.io.AudioIO;
 import org.muplayer.audio.track.Track;
 
 import java.io.File;
@@ -51,7 +52,7 @@ public class FilterUtil {
     }
 
     public static FileFilter getAudioFileFilter() {
-        return pathname -> getBaseFilter().accept(pathname) && AudioUtil.isSupportedFile(pathname);
+        return pathname -> getBaseFilter().accept(pathname) && AudioIO.isSupportedFile(pathname);
     }
 
 }

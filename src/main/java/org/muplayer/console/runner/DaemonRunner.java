@@ -1,8 +1,7 @@
 package org.muplayer.console.runner;
 
-import org.muplayer.audio.player.MusicPlayer;
+import org.muplayer.audio.player.MuPlayer;
 import org.muplayer.audio.player.Player;
-import org.muplayer.data.CacheManager;
 import org.muplayer.data.CacheVar;
 import org.muplayer.net.DaemonServer;
 import org.muplayer.net.TCPClient;
@@ -24,7 +23,7 @@ public class DaemonRunner extends ConsoleRunner {
     }
 
     public DaemonRunner(File rootFolder) throws IOException {
-        this(new MusicPlayer(rootFolder));
+        this(new MuPlayer(rootFolder));
     }
 
     public DaemonRunner(Player player) throws IOException {

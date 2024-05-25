@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.java.Log;
 import org.aucom.sound.Speaker;
+import org.muplayer.audio.io.AudioIO;
 
 import javax.sound.sampled.*;
 import javax.sound.sampled.spi.AudioFileReader;
@@ -38,11 +39,10 @@ public class TrackIO {
                 this.speaker = createSpeaker();
                 return true;
             } catch (IllegalArgumentException e1) {
-                System.err.println("Error: "+e1.getMessage());
+                System.err.println("Error: " + e1.getMessage());
                 return false;
             }
-        }
-        else {
+        } else {
             log.severe("TrackStream & TrackLine null");
             return false;
         }
@@ -54,8 +54,7 @@ public class TrackIO {
             speaker.close();
             speaker = null;
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -65,8 +64,7 @@ public class TrackIO {
             if (decodedStream != null) {
                 decodedStream.close();
                 return true;
-            }
-            else {
+            } else {
                 return false;
             }
         } catch (Exception e) {
@@ -86,8 +84,9 @@ public class TrackIO {
     }
 
     public double getSecondsPosition() {
-        if (speaker == null)
+        if (speaker == null) {
             return 0;
+        }
         return ((double) speaker.getDriver().getMicrosecondPosition()) / 1000000;
     }
 
@@ -97,12 +96,13 @@ public class TrackIO {
 
     public AudioFileFormat getAudioFileFormat(Object dataSource) throws IOException, UnsupportedAudioFileException {
         if (audioReader != null && dataSource != null) {
-            if (dataSource instanceof File)
+            if (dataSource instanceof File) {
                 return audioReader.getAudioFileFormat((File) dataSource);
-            else if (dataSource instanceof InputStream)
+            } else if (dataSource instanceof InputStream) {
                 return audioReader.getAudioFileFormat((InputStream) dataSource);
-            else
+            } else {
                 return audioReader.getAudioFileFormat((URL) dataSource);
+            }
         }
         return null;
     }

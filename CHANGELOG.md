@@ -248,7 +248,7 @@
     - Se añade opcion de reproducir carpeta según indice
     - Se añade opcion de formateo en minutos para obtener el progreso utilizando la opcion "h" en el comando respectivo
     - Se agregan los comandos sys y system para ejecutar ordenes del sistema operativo
-    - Se corrige error al cambiar volumen antes de iniciar musicPlayer
+    - Se corrige error al cambiar volumen antes de iniciar muPlayer
     - Se agrega metodo getTracksInfo para solo obtener la informacion de las canciones
     - Se corrige metodo reloadTracks para el un futuro recargar desde rutas en un archivo
       - Se agrega opcion de compatibilidad multicomando en una linea (&&)
@@ -273,7 +273,7 @@
     - Correcciones menores
     
 - 1.3.5-RC
-    - Corregido comando goto en consolePlayer
+    - Corregido comando goto en main
 
 - 1.4-RC
     - Se agregan comandos title y name

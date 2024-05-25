@@ -1,6 +1,6 @@
 package org.muplayer.thread;
 
-import org.muplayer.audio.player.MusicPlayer;
+import org.muplayer.audio.player.MuPlayer;
 import org.muplayer.audio.track.Track;
 import org.muplayer.listener.ListenersNames;
 
@@ -9,11 +9,11 @@ import java.io.IOException;
 
 public class TPlayingTrack implements Runnable {
     private final Track track;
-    private final MusicPlayer trackPlayer;
+    private final MuPlayer trackPlayer;
 
     public TPlayingTrack(Track track) {
         this.track = track;
-        this.trackPlayer = track.getPlayer() instanceof MusicPlayer ? (MusicPlayer) track.getPlayer() : null;
+        this.trackPlayer = track.getPlayer() instanceof MuPlayer ? (MuPlayer) track.getPlayer() : null;
     }
 
     public boolean hasTrack(Track track) {

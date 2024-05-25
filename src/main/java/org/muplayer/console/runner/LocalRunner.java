@@ -1,6 +1,6 @@
 package org.muplayer.console.runner;
 
-import org.muplayer.audio.player.MusicPlayer;
+import org.muplayer.audio.player.MuPlayer;
 import org.muplayer.audio.player.Player;
 import org.muplayer.console.ConsoleExecution;
 import org.muplayer.data.CacheVar;
@@ -26,7 +26,7 @@ public class LocalRunner extends ConsoleRunner {
     }
 
     public LocalRunner(File rootFolder) throws FileNotFoundException {
-        this(new MusicPlayer(rootFolder));
+        this(new MuPlayer(rootFolder));
     }
 
     public LocalRunner(Player player) {

@@ -13,57 +13,16 @@ import java.net.URL;
 import java.nio.file.Path;
 
 public abstract class AudioIO {
-    protected static final float MAX_VOL = 0.855f;
-    protected static final float MIN_VOL = -80f;
-    public static final float VOL_RANGE = MAX_VOL - MIN_VOL;
-    public static final float MiDDLE_VOL = VOL_RANGE / 2;
-
-    protected static final float DEFAULT_MIN_VOL = 0;
-    protected static final float DEFAULT_MAX_VOL = 100;
-    protected static final float DEFAULT_VOL_RANGE = DEFAULT_MAX_VOL - DEFAULT_MIN_VOL;
-
-    protected float convertVolRangeToLineRange(float volume, float minLineVol, float maxLineVol) {
-        float volRange = maxLineVol - minLineVol;
-        float volScale = 1 / (DEFAULT_VOL_RANGE / volRange);
-
-        float result = (volume * volScale) + minLineVol;
-        return result < minLineVol ? minLineVol : (Math.min(result, maxLineVol));
-    }
-
-    protected float convertLineRangeToVolRange(float volume, float minLineVol, float maxLineVol) {
-        float volRange = maxLineVol - minLineVol;
-        float volScale = 1 / (DEFAULT_VOL_RANGE / volRange);
-
-        float result = (volume - minLineVol) / volScale;
-        return result < DEFAULT_MIN_VOL ? DEFAULT_MIN_VOL : (Math.min(result, DEFAULT_MAX_VOL));
-    }
-
-    public float convertVolRangeToLineRange(float volume) {
-        return convertVolRangeToLineRange(volume, MIN_VOL, MAX_VOL);
-    }
-
-    public float convertLineRangeToVolRange(float volume) {
-        return convertLineRangeToVolRange(volume, MIN_VOL, MAX_VOL);
-    }
-
-    public float convertVolRangeToLineRange(float volume, FloatControl control) {
-        return convertVolRangeToLineRange(volume, control.getMinimum(), control.getMaximum());
-    }
-
-    public float convertLineRangeToVolRange(float volume, FloatControl control) {
-        return convertLineRangeToVolRange(volume, control.getMinimum(), control.getMaximum());
-    }
-
-    public boolean isSupportedFile(File trackFile) {
+    public static boolean isSupportedFile(File trackFile) {
         final String formatName = FileUtil.getFormatName(trackFile.getName());
         return AudioSupportInfo.getInstance().getProperty(formatName) != null;
     }
 
-    public boolean isSupportedFile(Path track) {
+    public static boolean isSupportedFile(Path track) {
         return isSupportedFile(track.toFile());
     }
 
-    public boolean isSupportedFile(String trackPath) {
+    public static boolean isSupportedFile(String trackPath) {
         return isSupportedFile(new File(trackPath));
     }
 

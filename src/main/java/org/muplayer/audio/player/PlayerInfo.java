@@ -16,14 +16,14 @@ public class PlayerInfo {
     private final int songsCount;
     private final int foldersCount;
 
-    public PlayerInfo(MusicPlayer musicPlayer) {
-        this.current = musicPlayer.getCurrent();
+    public PlayerInfo(MuPlayer muPlayer) {
+        this.current = muPlayer.getCurrent();
         trackFolder = current != null && current.getDataSource() != null
                 ? current.getDataSource().getParentFile() : null;
-        rootFolder = musicPlayer.getRootFolder();
-        volume = musicPlayer.getVolume();
-        songsCount = musicPlayer.getSongsCount();
-        foldersCount = musicPlayer.getFoldersCount();
+        rootFolder = muPlayer.getRootFolder();
+        volume = muPlayer.getVolume();
+        songsCount = muPlayer.getSongsCount();
+        foldersCount = muPlayer.getFoldersCount();
     }
 
     public String getCurrentTrackTitle() {

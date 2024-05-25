@@ -1,7 +1,7 @@
 package org.muplayer.console.runner;
 
 import lombok.Getter;
-import org.muplayer.audio.player.MusicPlayer;
+import org.muplayer.audio.player.MuPlayer;
 import org.muplayer.audio.player.Player;
 import org.muplayer.console.ConsoleExecution;
 import org.muplayer.console.PlayerCommandInterpreter;
@@ -30,7 +30,7 @@ public abstract class ConsoleRunner implements Runnable {
     }
 
     public ConsoleRunner(File rootFolder) throws FileNotFoundException {
-        this(new MusicPlayer(rootFolder));
+        this(new MuPlayer(rootFolder));
     }
 
     public ConsoleRunner(Player player) {
