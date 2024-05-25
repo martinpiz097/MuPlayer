@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.ByteOrder;
 import java.nio.file.Path;
 
 public abstract class AudioIO {
@@ -24,6 +25,10 @@ public abstract class AudioIO {
 
     public static boolean isSupportedFile(String trackPath) {
         return isSupportedFile(new File(trackPath));
+    }
+
+    public boolean isSystemBigEndian() {
+        return ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN;
     }
 
     public abstract AudioFormat getPcmFormat(AudioFormat baseFormat);

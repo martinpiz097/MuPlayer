@@ -1,6 +1,8 @@
 package org.muplayer.audio.io;
 
 import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import java.nio.ByteOrder;
 
 public class DefaultAudioIO extends AudioIO {
     @Override
@@ -11,7 +13,7 @@ public class DefaultAudioIO extends AudioIO {
                 baseFormat.getChannels(),
                 baseFormat.getChannels() * 2,
                 baseFormat.getFrameRate() * 1000,
-                baseFormat.isBigEndian());
+                isSystemBigEndian());
     }
 
 }

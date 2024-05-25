@@ -23,6 +23,9 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
 
+import static org.muplayer.audio.values.AudioConstantValues.DEFAULT_MAX_VOL;
+import static org.muplayer.audio.values.AudioConstantValues.DEFAULT_MIN_VOL;
+
 @Data
 @Log
 public abstract class Track extends Thread implements ControllableMusic, ReportableTrack {
@@ -258,7 +261,7 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
 
     @Override
     public float getVolume() {
-        return trackData.isMute() ? 0 : trackData.getVolume();
+        return trackData.isMute() ? DEFAULT_MIN_VOL : trackData.getVolume();
     }
 
     // -80 to 5.5
@@ -284,7 +287,7 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     @Override
     public void unMute() {
         if (trackData.isVolumeZero()) {
-            trackData.setVolume(100);
+            trackData.setVolume(DEFAULT_MAX_VOL);
             if (trackIO != null && trackIO.isTrackStreamsOpened()) {
                 trackIO.setGain(AudioConversionUtil.convertVolRangeToLineRange(trackData.getVolume()));
             }
