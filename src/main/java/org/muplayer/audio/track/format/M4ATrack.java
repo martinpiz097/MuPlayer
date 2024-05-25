@@ -7,11 +7,12 @@ import net.sourceforge.jaad.mp4.api.AudioTrack;
 import net.sourceforge.jaad.mp4.api.Frame;
 import net.sourceforge.jaad.mp4.api.Movie;
 import net.sourceforge.jaad.spi.javasound.AACAudioFileReader;
+import org.muplayer.audio.io.DefaultAudioIO;
 import org.muplayer.audio.player.Player;
 import org.muplayer.audio.track.Track;
 import org.muplayer.audio.track.TrackIO;
 import org.muplayer.model.MuPlayerAudioFormat;
-import org.muplayer.util.AudioUtil;
+import org.muplayer.audio.io.AudioIO;
 import org.orangelogger.sys.Logger;
 
 import javax.sound.sampled.AudioFormat;
@@ -66,7 +67,7 @@ public class M4ATrack extends Track {
     private void decodeAAC() throws IOException, UnsupportedAudioFileException {
         trackIO = new TrackIO();
         trackIO.setAudioReader(new AACAudioFileReader());
-        trackIO.setDecodedStream(AudioUtil.instanceStream(trackIO.getAudioReader(), dataSource));
+        trackIO.setDecodedStream(audioIO.getAudioSteamBySource(trackIO.getAudioReader(), dataSource));
     }
 
     private AudioTrack getM4ATrack(Object source) throws IOException, UnsupportedAudioFileException {
@@ -131,7 +132,12 @@ public class M4ATrack extends Track {
     }
 
     @Override
-    protected MuPlayerAudioFormat[] getAudioFileFormats() {
+    protected AudioIO createAudioIO() {
+        return new DefaultAudioIO();
+    }
+
+    @Override
+    public MuPlayerAudioFormat[] getAudioFileFormats() {
         return new MuPlayerAudioFormat[] {m4a, aac};
     }
 

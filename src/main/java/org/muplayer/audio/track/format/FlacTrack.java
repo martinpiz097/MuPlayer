@@ -2,11 +2,12 @@ package org.muplayer.audio.track.format;
 
 import org.jflac.sound.spi.FlacAudioFileReader;
 import org.jflac.sound.spi.FlacFormatConversionProvider;
+import org.muplayer.audio.io.FlacAudioIO;
 import org.muplayer.audio.player.Player;
 import org.muplayer.audio.track.Track;
 import org.muplayer.audio.track.TrackIO;
 import org.muplayer.model.MuPlayerAudioFormat;
-import org.muplayer.util.AudioUtil;
+import org.muplayer.audio.io.AudioIO;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -39,10 +40,10 @@ public class FlacTrack extends Track {
             trackIO = new TrackIO();
             trackIO.setAudioReader(new FlacAudioFileReader());
 
-            final AudioInputStream flacEncodedStream = AudioUtil.instanceStream(trackIO.getAudioReader(),
+            final AudioInputStream flacEncodedStream = audioIO.getAudioSteamBySource(trackIO.getAudioReader(),
                     dataSource);
             final AudioFormat format = flacEncodedStream.getFormat();
-            final AudioFormat decodedFormat = AudioUtil.getPcmFormatByFlac(format);
+            final AudioFormat decodedFormat = audioIO.getPcmFormat(format);
             trackIO.setDecodedStream(new FlacFormatConversionProvider().
                     getAudioInputStream(decodedFormat, flacEncodedStream));
         } catch (UnsupportedAudioFileException | IOException e) {
@@ -66,7 +67,12 @@ public class FlacTrack extends Track {
     }
 
     @Override
-    protected MuPlayerAudioFormat[] getAudioFileFormats() {
+    protected AudioIO createAudioIO() {
+        return new FlacAudioIO();
+    }
+
+    @Override
+    public MuPlayerAudioFormat[] getAudioFileFormats() {
         return new MuPlayerAudioFormat[] {MuPlayerAudioFormat.flac};
     }
 

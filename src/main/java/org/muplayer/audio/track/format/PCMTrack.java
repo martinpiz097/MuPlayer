@@ -7,7 +7,7 @@ import org.muplayer.audio.player.Player;
 import org.muplayer.audio.track.Track;
 import org.muplayer.audio.track.TrackIO;
 import org.muplayer.model.MuPlayerAudioFormat;
-import org.muplayer.util.AudioUtil;
+import org.muplayer.audio.io.AudioIO;
 import org.muplayer.util.FileUtil;
 
 import javax.sound.sampled.AudioInputStream;
@@ -59,7 +59,7 @@ public class PCMTrack extends Track {
         }
 
         if (audioReader != null) {
-            AudioInputStream trackStream = AudioUtil.instanceStream(audioReader, dataSource);
+            AudioInputStream trackStream = AudioIO.getAudioSteamBySource(audioReader, dataSource);
             trackIO.setAudioReader(audioReader);
             trackIO.setDecodedStream(trackStream);
         }
@@ -81,7 +81,7 @@ public class PCMTrack extends Track {
     }
 
     @Override
-    protected MuPlayerAudioFormat[] getAudioFileFormats() {
+    public MuPlayerAudioFormat[] getAudioFileFormats() {
         return new MuPlayerAudioFormat[] {MuPlayerAudioFormat.wav, MuPlayerAudioFormat.aiff,
                 MuPlayerAudioFormat.aifc, MuPlayerAudioFormat.au};
     }

@@ -3,11 +3,12 @@ package org.muplayer.audio.track.format;
 import javazoom.spi.mpeg.sampled.file.MpegAudioFileReader;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.mp3.MP3AudioHeader;
+import org.muplayer.audio.io.DefaultAudioIO;
 import org.muplayer.audio.player.Player;
 import org.muplayer.audio.track.Track;
 import org.muplayer.audio.track.TrackIO;
 import org.muplayer.model.MuPlayerAudioFormat;
-import org.muplayer.util.AudioUtil;
+import org.muplayer.audio.io.AudioIO;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -49,16 +50,18 @@ public class MP3Track extends Track {
     @Override
     protected void loadAudioStream() throws IOException, UnsupportedAudioFileException {
         // Ver si se escucha mejor en ogg utilizando la logica de mp3
+        MpegAudioFileReader audioFileReader = new MpegAudioFileReader();
+
         trackIO = new TrackIO();
-        trackIO.setAudioReader(new MpegAudioFileReader());
-        AudioInputStream encodedAudioStream = AudioUtil.instanceStream(trackIO.getAudioReader(), dataSource);
+        trackIO.setAudioReader(audioFileReader);
+        AudioInputStream encodedAudioStream = audioIO.getAudioSteamBySource(audioFileReader, dataSource);
         AudioFormat baseFormat = encodedAudioStream.getFormat();
 
         AudioInputStream trackStream = trackIO.getDecodedStream();
         if (trackStream != null) {
             trackStream.close();
         }
-        trackIO.setDecodedStream(AudioUtil.decodeToPcm(baseFormat, encodedAudioStream));
+        trackIO.setDecodedStream(audioIO.decodeToPcm(baseFormat, encodedAudioStream));
     }
 
     @Override
@@ -73,7 +76,12 @@ public class MP3Track extends Track {
     }
 
     @Override
-    protected MuPlayerAudioFormat[] getAudioFileFormats() {
+    protected AudioIO createAudioIO() {
+        return new DefaultAudioIO();
+    }
+
+    @Override
+    public MuPlayerAudioFormat[] getAudioFileFormats() {
         return new MuPlayerAudioFormat[] {MuPlayerAudioFormat.mp3};
     }
 

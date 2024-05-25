@@ -1,10 +1,11 @@
 package org.muplayer.audio.track.format;
 
+import org.muplayer.audio.io.DefaultAudioIO;
 import org.muplayer.audio.player.Player;
 import org.muplayer.audio.track.Track;
 import org.muplayer.audio.track.TrackIO;
 import org.muplayer.model.MuPlayerAudioFormat;
-import org.muplayer.util.AudioUtil;
+import org.muplayer.audio.io.AudioIO;
 import org.tritonus.sampled.file.jorbis.JorbisAudioFileReader;
 
 import javax.sound.sampled.AudioFormat;
@@ -34,9 +35,9 @@ public class OGGTrack extends Track {
 
     private AudioInputStream createAudioStream() throws IOException, UnsupportedAudioFileException {
         trackIO.setAudioReader(new JorbisAudioFileReader());
-        final AudioInputStream soundEncodedStream = AudioUtil.instanceStream(trackIO.getAudioReader(),
+        final AudioInputStream soundEncodedStream = audioIO.getAudioSteamBySource(trackIO.getAudioReader(),
                 dataSource);
-        return AudioUtil.decodeToPcm(soundEncodedStream);
+        return audioIO.decodeToPcm(soundEncodedStream);
     }
 
     @Override
@@ -61,7 +62,12 @@ public class OGGTrack extends Track {
     }
 
     @Override
-    protected MuPlayerAudioFormat[] getAudioFileFormats() {
+    protected AudioIO createAudioIO() {
+        return new DefaultAudioIO();
+    }
+
+    @Override
+    public MuPlayerAudioFormat[] getAudioFileFormats() {
         return new MuPlayerAudioFormat[] {MuPlayerAudioFormat.ogg};
     }
 

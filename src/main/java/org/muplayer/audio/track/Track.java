@@ -13,7 +13,7 @@ import org.muplayer.interfaces.ControllableMusic;
 import org.muplayer.interfaces.ReportableTrack;
 import org.muplayer.data.properties.support.AudioSupportInfo;
 import org.muplayer.model.MuPlayerAudioFormat;
-import org.muplayer.util.AudioUtil;
+import org.muplayer.audio.io.AudioIO;
 import org.muplayer.util.FileUtil;
 import org.muplayer.util.TrackUtil;
 
@@ -30,6 +30,7 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     protected volatile TrackIO trackIO;
     protected final TrackData trackData;
     protected volatile TrackState trackState;
+    protected final AudioIO audioIO;
 
     protected final Player player;
 
@@ -89,6 +90,7 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
         this.player = player;
         this.trackData = new TrackData();
         this.trackState = new InitializedState(player, this);
+        this.audioIO = createAudioIO();
         setPriority(MAX_PRIORITY);
     }
 
@@ -99,7 +101,9 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
 
     protected abstract double convertBytesToSeconds(Number bytes);
 
-    protected abstract MuPlayerAudioFormat[] getAudioFileFormats();
+    protected abstract AudioIO createAudioIO();
+
+    public abstract MuPlayerAudioFormat[] getAudioFileFormats();
 
     public AudioTag loadTagInfo(File dataSource) {
         try {
@@ -261,7 +265,7 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     public void setVolume(float volume) {
         trackData.setVolume(volume);
         if (trackIO != null && trackIO.isTrackStreamsOpened()) {
-            trackIO.setGain(AudioUtil.convertVolRangeToLineRange(volume));
+            trackIO.setGain(audioIO.convertVolRangeToLineRange(volume));
             if (trackData.isVolumeZero()) {
                 AudioHardware.setMuteValue(trackIO.getSpeakerDriver(), true);
             }
@@ -281,7 +285,7 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
         if (trackData.isVolumeZero()) {
             trackData.setVolume(100);
             if (trackIO != null && trackIO.isTrackStreamsOpened()) {
-                trackIO.setGain(AudioUtil.convertVolRangeToLineRange(trackData.getVolume()));
+                trackIO.setGain(audioIO.convertVolRangeToLineRange(trackData.getVolume()));
             }
         } else {
             trackData.setMute(false);
