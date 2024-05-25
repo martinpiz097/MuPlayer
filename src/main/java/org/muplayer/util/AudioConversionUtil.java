@@ -1,10 +1,6 @@
 package org.muplayer.util;
 
-import org.muplayer.data.properties.support.AudioSupportInfo;
-
 import javax.sound.sampled.FloatControl;
-import java.io.File;
-import java.nio.file.Path;
 
 import static org.muplayer.audio.values.AudioConstantValues.*;
 
@@ -12,16 +8,16 @@ public class AudioConversionUtil {
     public static float convertVolRangeToLineRange(float volume, float minLineVol, float maxLineVol) {
         float volRange = maxLineVol - minLineVol;
         float volScale = 1 / (DEFAULT_VOL_RANGE / volRange);
-
         float result = (volume * volScale) + minLineVol;
+
         return result < minLineVol ? minLineVol : (Math.min(result, maxLineVol));
     }
 
     public static float convertLineRangeToVolRange(float volume, float minLineVol, float maxLineVol) {
         float volRange = maxLineVol - minLineVol;
         float volScale = 1 / (DEFAULT_VOL_RANGE / volRange);
-
         float result = (volume - minLineVol) / volScale;
+
         return result < DEFAULT_MIN_VOL ? DEFAULT_MIN_VOL : (Math.min(result, DEFAULT_MAX_VOL));
     }
 
@@ -39,18 +35,5 @@ public class AudioConversionUtil {
 
     public static float convertLineRangeToVolRange(float volume, FloatControl control) {
         return convertLineRangeToVolRange(volume, control.getMinimum(), control.getMaximum());
-    }
-
-    public static boolean isSupportedFile(File trackFile) {
-        final String formatName = FileUtil.getFormatName(trackFile.getName());
-        return AudioSupportInfo.getInstance().getProperty(formatName) != null;
-    }
-
-    public static boolean isSupportedFile(Path track) {
-        return isSupportedFile(track.toFile());
-    }
-
-    public static boolean isSupportedFile(String trackPath) {
-        return isSupportedFile(new File(trackPath));
     }
 }
