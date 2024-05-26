@@ -27,6 +27,10 @@ public class Command {
             options = null;
     }
 
+    public boolean hasNotOptions() {
+        return !hasOptions();
+    }
+
     public boolean hasOptions() {
         return options != null;
     }

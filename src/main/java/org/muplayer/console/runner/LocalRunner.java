@@ -6,19 +6,16 @@ import org.muplayer.console.ConsoleExecution;
 import org.muplayer.data.CacheVar;
 import org.muplayer.system.SysInfo;
 import org.orangelogger.sys.Logger;
-import org.orangelogger.sys.SystemUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Scanner;
 
 public class LocalRunner extends ConsoleRunner {
     protected final Scanner scanner;
 
     public LocalRunner() throws FileNotFoundException {
-        this((File) null);
+        this(new MuPlayer());
     }
 
     public LocalRunner(String folder) throws FileNotFoundException {
@@ -32,28 +29,6 @@ public class LocalRunner extends ConsoleRunner {
     public LocalRunner(Player player) {
         super(player);
         scanner = new Scanner(System.in);
-    }
-
-    @Override
-    protected void printHeader() {
-        final FileOutputStream stdout = SystemUtil.getStdout();
-        try {
-            stdout.write(Logger.getLogger(this, LINEHEADER)
-                    .getColoredMsg(Logger.INFOCOLOR).getBytes());
-            stdout.flush();
-        } catch (IOException e) {
-            Logger.getLogger(this, e.getClass().getSimpleName(), e.getMessage()).error();
-        }
-    }
-
-    @Override
-    public ConsoleExecution execCommand(String strCmd) {
-        try {
-            return interpreter.executeCommand(strCmd);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     public void shutdown() {

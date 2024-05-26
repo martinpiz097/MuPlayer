@@ -41,5 +41,6 @@ public enum ConsoleOrderCode {
     title,
     u,
     um,
-    v
+    v,
+    smf
 }

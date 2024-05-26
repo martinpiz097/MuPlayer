@@ -203,5 +203,10 @@
     "code": "v",
     "orders": ["v", "set-vol", "set-volume", "set-player-volume"],
     "helpInfo": "Cambia el volumen del reproductor (valor entre 0 y 100 ambos incluidos)"
+  },
+  {
+    "code": "smf",
+    "orders": ["smf", "set-music-folder"],
+    "helpInfo": "Setea la carpeta raíz de música"
   }
 ]
