@@ -1,14 +1,19 @@
 package org.muplayer.listener;
 
 public class ListenersNames {
-    public static final String ONSTARTED = "onStarted";
-    public static final String ONSHUTDOWN = "onShutdown";
-    public static final String ONSONGCHANGE = "onSongChange";
-    public static final String ONPLAYING = "onPlaying";
-    public static final String ONPLAYED = "onPlayed";
-    public static final String ONRESUMED = "onResumed";
-    public static final String ONPAUSED = "onPaused";
-    public static final String ONSTOPPED = "onStopped";
-    public static final String ONSEEKED = "onSeeked";
-    public static final String ONGOTOSECOND = "onGotosecond";
+
+    private ListenersNames() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    public static final String ON_STARTED = "onStarted";
+    public static final String ON_SHUTDOWN = "onShutdown";
+    public static final String ON_SONG_CHANGE = "onSongChange";
+    public static final String ON_PLAYING = "onPlaying";
+    public static final String ON_PLAYED = "onPlayed";
+    public static final String ON_RESUMED = "onResumed";
+    public static final String ON_PAUSED = "onPaused";
+    public static final String ON_STOPPED = "onStopped";
+    public static final String ON_SOUGHT = "onSought";
+    public static final String ON_GO_TO_SECOND = "onGoToSecond";
 }

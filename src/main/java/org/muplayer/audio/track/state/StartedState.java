@@ -2,7 +2,6 @@ package org.muplayer.audio.track.state;
 
 import org.muplayer.audio.player.Player;
 import org.muplayer.audio.track.Track;
-import org.muplayer.audio.track.TrackData;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;

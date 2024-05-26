@@ -69,8 +69,8 @@ public class TCPClient extends Client {
 
                     if (consoleExecution != null && consoleExecution.hasOutput()) {
                         Logger.getLogger(this, getLoggerHeader()+"Waiting for command processing...").info();
-                        sendString(consoleExecution.getOutputMsg().toString());
-                        Logger.getLogger(this, getLoggerHeader()+"Command response sent: "+consoleExecution.getOutputMsg().toString()).info();
+                        sendString(consoleExecution.getOutputMsg());
+                        Logger.getLogger(this, getLoggerHeader()+"Command response sent: "+consoleExecution.getOutputMsg()).info();
                     }
                 }
                 Thread.sleep(1);

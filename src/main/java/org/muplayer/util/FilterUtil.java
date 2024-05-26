@@ -8,6 +8,11 @@ import java.io.FileFilter;
 import java.util.function.Predicate;
 
 public class FilterUtil {
+
+    private FilterUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static Predicate<Track> newSeekToFolderFilter(File parentFile) {
         return track -> {
             File dataSource = track.getDataSource();

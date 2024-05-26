@@ -7,6 +7,11 @@ import org.orangelogger.sys.Logger;
 import java.io.File;
 
 public class ThreadUtil {
+
+    private ThreadUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static boolean hasOneSecond(long ti) {
         return Time.getInstance().getTime() - ti >= 1000;
     }

@@ -1,6 +1,11 @@
 package org.muplayer.audio.values;
 
 public class AudioConstantValues {
+
+    private AudioConstantValues() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static final float MAX_VOL = 0.855f;
     public static final float MIN_VOL = -80f;
 
@@ -9,5 +14,5 @@ public class AudioConstantValues {
     public static final float DEFAULT_VOL_RANGE = DEFAULT_MAX_VOL - DEFAULT_MIN_VOL;
 
     public static final float VOL_RANGE = MAX_VOL - MIN_VOL;
-    public static final float MiDDLE_VOL = VOL_RANGE / 2;
+    public static final float MIDDLE_VOL = VOL_RANGE / 2;
 }

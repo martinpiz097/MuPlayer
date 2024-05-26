@@ -4,8 +4,6 @@ import lombok.Data;
 import org.orangelogger.sys.ConsoleColor;
 import org.orangelogger.sys.Logger;
 
-import static org.muplayer.console.OutputType.*;
-
 @Data
 public class ConsoleExecution {
     private final Command cmd;

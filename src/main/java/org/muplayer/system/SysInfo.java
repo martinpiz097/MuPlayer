@@ -4,6 +4,11 @@ import org.muplayer.data.properties.info.MuPlayerInfo;
 import org.muplayer.data.properties.info.MuPlayerInfoKeys;
 
 public class SysInfo {
+
+    private SysInfo() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static final String OS_NAME = System.getProperty("os.name").toLowerCase();
     public static final boolean IS_WINDOWS = OS_NAME.contains("windows");
     public static final boolean IS_LINUX = OS_NAME.contains("linux");
@@ -14,6 +19,6 @@ public class SysInfo {
     public static final String USERNAME = System.getProperty("user.name");
 
     public static String readVersion() {
-        return MuPlayerInfo.getInstance().getProperty(MuPlayerInfoKeys.MUPLAYER_VERSION);
+        return MuPlayerInfo.getInstance().getProperty(MuPlayerInfoKeys.MU_PLAYER_VERSION);
     }
 }

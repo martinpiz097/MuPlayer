@@ -33,7 +33,7 @@ public class MP3Track extends Track {
         final long audioSize = dataSource.length() - audioStartByte;
         final long frameCount = audioHeader.getNumberOfFrames();
         this.frameSize = audioSize / frameCount;
-        this.frameDurationInSec = (audioHeader.getPreciseTrackLength() / (double) frameCount);
+        this.frameDurationInSec = (audioHeader.getPreciseTrackLength() / frameCount);
     }
 
     public MP3Track(String trackPath)
