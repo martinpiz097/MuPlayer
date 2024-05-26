@@ -1,76 +1,69 @@
 # MuPlayer
-#### Music Player library in pure Java.
-#### Min JDK Version: 11
+MuPlayer is a music player library written in pure Java.
 
-## Note: 
-    To compile the project you must execute "mvn clean install" command to
-    generate the jar file, this file you can find in "target" folder.
+## Requirements
+- JDK 11 or higher
 
-## Note 2:
-    If you want to use the project as a dependency add the following lines if you are working with maven or gradle:
+## Compilation
+To compile the project, use Maven with the following command:
 
-    Maven:
-        Add the repository:
-            <repositories>
-                <repository>
-                    <id>clojars</id>
-                    <url>https://clojars.org/repo</url>
-                </repository>
-            </repositories>
-        
-        Then add the dependency:
-            <dependency>
-                <groupId>org.orangeplayer</groupId>
-                <artifactId>muplayer</artifactId>
-                <version>RELEASE</version>
-            </dependency>
-    Gradle:
-        Add the repository:
-            allprojects {
-                repositories {
-                    ...
-                    maven { url 'https://clojars.org/repo' }
-                }
-            }
-        Then add the dependency:
-            dependencies {
-                implementation 'org.orangeplayer:muplayer'
-            }
-# ------------------------------------------------------------------------------------
+```bash
+mvn clean install
+```
 
-## Nota: 
-    Para compilar el proyecto debe ejecutar el comando "mvn clean install" para 
-    generar el archivo jar, este archivo se puede encontrar en la carpeta "target".
-    
-## Nota 2:
+## Using MuPlayer as a Dependency
+### Maven
+#### Add repository
+Add the following repository to your pom.xml file:
 
-    Si tu deseas utilizar el proyecto como dependencia agregar las siguientes líneas si estas trabajando con maven o gradle:
+```xml
+<repositories>
+    <repository>
+        <id>clojars</id>
+        <url>https://clojars.org/repo</url>
+    </repository>
+</repositories>
+```
 
-    Maven:
-        Añade el repositorio:
-            <repositories>
-                <repository>
-                    <id>clojars</id>
-                    <url>https://clojars.org/repo</url>
-                </repository>
-            </repositories>
-        
-        Luego añade la dependencia:
-            <dependency>
-                <groupId>org.orangeplayer</groupId>
-                <artifactId>muplayer</artifactId>
-                <version>RELEASE</version>
-            </dependency>
-    Gradle:
-        Añade el repositorio:
-            allprojects {
-                repositories {
-                    ...
-                    maven { url 'https://clojars.org/repo' }
-                }
-            }
-        Luego añade la dependencia:
-            dependencies {
-                implementation 'org.orangeplayer:muplayer'
-            }
-    
+#### Add dependency
+Add the following dependency to your pom.xml file:
+```xml
+<dependency>
+    <groupId>org.orangeplayer</groupId>
+    <artifactId>muplayer</artifactId>
+    <version>RELEASE</version>
+</dependency>
+```
+
+### Gradle
+#### Add repository
+Add the following repository to your build.gradle file:
+
+```groovy
+allprojects {
+    repositories {
+        maven { url 'https://clojars.org/repo' }
+    }
+}
+```
+
+#### Add dependency
+Add the following dependency to your build.gradle file:
+
+```groovy
+dependencies {
+    implementation 'org.orangeplayer:muplayer'
+}
+```
+
+## Contributing
+If you'd like to contribute to the project, please follow these steps:
+
+1. Fork the repository.
+2. Create a new branch (git checkout -b feature/new-feature).
+3. Make your changes and commit (git commit -am 'Add new feature').
+4. Push your branch (git push origin feature/new-feature).
+5. Open a Merge Request.
+
+## License
+This project is licensed under the Apache License, Version 2.0
