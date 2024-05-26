@@ -61,8 +61,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
     }
 
     private boolean isPlayerOn() {
-        return player != null &&
-                player.isAlive();
+        return player != null && player.isAlive();
     }
 
     private void execSysCommand(String cmd) {
@@ -382,7 +381,11 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                         player.resumeTrack();
                     }
                     break;
-
+                case s:
+                    if (isPlayerOn() && (player.isPlaying() || player.isPaused())) {
+                        player.stopTrack();
+                    }
+                    break;
                 case n:
                     if (isPlayerOn()) {
                         if (cmd.hasOptions()) {

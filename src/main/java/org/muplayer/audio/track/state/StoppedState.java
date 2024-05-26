@@ -18,13 +18,15 @@ public class StoppedState extends TrackState {
 
     @Override
     public void handle() {
-        try {
-            track.resetStream();
-            trackData.setSecsSeeked(0);
-            track.wait();
-        } catch (Exception e) {
-            log.log(Level.SEVERE, e.getMessage());
-            track.kill();
-        }
+       synchronized (track) {
+           try {
+               track.resetStream();
+               trackData.setSecsSeeked(0);
+               track.wait();
+           } catch (Exception e) {
+               log.log(Level.SEVERE, e.getMessage());
+               track.kill();
+           }
+       }
     }
 }
