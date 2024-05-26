@@ -20,13 +20,17 @@ import java.util.logging.LogManager;
 @Log
 public class Main {
     public static void main(String[] args) {
+        ConfigInfo configInfo = ConfigInfo.getInstance();
+        MessagesInfo messagesInfo = MessagesInfo.getInstance();
+        CacheManager globalCache = CacheManager.getGlobalCache();
+
         try {
             loadLogConfig();
             ConsoleRunner consoleRunner = null;
             if (args.length == 0) {
-                final String defaultRootPath = ConfigInfo.getInstance().getProperty(ConfigInfoKeys.DEFAULT_MUSIC_FOLDER);
+                final String defaultRootPath = configInfo.getProperty(ConfigInfoKeys.DEFAULT_MUSIC_FOLDER);
                 if (defaultRootPath == null) {
-                    throw new NullPointerException(MessagesInfo.getInstance().getProperty(MessagesInfoKeys.PROPERTY_NOT_FOUND_MSG));
+                    throw new NullPointerException(messagesInfo.getProperty(MessagesInfoKeys.PROPERTY_NOT_FOUND_MSG));
                 } else {
                     consoleRunner = new LocalRunner(defaultRootPath);
                 }
@@ -35,7 +39,7 @@ public class Main {
                     case 1:
                         String firstArg = args[0].trim();
                         if (firstArg.startsWith("-")) {
-                            throw new NullPointerException(MessagesInfo.getInstance().getProperty(MessagesInfoKeys.PROPERTY_NOT_FOUND_MSG));
+                            throw new NullPointerException(messagesInfo.getProperty(MessagesInfoKeys.PROPERTY_NOT_FOUND_MSG));
                         } else {
                             consoleRunner = new LocalRunner(firstArg);
                         }
@@ -58,7 +62,7 @@ public class Main {
             }
             if (consoleRunner != null) {
                 TaskRunner.execute(consoleRunner, consoleRunner.getClass().getSimpleName());
-                CacheManager.getGlobalCache().saveValue(CacheVar.RUNNER, consoleRunner);
+                globalCache.saveValue(CacheVar.RUNNER, consoleRunner);
             }
         } catch (Exception e) {
             e.printStackTrace();
