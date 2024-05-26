@@ -382,7 +382,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     }
                     break;
                 case s:
-                    if (isPlayerOn() && (player.isPlaying() || player.isPaused())) {
+                    if (isPlayerOn()) {
                         player.stopTrack();
                     }
                     break;
