@@ -9,6 +9,11 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
 public class IOUtil {
+
+    private IOUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static final int DEFAULT_BUFFER_SIZE = 1024 * 64;
 
     public static boolean isEqualsBuffers(byte[] b1, byte[] b2) {

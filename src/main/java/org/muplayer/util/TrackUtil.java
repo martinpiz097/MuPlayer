@@ -16,6 +16,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class TrackUtil {
+
+    private TrackUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
     private static final Map<String, Constructor<? extends Track>> mapTrackConstructors = CollectionUtil.newFastMap();
 
     public static String getSongInfo(Track track) {

@@ -1,8 +1,6 @@
 package org.muplayer.audio.io;
 
 import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import java.nio.ByteOrder;
 
 public class DefaultAudioIO extends AudioIO {
     @Override

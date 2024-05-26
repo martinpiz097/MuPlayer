@@ -5,6 +5,11 @@ import javax.sound.sampled.FloatControl;
 import static org.muplayer.audio.values.AudioConstantValues.*;
 
 public class AudioConversionUtil {
+
+    private AudioConversionUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static float convertVolRangeToLineRange(float volume, float minLineVol, float maxLineVol) {
         float volRange = maxLineVol - minLineVol;
         float volScale = 1 / (DEFAULT_VOL_RANGE / volRange);

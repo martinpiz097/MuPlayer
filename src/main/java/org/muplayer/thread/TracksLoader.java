@@ -1,7 +1,6 @@
 package org.muplayer.thread;
 
 import lombok.Getter;
-import lombok.Synchronized;
 import org.muplayer.util.CollectionUtil;
 
 import java.util.Collections;

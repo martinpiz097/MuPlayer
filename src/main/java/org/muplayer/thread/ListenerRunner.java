@@ -21,39 +21,39 @@ public class ListenerRunner implements Runnable {
     @Override
     public void run() {
         switch (methodName) {
-            case ONSONGCHANGE:
+            case ON_SONG_CHANGE:
                 listListeners.parallelStream()
                         .forEach(listener-> listener.onSongChange(track));
                 break;
-            case ONPLAYED:
+            case ON_PLAYED:
                 listListeners.parallelStream()
                         .forEach(listener-> listener.onPlayed(track));
                 break;
-            case ONPLAYING:
+            case ON_PLAYING:
                 listListeners.parallelStream()
                         .forEach(listener-> listener.onPlaying(track));
                 break;
-            case ONRESUMED:
+            case ON_RESUMED:
                 listListeners.parallelStream()
                         .forEach(listener-> listener.onResumed(track));
                 break;
-            case ONPAUSED:
+            case ON_PAUSED:
                 listListeners.parallelStream()
                         .forEach(listener-> listener.onPaused(track));
                 break;
-            case ONSTARTED:
+            case ON_STARTED:
                 listListeners.parallelStream()
                         .forEach(PlayerListener::onStarted);
                 break;
-            case ONSTOPPED:
+            case ON_STOPPED:
                 listListeners.parallelStream()
                         .forEach(listener-> listener.onStopped(track));
                 break;
-            case ONSEEKED:
+            case ON_SOUGHT:
                 listListeners.parallelStream()
                         .forEach(listener-> listener.onSeeked(track));
                 break;
-            case ONSHUTDOWN:
+            case ON_SHUTDOWN:
                 listListeners.parallelStream()
                         .forEach(PlayerListener::onShutdown);
                 break;

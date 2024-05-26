@@ -4,6 +4,11 @@ import java.io.File;
 import java.io.IOException;
 
 public class FileUtil {
+
+    private FileUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
     private static final String FORMAT_NAME_DELIMITER = "\\.";
     private static final String EMPTY = "";
 

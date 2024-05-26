@@ -1,9 +1,6 @@
 package org.muplayer.audio.track.io;
 
-import org.muplayer.util.IOUtil;
-
 import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.TargetDataLine;
 import java.io.BufferedInputStream;
@@ -458,7 +455,7 @@ public class AudioDataInputStream extends InputStream {
                 return -1;
             }
 
-            value = (int)b[0];
+            value = b[0];
 
             if (line.getFormat().getEncoding().equals(AudioFormat.Encoding.PCM_SIGNED)) {
                 value += 128;

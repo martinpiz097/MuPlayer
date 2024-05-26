@@ -67,7 +67,6 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
             log.severe("Error on MuPlayer class: " + e);
-            //Logger.getLogger(ConsolePlayer.class, e.getClass().getSimpleName(), e.getMessage()).error();
         }
     }
 

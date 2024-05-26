@@ -32,7 +32,7 @@ public class TPlayingTrack implements Runnable {
         if (trackPlayer != null) {
             while (track.isPlaying()) {
                 try {
-                    trackPlayer.loadListenerMethod(ListenersNames.ONPLAYING, track);
+                    trackPlayer.loadListenerMethod(ListenersNames.ON_PLAYING, track);
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();

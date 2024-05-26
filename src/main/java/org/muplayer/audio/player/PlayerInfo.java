@@ -8,13 +8,15 @@ import java.text.DecimalFormat;
 
 @Data
 public class PlayerInfo {
+
     private final Track current;
     private final File trackFolder;
     private final File rootFolder;
     private final float volume;
-
     private final int songsCount;
     private final int foldersCount;
+
+    private static final String ENTER_TAB = ",\n\t";
 
     public PlayerInfo(MuPlayer muPlayer) {
         this.current = muPlayer.getCurrent();
@@ -42,12 +44,12 @@ public class PlayerInfo {
     @Override
     public String toString() {
         return new StringBuilder().append("{\n\t")
-                .append("Track: ").append(getCurrentTrackTitle()).append(",\n\t")
-                .append("Track Format: ").append(getCurrentTrackFormat()).append(",\n\t")
-                .append("Track Folder: ").append(trackFolder==null?"Unknown":trackFolder.getPath()).append(",\n\t")
-                .append("Root Folder: ").append(rootFolder==null?"Unknown":rootFolder.getPath()).append(",\n\t")
-                .append("Volume: ").append(new DecimalFormat("#0.0").format(volume)).append(",\n\t")
-                .append("Songs Count: ").append(songsCount).append(",\n\t")
+                .append("Track: ").append(getCurrentTrackTitle()).append(ENTER_TAB)
+                .append("Track Format: ").append(getCurrentTrackFormat()).append(ENTER_TAB)
+                .append("Track Folder: ").append(trackFolder==null?"Unknown":trackFolder.getPath()).append(ENTER_TAB)
+                .append("Root Folder: ").append(rootFolder==null?"Unknown":rootFolder.getPath()).append(ENTER_TAB)
+                .append("Volume: ").append(new DecimalFormat("#0.0").format(volume)).append(ENTER_TAB)
+                .append("Songs Count: ").append(songsCount).append(ENTER_TAB)
                 .append("Folder Count: ").append(foldersCount).append("\n}")
                 .toString();
     }

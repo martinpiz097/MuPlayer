@@ -8,6 +8,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class AudioHardware {
+
+    private AudioHardware() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    private static final String LINE_IS_CLOSED = "Line is closed: ";
+
     public static List<Mixer> getMixers() {
         return Arrays.stream(AudioSystem.getMixerInfo())
                 .map(AudioSystem::getMixer)
@@ -235,9 +242,6 @@ public class AudioHardware {
             speakerLine.open();
             final BooleanControl speakerMute = getMuteControl(speakerLine);
 
-            //System.out.println("HeadphoneLine: " + Arrays.toString(headphoneLine.getControls()));
-            //System.out.println("SpeakerLine: " + Arrays.toString(speakerLine.getControls()));
-
             final Line toReturn;
             if (headphoneMute.getValue() && speakerMute.getValue())
                 toReturn = getMasterOutputLine();
@@ -256,25 +260,25 @@ public class AudioHardware {
 
     public static FloatControl getGainControl(Line line) {
         if (!line.isOpen())
-            throw new RuntimeException("Line is closed: " + toString(line));
+            throw new RuntimeException(LINE_IS_CLOSED + toString(line));
         return (FloatControl) findControl(FloatControl.Type.MASTER_GAIN, line.getControls());
     }
 
     public static FloatControl getVolumeControl(Line line) {
         if (!line.isOpen())
-            throw new RuntimeException("Line is closed: " + toString(line));
+            throw new RuntimeException(LINE_IS_CLOSED + toString(line));
         return (FloatControl) findControl(FloatControl.Type.VOLUME, line.getControls());
     }
 
     public static BooleanControl getMuteControl(Line line) {
         if (!line.isOpen())
-            throw new RuntimeException("Line is closed: " + toString(line));
+            throw new RuntimeException(LINE_IS_CLOSED + toString(line));
         return (BooleanControl) findControl(BooleanControl.Type.MUTE, line.getControls());
     }
 
     public static void setMuteValue(Line line, boolean mute) {
         if (!line.isOpen())
-            throw new RuntimeException("Line is closed: " + toString(line));
+            throw new RuntimeException(LINE_IS_CLOSED + toString(line));
         final BooleanControl muteControl = (BooleanControl) findControl(BooleanControl.Type.MUTE, line.getControls());
 
         if (muteControl != null)

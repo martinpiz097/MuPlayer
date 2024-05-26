@@ -252,7 +252,7 @@ public class MuPlayer extends Player {
             playerData.setTrackIndex(trackIndexed.getIndex());
             current = trackIndexed.getTrack();
             startTrackThread();
-            loadListenerMethod(ONSONGCHANGE, current);
+            loadListenerMethod(ON_SONG_CHANGE, current);
         }
     }
 
@@ -316,10 +316,10 @@ public class MuPlayer extends Player {
 
     @Override
     public synchronized List<Artist> getArtists() {
-        final List<Track> listTracks = getTracks();
-        final Set<Artist> setArtists = new HashSet<>(listTracks.size() + 1);
+        final List<Track> trackList = getTracks();
+        final Set<Artist> setArtists = new HashSet<>(trackList.size() + 1);
 
-        listTracks.parallelStream()
+        trackList.parallelStream()
                 .forEach(track -> {
                     final String artistName = track.getArtist() != null ? track.getArtist() : "Unknown";
                     synchronized (setArtists) {
@@ -442,11 +442,6 @@ public class MuPlayer extends Player {
         return current != null && current.isStopped();
     }
 
-    /*@Override
-    public synchronized boolean isFinished() {
-        return current != null && current.isFinished();
-    }*/
-
     @Override
     public synchronized boolean isMute() {
         return playerData.isMute();
@@ -517,7 +512,7 @@ public class MuPlayer extends Player {
             start();
         } else if (current != null) {
             current.play();
-            loadListenerMethod(ONPLAYED, current);
+            loadListenerMethod(ON_PLAYED, current);
         }
     }
 
@@ -532,7 +527,7 @@ public class MuPlayer extends Player {
             current = track;
             startTrackThread();
             playerData.setTrackIndex(index);
-            loadListenerMethod(ONPLAYED, current);
+            loadListenerMethod(ON_PLAYED, current);
         }
     }
 
@@ -565,7 +560,7 @@ public class MuPlayer extends Player {
             }
             current = listTracks.get(playerData.getTrackIndex());
             startTrackThread();
-            loadListenerMethod(ONPLAYED, current);
+            loadListenerMethod(ON_PLAYED, current);
         }
     }
 
@@ -581,7 +576,7 @@ public class MuPlayer extends Player {
             }
             current = trackIndexed.getTrack();
             startTrackThread();
-            loadListenerMethod(ONPLAYED, current);
+            loadListenerMethod(ON_PLAYED, current);
         }
     }
 
@@ -589,7 +584,7 @@ public class MuPlayer extends Player {
     public synchronized void pause() {
         if (current != null) {
             current.pause();
-            loadListenerMethod(ONPAUSED, current);
+            loadListenerMethod(ON_PAUSED, current);
         }
     }
 
@@ -597,7 +592,7 @@ public class MuPlayer extends Player {
     public synchronized void resumeTrack() {
         if (current != null) {
             current.resumeTrack();
-            loadListenerMethod(ONRESUMED, current);
+            loadListenerMethod(ON_RESUMED, current);
         }
     }
 
@@ -605,7 +600,7 @@ public class MuPlayer extends Player {
     public synchronized void stopTrack() {
         if (current != null) {
             current.stopTrack();
-            loadListenerMethod(ONSTOPPED, current);
+            loadListenerMethod(ON_STOPPED, current);
         }
     }
 
@@ -622,17 +617,12 @@ public class MuPlayer extends Player {
         }
     }
 
-    /*@Override
-    public synchronized void replace() {
-        shutdown();
-    }*/
-
     @Override
     public synchronized void seek(double seconds) {
         if (current != null) {
             try {
                 current.seek(seconds);
-                loadListenerMethod(ONGOTOSECOND, current);
+                loadListenerMethod(ON_GO_TO_SECOND, current);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -644,7 +634,7 @@ public class MuPlayer extends Player {
         if (current != null) {
             try {
                 current.gotoSecond(second);
-                loadListenerMethod(ONGOTOSECOND, current);
+                loadListenerMethod(ON_GO_TO_SECOND, current);
             } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
                 e.printStackTrace();
             }
@@ -728,12 +718,12 @@ public class MuPlayer extends Player {
         playerData.setOn(false);
         restartCurrent();
         this.interrupt();
-        loadListenerMethod(ONSHUTDOWN, null);
+        loadListenerMethod(ON_SHUTDOWN, null);
     }
 
     @Override
     public synchronized void run() {
-        loadListenerMethod(ONSTARTED, null);
+        loadListenerMethod(ON_STARTED, null);
         startPlaying();
         freezePlayer();
     }

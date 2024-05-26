@@ -173,11 +173,4 @@ public class M4ATrack extends Track {
             seek(second);
         }
     }
-
-    /*private long getSoundSize() {
-        long size = (long) ((decodedStream.getFormat().getSampleRate()/8)*getDuration());
-        System.out.println("SoundSize: "+size);
-        return size;
-    }*/
-
 }

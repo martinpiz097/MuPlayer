@@ -94,7 +94,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
             for (int i = 0; i < player.getSongsCount(); i++) {
                 track = listTracks.get(i);
                 fileTrack = track.getDataSource();
-                if (current != null && fileTrack.getPath().equals(((File) current.getDataSource()).getPath())) {
+                if (current != null && fileTrack.getPath().equals((current.getDataSource()).getPath())) {
                     execution.appendOutput("Track " + (i + 1) + ": "
                             + fileTrack.getName(), warn);
                 } else {
@@ -461,15 +461,13 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     break;
 
                 case v:
-                    if (player != null) {
-                        if (cmd.hasOptions()) {
-                            Number volume = cmd.getOptionAsNumber(0);
-                            if (volume == null) {
-                                execution.appendOutput("Volume value incorrect", error);
-                            } else {
-                                player.setVolume(volume.floatValue());
-                                execution.appendOutput("Volume value changed", warn);
-                            }
+                    if (player != null && cmd.hasOptions()) {
+                        Number volume = cmd.getOptionAsNumber(0);
+                        if (volume == null) {
+                            execution.appendOutput("Volume value incorrect", error);
+                        } else {
+                            player.setVolume(volume.floatValue());
+                            execution.appendOutput("Volume value changed", warn);
                         }
                     }
                     break;
@@ -480,15 +478,13 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     break;
 
                 case sv:
-                    if (player != null) {
-                        if (cmd.hasOptions()) {
-                            Number volume = cmd.getOptionAsNumber(0);
-                            if (volume == null) {
-                                execution.appendOutput("Volume value incorrect", error);
-                            } else {
-                                player.setSystemVolume(volume.floatValue());
-                                execution.appendOutput("Volume value changed", warn);
-                            }
+                    if (player != null && cmd.hasOptions()) {
+                        Number volume = cmd.getOptionAsNumber(0);
+                        if (volume == null) {
+                            execution.appendOutput("Volume value incorrect", error);
+                        } else {
+                            player.setSystemVolume(volume.floatValue());
+                            execution.appendOutput("Volume value changed", warn);
                         }
                     }
                     break;
@@ -502,14 +498,12 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     break;
 
                 case k:
-                    if (isPlayerOn()) {
-                        if (cmd.hasOptions()) {
-                            Number seekSec = cmd.getOptionAsNumber(0);
-                            if (seekSec == null) {
-                                execution.appendOutput("Seek value incorrect", error);
-                            } else {
-                                player.seek(seekSec.doubleValue());
-                            }
+                    if (isPlayerOn() && cmd.hasOptions()) {
+                        Number seekSec = cmd.getOptionAsNumber(0);
+                        if (seekSec == null) {
+                            execution.appendOutput("Seek value incorrect", error);
+                        } else {
+                            player.seek(seekSec.doubleValue());
                         }
                     }
                     break;
@@ -548,14 +542,12 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     }
                     break;
                 case g:
-                    if (player != null) {
-                        if (cmd.hasOptions()) {
-                            Number gotoSec = cmd.getOptionAsNumber(0);
-                            if (gotoSec == null) {
-                                execution.appendOutput("Go to value incorrect", error);
-                            } else {
-                                player.gotoSecond(gotoSec.doubleValue());
-                            }
+                    if (player != null && cmd.hasOptions()) {
+                        Number gotoSec = cmd.getOptionAsNumber(0);
+                        if (gotoSec == null) {
+                            execution.appendOutput("Go to value incorrect", error);
+                        } else {
+                            player.gotoSecond(gotoSec.doubleValue());
                         }
                     }
                     break;
@@ -603,7 +595,6 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                         execution.appendOutput("Current track unavailable", error);
                     } else {
                         final String formattedProgress = current.getFormattedProgress();
-                        ;
                         final String formattedDuration = current.getFormattedDuration();
                         execution.appendOutput(formattedProgress + "/" + formattedDuration, warn);
                     }
@@ -664,13 +655,11 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     break;
 
                 case pf:
-                    if (isPlayerOn()) {
-                        if (cmd.hasOptions()) {
-                            final Number fldIndex = cmd.getOptionAsNumber(0);
-                            if (fldIndex != null && fldIndex.intValue() > 0) {
-                                player.playFolder(fldIndex.intValue() - 1);
-                                showSongInfo(player.getCurrent(), execution);
-                            }
+                    if (isPlayerOn() && cmd.hasOptions()) {
+                        final Number fldIndex = cmd.getOptionAsNumber(0);
+                        if (fldIndex != null && fldIndex.intValue() > 0) {
+                            player.playFolder(fldIndex.intValue() - 1);
+                            showSongInfo(player.getCurrent(), execution);
                         }
                     }
                     break;

@@ -34,6 +34,7 @@ public class LocalRunner extends ConsoleRunner {
         scanner = new Scanner(System.in);
     }
 
+    @Override
     protected void printHeader() {
         final FileOutputStream stdout = SystemUtil.getStdout();
         try {
@@ -45,6 +46,7 @@ public class LocalRunner extends ConsoleRunner {
         }
     }
 
+    @Override
     public ConsoleExecution execCommand(String strCmd) {
         try {
             return interpreter.executeCommand(strCmd);
