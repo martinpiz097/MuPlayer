@@ -9,12 +9,15 @@ import org.muplayer.console.runner.ConsoleRunner;
 import org.muplayer.console.runner.LocalRunner;
 import org.muplayer.console.runner.RunnerMode;
 import org.muplayer.data.CacheManager;
+import org.muplayer.data.CacheVar;
 import org.muplayer.data.json.command.model.ConsoleCodesData;
 import org.muplayer.model.Album;
 import org.muplayer.model.Artist;
 import org.muplayer.model.SeekOption;
 import org.muplayer.console.runner.DaemonRunner;
 import org.muplayer.data.json.command.ConsoleCodesInfo;
+import org.muplayer.service.PrintLogService;
+import org.muplayer.service.impl.PrintLogServiceImpl;
 import org.muplayer.system.*;
 import org.muplayer.thread.TaskRunner;
 import org.muplayer.util.CollectionUtil;
@@ -45,6 +48,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
 
     private final CacheManager globalCacheManager;
     private final ConsoleCodesInfo consoleCodesInfo;
+    private final PrintLogService printLogService;
 
     private static final String CMD_DIVISOR = " && ";
 
@@ -53,6 +57,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
         this.playerFolder = player.getRootFolder();
         this.globalCacheManager = CacheManager.getGlobalCache();
         this.consoleCodesInfo = ConsoleCodesInfo.getInstance();
+        this.printLogService = new PrintLogServiceImpl();
     }
 
     private boolean isPlayerOn() {
@@ -152,7 +157,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
         final Track current = player.getCurrent();
         final int songsCount = player.getSongsCount();
 
-            File parentFolder = current == null ? null : current.getDataSource().getParentFile();
+        File parentFolder = current == null ? null : current.getDataSource().getParentFile();
 
         execution.appendOutput("------------------------------", info);
         if (parentFolder == null) {
@@ -745,6 +750,30 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                         execution.appendOutput("No options selected, the options must be LOCAL or DAEMON", warn);
                     }
                     break;
+
+                case smf: {
+                    if (cmd.hasNotOptions()) {
+                        printLogService.errorLog("[Set music folder]\nCommand use: \n\tsmf ${music-folder-path}\n");
+                        break;
+                    }
+
+                    String musicFolderPath = cmd.getOptionAt(0);
+                    File musicFolderFile = new File(musicFolderPath);
+
+                    if (!musicFolderFile.exists()) {
+                        printLogService.errorLog("[" + musicFolderFile + "] doesn't exist\n");
+                        break;
+                    }
+
+                    if (!musicFolderFile.isDirectory()) {
+                        printLogService.errorLog("[" + musicFolderFile + "] is not a folder\n");
+                        break;
+                    }
+
+                    player.addMusic(musicFolderFile);
+
+                    break;
+                }
             }
 
         } else {

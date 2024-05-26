@@ -28,12 +28,7 @@ public class Main {
             loadLogConfig();
             ConsoleRunner consoleRunner = null;
             if (args.length == 0) {
-                final String defaultRootPath = configInfo.getProperty(ConfigInfoKeys.DEFAULT_MUSIC_FOLDER);
-                if (defaultRootPath == null) {
-                    throw new NullPointerException(messagesInfo.getProperty(MessagesInfoKeys.PROPERTY_NOT_FOUND_MSG));
-                } else {
-                    consoleRunner = new LocalRunner(defaultRootPath);
-                }
+                consoleRunner = new LocalRunner();
             } else {
                 switch (args.length) {
                     case 1:

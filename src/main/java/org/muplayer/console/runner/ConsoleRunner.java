@@ -19,7 +19,7 @@ public abstract class ConsoleRunner implements Runnable {
     protected final Scanner scanner;
     protected final CacheManager globalCacheManager;
 
-    protected static final String LINEHEADER = "[MuPlayer]> ";
+    protected static final String PROMPT = "[MuPlayer]> ";
 
     public ConsoleRunner() throws FileNotFoundException {
         this((File) null);
@@ -43,7 +43,7 @@ public abstract class ConsoleRunner implements Runnable {
     protected void printHeader() {
         try {
             final FileOutputStream stdout = SystemUtil.getStdout();
-            stdout.write(Logger.getLogger(this, LINEHEADER)
+            stdout.write(Logger.getLogger(this, PROMPT)
                     .getColoredMsg(Logger.INFOCOLOR).getBytes());
             stdout.flush();
         } catch (IOException e) {

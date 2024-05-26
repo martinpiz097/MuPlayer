@@ -6,9 +6,10 @@ import org.muplayer.audio.track.Track;
 import org.muplayer.audio.track.state.TrackState;
 import org.muplayer.audio.track.state.UnknownState;
 import org.muplayer.exception.FormatNotSupportedException;
-import org.muplayer.exception.MuPlayerException;
 import org.muplayer.listener.PlayerListener;
 import org.muplayer.model.*;
+import org.muplayer.service.PrintLogService;
+import org.muplayer.service.impl.PrintLogServiceImpl;
 import org.muplayer.thread.*;
 import org.muplayer.util.*;
 
@@ -35,8 +36,8 @@ public class MuPlayer extends Player {
     private final List<PlayerListener> listListeners;
 
     private final PlayerData playerData;
-
     private final TracksLoader tracksLoader;
+    private final PrintLogService printLogService;
 
     public MuPlayer() throws FileNotFoundException {
         this((File) null);
@@ -49,6 +50,7 @@ public class MuPlayer extends Player {
         listListeners = CollectionUtil.newFastList();
         playerData = new PlayerData();
         this.tracksLoader = TracksLoader.getInstance();
+        this.printLogService = new PrintLogServiceImpl();
 
         checkRootFolder();
         setName("MusicPlayer " + getId());
@@ -63,7 +65,7 @@ public class MuPlayer extends Player {
                 && FilterUtil.getDirectoriesFilter().accept(rootFolder)) {
             setupTracksList();
         } else if (rootFolder == null) {
-            throw new MuPlayerException("The root folder is null");
+            printLogService.warningLog("To set music folder run this: smf ${music-folder-path}\n");
         } else {
             throw new FileNotFoundException(rootFolder.getPath());
         }
