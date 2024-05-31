@@ -91,6 +91,7 @@
                 </executions>
                 <configuration>
                     <finalName>${artifactId}</finalName>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
                 </configuration>
             </plugin>
 
