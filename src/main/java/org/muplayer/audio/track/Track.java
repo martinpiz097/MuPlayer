@@ -317,10 +317,8 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     @Override
     public String getTitle() {
         final String titleProper = getProperty(FieldKey.TITLE);
-        final File fileSource = dataSource != null && dataSource instanceof File ? (File) dataSource : null;
-
         return (titleProper == null || titleProper.trim().isEmpty())
-                && fileSource != null ? fileSource.getName() : titleProper;
+                && dataSource != null ? dataSource.getName() : titleProper;
     }
 
     @Override
@@ -374,6 +372,6 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
         trackState = new StartedState(player, this);
         while (trackData.canTrackContinue()) {
             trackState.handle();
-        }
+        }fileSource
     }
 }

@@ -6,8 +6,6 @@ import org.muplayer.console.runner.DaemonRunner;
 import org.muplayer.console.runner.LocalRunner;
 import org.muplayer.data.CacheManager;
 import org.muplayer.data.CacheVar;
-import org.muplayer.data.properties.config.ConfigInfo;
-import org.muplayer.data.properties.config.ConfigInfoKeys;
 import org.muplayer.data.properties.log.LogConfig;
 import org.muplayer.data.properties.log.LogConfigKeys;
 import org.muplayer.data.properties.msg.MessagesInfo;
@@ -20,7 +18,6 @@ import java.util.logging.LogManager;
 @Log
 public class Main {
     public static void main(String[] args) {
-        ConfigInfo configInfo = ConfigInfo.getInstance();
         MessagesInfo messagesInfo = MessagesInfo.getInstance();
         CacheManager globalCache = CacheManager.getGlobalCache();
 

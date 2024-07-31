@@ -49,24 +49,22 @@ public class TrackIO {
     }
 
     public boolean closeSpeaker() {
-        if (speaker != null) {
+        boolean existsSpeaker = speaker != null;
+        if (existsSpeaker) {
             speaker.stop();
             speaker.close();
             speaker = null;
-            return true;
-        } else {
-            return false;
         }
+        return existsSpeaker;
     }
 
     public boolean closeStream() {
         try {
-            if (decodedStream != null) {
+            boolean streamOpened = decodedStream != null;
+            if (streamOpened) {
                 decodedStream.close();
-                return true;
-            } else {
-                return false;
             }
+            return streamOpened;
         } catch (Exception e) {
             log.severe(e.getMessage());
             return false;
@@ -84,10 +82,11 @@ public class TrackIO {
     }
 
     public double getSecondsPosition() {
-        if (speaker == null) {
+        SourceDataLine driver = speaker.getDriver();
+        if (speaker == null || driver == null) {
             return 0;
         }
-        return ((double) speaker.getDriver().getMicrosecondPosition()) / 1000000;
+        return ((double) driver.getMicrosecondPosition()) / 1000000;
     }
 
     public boolean isTrackStreamsOpened() {

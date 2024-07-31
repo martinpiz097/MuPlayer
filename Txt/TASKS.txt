@@ -2,6 +2,8 @@ Ver si seek y goto funcionan en todos los formatos y ver si entregan calculos o 
 Al momento de tener un release definitivo separar clases de prueba del proyecto muplayer a proyecto aparte
 
 25 de Mayo, 2024
-
-    - JConsole
+    - JLine
     - Bytes y frames por defecto en archivos que no tienen suficiente info para que no se escuchen entrecortados
+
+28 de Mayo, 2024
+    - PicoCLI
