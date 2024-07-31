@@ -372,6 +372,6 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
         trackState = new StartedState(player, this);
         while (trackData.canTrackContinue()) {
             trackState.handle();
-        }fileSource
+        }
     }
 }
