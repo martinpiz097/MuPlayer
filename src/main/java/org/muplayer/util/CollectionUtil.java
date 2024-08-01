@@ -12,6 +12,10 @@ public class CollectionUtil {
         return new LinkedList<>();
     }
 
+    public static <T> List<T> newFastList(Collection<T> collection) {
+        return new LinkedList<>(collection);
+    }
+
     public static <K, V> Map<K, V> newFastMap() {
         return new TreeMap<>();
     }

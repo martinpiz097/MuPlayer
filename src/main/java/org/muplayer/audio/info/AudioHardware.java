@@ -43,14 +43,19 @@ public class AudioHardware {
         }
         CompoundControl compoundControl;
         Control member;
-        for (Control control : controls) {
-            if (control.getType().equals(type))
+
+        Control control;
+        for (int i = 0; i < controls.length; i++) {
+            control = controls[i];
+            if (control.getType().equals(type)) {
                 return control;
+            }
             if (control instanceof CompoundControl) {
                 compoundControl = (CompoundControl) control;
                 member = findControl(type, compoundControl.getMemberControls());
-                if (member != null)
+                if (member != null) {
                     return member;
+                }
             }
         }
         return null;

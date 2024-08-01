@@ -343,7 +343,7 @@ public class MuPlayer extends Player {
                         }
                     }
                 });
-        final List<Artist> listArtists = new LinkedList<>(setArtists);
+        final List<Artist> listArtists = CollectionUtil.newFastList(setArtists);
         listArtists.sort(Comparator.comparing(Artist::getName));
         return listArtists;
     }
@@ -369,7 +369,7 @@ public class MuPlayer extends Player {
                         }
                     }
                 });
-        final List<Album> listAlbums = new LinkedList<>(setAlbums);
+        final List<Album> listAlbums = CollectionUtil.newFastList(setAlbums);
         listAlbums.sort(Comparator.comparing(Album::getName));
         return listAlbums;
     }
