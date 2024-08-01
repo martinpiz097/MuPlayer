@@ -232,18 +232,20 @@ public class MuPlayer extends Player {
     private synchronized void changeTrack(SeekOption seekOption) {
         final int currentIndex = playerData.getTrackIndex();
         final int newIndex;
+        final int tracksSize = listTracks.size();
+
         if (seekOption == SeekOption.NEXT) {
-            newIndex = currentIndex == listTracks.size() - 1 ? 0 : currentIndex + 1;
+            newIndex = currentIndex == tracksSize - 1 ? 0 : currentIndex + 1;
         } else {
-            newIndex = currentIndex == 0 ? listTracks.size() - 1 : currentIndex - 1;
+            newIndex = currentIndex == 0 ? tracksSize - 1 : currentIndex - 1;
         }
         changeTrack(newIndex);
     }
 
     private synchronized void changeTrack(int newTrackIndex) {
-        Track track = listTracks.get(newTrackIndex);
+        final Track track = listTracks.get(newTrackIndex);
         if (track != null) {
-            TrackIndexed trackIndexed = new TrackIndexed(track, newTrackIndex);
+            final TrackIndexed trackIndexed = new TrackIndexed(track, newTrackIndex);
             changeTrack(trackIndexed);
         }
     }
@@ -260,7 +262,9 @@ public class MuPlayer extends Player {
 
     public void loadListenerMethod(String methodName, Track track) {
         if (!listListeners.isEmpty()) {
-            TaskRunner.execute(new ListenerRunner(listListeners, methodName, track), "ListenerRunner");
+            final String threadName = ListenerRunner.class.getSimpleName();
+            TaskRunner.execute(new ListenerRunner(listListeners, methodName, track),
+                    threadName);
         }
     }
 
@@ -307,8 +311,10 @@ public class MuPlayer extends Player {
 
     @Override
     public synchronized List<File> getListSoundFiles() {
-        return listTracks.stream().filter(track -> track.getDataSource() != null)
-                .map(track -> (File) track.getDataSource()).collect(Collectors.toList());
+        return listTracks.stream()
+                .filter(track -> track.getDataSource() != null)
+                .map(Track::getDataSource)
+                .collect(Collectors.toCollection(LinkedList::new));
     }
 
     @Override
@@ -337,7 +343,7 @@ public class MuPlayer extends Player {
                         }
                     }
                 });
-        final List<Artist> listArtists = new ArrayList<>(setArtists);
+        final List<Artist> listArtists = new LinkedList<>(setArtists);
         listArtists.sort(Comparator.comparing(Artist::getName));
         return listArtists;
     }
@@ -363,7 +369,7 @@ public class MuPlayer extends Player {
                         }
                     }
                 });
-        final List<Album> listAlbums = new ArrayList<>(setAlbums);
+        final List<Album> listAlbums = new LinkedList<>(setAlbums);
         listAlbums.sort(Comparator.comparing(Album::getName));
         return listAlbums;
     }
