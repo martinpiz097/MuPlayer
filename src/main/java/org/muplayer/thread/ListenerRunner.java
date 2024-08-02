@@ -1,18 +1,17 @@
 package org.muplayer.thread;
 
 import org.muplayer.audio.track.Track;
+import org.muplayer.listener.ListenerMethodName;
 import org.muplayer.listener.PlayerListener;
 
 import java.util.List;
 
-import static org.muplayer.listener.ListenersNames.*;
-
 public class ListenerRunner implements Runnable {
     private final List<PlayerListener> listListeners;
-    private final String methodName;
+    private final ListenerMethodName methodName;
     private final Track track;
 
-    public ListenerRunner(List<PlayerListener> listListeners, String methodName, Track track) {
+    public ListenerRunner(List<PlayerListener> listListeners, ListenerMethodName methodName, Track track) {
         this.listListeners = listListeners;
         this.methodName = methodName;
         this.track = track;

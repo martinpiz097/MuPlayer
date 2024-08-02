@@ -6,6 +6,7 @@ import org.muplayer.audio.track.Track;
 import org.muplayer.audio.track.state.TrackState;
 import org.muplayer.audio.track.state.UnknownState;
 import org.muplayer.exception.FormatNotSupportedException;
+import org.muplayer.listener.ListenerMethodName;
 import org.muplayer.listener.PlayerListener;
 import org.muplayer.model.*;
 import org.muplayer.service.PrintLogService;
@@ -23,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static org.muplayer.listener.ListenersNames.*;
+import static org.muplayer.listener.ListenerMethodName.*;
 import static org.muplayer.thread.ThreadUtil.generateTrackThreadName;
 
 @Log
@@ -260,7 +261,7 @@ public class MuPlayer extends Player {
         }
     }
 
-    public void loadListenerMethod(String methodName, Track track) {
+    public void loadListenerMethod(ListenerMethodName methodName, Track track) {
         if (!listListeners.isEmpty()) {
             final String threadName = ListenerRunner.class.getSimpleName();
             TaskRunner.execute(new ListenerRunner(listListeners, methodName, track),

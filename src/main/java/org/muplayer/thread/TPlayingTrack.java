@@ -2,7 +2,7 @@ package org.muplayer.thread;
 
 import org.muplayer.audio.player.MuPlayer;
 import org.muplayer.audio.track.Track;
-import org.muplayer.listener.ListenersNames;
+import org.muplayer.listener.ListenerMethodName;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class TPlayingTrack implements Runnable {
         if (trackPlayer != null) {
             while (track.isPlaying()) {
                 try {
-                    trackPlayer.loadListenerMethod(ListenersNames.ON_PLAYING, track);
+                    trackPlayer.loadListenerMethod(ListenerMethodName.ON_PLAYING, track);
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
