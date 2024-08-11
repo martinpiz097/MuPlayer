@@ -1,5 +1,7 @@
 package org.muplayer.util;
 
+import org.mpizutil.electrolist.structure.ElectroList;
+
 import java.util.*;
 
 public class CollectionUtil {
@@ -9,11 +11,11 @@ public class CollectionUtil {
     }
 
     public static <T> List<T> newFastList() {
-        return new LinkedList<>();
+        return new ElectroList<>();
     }
 
     public static <T> List<T> newFastList(Collection<T> collection) {
-        return new LinkedList<>(collection);
+        return new ElectroList<>(collection);
     }
 
     public static <K, V> Map<K, V> newFastMap() {
