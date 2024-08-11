@@ -23,6 +23,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.muplayer.listener.ListenerMethodName.*;
 import static org.muplayer.thread.ThreadUtil.generateTrackThreadName;
@@ -182,6 +183,7 @@ public class MuPlayer extends Player {
     // ya que hay algunos casos en los que si necesito secuencialidad
     private TrackIndexed getTrackIndexedFromCondition(Predicate<Track> filter) {
         int index = 0;
+
         for (Track track : listTracks) {
             if (filter.test(track)) {
                 return new TrackIndexed(track, index);
@@ -203,16 +205,12 @@ public class MuPlayer extends Player {
 
     private int seekToFolder(String folderPath) {
         final File parentFile = new File(folderPath);
-        int newTrackIndex = -1;
 
         // idea para electrolist -> Indexof con predicate
         Predicate<Track> filter = FilterUtil.newSeekToFolderFilter(parentFile);
         TrackIndexed trackIndexed = getTrackIndexedFromCondition(filter);
 
-        if (trackIndexed != null) {
-            newTrackIndex = trackIndexed.getIndex();
-        }
-        return newTrackIndex;
+        return trackIndexed != null ? trackIndexed.getIndex() : -1;
     }
 
     private void startPlaying() {

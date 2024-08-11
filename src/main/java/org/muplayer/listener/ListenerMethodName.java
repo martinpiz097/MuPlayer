@@ -1,7 +1,6 @@
 package org.muplayer.listener;
 
 public enum ListenerMethodName {
-
     ON_STARTED,
     ON_SHUTDOWN,
     ON_SONG_CHANGE,

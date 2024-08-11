@@ -7,9 +7,10 @@ import org.muplayer.data.json.JsonInfo;
 import org.muplayer.data.json.InternalJsonSource;
 import org.muplayer.data.json.command.model.ConsoleCodeResult;
 import org.muplayer.data.json.command.model.ConsoleCodesData;
-import org.muplayer.data.properties.ResourceFiles;
 
 import java.util.LinkedList;
+
+import static org.muplayer.data.properties.ResourceFiles.CONSOLE_PLAYER_CODES_RES_PATH;
 
 public class ConsoleCodesInfo extends JsonInfo<String, LinkedList<ConsoleCodesData>> {
 
@@ -20,7 +21,7 @@ public class ConsoleCodesInfo extends JsonInfo<String, LinkedList<ConsoleCodesDa
 
     private ConsoleCodesInfo() {
         super(new InternalJsonSource<>(
-                ResourceFiles.CONSOLE_PLAYER_CODES_RES_PATH,
+                CONSOLE_PLAYER_CODES_RES_PATH,
                 new TypeReference<>() {}, false));
         this.consoleCodeResult = new ConsoleCodeResult();
     }

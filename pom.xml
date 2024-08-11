@@ -149,6 +149,12 @@
             <optional>true</optional>
         </dependency>
 
+        <!--<dependency>
+            <groupId>org.mpizutil</groupId>
+            <artifactId>electrolist</artifactId>
+            <version>3.0.1</version>
+        </dependency>-->
+
         <dependency>
             <groupId>org.orangeplayer</groupId>
             <artifactId>logger</artifactId>
