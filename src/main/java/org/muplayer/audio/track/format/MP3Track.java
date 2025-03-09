@@ -76,7 +76,7 @@ public class MP3Track extends Track {
     }
 
     @Override
-    protected AudioIO createAudioIO() {
+    protected AudioIO initAudioIO() {
         return new DefaultAudioIO();
     }
 

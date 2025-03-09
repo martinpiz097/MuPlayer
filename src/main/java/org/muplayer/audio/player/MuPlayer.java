@@ -3,6 +3,7 @@ package org.muplayer.audio.player;
 import lombok.extern.java.Log;
 import org.muplayer.audio.io.AudioIO;
 import org.muplayer.audio.track.Track;
+import org.muplayer.audio.track.TrackBuilder;
 import org.muplayer.audio.track.state.TrackState;
 import org.muplayer.audio.track.state.UnknownState;
 import org.muplayer.exception.FormatNotSupportedException;
@@ -19,6 +20,10 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.FileVisitOption;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -39,6 +44,9 @@ public class MuPlayer extends Player {
 
     private final PlayerData playerData;
     private final TracksLoader tracksLoader;
+    private final TrackBuilder trackBuilder;
+    private final FilterUtil filterUtil;
+
     private final PrintLogService printLogService;
 
     public MuPlayer() throws FileNotFoundException {
@@ -47,11 +55,13 @@ public class MuPlayer extends Player {
 
     public MuPlayer(File rootFolder) throws FileNotFoundException {
         this.rootFolder = rootFolder;
-        listTracks = CollectionUtil.newFastList();
-        listFolders = CollectionUtil.newFastList();
-        listListeners = CollectionUtil.newFastList();
-        playerData = new PlayerData();
+        this.listTracks = CollectionUtil.newFastArrayList();
+        this.listFolders = CollectionUtil.newFastList(100);
+        this.listListeners = CollectionUtil.newLinkedList();
+        this.playerData = new PlayerData();
         this.tracksLoader = TracksLoader.getInstance();
+        this.trackBuilder = Track.builder();
+        this.filterUtil = new FilterUtil();
         this.printLogService = new PrintLogServiceImpl();
 
         checkRootFolder();
@@ -64,7 +74,7 @@ public class MuPlayer extends Player {
 
     private void checkRootFolder() throws FileNotFoundException {
         if (rootFolder != null && rootFolder.exists()
-                && FilterUtil.getDirectoriesFilter().accept(rootFolder)) {
+                && filterUtil.getDirectoriesFilter().accept(rootFolder)) {
             setupTracksList();
         } else if (rootFolder == null) {
             printLogService.warningLog("To set music folder run this: smf ${music-folder-path}\n");
@@ -74,33 +84,51 @@ public class MuPlayer extends Player {
     }
 
     private void loadTracks(File folderToLoad) {
+//        Files.find()
         tracksLoader.addTask(() -> {
             tracksLoader.addTask(() -> {
-                final File[] fldDirs = folderToLoad.listFiles(FilterUtil.getDirectoriesFilter());
+                final File[] fldDirs = folderToLoad.listFiles(filterUtil.getDirectoriesFilter());
                 if (fldDirs != null && fldDirs.length > 0) {
                     Arrays.stream(fldDirs).parallel().forEach(this::loadTracks);
                 }
             });
 
             tracksLoader.addTask(() -> {
-                final File[] fldAudioFiles = folderToLoad.listFiles(FilterUtil.getAudioFileFilter());
+                final File[] fldAudioFiles = folderToLoad.listFiles(filterUtil.getAudioFileFilter());
                 if (fldAudioFiles != null && fldAudioFiles.length > 0) {
                     synchronized (listFolders) {
                         listFolders.add(folderToLoad);
                     }
-                    Arrays.stream(fldAudioFiles).parallel()
+
+                    final List<Track> listTraksSync = Collections.synchronizedList(listTracks);
+                    Arrays.asList(fldAudioFiles).parallelStream()
                             .forEach(audioFile -> {
+                                final TrackBuilder localTrackBuilder = Track.builder();
                                 final Track track;
                                 try {
-                                    track = Track.getTrack(audioFile, this);
+                                    track = localTrackBuilder.getTrack(audioFile, this);
                                     if (track != null) {
-                                        synchronized (listTracks) {
-                                            listTracks.add(track);
-                                        }
+                                        listTraksSync.add(track);
                                     }
                                 } catch (FormatNotSupportedException e) {
                                 }
                             });
+
+//                    Arrays.asList(fldAudioFiles)
+//                            .parallelStream()
+//                            .map(audioFile -> {
+//                                final TrackBuilder localTrackBuilder = Track.builder();
+//                                final Track track;
+//                                try {
+//                                    track = localTrackBuilder.getTrack(audioFile, this);
+//                                    return track;
+//                                } catch (FormatNotSupportedException e) {
+//                                    return null;
+//                                }
+//                            })
+//                            .filter(Objects::nonNull)
+//                            .sequential()
+//                            .collect(Collectors.toCollection(() -> listTracks));
                 }
             });
         });
@@ -158,7 +186,7 @@ public class MuPlayer extends Player {
     private void restartCurrent() {
         try {
             if (current != null) {
-                Track cur = Track.getTrack(current.getDataSource());
+                Track cur = trackBuilder.getTrack(current.getDataSource());
                 current.kill();
                 listTracks.set(playerData.getTrackIndex(), cur);
             }
@@ -198,7 +226,7 @@ public class MuPlayer extends Player {
     // si existe o no en la ruta padre
     private TrackIndexed findFirstIn(String folderPath) {
         final File parentFile = new File(folderPath);
-        final Predicate<Track> filter = FilterUtil.getFindFirstInFilter(parentFile);
+        final Predicate<Track> filter = filterUtil.getFindFirstInFilter(parentFile);
 
         return getTrackIndexedFromCondition(filter);
     }
@@ -207,7 +235,7 @@ public class MuPlayer extends Player {
         final File parentFile = new File(folderPath);
 
         // idea para electrolist -> Indexof con predicate
-        Predicate<Track> filter = FilterUtil.newSeekToFolderFilter(parentFile);
+        Predicate<Track> filter = filterUtil.newSeekToFolderFilter(parentFile);
         TrackIndexed trackIndexed = getTrackIndexedFromCondition(filter);
 
         return trackIndexed != null ? trackIndexed.getIndex() : -1;
@@ -220,7 +248,7 @@ public class MuPlayer extends Player {
     }
 
     private void playFolderSongs(String fldPath) {
-        Predicate<Track> filter = FilterUtil.getPlayFolderFilter(fldPath);
+        Predicate<Track> filter = filterUtil.getPlayFolderFilter(fldPath);
         TrackIndexed trackIndexed = getTrackIndexedFromCondition(filter);
 
         if (trackIndexed != null) {
@@ -476,8 +504,8 @@ public class MuPlayer extends Player {
             if (validSort) {
                 sortTracks();
             }
-        } else if (AudioIO.isSupportedFile(folderOrFile)) {
-            final Track track = Track.getTrack(folderOrFile, this);
+        } else if (audioUtil.isSupportedFile(folderOrFile)) {
+            final Track track = trackBuilder.getTrack(folderOrFile, this);
             if (track != null) {
                 listTracks.add(track);
                 final File parent = folderOrFile.getParentFile();
@@ -550,12 +578,12 @@ public class MuPlayer extends Player {
     // (is alive)
     @Override
     public synchronized void play(File track) {
-        Predicate<Track> filter = FilterUtil.getPlayByPathFilter(track.getPath());
+        Predicate<Track> filter = filterUtil.getPlayByPathFilter(track.getPath());
         TrackIndexed trackIndexed = getTrackIndexedFromCondition(filter);
 
         if (trackIndexed == null) {
-            if (AudioIO.isSupportedFile(track)) {
-                listTracks.add(Track.getTrack(track, this));
+            if (audioUtil.isSupportedFile(track)) {
+                listTracks.add(trackBuilder.getTrack(track, this));
                 if (!existsFolder(track.getParent())) {
                     listFolders.add(track.getParentFile());
                 }
@@ -573,7 +601,7 @@ public class MuPlayer extends Player {
 
     @Override
     public synchronized void play(String trackName) {
-        Predicate<Track> filter = FilterUtil.getPlayByNameFilter(trackName);
+        Predicate<Track> filter = filterUtil.getPlayByNameFilter(trackName);
         TrackIndexed trackIndexed = getTrackIndexedFromCondition(filter);
 
         if (trackIndexed != null) {

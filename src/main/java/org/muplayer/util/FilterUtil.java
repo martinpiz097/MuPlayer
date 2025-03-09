@@ -1,6 +1,5 @@
 package org.muplayer.util;
 
-import org.muplayer.audio.io.AudioIO;
 import org.muplayer.audio.track.Track;
 
 import java.io.File;
@@ -8,56 +7,57 @@ import java.io.FileFilter;
 import java.util.function.Predicate;
 
 public class FilterUtil {
+    private final AudioUtil audioUtil;
 
-    private FilterUtil() {
-        throw new IllegalStateException("Utility class");
+    public FilterUtil() {
+        audioUtil = new AudioUtil();
     }
 
-    public static Predicate<Track> newSeekToFolderFilter(File parentFile) {
+    public Predicate<Track> newSeekToFolderFilter(File parentFile) {
         return track -> {
             File dataSource = track.getDataSource();
             return dataSource != null && dataSource.getParentFile().equals(parentFile);
         };
     }
 
-    public static Predicate<Track> getPlayFolderFilter(String fldPath) {
+    public Predicate<Track> getPlayFolderFilter(String fldPath) {
         return track -> {
             File dataSource = track.getDataSource();
             return dataSource != null && dataSource.getParent().equals(fldPath);
         };
     }
 
-    public static Predicate<Track> getPlayByPathFilter(String trackPath) {
+    public Predicate<Track> getPlayByPathFilter(String trackPath) {
         return track -> {
             File dataSource = track.getDataSource();
             return dataSource != null && dataSource.getPath().equals(trackPath);
         };
     }
 
-    public static Predicate<Track> getPlayByNameFilter(String trackName) {
+    public Predicate<Track> getPlayByNameFilter(String trackName) {
         return track -> {
             File dataSource = track.getDataSource();
             return dataSource != null && dataSource.getName().equals(trackName);
         };
     }
 
-    public static Predicate<Track> getFindFirstInFilter(File parentFile) {
+    public Predicate<Track> getFindFirstInFilter(File parentFile) {
         return track -> {
             File dataSource = track.getDataSource();
             return dataSource != null && dataSource.getParentFile().equals(parentFile);
         };
     }
 
-    public static FileFilter getBaseFilter() {
+    public FileFilter getBaseFilter() {
         return pathname -> pathname.canRead() && !pathname.isHidden();
     }
 
-    public static FileFilter getDirectoriesFilter() {
+    public FileFilter getDirectoriesFilter() {
         return pathname -> getBaseFilter().accept(pathname) && pathname.isDirectory();
     }
 
-    public static FileFilter getAudioFileFilter() {
-        return pathname -> getBaseFilter().accept(pathname) && AudioIO.isSupportedFile(pathname);
+    public FileFilter getAudioFileFilter() {
+        return pathname -> getBaseFilter().accept(pathname) && audioUtil.isSupportedFile(pathname);
     }
 
 }

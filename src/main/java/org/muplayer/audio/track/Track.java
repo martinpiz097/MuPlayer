@@ -5,18 +5,13 @@ import lombok.extern.java.Log;
 import org.jaudiotagger.tag.FieldKey;
 import org.muplayer.audio.info.AudioHardware;
 import org.muplayer.audio.info.AudioTag;
+import org.muplayer.audio.player.AudioComponent;
 import org.muplayer.audio.player.Player;
 import org.muplayer.audio.track.state.*;
-import org.muplayer.exception.FormatNotSupportedException;
-import org.muplayer.exception.MuPlayerException;
 import org.muplayer.interfaces.ControllableMusic;
 import org.muplayer.interfaces.ReportableTrack;
-import org.muplayer.data.properties.support.AudioSupportInfo;
 import org.muplayer.model.MuPlayerAudioFormat;
 import org.muplayer.audio.io.AudioIO;
-import org.muplayer.util.AudioConversionUtil;
-import org.muplayer.util.FileUtil;
-import org.muplayer.util.TrackUtil;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -28,7 +23,7 @@ import static org.muplayer.audio.values.AudioConstantValues.DEFAULT_MIN_VOL;
 
 @Data
 @Log
-public abstract class Track extends Thread implements ControllableMusic, ReportableTrack {
+public abstract class Track extends AudioComponent implements Runnable, ControllableMusic, ReportableTrack {
     protected final File dataSource;
     protected volatile AudioTag tagInfo;
     protected volatile TrackIO trackIO;
@@ -38,64 +33,30 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
 
     protected final Player player;
 
-    protected static final AudioSupportInfo audioSupportInfo = AudioSupportInfo.getInstance();
-
-    public static Track getTrack(String dataSource) {
-        return getTrack(new File(dataSource));
+    public static TrackBuilder builder() {
+        return new TrackBuilder();
     }
 
-    public static Track getTrack(File dataSource) {
-        return getTrack(dataSource, null);
-    }
-
-    public static Track getTrack(String dataSource, Player player) {
-        return getTrack(new File(dataSource), player);
-    }
-
-    public static Track getTrack(File dataSource, Player player) {
-        if (dataSource != null) {
-            Track result;
-
-            if (dataSource.exists()) {
-                final String formatName = FileUtil.getFormatName(dataSource.getName());
-                final String formatClass = audioSupportInfo.getProperty(formatName);
-
-                if (formatClass != null) {
-                    result = TrackUtil.getTrackFromClass(formatClass, dataSource, player);
-                } else {
-                    throw new FormatNotSupportedException("Audio format " + formatName + " not supported!");
-                }
-            } else {
-                throw new MuPlayerException("The dataSource file for path " + dataSource.getPath() + " not exists");
-            }
-
-            return result;
-        } else {
-            throw new MuPlayerException("The dataSource object is null");
-        }
-    }
-
-    protected Track(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+    public Track(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this(new File(trackPath), null);
     }
 
-    protected Track(File dataSource)
+    public Track(File dataSource)
             throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this(dataSource, null);
     }
 
-    protected Track(String trackPath, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+    public Track(String trackPath, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this(new File(trackPath), player);
     }
 
-    protected Track(File dataSource, Player player)
+    public Track(File dataSource, Player player)
             throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this.dataSource = dataSource;
         this.player = player;
         this.trackData = new TrackData();
         this.trackState = new InitializedState(player, this);
-        this.audioIO = createAudioIO();
-        setPriority(MAX_PRIORITY);
+        this.audioIO = initAudioIO();
     }
 
     // Ver opcion de usar archivo temporal y leer desde ahi
@@ -105,7 +66,7 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
 
     protected abstract double convertBytesToSeconds(Number bytes);
 
-    protected abstract AudioIO createAudioIO();
+    protected abstract AudioIO initAudioIO();
 
     public abstract MuPlayerAudioFormat[] getAudioFileFormats();
 
@@ -269,9 +230,9 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     public void setVolume(float volume) {
         trackData.setVolume(volume);
         if (trackIO != null && trackIO.isTrackStreamsOpened()) {
-            trackIO.setGain(AudioConversionUtil.convertVolRangeToLineRange(volume));
+            trackIO.setGain(audioUtil.convertVolRangeToLineRange(volume));
             if (trackData.isVolumeZero()) {
-                AudioHardware.setMuteValue(trackIO.getSpeakerDriver(), true);
+                audioHardware.setMuteValue(trackIO.getSpeakerDriver(), true);
             }
         }
     }
@@ -280,7 +241,7 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
     public void mute() {
         trackData.setMute(true);
         if (trackIO != null && trackIO.isTrackStreamsOpened()) {
-            AudioHardware.setMuteValue(trackIO.getSpeakerDriver(), trackData.isMute());
+            audioHardware.setMuteValue(trackIO.getSpeakerDriver(), trackData.isMute());
         }
     }
 
@@ -289,13 +250,13 @@ public abstract class Track extends Thread implements ControllableMusic, Reporta
         if (trackData.isVolumeZero()) {
             trackData.setVolume(DEFAULT_MAX_VOL);
             if (trackIO != null && trackIO.isTrackStreamsOpened()) {
-                trackIO.setGain(AudioConversionUtil.convertVolRangeToLineRange(trackData.getVolume()));
+                trackIO.setGain(audioUtil.convertVolRangeToLineRange(trackData.getVolume()));
             }
         } else {
             trackData.setMute(false);
         }
         if (trackIO != null && trackIO.isTrackStreamsOpened()) {
-            AudioHardware.setMuteValue(trackIO.getSpeakerDriver(), false);
+            audioHardware.setMuteValue(trackIO.getSpeakerDriver(), false);
         }
     }
 

@@ -16,7 +16,7 @@ public class Album {
 
     public Album(String name) {
         this.name = name;
-        this.listTracks = CollectionUtil.newFastList();
+        this.listTracks = CollectionUtil.newLinkedList();
         this.coverData = getCover();
     }
 

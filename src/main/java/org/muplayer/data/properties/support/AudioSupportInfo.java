@@ -11,13 +11,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class AudioSupportInfo extends PropertiesInfo<File> {
-    @Getter
-    private static final AudioSupportInfo instance = new AudioSupportInfo();
+//    @Getter
+//    private static final AudioSupportInfo instance = new AudioSupportInfo();
 
     public static final String KEY_PREFFIX = "audio.format.class.";
     private static final String DEFAULT_COMMENT = "Audio formats support";
 
-    private AudioSupportInfo() {
+    public AudioSupportInfo() {
         super(new FilePropertiesSource(ResourceFiles.AUDIO_SUPPORT_FILE_PATH));
     }
 

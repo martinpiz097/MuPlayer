@@ -9,7 +9,6 @@ import org.muplayer.console.runner.ConsoleRunner;
 import org.muplayer.console.runner.LocalRunner;
 import org.muplayer.console.runner.RunnerMode;
 import org.muplayer.data.CacheManager;
-import org.muplayer.data.CacheVar;
 import org.muplayer.data.json.command.model.ConsoleCodesData;
 import org.muplayer.model.Album;
 import org.muplayer.model.Artist;
@@ -29,7 +28,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -51,6 +49,8 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
     private final ConsoleCodesInfo consoleCodesInfo;
     private final PrintLogService printLogService;
 
+    private final TrackUtil trackUtil;
+
     private static final String CMD_DIVISOR = " && ";
 
     public PlayerCommandInterpreter(Player player) {
@@ -59,6 +59,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
         this.globalCacheManager = CacheManager.getGlobalCache();
         this.consoleCodesInfo = ConsoleCodesInfo.getInstance();
         this.printLogService = new PrintLogServiceImpl();
+        trackUtil = new TrackUtil();
     }
 
     private boolean isPlayerOn() {
@@ -295,14 +296,14 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
         if (track == null) {
             execution.appendOutput("Current track unavailable", error);
         } else {
-            execution.appendOutput(TrackUtil.getSongInfo(track), warn);
+            execution.appendOutput(trackUtil.getSongInfo(track), warn);
         }
     }
 
     public ConsoleExecution executeCommand(String cmdString) throws Exception {
         if (cmdString.contains(CMD_DIVISOR)) {
             final String[] cmdSplit = cmdString.split(CMD_DIVISOR);
-            final List<String> listExec = CollectionUtil.newFastList();
+            final List<String> listExec = CollectionUtil.newLinkedList();
             ConsoleExecution exec;
 
             for (int i = 0; i < cmdSplit.length; i++) {
@@ -653,13 +654,13 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
 
                 case sn:
                     if (isPlayerOn()) {
-                        execution.appendOutput(TrackUtil.getSongInfo(player.getNext()), warn);
+                        execution.appendOutput(trackUtil.getSongInfo(player.getNext()), warn);
                     }
                     break;
 
                 case sp:
                     if (isPlayerOn()) {
-                        execution.appendOutput(TrackUtil.getSongInfo(player.getPrevious()), warn);
+                        execution.appendOutput(trackUtil.getSongInfo(player.getPrevious()), warn);
                     }
                     break;
 

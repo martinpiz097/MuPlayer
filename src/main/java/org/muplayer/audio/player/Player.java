@@ -9,7 +9,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
-public abstract class Player extends Thread implements ControllableMusic, ReportablePlayer {
+public abstract class Player extends AudioComponent implements ControllableMusic, ReportablePlayer {
     public abstract boolean isOn();
     public abstract boolean hasSounds();
 

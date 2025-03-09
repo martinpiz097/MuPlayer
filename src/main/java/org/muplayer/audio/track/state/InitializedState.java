@@ -8,6 +8,8 @@ import org.muplayer.audio.track.TrackData;
 
 import java.util.logging.Level;
 
+import static org.muplayer.util.AudioUtil.DEFAULT_VOLUME;
+
 @Log
 public class InitializedState extends TrackState {
     public InitializedState(Player player, Track track) {
@@ -21,7 +23,7 @@ public class InitializedState extends TrackState {
             synchronized (trackData) {
                 trackData.setSecsSeeked(0);
                 trackData.setBytesPerSecond(0);
-                trackData.setVolume(PlayerData.DEFAULT_VOLUME);
+                trackData.setVolume(DEFAULT_VOLUME);
                 trackData.setMute(false);
                 trackData.setCanTrackContinue(true);
             }

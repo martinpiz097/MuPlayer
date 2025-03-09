@@ -15,7 +15,7 @@ public class TracksLoader {
     private static final TracksLoader instance = new TracksLoader();
 
     private TracksLoader() {
-        this.listLoadTasks = Collections.synchronizedList(CollectionUtil.newFastList());
+        this.listLoadTasks = Collections.synchronizedList(CollectionUtil.newFastArrayList());
     }
 
     private void startTaskCleaner(CompletableFuture<?> task) {

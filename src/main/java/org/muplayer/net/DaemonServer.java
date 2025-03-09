@@ -20,7 +20,7 @@ public class DaemonServer {
     public DaemonServer() throws IOException {
         this.serverSocket = new ServerSocket(getServerSetupPort());
         this.serverSocket.setSoTimeout(getSetSoTimeout());
-        this.listClients = CollectionUtil.newFastList();
+        this.listClients = CollectionUtil.newLinkedList();
     }
 
     private int getServerSetupPort() {

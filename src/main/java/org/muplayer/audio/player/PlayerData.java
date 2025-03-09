@@ -1,9 +1,10 @@
 package org.muplayer.audio.player;
 
 import lombok.Data;
-import org.muplayer.util.AudioConversionUtil;
+import org.muplayer.util.AudioUtil;
 
 import static org.muplayer.audio.values.AudioConstantValues.MIDDLE_VOL;
+import static org.muplayer.util.AudioUtil.DEFAULT_VOLUME;
 
 @Data
 public class PlayerData {
@@ -11,8 +12,6 @@ public class PlayerData {
     private volatile float volume;
     private volatile boolean on;
     private volatile boolean isMute;
-
-    public static final float DEFAULT_VOLUME = AudioConversionUtil.convertLineRangeToVolRange(MIDDLE_VOL);
 
     public PlayerData() {
         this.trackIndex = -1;

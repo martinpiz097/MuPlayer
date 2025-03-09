@@ -17,13 +17,13 @@ import java.util.stream.Collectors;
 
 public class TrackUtil {
 
-    private TrackUtil() {
-        throw new IllegalStateException("Utility class");
+    private final Map<String, Constructor<? extends Track>> mapTrackConstructors;
+
+    public TrackUtil() {
+        mapTrackConstructors = CollectionUtil.newFastMap();
     }
 
-    private static final Map<String, Constructor<? extends Track>> mapTrackConstructors = CollectionUtil.newFastMap();
-
-    public static String getSongInfo(Track track) {
+    public String getSongInfo(Track track) {
         final StringBuilder sbInfo = new StringBuilder();
         final String title = track.getTitle();
         final String album = track.getAlbum();
@@ -115,7 +115,7 @@ public class TrackUtil {
         return sbTabs.toString();
     }
 
-    private static Class<?> getClassByPackage(String className, String packageName) {
+    private Class<?> getClassByPackage(String className, String packageName) {
         try {
             return Class.forName(packageName + "."
                     + className.substring(0, className.lastIndexOf('.')));
@@ -124,7 +124,7 @@ public class TrackUtil {
         return null;
     }
 
-    public static Set<Class<?>> findAllClassesUsingClassLoader(String packageName) {
+    public Set<Class<?>> findAllClassesUsingClassLoader(String packageName) {
         InputStream inputStream = ClassLoader.getSystemClassLoader()
                 .getResourceAsStream(packageName.replaceAll("[.]", "/"));
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -134,7 +134,7 @@ public class TrackUtil {
                 .collect(Collectors.toSet());
     }
 
-    public static Constructor<? extends Track> getTrackClassConstructor(String formatClass, Class<?>... paramsClasses) {
+    public Constructor<? extends Track> getTrackClassConstructor(String formatClass, Class<?>... paramsClasses) {
         try {
             Constructor<? extends Track> constructor = mapTrackConstructors.get(formatClass);
             if (constructor == null) {
@@ -149,7 +149,7 @@ public class TrackUtil {
         }
     }
 
-    public static Track getTrackFromClass(String formatClass, File dataSource, Player player) {
+    public Track getTrackFromClass(String formatClass, File dataSource, Player player) {
         try {
             final Constructor<? extends Track> constructor = getTrackClassConstructor(
                     formatClass, dataSource.getClass(), Player.class);
@@ -159,7 +159,7 @@ public class TrackUtil {
         }
     }
 
-    public static String getLineInfo(Track track) {
+    public String getLineInfo(Track track) {
         final TrackIO trackIO = track.getTrackIO();
         final SourceDataLine driver = trackIO.getSpeaker().getDriver();
 

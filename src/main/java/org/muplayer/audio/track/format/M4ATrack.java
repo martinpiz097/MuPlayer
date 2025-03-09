@@ -132,7 +132,7 @@ public class M4ATrack extends Track {
     }
 
     @Override
-    protected AudioIO createAudioIO() {
+    protected AudioIO initAudioIO() {
         return new DefaultAudioIO();
     }
 

@@ -67,7 +67,7 @@ public class FlacTrack extends Track {
     }
 
     @Override
-    protected AudioIO createAudioIO() {
+    protected AudioIO initAudioIO() {
         return new FlacAudioIO();
     }
 

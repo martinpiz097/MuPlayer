@@ -18,19 +18,13 @@ public interface ControllableMusic {
     void gotoSecond(double second) throws Exception;
     float getVolume();
     void setVolume(float volume);
-    default float getSystemVolume() {
-        return AudioHardware.getFormattedSpeakerVolume();
-    }
-    default void setSystemVolume(float volume) {
-        AudioHardware.setFormattedSpeakerVolume(volume);
-    }
     void mute();
     void unMute();
     /*default void muteSystemVolume() {
-        AudioHardware.setSpeakerMuteValue(true);
+        audioHardware.setSpeakerMuteValue(true);
     }
     default void unmuteSystemVolume() {
-        AudioHardware.setSpeakerMuteValue(false);
+        audioHardware.setSpeakerMuteValue(false);
     }*/
 
     double getProgress();

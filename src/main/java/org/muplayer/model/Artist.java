@@ -14,7 +14,7 @@ public class Artist {
 
     public Artist(String name) {
         this.name = name;
-        this.listTracks = CollectionUtil.newFastList();
+        this.listTracks = CollectionUtil.newLinkedList();
     }
 
     public byte[] getAnyCover() {

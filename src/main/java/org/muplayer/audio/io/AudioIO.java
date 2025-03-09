@@ -2,6 +2,7 @@ package org.muplayer.audio.io;
 
 import org.muplayer.audio.track.io.AudioDataInputStream;
 import org.muplayer.data.properties.support.AudioSupportInfo;
+import org.muplayer.util.AudioUtil;
 import org.muplayer.util.FileUtil;
 
 import javax.sound.sampled.*;
@@ -14,17 +15,11 @@ import java.nio.ByteOrder;
 import java.nio.file.Path;
 
 public abstract class AudioIO {
-    public static boolean isSupportedFile(File trackFile) {
-        final String formatName = FileUtil.getFormatName(trackFile.getName());
-        return AudioSupportInfo.getInstance().getProperty(formatName) != null;
-    }
 
-    public static boolean isSupportedFile(Path track) {
-        return isSupportedFile(track.toFile());
-    }
+    protected final AudioUtil audioUtil;
 
-    public static boolean isSupportedFile(String trackPath) {
-        return isSupportedFile(new File(trackPath));
+    protected AudioIO() {
+        this.audioUtil = new AudioUtil();
     }
 
     public boolean isSystemBigEndian() {
