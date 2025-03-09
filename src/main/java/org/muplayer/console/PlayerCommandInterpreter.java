@@ -15,8 +15,8 @@ import org.muplayer.model.Artist;
 import org.muplayer.model.SeekOption;
 import org.muplayer.console.runner.DaemonRunner;
 import org.muplayer.data.json.command.ConsoleCodesInfo;
-import org.muplayer.service.PrintLogService;
-import org.muplayer.service.impl.PrintLogServiceImpl;
+import org.muplayer.service.LogService;
+import org.muplayer.service.impl.LogServiceImpl;
 import org.muplayer.system.*;
 import org.muplayer.thread.TaskRunner;
 import org.muplayer.util.CollectionUtil;
@@ -47,7 +47,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
 
     private final CacheManager globalCacheManager;
     private final ConsoleCodesInfo consoleCodesInfo;
-    private final PrintLogService printLogService;
+    private final LogService logService;
 
     private final TrackUtil trackUtil;
 
@@ -58,7 +58,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
         this.playerFolder = player.getRootFolder();
         this.globalCacheManager = CacheManager.getGlobalCache();
         this.consoleCodesInfo = ConsoleCodesInfo.getInstance();
-        this.printLogService = new PrintLogServiceImpl();
+        this.logService = new LogServiceImpl();
         trackUtil = new TrackUtil();
     }
 
@@ -758,7 +758,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
 
                 case smf: {
                     if (cmd.hasNotOptions()) {
-                        printLogService.errorLog("[Set music folder]\nCommand use: \n\tsmf ${music-folder-path}\n");
+                        logService.errorLog("[Set music folder]\nCommand use: \n\tsmf ${music-folder-path}\n");
                         break;
                     }
 
@@ -766,12 +766,12 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     File musicFolderFile = new File(musicFolderPath);
 
                     if (!musicFolderFile.exists()) {
-                        printLogService.errorLog("[" + musicFolderFile + "] doesn't exist\n");
+                        logService.errorLog("[" + musicFolderFile + "] doesn't exist\n");
                         break;
                     }
 
                     if (!musicFolderFile.isDirectory()) {
-                        printLogService.errorLog("[" + musicFolderFile + "] is not a folder\n");
+                        logService.errorLog("[" + musicFolderFile + "] is not a folder\n");
                         break;
                     }
 

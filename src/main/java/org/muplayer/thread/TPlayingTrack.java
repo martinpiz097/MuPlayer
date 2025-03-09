@@ -3,6 +3,7 @@ package org.muplayer.thread;
 import org.muplayer.audio.player.MuPlayer;
 import org.muplayer.audio.track.Track;
 import org.muplayer.listener.ListenerMethodName;
+import org.muplayer.util.MuPlayerUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,10 +11,13 @@ import java.io.IOException;
 public class TPlayingTrack implements Runnable {
     private final Track track;
     private final MuPlayer trackPlayer;
+    private final MuPlayerUtil trackPlayerUtil;
 
     public TPlayingTrack(Track track) {
         this.track = track;
         this.trackPlayer = track.getPlayer() instanceof MuPlayer ? (MuPlayer) track.getPlayer() : null;
+        this.trackPlayerUtil = track.getPlayer() instanceof MuPlayer
+                ? ((MuPlayer) track.getPlayer()).getMuPlayerUtil() : null;
     }
 
     public boolean hasTrack(Track track) {
@@ -32,7 +36,7 @@ public class TPlayingTrack implements Runnable {
         if (trackPlayer != null) {
             while (track.isPlaying()) {
                 try {
-                    trackPlayer.loadListenerMethod(ListenerMethodName.ON_PLAYING, track);
+                    trackPlayerUtil.loadListenerMethod(ListenerMethodName.ON_PLAYING, track);
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();

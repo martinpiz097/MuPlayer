@@ -33,10 +33,6 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
 
     protected final Player player;
 
-    public static TrackBuilder builder() {
-        return new TrackBuilder();
-    }
-
     public Track(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this(new File(trackPath), null);
     }

@@ -16,7 +16,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class TrackUtil {
-
     private final Map<String, Constructor<? extends Track>> mapTrackConstructors;
 
     public TrackUtil() {

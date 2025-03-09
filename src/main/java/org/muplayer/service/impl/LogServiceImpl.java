@@ -1,17 +1,17 @@
 package org.muplayer.service.impl;
 
-import org.muplayer.service.PrintLogService;
+import org.muplayer.service.LogService;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class PrintLogServiceImpl implements PrintLogService {
+public class LogServiceImpl implements LogService {
 
     private final FileOutputStream fileOutputStream;
 
-    public PrintLogServiceImpl() {
+    public LogServiceImpl() {
         fileOutputStream = SystemUtil.getStdout();
     }
 

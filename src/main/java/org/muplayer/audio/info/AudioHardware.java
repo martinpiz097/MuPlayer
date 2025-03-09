@@ -17,9 +17,10 @@ public class AudioHardware {
     private static final String LINE_IS_CLOSED = "Line is closed: ";
 
     public List<Mixer> getMixers() {
-        return Arrays.stream(AudioSystem.getMixerInfo())
+        return CollectionUtil.streamOf(AudioSystem.getMixerInfo())
                 .map(AudioSystem::getMixer)
-                .collect(Collectors.toList());
+                .collect(Collectors.toCollection(
+                        CollectionUtil::newLinkedList));
     }
 
     public boolean open(Line line) {

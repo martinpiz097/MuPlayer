@@ -10,17 +10,19 @@ import java.util.function.Supplier;
 
 public class TracksLoader {
     private final List<CompletableFuture<?>> listLoadTasks;
+//    private final TracksLoaderCleaner cleaner;
 
     @Getter
     private static final TracksLoader instance = new TracksLoader();
 
     private TracksLoader() {
         this.listLoadTasks = Collections.synchronizedList(CollectionUtil.newFastArrayList());
+//        this.cleaner = new TracksLoaderCleaner(listLoadTasks);
+        init();
     }
 
-    private void startTaskCleaner(CompletableFuture<?> task) {
-        TracksLoaderCleaner cleaner = new TracksLoaderCleaner(task);
-        cleaner.start();
+    private void init() {
+//        cleaner.start();
     }
 
     public synchronized boolean hasPendingTasks() {
@@ -34,19 +36,21 @@ public class TracksLoader {
     }
 
     public synchronized CompletableFuture<Void> addTask(Runnable task) {
-        CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(task);
+        final CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(task);
         listLoadTasks.add(completableFuture);
-        startTaskCleaner(completableFuture);
+        new TracksLoaderCleaner(completableFuture).start();
         return completableFuture;
     }
 
     public synchronized <T> CompletableFuture<T> addTask(Supplier<T> task) {
-        CompletableFuture<T> tCompletableFuture = CompletableFuture.supplyAsync(task);
-        listLoadTasks.add(tCompletableFuture);
-        return tCompletableFuture;
+        final CompletableFuture<T> completableFuture = CompletableFuture.supplyAsync(task);
+        listLoadTasks.add(completableFuture);
+        new TracksLoaderCleaner(completableFuture).start();
+        return completableFuture;
     }
 
     public synchronized void removeTask(CompletableFuture<?> task) {
         listLoadTasks.remove(task);
     }
+
 }

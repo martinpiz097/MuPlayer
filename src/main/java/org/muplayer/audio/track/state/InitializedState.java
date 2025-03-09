@@ -2,9 +2,7 @@ package org.muplayer.audio.track.state;
 
 import lombok.extern.java.Log;
 import org.muplayer.audio.player.Player;
-import org.muplayer.audio.player.PlayerData;
 import org.muplayer.audio.track.Track;
-import org.muplayer.audio.track.TrackData;
 
 import java.util.logging.Level;
 
