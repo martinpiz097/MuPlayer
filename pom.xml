@@ -36,7 +36,11 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
             </resource>
+
         </resources>
         <plugins>
             <plugin>
@@ -46,6 +50,8 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                     <compilerArgs>
+                        <arg>--add-opens</arg>
+                        <arg>java.desktop/com.sun.media.sound=ALL-UNNAMED</arg>
                         <arg>--add-exports</arg>
                         <arg>java.desktop/com.sun.media.sound=ALL-UNNAMED</arg>
                     </compilerArgs>
@@ -71,9 +77,6 @@
                             <mainClass>org.muplayer.Main</mainClass>
                         </manifest>
                     </archive>
-                    <!--<includes>
-                        <include>**/service/*</include>
-                    </includes>-->
                 </configuration>
             </plugin>
 
@@ -161,7 +164,18 @@
             <version>0.4.1</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.gitlab.9lukas5/jaad -->
+        <dependency>
+            <groupId>dev.mccue</groupId>
+            <artifactId>mp3spi</artifactId>
+            <version>2024.04.19</version>
+        </dependency>
+
+        <dependency>
+            <groupId>dev.mccue</groupId>
+            <artifactId>vorbisspi</artifactId>
+            <version>2024.04.19</version>
+        </dependency>
+
         <dependency>
             <groupId>org.orangeplayer.audiolibs</groupId>
             <artifactId>jaad</artifactId>
@@ -170,20 +184,8 @@
 
         <dependency>
             <groupId>org.orangeplayer.audiolibs</groupId>
-            <artifactId>tritonus-jorbis</artifactId>
-            <version>0.4</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.orangeplayer.audiolibs</groupId>
             <artifactId>jspeex-codec</artifactId>
             <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.googlecode.soundlibs</groupId>
-            <artifactId>mp3spi</artifactId>
-            <version>1.9.5.4</version>
         </dependency>
 
         <dependency>
