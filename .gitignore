@@ -6,4 +6,4 @@ dependency-reduced-pom.xml
 testingInfo.properties
 config.properties
 
-src/main/java/org/muplayer/testing
+src/main/java/cl/estencia/labs/muplayer/muplayer/testing
