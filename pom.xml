@@ -14,7 +14,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>17</java.version>
+        <java.version>21</java.version>
     </properties>
 
     <developers>
@@ -62,82 +62,60 @@
                 </configuration>
             </plugin>
 
-            <!--<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.9</version>
-                <configuration>
-                    <argLine>-Xmx64M</argLine>
-                    <argLine>-Xms32M</argLine>
-                </configuration>
-            </plugin>-->
-
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
                 <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>cl.estencia.labs.muplayer.Main</mainClass>
-                        </manifest>
-                        <manifestEntries>
-                            <Add-Modules>java.desktop java.logging</Add-Modules>
-                            <Add-Opens>java.desktop/javax.sound.sampled java.desktop/com.sun.media.sound</Add-Opens>
-                            <Add-Exports>java.desktop/com.sun.media.sound</Add-Exports>
-                        </manifestEntries>
-                    </archive>
+                    <mainClass>cl.estencia.labs.muplayer.MiniTesting</mainClass>
+                    <systemProperties />
+                    <arguments>
+                        <argument>--add-modules java.desktop,java.logging</argument>
+                        <argument>--add-exports java.desktop/com.sun.media.sound=ALL-UNNAMED</argument>
+                        <argument>--add-opens java.desktop/com.sun.media.sound=ALL-UNNAMED</argument>
+                    </arguments>
                 </configuration>
             </plugin>
+
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-jar-plugin</artifactId>-->
+<!--                <configuration>-->
+<!--                    <archive>-->
+<!--                        <manifest>-->
+<!--                            <mainClass>cl.estencia.labs.muplayer.Main</mainClass>-->
+<!--                        </manifest>-->
+<!--                        <manifestEntries>-->
+<!--                            <Add-Modules>java.desktop java.logging</Add-Modules>-->
+<!--                            <Add-Opens>java.desktop/javax.sound.sampled java.desktop/com.sun.media.sound</Add-Opens>-->
+<!--                            <Add-Exports>java.desktop/com.sun.media.sound</Add-Exports>-->
+<!--                        </manifestEntries>-->
+<!--                    </archive>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
 
             <!--Con Dependencias dentro -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <finalName>${artifactId}</finalName>
-                    <createDependencyReducedPom>false</createDependencyReducedPom>
-                </configuration>
-            </plugin>
-
-            <!--<plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <mainClass>org.muplayer.Main</mainClass>
-                </configuration>
-            </plugin>-->
-
-            <!--Dependencias fuera-->
-            <!--<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>cl.estencia.labs.muplayer.Launcher</mainClass>
+                                </transformer>
+                            </transformers>
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>-->
+            </plugin>
 
             <!--Compilacion nativa con GraalVM -> Requiere JDK 17 -->
             <!--<plugin>
@@ -149,9 +127,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.aucom</groupId>
+            <groupId>cl.estencia.labs</groupId>
             <artifactId>aucom</artifactId>
-            <version>1.1</version>
+            <version>2.0.0</version>
         </dependency>
 
         <dependency>
@@ -173,16 +151,28 @@
             <version>0.4.1</version>
         </dependency>
 
+<!--        <dependency>-->
+<!--            <groupId>dev.mccue</groupId>-->
+<!--            <artifactId>mp3spi</artifactId>-->
+<!--            <version>2024.04.19</version>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>dev.mccue</groupId>-->
+<!--            <artifactId>vorbisspi</artifactId>-->
+<!--            <version>2024.04.19</version>-->
+<!--        </dependency>-->
+
         <dependency>
-            <groupId>dev.mccue</groupId>
-            <artifactId>mp3spi</artifactId>
-            <version>2024.04.19</version>
+            <groupId>org.orangeplayer.audiolibs</groupId>
+            <artifactId>tritonus-jorbis</artifactId>
+            <version>0.4</version>
         </dependency>
 
         <dependency>
-            <groupId>dev.mccue</groupId>
-            <artifactId>vorbisspi</artifactId>
-            <version>2024.04.19</version>
+            <groupId>com.googlecode.soundlibs</groupId>
+            <artifactId>mp3spi</artifactId>
+            <version>1.9.5.4</version>
         </dependency>
 
         <dependency>
