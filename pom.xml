@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.orangeplayer</groupId>
+    <groupId>cl.estencia.labs</groupId>
     <artifactId>muplayer</artifactId>
-    <version>3.5.0.NEXT</version>
+    <version>4.0.0-NEXT</version>
     <packaging>jar</packaging>
 
     <name>muplayer</name>
@@ -50,6 +50,10 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                     <compilerArgs>
+                        <arg>--add-modules</arg>
+                        <arg>java.desktop</arg>
+                        <arg>--add-modules</arg>
+                        <arg>java.logging</arg>
                         <arg>--add-opens</arg>
                         <arg>java.desktop/com.sun.media.sound=ALL-UNNAMED</arg>
                         <arg>--add-exports</arg>
@@ -74,8 +78,13 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.muplayer.Main</mainClass>
+                            <mainClass>cl.estencia.labs.muplayer.Main</mainClass>
                         </manifest>
+                        <manifestEntries>
+                            <Add-Modules>java.desktop java.logging</Add-Modules>
+                            <Add-Opens>java.desktop/javax.sound.sampled java.desktop/com.sun.media.sound</Add-Opens>
+                            <Add-Exports>java.desktop/com.sun.media.sound</Add-Exports>
+                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
