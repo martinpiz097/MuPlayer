@@ -1,7 +1,6 @@
 package cl.estencia.labs.muplayer.audio.track;
 
 import cl.estencia.labs.muplayer.audio.track.state.*;
-import cl.estencia.labs.muplayer.muplayer.audio.track.state.*;
 import lombok.Data;
 import lombok.extern.java.Log;
 import org.jaudiotagger.tag.FieldKey;
@@ -182,7 +181,7 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
             throws IOException {
         if (seconds > 0) {
             final long bytesToSeek = Math.round(convertSecondsToBytes(seconds));
-            final long skip = trackIO.getDecodedStream().skip(bytesToSeek);
+            final long skip = trackIO.getDecodedInputStream().skip(bytesToSeek);
             final double skippedSeconds = convertBytesToSeconds(skip);
 
             if (skip > 0) {
@@ -312,7 +311,7 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
 
     @Override
     public String getFormat() {
-        return trackIO.getDecodedStream().getFormat().toString();
+        return trackIO.getDecodedInputStream().getFormat().toString();
     }
 
     @Override

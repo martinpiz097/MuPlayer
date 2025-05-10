@@ -18,7 +18,7 @@ public abstract class AudioIO {
         return ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN;
     }
 
-    public abstract AudioFormat getPcmFormat(AudioFormat baseFormat);
+    public abstract AudioFormat convertToPcmFormat(AudioFormat baseFormat);
 
     public AudioInputStream getAudioSteamBySource(AudioFileReader audioReader, Object source) throws IOException, UnsupportedAudioFileException {
         if (source instanceof URL) {
@@ -46,7 +46,7 @@ public abstract class AudioIO {
 
     public AudioInputStream decodeToPcm(AudioFormat baseFormat, AudioInputStream encodedAis) {
         try {
-            final AudioFormat decodedFormat = getPcmFormat(baseFormat);
+            final AudioFormat decodedFormat = convertToPcmFormat(baseFormat);
             return AudioSystem.getAudioInputStream(decodedFormat, encodedAis);
         } catch (IllegalArgumentException e) {
             return null;

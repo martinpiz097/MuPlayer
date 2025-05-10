@@ -29,7 +29,7 @@ public class PlayingState extends TrackState {
     }
 
     private int readNextBytes() throws IOException {
-        return trackIO.getDecodedStream().read(audioBuffer);
+        return trackIO.getDecodedInputStream().read(audioBuffer);
     }
 
     @Override

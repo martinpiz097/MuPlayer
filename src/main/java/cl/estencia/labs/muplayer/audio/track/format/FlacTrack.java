@@ -38,13 +38,13 @@ public class FlacTrack extends Track {
     protected void loadAudioStream() {
         try {
             trackIO = new TrackIO();
-            trackIO.setAudioReader(new FlacAudioFileReader());
+            trackIO.setAudioFileReader(new FlacAudioFileReader());
 
-            final AudioInputStream flacEncodedStream = audioIO.getAudioSteamBySource(trackIO.getAudioReader(),
+            final AudioInputStream flacEncodedStream = audioIO.getAudioSteamBySource(trackIO.getAudioFileReader(),
                     dataSource);
             final AudioFormat format = flacEncodedStream.getFormat();
-            final AudioFormat decodedFormat = audioIO.getPcmFormat(format);
-            trackIO.setDecodedStream(new FlacFormatConversionProvider().
+            final AudioFormat decodedFormat = audioIO.convertToPcmFormat(format);
+            trackIO.setDecodedInputStream(new FlacFormatConversionProvider().
                     getAudioInputStream(decodedFormat, flacEncodedStream));
         } catch (UnsupportedAudioFileException | IOException e) {
             e.printStackTrace();
@@ -82,7 +82,7 @@ public class FlacTrack extends Track {
            trackStatusData.setSecsSeeked(trackStatusData.getSecsSeeked()+seconds);
            final int bytesToSeek = (int) Math.round(convertSecondsToBytes(seconds));
 
-           AudioInputStream decodedStream = trackIO.getDecodedStream();
+           AudioInputStream decodedStream = trackIO.getDecodedInputStream();
            if (decodedStream != null) {
                decodedStream.read(new byte[bytesToSeek]);
            }

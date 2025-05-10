@@ -1,4 +1,4 @@
 # for the javalayer mp3 decoder
-dev.mccue.vorbisspi.vorbis.sampled.convert.VorbisFormatConversionProvider
-dev.mccue.mp3spi.mpeg.sampled.convert.MpegFormatConversionProvider
+org.tritonus.sampled.convert.jorbis.JorbisFormatConversionProvider
+javazoom.spi.mpeg.sampled.convert.MpegFormatConversionProvider
 org.xiph.speex.spi.SpeexFormatConvertionProvider

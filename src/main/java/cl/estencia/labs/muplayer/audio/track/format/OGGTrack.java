@@ -1,12 +1,13 @@
 package cl.estencia.labs.muplayer.audio.track.format;
 
-import dev.mccue.vorbisspi.vorbis.sampled.file.VorbisAudioFileReader;
 import cl.estencia.labs.muplayer.audio.io.DefaultAudioIO;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.TrackIO;
 import cl.estencia.labs.muplayer.model.MuPlayerAudioFormat;
 import cl.estencia.labs.muplayer.audio.io.AudioIO;
+import javazoom.spi.mpeg.sampled.convert.MpegFormatConversionProvider;
+import org.tritonus.sampled.file.jorbis.JorbisAudioFileReader;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -34,8 +35,8 @@ public class OGGTrack extends Track {
     }
 
     private AudioInputStream createAudioStream() throws IOException, UnsupportedAudioFileException {
-        trackIO.setAudioReader(new VorbisAudioFileReader());
-        final AudioInputStream soundEncodedStream = audioIO.getAudioSteamBySource(trackIO.getAudioReader(),
+        trackIO.setAudioFileReader(new JorbisAudioFileReader());
+        final AudioInputStream soundEncodedStream = audioIO.getAudioSteamBySource(trackIO.getAudioFileReader(),
                 dataSource);
         return audioIO.decodeToPcm(soundEncodedStream);
     }
@@ -43,7 +44,7 @@ public class OGGTrack extends Track {
     @Override
     protected void loadAudioStream() throws IOException, UnsupportedAudioFileException {
         trackIO = new TrackIO();
-        trackIO.setDecodedStream(createAudioStream());
+        trackIO.setDecodedInputStream(createAudioStream());
     }
 
     @Override

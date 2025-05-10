@@ -19,6 +19,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.spi.AudioFileReader;
 import java.io.*;
 import java.util.List;
 
@@ -55,7 +56,7 @@ public class M4ATrack extends Track {
             e.printStackTrace();
         } catch (IOException e) {
             trackIO = new TrackIO();
-            trackIO.setDecodedStream(decodeM4A(dataSource));
+            trackIO.setDecodedInputStream(decodeM4A(dataSource));
             isAac = false;
         }
         // Probar despues transformando a PCM
@@ -65,9 +66,13 @@ public class M4ATrack extends Track {
     }
 
     private void decodeAAC() throws IOException, UnsupportedAudioFileException {
+        AudioFileReader aacAudioFileReader = new AACAudioFileReader();
+        AudioInputStream audioSteamBySource = audioIO.getAudioSteamBySource(
+                aacAudioFileReader, dataSource);
+
         trackIO = new TrackIO();
-        trackIO.setAudioReader(new AACAudioFileReader());
-        trackIO.setDecodedStream(audioIO.getAudioSteamBySource(trackIO.getAudioReader(), dataSource));
+        trackIO.setAudioFileReader(aacAudioFileReader);
+        trackIO.setDecodedInputStream(audioSteamBySource);
     }
 
     private AudioTrack getM4ATrack(Object source) throws IOException, UnsupportedAudioFileException {
@@ -75,8 +80,7 @@ public class M4ATrack extends Track {
                 ? new MP4Container((RandomAccessFile) source)
                 : new MP4Container((InputStream) source);
         final Movie movie = cont.getMovie();
-        final List<net.sourceforge.jaad.mp4.api.Track> listContTracks =
-                movie.getTracks(AudioTrack.AudioCodec.AAC);
+        final var listContTracks = movie.getTracks(AudioTrack.AudioCodec.AAC);
 
         if (listContTracks.isEmpty()) {
             throw new UnsupportedAudioFileException("Movie does not contain any AAC track");

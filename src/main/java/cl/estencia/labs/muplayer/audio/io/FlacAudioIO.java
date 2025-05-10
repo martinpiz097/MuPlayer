@@ -4,7 +4,7 @@ import javax.sound.sampled.AudioFormat;
 
 public class FlacAudioIO extends AudioIO {
     @Override
-    public AudioFormat getPcmFormat(AudioFormat baseFormat) {
+    public AudioFormat convertToPcmFormat(AudioFormat baseFormat) {
         return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
                 baseFormat.getSampleRate(),
                 baseFormat.getSampleSizeInBits(),

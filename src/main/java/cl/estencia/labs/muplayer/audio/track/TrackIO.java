@@ -8,10 +8,7 @@ import lombok.extern.java.Log;
 
 import javax.sound.sampled.*;
 import javax.sound.sampled.spi.AudioFileReader;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 
 @Data
 @NoArgsConstructor
@@ -19,17 +16,17 @@ import java.net.URL;
 @Log
 public class TrackIO {
     private volatile Speaker speaker;
-    private volatile AudioInputStream decodedStream;
-    private volatile AudioFileReader audioReader;
+    private volatile AudioInputStream decodedInputStream;
+    private volatile AudioFileReader audioFileReader;
 
     public Speaker createSpeaker() {
-        final Speaker speaker = new Speaker(decodedStream.getFormat());
+        final Speaker speaker = new Speaker(decodedInputStream.getFormat());
         speaker.open();
         return speaker;
     }
 
     public boolean initSpeaker() {
-        if (decodedStream != null) {
+        if (decodedInputStream != null) {
             if (speaker != null && speaker.isOpen()) {
                 speaker.close();
             }
@@ -57,9 +54,9 @@ public class TrackIO {
 
     public boolean closeStream() {
         try {
-            boolean streamOpened = decodedStream != null;
+            boolean streamOpened = decodedInputStream != null;
             if (streamOpened) {
-                decodedStream.close();
+                decodedInputStream.close();
             }
             return streamOpened;
         } catch (Exception e) {
@@ -70,7 +67,7 @@ public class TrackIO {
 
     public boolean resetDecodedStream() {
         try {
-            decodedStream.reset();
+            decodedInputStream.reset();
             return true;
         } catch (IOException e) {
             log.severe(e.getMessage());
@@ -87,7 +84,7 @@ public class TrackIO {
     }
 
     public boolean isTrackStreamsOpened() {
-        return decodedStream != null && speaker != null;
+        return decodedInputStream != null && speaker != null;
     }
 
 //    public AudioFileFormat getAudioFileFormat(Object dataSource) throws IOException, UnsupportedAudioFileException {
@@ -104,7 +101,7 @@ public class TrackIO {
 //    }
 
     public AudioFormat getAudioFormat() {
-        return decodedStream.getFormat();
+        return decodedInputStream.getFormat();
     }
 
     public float getVolume() {

@@ -1,6 +1,6 @@
 package cl.estencia.labs.muplayer.audio.track.format;
 
-import dev.mccue.mp3spi.mpeg.sampled.file.MpegAudioFileReader;
+import javazoom.spi.mpeg.sampled.file.MpegAudioFileReader;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.mp3.MP3AudioHeader;
 import cl.estencia.labs.muplayer.audio.io.DefaultAudioIO;
@@ -14,6 +14,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.spi.AudioFileReader;
 import java.io.File;
 import java.io.IOException;
 
@@ -50,18 +51,20 @@ public class MP3Track extends Track {
     @Override
     protected void loadAudioStream() throws IOException, UnsupportedAudioFileException {
         // Ver si se escucha mejor en ogg utilizando la logica de mp3
-        MpegAudioFileReader audioFileReader = new MpegAudioFileReader();
+        AudioFileReader audioFileReader = new MpegAudioFileReader();
 
         trackIO = new TrackIO();
-        trackIO.setAudioReader(audioFileReader);
-        AudioInputStream encodedAudioStream = audioIO.getAudioSteamBySource(audioFileReader, dataSource);
+        trackIO.setAudioFileReader(audioFileReader);
+
+        AudioInputStream encodedAudioStream = audioIO.getAudioSteamBySource(
+                audioFileReader, dataSource);
         AudioFormat baseFormat = encodedAudioStream.getFormat();
 
-        AudioInputStream trackStream = trackIO.getDecodedStream();
+        AudioInputStream trackStream = trackIO.getDecodedInputStream();
         if (trackStream != null) {
             trackStream.close();
         }
-        trackIO.setDecodedStream(audioIO.decodeToPcm(baseFormat, encodedAudioStream));
+        trackIO.setDecodedInputStream(audioIO.decodeToPcm(baseFormat, encodedAudioStream));
     }
 
     @Override

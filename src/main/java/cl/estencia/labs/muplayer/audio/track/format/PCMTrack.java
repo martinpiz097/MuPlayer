@@ -61,8 +61,8 @@ public class PCMTrack extends Track {
 
         if (audioReader != null) {
             AudioInputStream trackStream = audioIO.getAudioSteamBySource(audioReader, dataSource);
-            trackIO.setAudioReader(audioReader);
-            trackIO.setDecodedStream(trackStream);
+            trackIO.setAudioFileReader(audioReader);
+            trackIO.setDecodedInputStream(trackStream);
         }
     }
 
