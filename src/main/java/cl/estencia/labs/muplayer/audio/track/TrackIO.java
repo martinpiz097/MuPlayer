@@ -11,45 +11,26 @@ import javax.sound.sampled.spi.AudioFileReader;
 import java.io.IOException;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Log
 public class TrackIO {
-    private volatile Speaker speaker;
-    private volatile AudioInputStream decodedInputStream;
+    private final Speaker speaker;
     private volatile AudioFileReader audioFileReader;
+    private volatile AudioInputStream decodedInputStream;
 
-    public Speaker createSpeaker() {
-        final Speaker speaker = new Speaker(decodedInputStream.getFormat());
+    public TrackIO(AudioFileReader audioFileReader, AudioInputStream decodedInputStream) {
+        this.speaker = createSpeaker(decodedInputStream.getFormat());
+        this.audioFileReader = audioFileReader;
+        this.decodedInputStream = decodedInputStream;
+    }
+
+    public Speaker createSpeaker(AudioFormat format) {
+        final Speaker speaker = new Speaker(format);
         speaker.open();
         return speaker;
     }
 
-    public boolean initSpeaker() {
-        if (decodedInputStream != null) {
-            if (speaker != null && speaker.isOpen()) {
-                speaker.close();
-            }
-            try {
-                this.speaker = createSpeaker();
-                return true;
-            } catch (IllegalArgumentException e1) {
-                System.err.println("Error: " + e1.getMessage());
-                return false;
-            }
-        } else {
-            log.severe("TrackStream & TrackLine null");
-            return false;
-        }
-    }
-
     public boolean closeSpeaker() {
-        boolean existsSpeaker = speaker != null;
-        if (existsSpeaker) {
-            speaker.close();
-            speaker = null;
-        }
-        return existsSpeaker;
+        return speaker.close();
     }
 
     public boolean closeStream() {
@@ -77,7 +58,7 @@ public class TrackIO {
 
     public double getSecondsPosition() {
         SourceDataLine driver = speaker.getDriver();
-        if (speaker == null || driver == null) {
+        if (driver == null) {
             return 0;
         }
         return ((double) driver.getMicrosecondPosition()) / 1000000;
@@ -100,23 +81,4 @@ public class TrackIO {
 //        return null;
 //    }
 
-    public AudioFormat getAudioFormat() {
-        return decodedInputStream.getFormat();
-    }
-
-    public float getVolume() {
-        return speaker.getVolume();
-    }
-
-    public void setVolume(float gain) {
-        speaker.setVolume(gain);
-    }
-
-    public SourceDataLine getSpeakerDriver() {
-        return speaker.getDriver();
-    }
-
-    public void playAudio(byte[] audioData) {
-        speaker.playAudio(audioData);
-    }
 }
