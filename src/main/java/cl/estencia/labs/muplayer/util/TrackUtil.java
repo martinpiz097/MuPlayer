@@ -10,7 +10,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -135,6 +139,19 @@ public class TrackUtil {
 
     public Constructor<? extends Track> getTrackClassConstructor(String formatClass, Class<?>... paramsClasses) {
         try {
+            MethodHandles.Lookup lookup = MethodHandles.lookup();
+
+            // Definir la signatura del constructor: () -> Person (sin parámetros y retorna Person)
+            // o (String, int) -> Person para constructor con parámetros
+
+            MethodType constructorType = MethodType.methodType(Track.class,
+                    paramsClasses[0],
+                    Arrays.copyOfRange(paramsClasses, 1, paramsClasses.length));
+
+            // Encontrar el constructor con la signatura especificada
+            MethodHandle ctor = lookup.findConstructor(Track.class, constructorType);
+
+
             Constructor<? extends Track> constructor = mapTrackConstructors.get(formatClass);
             if (constructor == null) {
                 final Class<? extends Track> trackClass = (Class<? extends Track>)

@@ -3,7 +3,7 @@ package cl.estencia.labs.muplayer.util;
 import lombok.extern.java.Log;
 import cl.estencia.labs.muplayer.audio.player.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.audio.track.TrackBuilder;
+import cl.estencia.labs.muplayer.audio.track.TrackFactory;
 import cl.estencia.labs.muplayer.listener.ListenerMethodName;
 import cl.estencia.labs.muplayer.listener.PlayerListener;
 import cl.estencia.labs.muplayer.model.SeekOption;
@@ -29,8 +29,19 @@ public class MuPlayerUtil {
     private final List<PlayerListener> listListeners;
     private final PlayerStatusData playerStatusData;
 
-    private final TrackBuilder trackBuilder;
+    private final TrackFactory trackFactory;
     private final FilterUtil filterUtil;
+
+    public static final Comparator<Track> TRACKS_SORT_COMPARATOR = (o1, o2) -> {
+        if (o1 == null || o2 == null) {
+            return 0;
+        }
+        final File dataSource1 = o1.getDataSource();
+        final File dataSource2 = o2.getDataSource();
+        return dataSource1.getPath().compareTo(dataSource2.getPath());
+    };
+
+    public static final Comparator<File> FOLDERS_COMPARATOR = Comparator.comparing(File::getPath);
 
     public MuPlayerUtil(List<Track> listTracks, List<File> listFolders,
                         List<PlayerListener> listListeners, PlayerStatusData playerStatusData) {
@@ -39,7 +50,7 @@ public class MuPlayerUtil {
         this.listListeners = listListeners;
         this.playerStatusData = playerStatusData;
 
-        this.trackBuilder = new TrackBuilder();
+        this.trackFactory = new TrackFactory();
         this.filterUtil = new FilterUtil();
     }
 
@@ -71,20 +82,9 @@ public class MuPlayerUtil {
         }
     }
 
-    public void sortTracks() {
-        listTracks.sort((o1, o2) -> {
-            if (o1 == null || o2 == null) {
-                return 0;
-            }
-            final File dataSource1 = o1.getDataSource();
-            final File dataSource2 = o2.getDataSource();
-            return dataSource1.getPath().compareTo(dataSource2.getPath());
-        });
-    }
-
     public void cleanUpFoldersList() {
         List<File> listFilteredFolders = listFolders.parallelStream().distinct()
-                .sorted(Comparator.comparing(File::getPath))
+                .sorted()
                 .collect(Collectors.toCollection(CollectionUtil::newFastArrayList));
 
         listFolders.clear();
@@ -144,7 +144,7 @@ public class MuPlayerUtil {
     public void restartCurrent(Track current) {
         try {
             if (current != null) {
-                Track cur = trackBuilder.getTrack(current.getDataSource());
+                Track cur = trackFactory.getTrack(current.getDataSource());
                 current.kill();
                 listTracks.set(playerStatusData.getTrackIndex(), cur);
             }

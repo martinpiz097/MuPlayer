@@ -7,10 +7,10 @@ import java.io.FileFilter;
 import java.util.function.Predicate;
 
 public class FilterUtil {
-    private final AudioSupportUtil audioSupportUtil;
+    private final AudioFormatSupport audioFormatSupport;
 
     public FilterUtil() {
-        audioSupportUtil = new AudioSupportUtil();
+        audioFormatSupport = new AudioFormatSupport();
     }
 
     public Predicate<Track> newSeekToFolderFilter(File parentFile) {
@@ -57,7 +57,7 @@ public class FilterUtil {
     }
 
     public FileFilter getAudioFileFilter() {
-        return pathname -> getBaseFilter().accept(pathname) && audioSupportUtil.isSupportedFile(pathname);
+        return pathname -> getBaseFilter().accept(pathname) && audioFormatSupport.isSupportedFile(pathname);
     }
 
 }
