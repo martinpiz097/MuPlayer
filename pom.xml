@@ -67,54 +67,35 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.0</version>
                 <configuration>
-                    <mainClass>cl.estencia.labs.muplayer.MiniTesting</mainClass>
-                    <systemProperties />
-                    <arguments>
-                        <argument>--add-modules java.desktop,java.logging</argument>
-                        <argument>--add-exports java.desktop/com.sun.media.sound=ALL-UNNAMED</argument>
-                        <argument>--add-opens java.desktop/com.sun.media.sound=ALL-UNNAMED</argument>
-                    </arguments>
+                    <mainClass>cl.estencia.labs.muplayer.Main</mainClass>
                 </configuration>
             </plugin>
-
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-jar-plugin</artifactId>-->
-<!--                <configuration>-->
-<!--                    <archive>-->
-<!--                        <manifest>-->
-<!--                            <mainClass>cl.estencia.labs.muplayer.Main</mainClass>-->
-<!--                        </manifest>-->
-<!--                        <manifestEntries>-->
-<!--                            <Add-Modules>java.desktop java.logging</Add-Modules>-->
-<!--                            <Add-Opens>java.desktop/javax.sound.sampled java.desktop/com.sun.media.sound</Add-Opens>-->
-<!--                            <Add-Exports>java.desktop/com.sun.media.sound</Add-Exports>-->
-<!--                        </manifestEntries>-->
-<!--                    </archive>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
 
             <!--Con Dependencias dentro -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.5.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
-                        <configuration>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>cl.estencia.labs.muplayer.Launcher</mainClass>
-                                </transformer>
-                            </transformers>
-                        </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <finalName>${artifactId}</finalName>
+                    <transformers>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                            <mainClass>cl.estencia.labs.muplayer.Main</mainClass>
+<!--                            <manifestEntries>-->
+<!--                                <Add-Modules>java.desktop,java.logging</Add-Modules>-->
+<!--                                <Add-Opens>java.desktop/com.sun.media.sound=ALL-UNNAMED</Add-Opens>-->
+<!--                                <Add-Exports>java.desktop/com.sun.media.sound=ALL-UNNAMED</Add-Exports>-->
+<!--                            </manifestEntries>-->
+                        </transformer>
+                    </transformers>
+                </configuration>
             </plugin>
 
             <!--Compilacion nativa con GraalVM -> Requiere JDK 17 -->
@@ -130,13 +111,6 @@
             <groupId>cl.estencia.labs</groupId>
             <artifactId>aucom</artifactId>
             <version>2.0.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.bytebuffer</groupId>
-            <artifactId>bytebuffer</artifactId>
-            <version>0.2.1</version>
-            <optional>true</optional>
         </dependency>
 
         <!--<dependency>
