@@ -175,11 +175,11 @@
             <version>1.9.5.4</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.orangeplayer.audiolibs</groupId>
-            <artifactId>jaad</artifactId>
-            <version>0.9</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.orangeplayer.audiolibs</groupId>-->
+<!--            <artifactId>jaad</artifactId>-->
+<!--            <version>0.9</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.orangeplayer.audiolibs</groupId>
