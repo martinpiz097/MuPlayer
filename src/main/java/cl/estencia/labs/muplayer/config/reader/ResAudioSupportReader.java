@@ -1,17 +1,21 @@
-package cl.estencia.labs.muplayer.data.reader;
+package cl.estencia.labs.muplayer.config.reader;
 
-import cl.estencia.labs.muplayer.data.reader.model.CompatibleAudioFormat;
-import cl.estencia.labs.muplayer.data.reader.base.json.source.InternalJsonSource;
-import cl.estencia.labs.muplayer.data.reader.base.json.JsonInfo;
+import cl.estencia.labs.muplayer.config.model.CompatibleAudioFormat;
+import cl.estencia.labs.muplayer.config.base.json.source.InternalJsonSource;
+import cl.estencia.labs.muplayer.config.base.json.JsonInfo;
+import cl.estencia.labs.muplayer.model.AudioSupport;
+import cl.estencia.labs.muplayer.util.AudioFormatSupport;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.Getter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static cl.estencia.labs.muplayer.data.ResourceFiles.AUDIO_FORMATS_RES_PATH;
+import static cl.estencia.labs.muplayer.config.ResourceFiles.AUDIO_FORMATS_RES_PATH;
 
-public class ResAudioSupportReader extends JsonInfo<String, List<CompatibleAudioFormat>> {
+public class ResAudioSupportReader extends JsonInfo<String, List<CompatibleAudioFormat>>
+        implements AudioFormatSupport {
 
     @Getter
     private final List<CompatibleAudioFormat> listCompatibleFormats;
@@ -29,9 +33,41 @@ public class ResAudioSupportReader extends JsonInfo<String, List<CompatibleAudio
         this.listCompatibleFormats = new ArrayList<>();
     }
 
+    private String getFileFormat(File file) {
+        String fileName = file.getName();
+        return fileName.split("\\.")[1].trim();
+    }
+
     @Override
     public void loadDefaultData() {
-        // load model por defecto desde codigo
+    }
+
+    @Override
+    public boolean isSupportedFile(File trackFile) {
+        return listCompatibleFormats.parallelStream()
+                .anyMatch(
+                        compatibleAudioFormat ->
+                                compatibleAudioFormat.formatName().trim()
+                                        .equals(getFileFormat(trackFile)));
+    }
+
+    @Override
+    public List<CompatibleAudioFormat> getSupportedFormats() {
+        return new ArrayList<>(listCompatibleFormats);
+    }
+
+    @Override
+    public List<String> getSupportedFileFormats() {
+        return listCompatibleFormats.parallelStream()
+                .map(CompatibleAudioFormat::formatName)
+                .toList();
+    }
+
+    @Override
+    public List<String> getSupportedFormatClassNames() {
+        return listCompatibleFormats.parallelStream()
+                .map(CompatibleAudioFormat::formatClass)
+                .toList();
     }
 
 }

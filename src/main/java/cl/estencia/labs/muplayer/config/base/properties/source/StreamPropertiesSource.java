@@ -1,7 +1,7 @@
-package cl.estencia.labs.muplayer.data.reader.base.properties.source;
+package cl.estencia.labs.muplayer.config.base.properties.source;
 
-import cl.estencia.labs.muplayer.data.ResourceFiles;
-import cl.estencia.labs.muplayer.data.reader.base.properties.PropertiesSource;
+import cl.estencia.labs.muplayer.config.ResourceFiles;
+import cl.estencia.labs.muplayer.config.base.properties.PropertiesSource;
 
 import java.io.*;
 import java.util.Properties;

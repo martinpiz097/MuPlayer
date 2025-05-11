@@ -1,11 +1,11 @@
-package cl.estencia.labs.muplayer.data.reader.base.json;
+package cl.estencia.labs.muplayer.config.base.json;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.extern.java.Log;
-import cl.estencia.labs.muplayer.data.cache.CacheManager;
-import cl.estencia.labs.muplayer.data.cache.CacheVar;
+import cl.estencia.labs.muplayer.cache.CacheManager;
+import cl.estencia.labs.muplayer.cache.CacheVar;
 
 @Log
 public abstract class JsonSource<T, O> {

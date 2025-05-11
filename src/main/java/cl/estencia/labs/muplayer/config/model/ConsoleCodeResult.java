@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.data.reader.model;
+package cl.estencia.labs.muplayer.config.model;
 
 import lombok.Data;
 import cl.estencia.labs.muplayer.console.ConsoleOrderCode;

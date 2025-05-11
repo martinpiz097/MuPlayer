@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.data.cache;
+package cl.estencia.labs.muplayer.cache;
 
 import java.util.Map;
 import java.util.TreeMap;

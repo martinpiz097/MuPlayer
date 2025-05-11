@@ -1,6 +1,6 @@
-package cl.estencia.labs.muplayer.data.reader.base.json.source;
+package cl.estencia.labs.muplayer.config.base.json.source;
 
-import cl.estencia.labs.muplayer.data.reader.base.json.JsonSource;
+import cl.estencia.labs.muplayer.config.base.json.JsonSource;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectReader;
 import lombok.extern.java.Log;

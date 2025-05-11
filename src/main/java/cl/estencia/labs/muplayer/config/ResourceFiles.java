@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.data;
+package cl.estencia.labs.muplayer.config;
 
 import java.io.File;
 import java.io.InputStream;

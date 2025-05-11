@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.data.reader.base.json;
+package cl.estencia.labs.muplayer.config.base.json;
 
 import lombok.Getter;
 

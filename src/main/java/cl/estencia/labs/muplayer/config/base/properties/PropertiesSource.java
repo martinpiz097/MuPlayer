@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.data.reader.base.properties;
+package cl.estencia.labs.muplayer.config.base.properties;
 
 import lombok.extern.java.Log;
 

@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.data.reader.model;
+package cl.estencia.labs.muplayer.config.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
