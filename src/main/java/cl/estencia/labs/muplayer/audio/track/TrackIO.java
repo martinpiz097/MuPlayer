@@ -1,9 +1,7 @@
 package cl.estencia.labs.muplayer.audio.track;
 
 import cl.estencia.labs.aucom.audio.device.Speaker;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.extern.java.Log;
 
 import javax.sound.sampled.*;
@@ -18,15 +16,19 @@ public class TrackIO {
     private volatile AudioInputStream decodedInputStream;
 
     public TrackIO(AudioFileReader audioFileReader, AudioInputStream decodedInputStream) {
-        this.speaker = createSpeaker(decodedInputStream.getFormat());
+        this.speaker = initSpeaker(decodedInputStream.getFormat());
         this.audioFileReader = audioFileReader;
         this.decodedInputStream = decodedInputStream;
     }
 
-    public Speaker createSpeaker(AudioFormat format) {
+    private Speaker initSpeaker(AudioFormat format) {
         final Speaker speaker = new Speaker(format);
         speaker.open();
         return speaker;
+    }
+
+    public boolean isTrackStreamsOpened() {
+        return decodedInputStream != null && speaker.isOpen();
     }
 
     public boolean closeSpeaker() {
@@ -46,26 +48,12 @@ public class TrackIO {
         }
     }
 
-    public boolean resetDecodedStream() {
-        try {
-            decodedInputStream.reset();
-            return true;
-        } catch (IOException e) {
-            log.severe(e.getMessage());
-            return false;
-        }
-    }
-
     public double getSecondsPosition() {
         SourceDataLine driver = speaker.getDriver();
         if (driver == null) {
             return 0;
         }
         return ((double) driver.getMicrosecondPosition()) / 1000000;
-    }
-
-    public boolean isTrackStreamsOpened() {
-        return decodedInputStream != null && speaker != null;
     }
 
 //    public AudioFileFormat getAudioFileFormat(Object dataSource) throws IOException, UnsupportedAudioFileException {

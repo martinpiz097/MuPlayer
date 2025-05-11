@@ -1,5 +1,7 @@
 package cl.estencia.labs.muplayer.audio.track;
 
+import cl.estencia.labs.aucom.audio.device.Speaker;
+import cl.estencia.labs.aucom.io.AudioDecoder;
 import cl.estencia.labs.muplayer.audio.track.state.*;
 import lombok.Data;
 import lombok.extern.java.Log;
@@ -10,10 +12,10 @@ import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.interfaces.ControllableMusic;
 import cl.estencia.labs.muplayer.interfaces.ReportableTrack;
 import cl.estencia.labs.muplayer.model.MuPlayerAudioFormat;
-import cl.estencia.labs.muplayer.audio.io.AudioIO;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.spi.AudioFileReader;
 import java.io.File;
 import java.io.IOException;
 
@@ -24,44 +26,47 @@ import static cl.estencia.labs.aucom.common.AudioConstants.DEFAULT_MIN_VOL;
 @Log
 public abstract class Track extends AudioComponent implements Runnable, ControllableMusic, ReportableTrack {
     protected final File dataSource;
-    protected volatile AudioTag tagInfo;
-    protected volatile TrackIO trackIO;
+    protected final AudioDecoder audioDecoder;
+    protected final TrackIO trackIO;
+    protected final Speaker speaker;
     protected final TrackStatusData trackStatusData;
+
+    protected volatile AudioTag tagInfo;
     protected volatile TrackState trackState;
-    protected final AudioIO audioIO;
 
     protected final Player player;
 
-    public Track(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        this(new File(trackPath), null);
+    public Track(String trackPath, AudioDecoder audioDecoder) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        this(new File(trackPath), audioDecoder, null);
     }
 
-    public Track(File dataSource)
+    public Track(File dataSource, AudioDecoder audioDecoder)
             throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        this(dataSource, null);
+        this(dataSource, audioDecoder, null);
     }
 
-    public Track(String trackPath, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        this(new File(trackPath), player);
+    public Track(String trackPath, AudioDecoder audioDecoder, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        this(new File(trackPath), audioDecoder, player);
     }
 
-    public Track(File dataSource, Player player)
+    public Track(File dataSource, AudioDecoder audioDecoder, Player player)
             throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this.dataSource = dataSource;
-        this.player = player;
+        this.audioDecoder = audioDecoder;
+        this.trackIO = new TrackIO(getAudioFileReader(), audioDecoder.getDecodedStream());
+        this.speaker = trackIO.getSpeaker();
         this.trackStatusData = new TrackStatusData();
         this.trackState = new InitializedState(player, this);
-        this.audioIO = initAudioIO();
+        this.player = player;
     }
 
-    // Ver opcion de usar archivo temporal y leer desde ahi
-    protected abstract void loadAudioStream() throws IOException, UnsupportedAudioFileException;
+    protected abstract AudioFileReader getAudioFileReader();
 
     protected abstract double convertSecondsToBytes(Number seconds);
 
     protected abstract double convertBytesToSeconds(Number bytes);
 
-    protected abstract AudioIO initAudioIO();
+    public abstract void updateIOData() throws IOException, UnsupportedAudioFileException;
 
     public abstract MuPlayerAudioFormat[] getAudioFileFormats();
 
@@ -74,20 +79,13 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
         }
     }
 
-    public void initSpeaker() throws LineUnavailableException {
-        if (trackIO.initSpeaker()) {
-            setVolume(trackStatusData.getVolume());
-        }
-    }
-
-    public void initStreamAndLine() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        loadAudioStream();
-        initSpeaker();
+    public void configSpeaker() {
+        setVolume(trackStatusData.getVolume());
     }
 
     public void resetStream() throws IOException, LineUnavailableException, UnsupportedAudioFileException {
         if (trackIO.closeStream() && trackIO.closeSpeaker()) {
-            initStreamAndLine();
+            updateIOData();
         }
     }
 
@@ -225,9 +223,9 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
     public void setVolume(float volume) {
         trackStatusData.setVolume(volume);
         if (trackIO != null && trackIO.isTrackStreamsOpened()) {
-            trackIO.setVolume(volume);
+            speaker.setVolume(volume);
             if (trackStatusData.isVolumeZero()) {
-                audioHardware.setMuteValue(trackIO.getSpeakerDriver(), true);
+                audioHardware.setMuteValue(speaker.getDriver(), true);
             }
         }
     }
@@ -236,7 +234,7 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
     public void mute() {
         trackStatusData.setMute(true);
         if (trackIO != null && trackIO.isTrackStreamsOpened()) {
-            audioHardware.setMuteValue(trackIO.getSpeakerDriver(), trackStatusData.isMute());
+            audioHardware.setMuteValue(speaker.getDriver(), trackStatusData.isMute());
         }
     }
 
@@ -245,13 +243,13 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
         if (trackStatusData.isVolumeZero()) {
             trackStatusData.setVolume(DEFAULT_MAX_VOL);
             if (trackIO != null && trackIO.isTrackStreamsOpened()) {
-                trackIO.setVolume(trackStatusData.getVolume());
+                speaker.setVolume(trackStatusData.getVolume());
             }
         } else {
             trackStatusData.setMute(false);
         }
         if (trackIO != null && trackIO.isTrackStreamsOpened()) {
-            audioHardware.setMuteValue(trackIO.getSpeakerDriver(), false);
+            audioHardware.setMuteValue(speaker.getDriver(), false);
         }
     }
 

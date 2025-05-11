@@ -1,14 +1,14 @@
 package cl.estencia.labs.muplayer.audio.track.format;
 
+import cl.estencia.labs.muplayer.audio.track.decoder.DefaultAudioDecoder;
 import com.sun.media.sound.AiffFileReader;
 import com.sun.media.sound.AuFileReader;
 import com.sun.media.sound.WaveFileReader;
-import cl.estencia.labs.muplayer.audio.io.DefaultAudioIO;
+import cl.estencia.labs.muplayer.audio.track.decoder.util.DefaultDecoderFormatUtil;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.audio.track.TrackIO;
 import cl.estencia.labs.muplayer.model.MuPlayerAudioFormat;
-import cl.estencia.labs.muplayer.audio.io.AudioIO;
+import cl.estencia.labs.aucom.util.DecoderFormatUtil;
 import cl.estencia.labs.muplayer.util.FileUtil;
 
 import javax.sound.sampled.AudioInputStream;
@@ -21,54 +21,47 @@ import java.io.IOException;
 public class PCMTrack extends Track {
 
     public PCMTrack(File dataSource) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        super(dataSource);
+        super(dataSource, new DefaultAudioDecoder(dataSource));
     }
 
     public PCMTrack(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        super(trackPath);
+        super(trackPath, new DefaultAudioDecoder(trackPath));
     }
 
     public PCMTrack(File dataSource, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        super(dataSource, player);
+        super(dataSource, new DefaultAudioDecoder(dataSource), player);
     }
 
     public PCMTrack(String trackPath, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        super(trackPath, player);
+        super(trackPath, new DefaultAudioDecoder(trackPath), player);
     }
 
     @Override
-    protected void loadAudioStream() throws IOException, UnsupportedAudioFileException {
-        trackIO = new TrackIO();
+    protected AudioFileReader getAudioFileReader() {
         final String extension = FileUtil.getFormatName(dataSource != null
                 ? dataSource.getName() : "");
         MuPlayerAudioFormat muPlayerAudioFormat = MuPlayerAudioFormat.valueOf(extension.toLowerCase());
-        AudioFileReader audioReader;
+        return switch (muPlayerAudioFormat) {
+            case wav -> new WaveFileReader();
+            case aiff, aifc -> new AiffFileReader();
+            case au -> new AuFileReader();
+            default -> null;
+        };
+    }
 
-        switch (muPlayerAudioFormat) {
-            case wav:
-                audioReader = new WaveFileReader();
-                break;
-            case aiff:
-            case aifc:
-                audioReader = new AiffFileReader();
-                break;
-            case au:
-                audioReader = new AuFileReader();
-                break;
-            default:
-                audioReader = null;
-        }
+    @Override
+    public void updateIOData() throws IOException, UnsupportedAudioFileException {
+        AudioInputStream decodedStream = audioDecoder.getDecodedStream();
 
-        if (audioReader != null) {
-            AudioInputStream trackStream = audioIO.getAudioSteamBySource(audioReader, dataSource);
-            trackIO.setAudioFileReader(audioReader);
-            trackIO.setDecodedInputStream(trackStream);
-        }
+        trackIO.setAudioFileReader(getAudioFileReader());
+        trackIO.setDecodedInputStream(decodedStream);
+
+        speaker.reopen(decodedStream.getFormat());
     }
 
     @Override
     protected double convertSecondsToBytes(Number seconds) {
-        final javax.sound.sampled.AudioFormat audioFormat = trackIO.getAudioFormat();
+        final javax.sound.sampled.AudioFormat audioFormat = speaker.getAudioFormat();
         final float frameRate = audioFormat.getFrameRate();
         final int frameSize = audioFormat.getFrameSize();
         final double framesToSeek = frameRate*seconds.doubleValue();
@@ -77,13 +70,8 @@ public class PCMTrack extends Track {
 
     @Override
     protected double convertBytesToSeconds(Number bytes) {
-        final javax.sound.sampled.AudioFormat audioFormat = trackIO.getAudioFormat();
+        final javax.sound.sampled.AudioFormat audioFormat = speaker.getAudioFormat();
         return bytes.doubleValue() / audioFormat.getFrameSize() / audioFormat.getFrameRate();
-    }
-
-    @Override
-    protected AudioIO initAudioIO() {
-        return new DefaultAudioIO();
     }
 
     @Override
