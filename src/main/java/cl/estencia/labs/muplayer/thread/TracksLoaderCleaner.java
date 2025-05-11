@@ -2,28 +2,40 @@ package cl.estencia.labs.muplayer.thread;
 
 import lombok.extern.java.Log;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 @Log
 public class TracksLoaderCleaner extends Thread {
-    private final TracksLoader tracksLoader;
-    private final CompletableFuture<?> task;
+    private final List<Future<?>> listTasks;
 
-    public TracksLoaderCleaner(CompletableFuture<?> task) {
-        this.tracksLoader = TracksLoader.getInstance();
-        this.task = task;
-        setName(getClass().getSimpleName() + " [task=" + task.hashCode() + "]");
+    public TracksLoaderCleaner(List<Future<?>> listTasks) {
+        this.listTasks = listTasks;
+    }
+
+    public void deleteCompletedTasks() {
+        if (!listTasks.isEmpty()) {
+            listTasks.removeIf(Future::isDone);
+        }
     }
 
     @Override
     public void run() {
-        while (!task.isDone()) {
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+        boolean canContinue = true;
+
+        while (canContinue) {
+            deleteCompletedTasks();
+
+            while (listTasks.isEmpty()) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    canContinue = false;
+                    break;
+                }
             }
+            System.out.println("Deleting data...");
         }
-        tracksLoader.removeTask(task);
     }
 }

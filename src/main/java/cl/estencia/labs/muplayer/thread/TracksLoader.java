@@ -1,23 +1,27 @@
 package cl.estencia.labs.muplayer.thread;
 
 import lombok.Getter;
-import cl.estencia.labs.muplayer.util.CollectionUtil;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Supplier;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class TracksLoader {
-    private final List<CompletableFuture<?>> listLoadTasks;
+    private final List<Future<?>> listLoadTasks;
+//    private final ExecutorService executorService;
 //    private final TracksLoaderCleaner cleaner;
 
     @Getter
     private static final TracksLoader instance = new TracksLoader();
 
     private TracksLoader() {
-        this.listLoadTasks = Collections.synchronizedList(CollectionUtil.newFastArrayList());
+        this.listLoadTasks = Collections.synchronizedList(new LinkedList<>());
 //        this.cleaner = new TracksLoaderCleaner(listLoadTasks);
+//        this.executorService = Executors.newCachedThreadPool();
+
         init();
     }
 
@@ -26,30 +30,16 @@ public class TracksLoader {
     }
 
     public synchronized boolean hasPendingTasks() {
-        return listLoadTasks.parallelStream().anyMatch(task -> task != null && !task.isDone());
+        return listLoadTasks.parallelStream()
+                .anyMatch(task -> task != null && !task.isDone());
     }
 
-    public void deleteFirstCompletedTask() {
-        if (!listLoadTasks.isEmpty()) {
-            listLoadTasks.removeIf(CompletableFuture::isDone);
-        }
+    public synchronized void addTask(Runnable task) {
+        new Thread(task).start();
     }
 
-    public synchronized CompletableFuture<Void> addTask(Runnable task) {
-        final CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(task);
-        listLoadTasks.add(completableFuture);
-        new TracksLoaderCleaner(completableFuture).start();
-        return completableFuture;
-    }
 
-    public synchronized <T> CompletableFuture<T> addTask(Supplier<T> task) {
-        final CompletableFuture<T> completableFuture = CompletableFuture.supplyAsync(task);
-        listLoadTasks.add(completableFuture);
-        new TracksLoaderCleaner(completableFuture).start();
-        return completableFuture;
-    }
-
-    public synchronized void removeTask(CompletableFuture<?> task) {
+    public synchronized void removeTask(Future<?> task) {
         listLoadTasks.remove(task);
     }
 

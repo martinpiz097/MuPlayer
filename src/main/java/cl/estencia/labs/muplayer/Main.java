@@ -17,6 +17,7 @@ import java.util.logging.LogManager;
 
 @Log
 public class Main {
+
     public static void main(String[] args) {
         MessagesInfo messagesInfo = MessagesInfo.getInstance();
         CacheManager globalCache = CacheManager.getGlobalCache();

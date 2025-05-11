@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.audio.io;
+package cl.estencia.labs.muplayer.audio.track.decoder.util;
 
 import cl.estencia.labs.aucom.util.DecoderFormatUtil;
 

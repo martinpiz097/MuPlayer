@@ -26,9 +26,12 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static cl.estencia.labs.muplayer.listener.ListenerMethodName.*;
 import static cl.estencia.labs.muplayer.model.SeekOption.NEXT;
@@ -68,7 +71,6 @@ public class MuPlayer extends Player {
         this.muPlayerUtil = new MuPlayerUtil(listTracks, listFolders, listListeners, playerStatusData);
 
         setName("MuPlayer " + getId());
-
     }
 
     public MuPlayer(String folderPath) throws FileNotFoundException {
@@ -86,62 +88,36 @@ public class MuPlayer extends Player {
         }
     }
 
+    private Track loadTrackFromFile(File audioFile) {
+        try {
+            return trackBuilder.getTrack(audioFile, this);
+        } catch (FormatNotSupportedException e) {
+            return null;
+        }
+    }
+
     private void loadTracks(File folderToLoad) {
 //        Files.find()
-        tracksLoader.addTask(() -> {
-            tracksLoader.addTask(() -> {
-                final File[] fldDirs = folderToLoad.listFiles(filterUtil.getDirectoriesFilter());
-                if (fldDirs != null && fldDirs.length > 0) {
-                    CollectionUtil.streamOf(fldDirs, true)
-                            .forEach(this::loadTracks);
-                }
-            });
+        try (Stream<Path> folderPaths = Files.walk(Path.of(folderToLoad.toURI())).parallel()) {
+            folderPaths.map(path -> loadTrackFromFile(path.toFile()))
+                    .filter(Objects::nonNull)
+                    .forEach(track -> {
+                        listTracks.add(track);
+                        listFolders.add(track.getDataSource().getParentFile());
+                    });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-            tracksLoader.addTask(() -> {
-                final File[] fldAudioFiles = folderToLoad.listFiles(filterUtil.getAudioFileFilter());
-                if (fldAudioFiles != null && fldAudioFiles.length > 0) {
-                    synchronized (listFolders) {
-                        listFolders.add(folderToLoad);
-                    }
-
-                    final List<Track> listTraksSync = Collections.synchronizedList(listTracks);
-                    CollectionUtil.streamOf(fldAudioFiles, true)
-                            .forEach(audioFile -> {
-                                final TrackBuilder localTrackBuilder = new TrackBuilder();
-                                final Track track;
-                                try {
-                                    track = localTrackBuilder.getTrack(audioFile, this);
-                                    if (track != null) {
-                                        listTraksSync.add(track);
-                                    }
-                                } catch (FormatNotSupportedException e) {
-                                }
-                            });
-
-
-//                    CollectionUtil.streamOf(fldAudioFiles, true)
-//                            .map(audioFile -> {
-//                                final TrackBuilder localTrackBuilder = new TrackBuilder();
-//                                final Track track;
-//                                try {
-//                                    track = localTrackBuilder.getTrack(audioFile, this);
-//                                    return track;
-//                                } catch (FormatNotSupportedException e) {
-//                                    return null;
-//                                }
-//                            })
-//                            .filter(Objects::nonNull)
-//                            .sequential()
-//                            .collect(Collectors.toCollection(() -> listTracks));
-                }
-            });
-        });
     }
+
+
 
     private void setupTracksList() {
         loadTracks(rootFolder);
-        muPlayerUtil.waitForTracksLoading();
         muPlayerUtil.sortTracks();
+        muPlayerUtil.cleanUpFoldersList();
+        System.out.println("");
     }
 
     private void playFolderSongs(String fldPath) {

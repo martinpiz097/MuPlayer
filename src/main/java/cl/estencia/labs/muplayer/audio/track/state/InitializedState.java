@@ -6,7 +6,7 @@ import cl.estencia.labs.muplayer.audio.track.Track;
 
 import java.util.logging.Level;
 
-import static cl.estencia.labs.muplayer.audio.io.AudioIO.DEFAULT_VOLUME;
+import static cl.estencia.labs.aucom.util.DecoderFormatUtil.DEFAULT_VOLUME;
 
 @Log
 public class InitializedState extends TrackState {
@@ -18,13 +18,11 @@ public class InitializedState extends TrackState {
     @Override
     public void handle() {
         try {
-            synchronized (trackData) {
-                trackData.setSecsSeeked(0);
-                trackData.setBytesPerSecond(0);
-                trackData.setVolume(DEFAULT_VOLUME);
-                trackData.setMute(false);
-                trackData.setCanTrackContinue(true);
-            }
+            trackData.setSecsSeeked(0);
+            trackData.setBytesPerSecond(0);
+            trackData.setVolume(DEFAULT_VOLUME);
+            trackData.setMute(false);
+            trackData.setCanTrackContinue(true);
             track.setTagInfo(track.loadTagInfo(track.getDataSource()));
         } catch (Exception e) {
             log.log(Level.SEVERE, e.getMessage());

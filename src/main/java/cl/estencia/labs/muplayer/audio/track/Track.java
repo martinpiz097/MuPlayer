@@ -4,6 +4,7 @@ import cl.estencia.labs.aucom.audio.device.Speaker;
 import cl.estencia.labs.aucom.io.AudioDecoder;
 import cl.estencia.labs.muplayer.audio.track.state.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.java.Log;
 import org.jaudiotagger.tag.FieldKey;
 import cl.estencia.labs.muplayer.audio.info.AudioTag;
@@ -23,6 +24,7 @@ import static cl.estencia.labs.aucom.common.AudioConstants.DEFAULT_MAX_VOL;
 import static cl.estencia.labs.aucom.common.AudioConstants.DEFAULT_MIN_VOL;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Log
 public abstract class Track extends AudioComponent implements Runnable, ControllableMusic, ReportableTrack {
     protected final File dataSource;
@@ -77,10 +79,6 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
         } catch (Exception e) {
             return null;
         }
-    }
-
-    public void configSpeaker() {
-        setVolume(trackStatusData.getVolume());
     }
 
     public void resetStream() throws IOException, LineUnavailableException, UnsupportedAudioFileException {

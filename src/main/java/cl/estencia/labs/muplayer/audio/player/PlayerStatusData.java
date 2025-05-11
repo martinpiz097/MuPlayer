@@ -2,7 +2,7 @@ package cl.estencia.labs.muplayer.audio.player;
 
 import lombok.Data;
 
-import static cl.estencia.labs.muplayer.audio.io.AudioIO.DEFAULT_VOLUME;
+import static cl.estencia.labs.aucom.util.DecoderFormatUtil.DEFAULT_VOLUME;
 
 @Data
 public class PlayerStatusData {

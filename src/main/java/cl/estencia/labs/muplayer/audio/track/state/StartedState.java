@@ -14,15 +14,10 @@ public class StartedState extends TrackState {
 
     @Override
     public void handle() {
-        try {
-            track.initStreamAndLine();
-            if (trackData.isMute()) {
-                track.mute();
-            }
-            track.setVolume(trackData.getVolume());
-            track.play();
-        } catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
-            throw new RuntimeException(e);
+        if (trackData.isMute()) {
+            track.mute();
         }
+        track.setVolume(trackData.getVolume());
+        track.play();
     }
 }

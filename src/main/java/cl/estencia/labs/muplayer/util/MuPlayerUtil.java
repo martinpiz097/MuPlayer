@@ -16,6 +16,7 @@ import java.io.File;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static cl.estencia.labs.muplayer.listener.ListenerMethodName.ON_SONG_CHANGE;
 import static cl.estencia.labs.muplayer.thread.ThreadUtil.generateTrackThreadName;
@@ -79,7 +80,15 @@ public class MuPlayerUtil {
             final File dataSource2 = o2.getDataSource();
             return dataSource1.getPath().compareTo(dataSource2.getPath());
         });
-        listFolders.sort(Comparator.comparing(File::getPath));
+    }
+
+    public void cleanUpFoldersList() {
+        List<File> listFilteredFolders = listFolders.parallelStream().distinct()
+                .sorted(Comparator.comparing(File::getPath))
+                .collect(Collectors.toCollection(CollectionUtil::newFastArrayList));
+
+        listFolders.clear();
+        listFolders.addAll(listFilteredFolders);
     }
 
     public int getFolderIndex(Track current) {

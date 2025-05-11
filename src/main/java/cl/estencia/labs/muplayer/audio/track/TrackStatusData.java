@@ -1,5 +1,6 @@
 package cl.estencia.labs.muplayer.audio.track;
 
+import cl.estencia.labs.aucom.common.AudioConstants;
 import lombok.*;
 
 @Data
