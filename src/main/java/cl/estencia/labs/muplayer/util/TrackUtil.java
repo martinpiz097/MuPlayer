@@ -1,30 +1,21 @@
 package cl.estencia.labs.muplayer.util;
 
+import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.TrackIO;
-import cl.estencia.labs.muplayer.audio.player.Player;
+import lombok.extern.java.Log;
 
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.SourceDataLine;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
+@Log
 public class TrackUtil {
-    private final Map<String, Constructor<? extends Track>> mapTrackConstructors;
-
-    public TrackUtil() {
-        mapTrackConstructors = CollectionUtil.newFastMap();
-    }
 
     public String getSongInfo(Track track) {
         final StringBuilder sbInfo = new StringBuilder();
@@ -116,63 +107,6 @@ public class TrackUtil {
         sbTabs.append('\n');
 
         return sbTabs.toString();
-    }
-
-    private Class<?> getClassByPackage(String className, String packageName) {
-        try {
-            return Class.forName(packageName + "."
-                    + className.substring(0, className.lastIndexOf('.')));
-        } catch (ClassNotFoundException e) {
-        }
-        return null;
-    }
-
-    public Set<Class<?>> findAllClassesUsingClassLoader(String packageName) {
-        InputStream inputStream = ClassLoader.getSystemClassLoader()
-                .getResourceAsStream(packageName.replaceAll("[.]", "/"));
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        return reader.lines()
-                .filter(line -> line.endsWith(".class"))
-                .map(line -> getClassByPackage(line, packageName))
-                .collect(Collectors.toSet());
-    }
-
-    public Constructor<? extends Track> getTrackClassConstructor(String formatClass, Class<?>... paramsClasses) {
-        try {
-            MethodHandles.Lookup lookup = MethodHandles.lookup();
-
-            // Definir la signatura del constructor: () -> Person (sin parámetros y retorna Person)
-            // o (String, int) -> Person para constructor con parámetros
-
-            MethodType constructorType = MethodType.methodType(Track.class,
-                    paramsClasses[0],
-                    Arrays.copyOfRange(paramsClasses, 1, paramsClasses.length));
-
-            // Encontrar el constructor con la signatura especificada
-            MethodHandle ctor = lookup.findConstructor(Track.class, constructorType);
-
-
-            Constructor<? extends Track> constructor = mapTrackConstructors.get(formatClass);
-            if (constructor == null) {
-                final Class<? extends Track> trackClass = (Class<? extends Track>)
-                        Class.forName(formatClass);
-                constructor = trackClass.getConstructor(paramsClasses);
-                mapTrackConstructors.put(formatClass, constructor);
-            }
-            return constructor;
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public Track getTrackFromClass(String formatClass, File dataSource, Player player) {
-        try {
-            final Constructor<? extends Track> constructor = getTrackClassConstructor(
-                    formatClass, dataSource.getClass(), Player.class);
-            return constructor != null ? constructor.newInstance(dataSource, player) : null;
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     public String getLineInfo(Track track) {

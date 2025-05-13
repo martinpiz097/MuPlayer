@@ -1,21 +1,36 @@
 package cl.estencia.labs.muplayer.audio.track;
 
 import cl.estencia.labs.muplayer.audio.player.Player;
-import cl.estencia.labs.muplayer.data.properties.support.AudioSupportInfo;
 import cl.estencia.labs.muplayer.exception.FormatNotSupportedException;
 import cl.estencia.labs.muplayer.exception.MuPlayerException;
-import cl.estencia.labs.muplayer.util.FileUtil;
-import cl.estencia.labs.muplayer.util.TrackUtil;
+import cl.estencia.labs.muplayer.util.TrackClassLoader;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
+import java.util.List;
 
-public class TrackBuilder {
-    private final AudioSupportInfo audioSupportInfo;
-    private final TrackUtil trackUtil;
+import static cl.estencia.labs.muplayer.util.FileUtil.getFileFormatName;
 
-    public TrackBuilder() {
-        this.audioSupportInfo = new AudioSupportInfo();
-        this.trackUtil = new TrackUtil();
+public class TrackFactory {
+    private final TrackClassLoader trackClassLoader;
+
+    public TrackFactory() {
+        this.trackClassLoader = new TrackClassLoader();
+    }
+
+    private Track instanceTrackFromClass(File dataSource, Player player) {
+        var listInitConstructors = trackClassLoader.getListInitConstructors();
+
+        Track track = null;
+        for (Constructor<? extends Track> initConstructor : listInitConstructors) {
+            track = trackClassLoader.tryInstance(initConstructor,
+                    dataSource, player);
+            if (track != null) {
+                break;
+            }
+        }
+
+        return track;
     }
 
     public Track getTrack(String dataSource) {
@@ -31,25 +46,16 @@ public class TrackBuilder {
     }
 
     public Track getTrack(File dataSource, Player player) {
-        if (dataSource != null) {
-            Track result;
-
-            if (dataSource.exists()) {
-                final String formatName = FileUtil.getFormatName(dataSource.getName());
-                final String formatClass = audioSupportInfo.getProperty(formatName);
-
-                if (formatClass != null) {
-                    result = trackUtil.getTrackFromClass(formatClass, dataSource, player);
-                } else {
-                    throw new FormatNotSupportedException("Audio format " + formatName + " not supported!");
-                }
-            } else {
-                throw new MuPlayerException("The dataSource file for path " + dataSource.getPath() + " not exists");
+        if (dataSource != null && dataSource.exists()) {
+            Track result = instanceTrackFromClass(dataSource, player);
+            if (result == null) {
+                throw new FormatNotSupportedException(
+                        getFileFormatName(dataSource.getName()));
             }
 
             return result;
         } else {
-            throw new MuPlayerException("The dataSource object is null");
+            throw new MuPlayerException("The dataSource object is null or not exists");
         }
     }
 }
