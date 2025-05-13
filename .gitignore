@@ -1,7 +1,7 @@
 .idea/
 target/
 test/
-audio-support.properties
+audio-formats.json
 dependency-reduced-pom.xml
 testingInfo.properties
 config.properties
