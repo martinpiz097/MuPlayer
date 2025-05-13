@@ -1,12 +1,34 @@
-#Audio formats support
-#Sun Mar 28 10:24:28 CLST 2021
-audio.format.class.wav=cl.estencia.labs.muplayer.audio.track.format.PCMTrack
-audio.format.class.aiff=cl.estencia.labs.muplayer.audio.track.format.PCMTrack
-audio.format.class.aifc=cl.estencia.labs.muplayer.audio.track.format.PCMTrack
-audio.format.class.au=cl.estencia.labs.muplayer.audio.track.format.PCMTrack
-audio.format.class.snd=cl.estencia.labs.muplayer.audio.track.format.PCMTrack
-audio.format.class.flac=cl.estencia.labs.muplayer.audio.track.format.FlacTrack
-#audio.format.class.m4a=cl.estencia.labs.muplayer.audio.track.format.M4ATrack
-audio.format.class.mp3=cl.estencia.labs.muplayer.audio.track.format.MP3Track
-audio.format.class.ogg=cl.estencia.labs.muplayer.audio.track.format.OGGTrack
-#audio.format.class.aac=cl.estencia.labs.muplayer.audio.track.format.M4ATrack
+[
+  {
+    "format_name": "wav",
+    "format_class": "cl.estencia.labs.muplayer.audio.track.format.PCMTrack"
+  },
+  {
+    "format_name": "aiff",
+    "format_class": "cl.estencia.labs.muplayer.audio.track.format.PCMTrack"
+  },
+  {
+    "format_name": "aifc",
+    "format_class": "cl.estencia.labs.muplayer.audio.track.format.PCMTrack"
+  },
+  {
+    "format_name": "au",
+    "format_class": "cl.estencia.labs.muplayer.audio.track.format.PCMTrack"
+  },
+  {
+    "format_name": "snd",
+    "format_class": "cl.estencia.labs.muplayer.audio.track.format.PCMTrack"
+  },
+  {
+    "format_name": "flac",
+    "format_class": "cl.estencia.labs.muplayer.audio.track.format.FlacTrack"
+  },
+  {
+    "format_name": "mp3",
+    "format_class": "cl.estencia.labs.muplayer.audio.track.format.MP3Track"
+  },
+  {
+    "format_name": "ogg",
+    "format_class": "cl.estencia.labs.muplayer.audio.track.format.OGGTrack"
+  }
+]
