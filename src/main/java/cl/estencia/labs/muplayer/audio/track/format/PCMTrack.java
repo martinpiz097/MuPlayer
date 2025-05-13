@@ -4,19 +4,19 @@ import cl.estencia.labs.muplayer.audio.track.decoder.DefaultAudioDecoder;
 import com.sun.media.sound.AiffFileReader;
 import com.sun.media.sound.AuFileReader;
 import com.sun.media.sound.WaveFileReader;
-import cl.estencia.labs.muplayer.audio.track.decoder.util.DefaultDecoderFormatUtil;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.model.MuPlayerAudioFormat;
-import cl.estencia.labs.aucom.util.DecoderFormatUtil;
+import cl.estencia.labs.muplayer.model.AudioFileExtension;
 import cl.estencia.labs.muplayer.util.FileUtil;
 
+import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.sound.sampled.spi.AudioFileReader;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class PCMTrack extends Track {
 
@@ -40,23 +40,13 @@ public class PCMTrack extends Track {
     protected AudioFileReader getAudioFileReader() {
         final String extension = FileUtil.getFormatName(dataSource != null
                 ? dataSource.getName() : "");
-        MuPlayerAudioFormat muPlayerAudioFormat = MuPlayerAudioFormat.valueOf(extension.toLowerCase());
-        return switch (muPlayerAudioFormat) {
+        AudioFileExtension audioFileExtension = AudioFileExtension.valueOf(extension.toLowerCase());
+        return switch (audioFileExtension) {
             case wav -> new WaveFileReader();
             case aiff, aifc -> new AiffFileReader();
             case au -> new AuFileReader();
             default -> null;
         };
-    }
-
-    @Override
-    public void updateIOData() throws IOException, UnsupportedAudioFileException {
-        AudioInputStream decodedStream = audioDecoder.getDecodedStream();
-
-        trackIO.setAudioFileReader(getAudioFileReader());
-        trackIO.setDecodedInputStream(decodedStream);
-
-        speaker.reopen(decodedStream.getFormat());
     }
 
     @Override
@@ -70,13 +60,16 @@ public class PCMTrack extends Track {
 
     @Override
     protected double convertBytesToSeconds(Number bytes) {
-        final javax.sound.sampled.AudioFormat audioFormat = speaker.getAudioFormat();
+        final AudioFormat audioFormat = speaker.getAudioFormat();
         return bytes.doubleValue() / audioFormat.getFrameSize() / audioFormat.getFrameRate();
     }
 
     @Override
-    public MuPlayerAudioFormat[] getAudioFileFormats() {
-        return new MuPlayerAudioFormat[] {MuPlayerAudioFormat.wav, MuPlayerAudioFormat.aiff,
-                MuPlayerAudioFormat.aifc, MuPlayerAudioFormat.au};
+    public List<String> getAudioFileExtensions() {
+        return List.of(AudioFileExtension.wav.name(),
+                AudioFileExtension.aiff.name(),
+                AudioFileExtension.aifc.name(),
+                AudioFileExtension.au.name());
     }
+
 }

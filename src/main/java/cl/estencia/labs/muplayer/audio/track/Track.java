@@ -12,13 +12,15 @@ import cl.estencia.labs.muplayer.audio.player.AudioComponent;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.interfaces.ControllableMusic;
 import cl.estencia.labs.muplayer.interfaces.ReportableTrack;
-import cl.estencia.labs.muplayer.model.MuPlayerAudioFormat;
+import cl.estencia.labs.muplayer.model.AudioFileExtension;
 
+import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.sound.sampled.spi.AudioFileReader;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import static cl.estencia.labs.aucom.common.AudioConstants.DEFAULT_MAX_VOL;
 import static cl.estencia.labs.aucom.common.AudioConstants.DEFAULT_MIN_VOL;
@@ -68,9 +70,16 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
 
     protected abstract double convertBytesToSeconds(Number bytes);
 
-    public abstract void updateIOData() throws IOException, UnsupportedAudioFileException;
+    public void updateIOData() throws IOException, UnsupportedAudioFileException {
+        AudioInputStream decodedStream = audioDecoder.getDecodedStream();
 
-    public abstract MuPlayerAudioFormat[] getAudioFileFormats();
+        trackIO.setAudioFileReader(getAudioFileReader());
+        trackIO.setDecodedInputStream(decodedStream);
+
+        speaker.reopen(decodedStream.getFormat());
+    }
+
+    public abstract List<String> getAudioFileExtensions();
 
     public AudioTag loadTagInfo(File dataSource) {
         try {

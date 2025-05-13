@@ -2,12 +2,9 @@ package cl.estencia.labs.muplayer.audio.track.format;
 
 import cl.estencia.labs.muplayer.audio.track.decoder.FlacAudioDecoder;
 import org.jflac.sound.spi.FlacAudioFileReader;
-import org.jflac.sound.spi.FlacFormatConversionProvider;
-import cl.estencia.labs.muplayer.audio.track.decoder.util.FlacDecoderFormatUtil;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.model.MuPlayerAudioFormat;
-import cl.estencia.labs.aucom.util.DecoderFormatUtil;
+import cl.estencia.labs.muplayer.model.AudioFileExtension;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -16,6 +13,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.sound.sampled.spi.AudioFileReader;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class FlacTrack extends Track {
 
@@ -41,22 +39,12 @@ public class FlacTrack extends Track {
     }
 
     @Override
-    public void updateIOData() {
-        AudioInputStream decodedStream = audioDecoder.getDecodedStream();
-
-        trackIO.setAudioFileReader(getAudioFileReader());
-        trackIO.setDecodedInputStream(decodedStream);
-
-        speaker.reopen(decodedStream.getFormat());
-    }
-
-    @Override
     protected double convertSecondsToBytes(Number seconds) {
         final AudioFormat audioFormat = speaker.getAudioFormat();
         final float frameRate = audioFormat.getFrameRate();
         final int frameSize = audioFormat.getFrameSize();
-        final double framesToSeek = frameRate*seconds.doubleValue();
-        return framesToSeek*frameSize;
+        final double framesToSeek = frameRate * seconds.doubleValue();
+        return framesToSeek * frameSize;
     }
 
     @Override
@@ -66,10 +54,9 @@ public class FlacTrack extends Track {
     }
 
     @Override
-    public MuPlayerAudioFormat[] getAudioFileFormats() {
-        return new MuPlayerAudioFormat[] {MuPlayerAudioFormat.flac};
+    public List<String> getAudioFileExtensions() {
+        return List.of(AudioFileExtension.flac.name());
     }
-
     @Override
     public synchronized void seek(double seconds) throws IOException {
        if (seconds != 0) {
