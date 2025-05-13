@@ -12,12 +12,10 @@ import java.io.IOException;
 @Log
 public class TrackIO {
     private final Speaker speaker;
-    private volatile AudioFileReader audioFileReader;
     private volatile AudioInputStream decodedInputStream;
 
-    public TrackIO(AudioFileReader audioFileReader, AudioInputStream decodedInputStream) {
+    public TrackIO(AudioInputStream decodedInputStream) {
         this.speaker = initSpeaker(decodedInputStream.getFormat());
-        this.audioFileReader = audioFileReader;
         this.decodedInputStream = decodedInputStream;
     }
 

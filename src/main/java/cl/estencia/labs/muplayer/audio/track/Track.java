@@ -2,6 +2,7 @@ package cl.estencia.labs.muplayer.audio.track;
 
 import cl.estencia.labs.aucom.audio.device.Speaker;
 import cl.estencia.labs.aucom.io.AudioDecoder;
+import cl.estencia.labs.muplayer.audio.track.header.HeaderData;
 import cl.estencia.labs.muplayer.audio.track.state.*;
 import cl.estencia.labs.muplayer.interfaces.TrackData;
 import cl.estencia.labs.muplayer.listener.TrackEvent;
@@ -45,7 +46,9 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
     @Getter @Setter protected volatile AudioTag tagInfo;
     protected volatile TrackState trackState;
 
-    protected final Player player;
+    protected final HeaderData headerData;
+
+    @Getter protected final Player player;
 
     public Track(String trackPath, AudioDecoder audioDecoder) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this(new File(trackPath), audioDecoder, null);
@@ -64,12 +67,14 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
             throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this.dataSource = dataSource;
         this.audioDecoder = audioDecoder;
-        this.trackIO = new TrackIO(getAudioFileReader(), audioDecoder.getDecodedStream());
+        this.trackIO = new TrackIO(audioDecoder.getDecodedStream());
         this.speaker = trackIO.getSpeaker();
         this.trackStatusData = new TrackStatusData();
         this.listInternalEvents = new ArrayList<>();
         this.listUserEvents = new LinkedList<>();
+        this.headerData = initHeaderData();
         this.player = player;
+        this.trackState = new UnknownState(player, this, listInternalEvents);
 
         initValues();
     }
@@ -88,22 +93,22 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
         }
     }
 
-    protected abstract AudioFileReader getAudioFileReader();
-
     protected abstract double convertSecondsToBytes(Number seconds);
 
     protected abstract double convertBytesToSeconds(Number bytes);
 
+    protected HeaderData initHeaderData() {
+        return new HeaderData(0L, 0d);
+    }
+
     public void updateIOData() {
         AudioInputStream decodedStream = audioDecoder.getDecodedStream();
 
-        trackIO.setAudioFileReader(getAudioFileReader());
+//        trackIO.setAudioFileReader(getAudioFileReader());
         trackIO.setDecodedInputStream(decodedStream);
 
         speaker.reopen(decodedStream.getFormat());
     }
-
-    public abstract List<String> getAudioFileExtensions();
 
     public AudioTag loadTagInfo(File dataSource) {
         try {

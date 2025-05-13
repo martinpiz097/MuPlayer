@@ -1,27 +1,22 @@
 package cl.estencia.labs.muplayer.audio.track.format;
 
 import cl.estencia.labs.muplayer.audio.track.decoder.DefaultAudioDecoder;
+import cl.estencia.labs.muplayer.audio.track.header.HeaderData;
 import javazoom.spi.mpeg.sampled.file.MpegAudioFileReader;
 import lombok.extern.java.Log;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.mp3.MP3AudioHeader;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.model.AudioFileExtension;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.sound.sampled.spi.AudioFileReader;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 @Log
 public class MP3Track extends Track {
-    private final long frameSize;
-    private final double frameDurationInSec;
-
-    private final MP3AudioHeader mp3AudioHeader;
 
     public MP3Track(File dataSource) throws IOException,
             UnsupportedAudioFileException, LineUnavailableException, InvalidAudioFrameException {
@@ -30,9 +25,6 @@ public class MP3Track extends Track {
 
     public MP3Track(File dataSource, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException, InvalidAudioFrameException {
         super(dataSource, new DefaultAudioDecoder(dataSource), player);
-        this.mp3AudioHeader = new MP3AudioHeader();
-        this.frameSize = calculateFrameSize(mp3AudioHeader);
-        this.frameDurationInSec = calculateFrameDurationInSec(mp3AudioHeader);
     }
 
     public MP3Track(String trackPath)
@@ -60,24 +52,25 @@ public class MP3Track extends Track {
     }
 
     @Override
-    protected AudioFileReader getAudioFileReader() {
-        return new MpegAudioFileReader();
-    }
-
-    @Override
     protected double convertSecondsToBytes(Number seconds) {
-        final double frameNeeded = seconds.doubleValue() / frameDurationInSec;
-        return frameNeeded * frameSize;
+        final double frameNeeded = seconds.doubleValue() / headerData.frameDurationInSec();
+        return frameNeeded * headerData.frameSize();
     }
 
     @Override
     protected double convertBytesToSeconds(Number bytes) {
-        return (bytes.doubleValue() / frameSize) * frameDurationInSec;
+        return (bytes.doubleValue() / headerData.frameSize()) * headerData.frameDurationInSec();
     }
 
     @Override
-    public List<String> getAudioFileExtensions() {
-        return List.of(AudioFileExtension.mp3.name());
+    protected HeaderData initHeaderData() {
+        try {
+            MP3AudioHeader mp3AudioHeader = new MP3AudioHeader(dataSource);
+            return new HeaderData(calculateFrameSize(mp3AudioHeader),
+                    calculateFrameDurationInSec(mp3AudioHeader));
+        } catch (IOException | InvalidAudioFrameException e) {
+            return null;
+        }
     }
 
     // bytesLeidos -> bytesTotales

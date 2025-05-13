@@ -3,6 +3,7 @@ package cl.estencia.labs.muplayer.audio.track.format;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.decoder.DefaultAudioDecoder;
+import cl.estencia.labs.muplayer.audio.track.header.HeaderData;
 import cl.estencia.labs.muplayer.model.AudioFileExtension;
 import org.tritonus.sampled.file.jorbis.JorbisAudioFileReader;
 
@@ -33,11 +34,6 @@ public class OGGTrack extends Track {
     }
 
     @Override
-    protected AudioFileReader getAudioFileReader() {
-        return new JorbisAudioFileReader();
-    }
-
-    @Override
     protected double convertSecondsToBytes(Number seconds) {
         final AudioFormat audioFormat = speaker.getAudioFormat();
         final float frameRate = audioFormat.getFrameRate();
@@ -53,8 +49,8 @@ public class OGGTrack extends Track {
     }
 
     @Override
-    public List<String> getAudioFileExtensions() {
-        return List.of(AudioFileExtension.ogg.name());
+    protected HeaderData initHeaderData() {
+        return new HeaderData(0L, 0d);
     }
 
 }

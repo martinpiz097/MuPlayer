@@ -34,11 +34,6 @@ public class FlacTrack extends Track {
     }
 
     @Override
-    protected AudioFileReader getAudioFileReader() {
-        return new FlacAudioFileReader();
-    }
-
-    @Override
     protected double convertSecondsToBytes(Number seconds) {
         final AudioFormat audioFormat = speaker.getAudioFormat();
         final float frameRate = audioFormat.getFrameRate();
@@ -53,10 +48,6 @@ public class FlacTrack extends Track {
         return bytes.doubleValue() / audioFormat.getFrameSize() / audioFormat.getFrameRate();
     }
 
-    @Override
-    public List<String> getAudioFileExtensions() {
-        return List.of(AudioFileExtension.flac.name());
-    }
     @Override
     public synchronized void seek(double seconds) throws IOException {
        if (seconds != 0) {

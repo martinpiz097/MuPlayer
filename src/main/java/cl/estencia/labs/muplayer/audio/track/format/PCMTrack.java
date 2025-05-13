@@ -36,19 +36,6 @@ public class PCMTrack extends Track {
     }
 
     @Override
-    protected AudioFileReader getAudioFileReader() {
-        final String extension = FileUtil.getFormatName(dataSource != null
-                ? dataSource.getName() : "");
-        AudioFileExtension audioFileExtension = AudioFileExtension.valueOf(extension.toLowerCase());
-        return switch (audioFileExtension) {
-            case wav -> new WaveFileReader();
-            case aiff, aifc -> new AiffFileReader();
-            case au -> new AuFileReader();
-            default -> null;
-        };
-    }
-
-    @Override
     protected double convertSecondsToBytes(Number seconds) {
         final javax.sound.sampled.AudioFormat audioFormat = speaker.getAudioFormat();
         final float frameRate = audioFormat.getFrameRate();
@@ -61,14 +48,6 @@ public class PCMTrack extends Track {
     protected double convertBytesToSeconds(Number bytes) {
         final AudioFormat audioFormat = speaker.getAudioFormat();
         return bytes.doubleValue() / audioFormat.getFrameSize() / audioFormat.getFrameRate();
-    }
-
-    @Override
-    public List<String> getAudioFileExtensions() {
-        return List.of(AudioFileExtension.wav.name(),
-                AudioFileExtension.aiff.name(),
-                AudioFileExtension.aifc.name(),
-                AudioFileExtension.au.name());
     }
 
 }
