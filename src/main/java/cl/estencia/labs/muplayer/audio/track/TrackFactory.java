@@ -11,51 +11,15 @@ import java.util.List;
 
 import static cl.estencia.labs.muplayer.util.FileUtil.getFileFormatName;
 
-public class TrackFactory {
-    private final TrackClassLoader trackClassLoader;
-
-    public TrackFactory() {
-        this.trackClassLoader = new TrackClassLoader();
-    }
-
-    private Track instanceTrackFromClass(File dataSource, Player player) {
-        var listInitConstructors = trackClassLoader.getListInitConstructors();
-
-        Track track = null;
-        for (Constructor<? extends Track> initConstructor : listInitConstructors) {
-            track = trackClassLoader.tryInstance(initConstructor,
-                    dataSource, player);
-            if (track != null) {
-                break;
-            }
-        }
-
-        return track;
-    }
-
-    public Track getTrack(String dataSource) {
+public interface TrackFactory {
+    default Track getTrack(String dataSource) {
         return getTrack(new File(dataSource));
     }
-
-    public Track getTrack(File dataSource) {
+    default Track getTrack(File dataSource) {
         return getTrack(dataSource, null);
     }
-
-    public Track getTrack(String dataSource, Player player) {
+    default Track getTrack(String dataSource, Player player) {
         return getTrack(new File(dataSource), player);
     }
-
-    public Track getTrack(File dataSource, Player player) {
-        if (dataSource != null && dataSource.exists()) {
-            Track result = instanceTrackFromClass(dataSource, player);
-            if (result == null) {
-                throw new FormatNotSupportedException(
-                        getFileFormatName(dataSource.getName()));
-            }
-
-            return result;
-        } else {
-            throw new MuPlayerException("The dataSource object is null or not exists");
-        }
-    }
+    Track getTrack(File dataSource, Player player);
 }
