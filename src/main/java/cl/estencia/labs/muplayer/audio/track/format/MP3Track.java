@@ -1,7 +1,6 @@
 package cl.estencia.labs.muplayer.audio.track.format;
 
 import cl.estencia.labs.muplayer.audio.track.decoder.DefaultAudioDecoder;
-import cl.estencia.labs.muplayer.util.LogUtil;
 import javazoom.spi.mpeg.sampled.file.MpegAudioFileReader;
 import lombok.extern.java.Log;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;

@@ -1,6 +1,6 @@
 package cl.estencia.labs.muplayer.audio.track.state;
 
-import cl.estencia.labs.aucom.audio.device.Speaker;
+import cl.estencia.labs.muplayer.listener.TrackEvent;
 import lombok.extern.java.Log;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
@@ -10,6 +10,7 @@ import cl.estencia.labs.muplayer.thread.ThreadUtil;
 
 import javax.sound.sampled.AudioInputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 
 import static cl.estencia.labs.aucom.common.IOConstants.DEFAULT_BUFF_SIZE;
@@ -21,8 +22,8 @@ public class PlayingState extends TrackState {
     private final TPlayingTrack trackThread;
     private final AudioInputStream decodedAudioStream;
 
-    public PlayingState(Player player, Track track) {
-        super(player, track);
+    public PlayingState(Player player, Track track, List<TrackEvent> listInternalEvents) {
+        super(player, track, TrackStateName.PLAYING, listInternalEvents);
         this.audioBuffer = new byte[DEFAULT_BUFF_SIZE];
         this.trackThread = new TPlayingTrack(track);
         this.decodedAudioStream = trackIO.getDecodedInputStream();
@@ -33,7 +34,7 @@ public class PlayingState extends TrackState {
     }
 
     @Override
-    public void handle() {
+    protected void handle() {
         try {
             String trackThreadName = ThreadUtil.generateTrackThreadName(trackThread.getClass(), track);
             TaskRunner.execute(trackThread, trackThreadName);

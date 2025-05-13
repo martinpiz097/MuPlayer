@@ -2,21 +2,23 @@ package cl.estencia.labs.muplayer.audio.track.state;
 
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
+import cl.estencia.labs.muplayer.listener.TrackEvent;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
+import java.util.List;
 
 public class ReverberatedState extends TrackState {
     private final double seekSeconds;
 
-    public ReverberatedState(Player player, Track track, double seekSeconds) {
-        super(player, track);
+    public ReverberatedState(Player player, Track track, double seekSeconds, List<TrackEvent> listInternalEvents) {
+        super(player, track, TrackStateName.REVERBERATED, listInternalEvents);
         this.seekSeconds = seekSeconds;
     }
 
     @Override
-    public void handle() {
+    protected void handle() {
         try {
             track.resetStream();
             track.getTrackStatusData().setSecsSeeked(0);

@@ -10,7 +10,6 @@ import cl.estencia.labs.muplayer.model.AudioFileExtension;
 import cl.estencia.labs.muplayer.util.FileUtil;
 
 import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.sound.sampled.spi.AudioFileReader;

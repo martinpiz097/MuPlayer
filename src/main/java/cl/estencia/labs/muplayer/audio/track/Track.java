@@ -3,16 +3,17 @@ package cl.estencia.labs.muplayer.audio.track;
 import cl.estencia.labs.aucom.audio.device.Speaker;
 import cl.estencia.labs.aucom.io.AudioDecoder;
 import cl.estencia.labs.muplayer.audio.track.state.*;
-import lombok.Data;
+import cl.estencia.labs.muplayer.interfaces.TrackData;
+import cl.estencia.labs.muplayer.listener.TrackEvent;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.java.Log;
 import org.jaudiotagger.tag.FieldKey;
 import cl.estencia.labs.muplayer.audio.info.AudioTag;
 import cl.estencia.labs.muplayer.audio.player.AudioComponent;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.interfaces.ControllableMusic;
-import cl.estencia.labs.muplayer.interfaces.ReportableTrack;
-import cl.estencia.labs.muplayer.model.AudioFileExtension;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
@@ -20,22 +21,28 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.sound.sampled.spi.AudioFileReader;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 
 import static cl.estencia.labs.aucom.common.AudioConstants.DEFAULT_MAX_VOL;
 import static cl.estencia.labs.aucom.common.AudioConstants.DEFAULT_MIN_VOL;
+import static cl.estencia.labs.aucom.util.DecoderFormatUtil.DEFAULT_VOLUME;
 
-@Data
 @EqualsAndHashCode(callSuper = true)
 @Log
-public abstract class Track extends AudioComponent implements Runnable, ControllableMusic, ReportableTrack {
-    protected final File dataSource;
-    protected final AudioDecoder audioDecoder;
-    protected final TrackIO trackIO;
-    protected final Speaker speaker;
-    protected final TrackStatusData trackStatusData;
+public abstract class Track extends AudioComponent implements Runnable, ControllableMusic, TrackData {
+    @Getter protected final File dataSource;
+    @Getter protected final AudioDecoder audioDecoder;
+    @Getter protected final TrackIO trackIO;
+    @Getter protected final Speaker speaker;
+    @Getter protected final TrackStatusData trackStatusData;
 
-    protected volatile AudioTag tagInfo;
+    protected final List<TrackEvent> listInternalEvents;
+    @Getter protected final List<TrackEvent> listUserEvents;
+
+    @Getter @Setter protected volatile AudioTag tagInfo;
     protected volatile TrackState trackState;
 
     protected final Player player;
@@ -60,8 +67,25 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
         this.trackIO = new TrackIO(getAudioFileReader(), audioDecoder.getDecodedStream());
         this.speaker = trackIO.getSpeaker();
         this.trackStatusData = new TrackStatusData();
-        this.trackState = new InitializedState(player, this);
+        this.listInternalEvents = new ArrayList<>();
+        this.listUserEvents = new LinkedList<>();
         this.player = player;
+
+        initValues();
+    }
+
+    private void initValues() {
+        try {
+            trackStatusData.setSecsSeeked(0);
+            trackStatusData.setBytesPerSecond(0);
+            trackStatusData.setVolume(DEFAULT_VOLUME);
+            trackStatusData.setMute(false);
+            trackStatusData.setCanTrackContinue(true);
+            setTagInfo(loadTagInfo(getDataSource()));
+        } catch (Exception e) {
+            log.log(Level.SEVERE, e.getMessage());
+            kill();
+        }
     }
 
     protected abstract AudioFileReader getAudioFileReader();
@@ -70,7 +94,7 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
 
     protected abstract double convertBytesToSeconds(Number bytes);
 
-    public void updateIOData() throws IOException, UnsupportedAudioFileException {
+    public void updateIOData() {
         AudioInputStream decodedStream = audioDecoder.getDecodedStream();
 
         trackIO.setAudioFileReader(getAudioFileReader());
@@ -102,8 +126,20 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
         return frameLen > 0 ? (int) (frameLen / 1024) : BUFFSIZE;
     }*/
 
-    public String getStateToString() {
+    public TrackStateName getStateName() {
         return trackState.getName();
+    }
+
+    public void addUserEvent(TrackEvent trackEvent) {
+        synchronized (listUserEvents) {
+            listUserEvents.add(trackEvent);
+        }
+    }
+
+    public void removeUserEvent(TrackEvent trackEvent) {
+        synchronized (listUserEvents) {
+            listUserEvents.remove(trackEvent);
+        }
     }
 
     @Override
@@ -118,21 +154,21 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
 
     @Override
     public synchronized boolean isPlaying() {
-        return trackState instanceof PlayingState;
+        return getStateName() == TrackStateName.PLAYING;
     }
 
     @Override
     public synchronized boolean isPaused() {
-        return trackState instanceof PausedState;
+        return getStateName() == TrackStateName.PAUSED;
     }
 
     @Override
     public synchronized boolean isStopped() {
-        return trackState instanceof StoppedState;
+        return getStateName() == TrackStateName.STOPPED;
     }
 
     public synchronized boolean isKilled() {
-        return trackState instanceof KilledState;
+        return getStateName() == TrackStateName.KILLED;
     }
 
     @Override
@@ -143,14 +179,14 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
     @Override
     public void play() {
         if (isAlive()) {
-            trackState = new PlayingState(player, this);
+            trackState = new PlayingState(player, this, listInternalEvents);
         }
     }
 
     @Override
     public void pause() {
         if (isPlaying()) {
-            trackState = new PausedState(player, this);
+            trackState = new PausedState(player, this, listInternalEvents);
         }
     }
 
@@ -167,17 +203,17 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
     @Override
     public synchronized void stopTrack() {
         if (isAlive() && (isPlaying() || isPaused())) {
-            trackState = new StoppedState(player, this);
+            trackState = new StoppedState(player, this, listInternalEvents);
         }
     }
 
     @Override
     public void reload() throws Exception {
-        //trackState = new ReloadedState(player, this);
+        //trackState = new ReloadedState(player, this, listInternalEvents);
     }
 
     public void kill() {
-        trackState = new KilledState(player, this);
+        trackState = new KilledState(player, this, listInternalEvents);
     }
 
     // en este caso pasan a ser seconds
@@ -216,7 +252,7 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
             final int gotoValue = (int) Math.round(second - getProgress());
             seek(gotoValue);
         } else {
-            trackState = new ReverberatedState(player, this, second);
+            trackState = new ReverberatedState(player, this, second, listInternalEvents);
         }
     }
 
@@ -324,15 +360,15 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
         if (getState() == State.NEW) {
             super.start();
         } else {
-            trackState = new StartedState(player, this);
+            trackState = new StartedState(player, this, listInternalEvents);
         }
     }
 
     @Override
     public void run() {
-        trackState = new StartedState(player, this);
+        trackState = new StartedState(player, this, listInternalEvents);
         while (trackStatusData.canTrackContinue()) {
-            trackState.handle();
+            trackState.execute();
         }
     }
 }
