@@ -12,6 +12,10 @@ public class FileUtil {
     private static final String FORMAT_NAME_DELIMITER = "\\.";
     private static final String EMPTY = "";
 
+    public static String getFormatName(File file) {
+        return file != null ? getFormatName(file.getName()) : null;
+    }
+
     public static String getFormatName(String fileName) {
         final String[] split = fileName.trim().split(FORMAT_NAME_DELIMITER);
         return split.length > 0 ? split[split.length-1] : EMPTY;
