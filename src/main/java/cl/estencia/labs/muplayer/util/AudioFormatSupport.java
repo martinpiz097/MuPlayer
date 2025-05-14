@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.util;
+package cl.estencia.labs.muplayer.utils;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.config.model.CompatibleAudioFormat;
@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Objects;
 
 public interface AudioFormatSupport {
-    default boolean isSupportedFile(Path track) {
-        return isSupportedFile(track.toFile());
+    default boolean isSupportedFile(Path trackPath) {
+        return isSupportedFile(trackPath.toFile());
     }
     default boolean isSupportedFile(String trackPath) {
         return isSupportedFile(new File(trackPath));
@@ -18,6 +18,8 @@ public interface AudioFormatSupport {
     boolean isSupportedFile(File trackFile);
     List<CompatibleAudioFormat> getSupportedFormats();
     List<String> getSupportedFileFormats();
+
+    String getFormatClassName(File file);
     List<String> getSupportedFormatClassNames();
     default List<Class<? extends Track>> getSupportedFormatClasses() {
         return getSupportedFormatClassNames()

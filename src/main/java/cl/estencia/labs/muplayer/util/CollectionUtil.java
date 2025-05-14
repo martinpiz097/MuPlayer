@@ -1,11 +1,7 @@
-package cl.estencia.labs.muplayer.util;
+package cl.estencia.labs.muplayer.utils;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.listener.ListenerMethodName;
-import cl.estencia.labs.muplayer.listener.PlayerListener;
 import cl.estencia.labs.muplayer.model.TrackIndexed;
-import cl.estencia.labs.muplayer.thread.ListenerRunner;
-import cl.estencia.labs.muplayer.thread.TaskRunner;
 
 import java.io.File;
 import java.util.*;
@@ -62,15 +58,6 @@ public class CollectionUtil {
     public static boolean existsFolder(List<File> listFolders, String folderPath) {
         return listFolders.parallelStream()
                 .anyMatch(fp -> fp.getPath().equals(folderPath));
-    }
-
-    public void loadListenerMethod(List<PlayerListener> listListeners,
-                                   ListenerMethodName methodName, Track track) {
-        if (!listListeners.isEmpty()) {
-            final String threadName = ListenerRunner.class.getSimpleName();
-            TaskRunner.execute(new ListenerRunner(listListeners, methodName, track),
-                    threadName);
-        }
     }
 
     // si incluyo paralelismo en este metodo, debo crear otro o gestionar con parametro boolean,

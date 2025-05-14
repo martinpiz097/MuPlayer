@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.util;
+package cl.estencia.labs.muplayer.utils;
 
 public class ObjectsUtil {
     public static boolean isEqualsStringsAcceptNull(String str1, String str2) {

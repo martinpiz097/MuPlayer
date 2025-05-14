@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.util;
+package cl.estencia.labs.muplayer.utils;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
 
@@ -7,11 +7,6 @@ import java.io.FileFilter;
 import java.util.function.Predicate;
 
 public class FilterUtil {
-    private final AudioFormatSupport audioFormatSupport;
-
-    public FilterUtil() {
-        audioFormatSupport = new AudioFormatSupport();
-    }
 
     public Predicate<Track> newSeekToFolderFilter(File parentFile) {
         return track -> {
@@ -27,14 +22,14 @@ public class FilterUtil {
         };
     }
 
-    public Predicate<Track> getPlayByPathFilter(String trackPath) {
+    public Predicate<Track> getTrackFilterByPath(String trackPath) {
         return track -> {
             File dataSource = track.getDataSource();
             return dataSource != null && dataSource.getPath().equals(trackPath);
         };
     }
 
-    public Predicate<Track> getPlayByNameFilter(String trackName) {
+    public Predicate<Track> getTrackFilterByName(String trackName) {
         return track -> {
             File dataSource = track.getDataSource();
             return dataSource != null && dataSource.getName().equals(trackName);
@@ -54,10 +49,6 @@ public class FilterUtil {
 
     public FileFilter getDirectoriesFilter() {
         return pathname -> getBaseFilter().accept(pathname) && pathname.isDirectory();
-    }
-
-    public FileFilter getAudioFileFilter() {
-        return pathname -> getBaseFilter().accept(pathname) && audioFormatSupport.isSupportedFile(pathname);
     }
 
 }

@@ -1,15 +1,13 @@
-package cl.estencia.labs.muplayer.util;
+package cl.estencia.labs.muplayer.utils;
 
+import cl.estencia.labs.muplayer.audio.track.StandardTrackFactory;
 import lombok.extern.java.Log;
 import cl.estencia.labs.muplayer.audio.player.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.TrackFactory;
-import cl.estencia.labs.muplayer.listener.ListenerMethodName;
-import cl.estencia.labs.muplayer.listener.PlayerListener;
+import cl.estencia.labs.muplayer.listener.PlayerEvent;
 import cl.estencia.labs.muplayer.model.SeekOption;
 import cl.estencia.labs.muplayer.model.TrackIndexed;
-import cl.estencia.labs.muplayer.thread.ListenerRunner;
-import cl.estencia.labs.muplayer.thread.TaskRunner;
 import cl.estencia.labs.muplayer.thread.TracksLoader;
 
 import java.io.File;
@@ -18,7 +16,6 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static cl.estencia.labs.muplayer.listener.ListenerMethodName.ON_SONG_CHANGE;
 import static cl.estencia.labs.muplayer.thread.ThreadUtil.generateTrackThreadName;
 
 @Log
@@ -26,7 +23,7 @@ public class MuPlayerUtil {
 
     private final List<Track> listTracks;
     private final List<File> listFolders;
-    private final List<PlayerListener> listListeners;
+    private final List<PlayerEvent> listListeners;
     private final PlayerStatusData playerStatusData;
 
     private final TrackFactory trackFactory;
@@ -44,17 +41,17 @@ public class MuPlayerUtil {
     public static final Comparator<File> FOLDERS_COMPARATOR = Comparator.comparing(File::getPath);
 
     public MuPlayerUtil(List<Track> listTracks, List<File> listFolders,
-                        List<PlayerListener> listListeners, PlayerStatusData playerStatusData) {
+                        List<PlayerEvent> listListeners, PlayerStatusData playerStatusData) {
         this.listTracks = listTracks;
         this.listFolders = listFolders;
         this.listListeners = listListeners;
         this.playerStatusData = playerStatusData;
 
-        this.trackFactory = new TrackFactory();
+        this.trackFactory = new StandardTrackFactory();
         this.filterUtil = new FilterUtil();
     }
 
-    public int getSongsCount() {
+    public synchronized int getSongsCount() {
         return listTracks.size();
     }
 
@@ -133,13 +130,13 @@ public class MuPlayerUtil {
         return getTrackIndexedFromCondition(filter);
     }
 
-    public void loadListenerMethod(ListenerMethodName methodName, Track track) {
-        if (!listListeners.isEmpty()) {
-            final String threadName = ListenerRunner.class.getSimpleName();
-            TaskRunner.execute(new ListenerRunner(listListeners, methodName, track),
-                    threadName);
-        }
-    }
+//    public void loadListenerMethod(ListenerMethodName methodName, Track track) {
+//        if (!listListeners.isEmpty()) {
+//            final String threadName = ListenerRunner.class.getSimpleName();
+//            TaskRunner.execute(new ListenerRunner(listListeners, methodName, track),
+//                    threadName);
+//        }
+//    }
 
     public void restartCurrent(Track current) {
         try {
@@ -199,7 +196,7 @@ public class MuPlayerUtil {
 
     private void initCurrentTrack(Track current) {
         startTrackThread(current);
-        loadListenerMethod(ON_SONG_CHANGE, current);
+        //loadListenerMethod(ON_SONG_CHANGE, current);
     }
 
     public int getNewIndex(SeekOption seekOption) {

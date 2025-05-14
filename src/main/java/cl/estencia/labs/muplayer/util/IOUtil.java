@@ -1,8 +1,9 @@
-package cl.estencia.labs.muplayer.util;
+package cl.estencia.labs.muplayer.utils;
 
 import org.bytebuffer.ByteBuffer;
 
 import java.io.*;
+import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -15,6 +16,10 @@ public class IOUtil {
     }
 
     public static final int DEFAULT_BUFFER_SIZE = 1024 * 64;
+
+    public static boolean isSystemBigEndian() {
+        return ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN;
+    }
 
     public static boolean isEqualsBuffers(byte[] b1, byte[] b2) {
         if (b1 == b2) {

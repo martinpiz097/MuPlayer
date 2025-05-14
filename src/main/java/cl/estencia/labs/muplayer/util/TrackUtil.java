@@ -1,18 +1,11 @@
-package cl.estencia.labs.muplayer.util;
+package cl.estencia.labs.muplayer.utils;
 
-import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.audio.track.TrackIO;
+import cl.estencia.labs.muplayer.audio.track.TrackIOUtil;
 import lombok.extern.java.Log;
 
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.SourceDataLine;
-import java.io.File;
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @Log
 public class TrackUtil {
@@ -110,8 +103,8 @@ public class TrackUtil {
     }
 
     public String getLineInfo(Track track) {
-        final TrackIO trackIO = track.getTrackIO();
-        final SourceDataLine driver = trackIO.getSpeaker().getDriver();
+        final TrackIOUtil trackIOUtil = track.getTrackIOUtil();
+        final SourceDataLine driver = track.getSpeaker().getDriver();
 
         return new StringBuilder().append("Soporte de controles en line")
                 .append("---------------")
