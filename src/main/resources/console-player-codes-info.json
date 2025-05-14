@@ -70,8 +70,8 @@
     "helpInfo": "Comprueba que el reproductor está iniciado"
   },
   {
-    "code": "k",
-    "orders": ["k", "seek", "seek-seconds", "seek-track-seconds", "seek-song-seconds"],
+    "code": "sk",
+    "orders": ["sk", "seek", "seek-seconds", "seek-track-seconds", "seek-song-seconds"],
     "helpInfo": "Salta segundos de la canción actual"
   },
   {

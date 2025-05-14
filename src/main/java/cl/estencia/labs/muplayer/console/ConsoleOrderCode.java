@@ -15,7 +15,7 @@ public enum ConsoleOrderCode {
     h,
     info,
     ist,
-    k,
+    sk,
     l,
     lc,
     ld,
