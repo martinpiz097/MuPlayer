@@ -3,9 +3,10 @@ package cl.estencia.labs.muplayer.audio.track;
 import cl.estencia.labs.aucom.audio.device.Speaker;
 import cl.estencia.labs.aucom.io.AudioDecoder;
 import cl.estencia.labs.muplayer.audio.track.header.HeaderData;
+import cl.estencia.labs.muplayer.audio.track.listener.TrackNotifier;
 import cl.estencia.labs.muplayer.audio.track.state.*;
 import cl.estencia.labs.muplayer.interfaces.TrackData;
-import cl.estencia.labs.muplayer.listener.TrackEvent;
+import cl.estencia.labs.muplayer.audio.track.listener.TrackStateListener;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,8 +39,7 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
     @Getter protected final Speaker speaker;
     @Getter protected final TrackStatusData trackStatusData;
 
-    protected final List<TrackEvent> listInternalEvents;
-    @Getter protected final List<TrackEvent> listUserEvents;
+    protected final TrackNotifier notifier;
 
     @Getter @Setter protected volatile AudioTag tagInfo;
     protected volatile TrackState trackState;
@@ -68,11 +68,10 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
         this.trackIOUtil = new TrackIOUtil();
         this.speaker = trackIOUtil.initSpeaker(audioDecoder.getDecodedStream());
         this.trackStatusData = new TrackStatusData();
-        this.listInternalEvents = new ArrayList<>();
-        this.listUserEvents = new LinkedList<>();
         this.headerData = initHeaderData();
         this.player = player;
-        this.trackState = new UnknownState(player, this, listInternalEvents);
+        this.notifier = new TrackNotifier();
+        this.trackState = new UnknownState(player, this, notifier);
 
         initValues();
     }
@@ -123,17 +122,7 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
         return trackState.getName();
     }
 
-    public void addUserEvent(TrackEvent trackEvent) {
-        synchronized (listUserEvents) {
-            listUserEvents.add(trackEvent);
-        }
-    }
 
-    public void removeUserEvent(TrackEvent trackEvent) {
-        synchronized (listUserEvents) {
-            listUserEvents.remove(trackEvent);
-        }
-    }
 
     @Override
     public long getDuration() {
@@ -172,14 +161,14 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
     @Override
     public void play() {
         if (isAlive()) {
-            trackState = new PlayingState(player, this, listInternalEvents);
+            trackState = new PlayingState(player, this, notifier);
         }
     }
 
     @Override
     public void pause() {
         if (isPlaying()) {
-            trackState = new PausedState(player, this, listInternalEvents);
+            trackState = new PausedState(player, this, notifier);
         }
     }
 
@@ -196,17 +185,17 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
     @Override
     public synchronized void stopTrack() {
         if (isAlive() && (isPlaying() || isPaused())) {
-            trackState = new StoppedState(player, this, listInternalEvents);
+            trackState = new StoppedState(player, this, notifier);
         }
     }
 
     @Override
     public void reload() throws Exception {
-        //trackState = new ReloadedState(player, this, listInternalEvents);
+        //trackState = new ReloadedState(player, this, notifier);
     }
 
     public void kill() {
-        trackState = new KilledState(player, this, listInternalEvents);
+        trackState = new KilledState(player, this, notifier);
     }
 
     // en este caso pasan a ser seconds
@@ -245,7 +234,7 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
             final int gotoValue = (int) Math.round(second - getProgress());
             seek(gotoValue);
         } else {
-            trackState = new ReverberatedState(player, this, second, listInternalEvents);
+            trackState = new ReverberatedState(player, this, second, notifier);
         }
     }
 
@@ -353,13 +342,13 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
         if (getState() == State.NEW) {
             super.start();
         } else {
-            trackState = new StartedState(player, this, listInternalEvents);
+            trackState = new StartedState(player, this, notifier);
         }
     }
 
     @Override
     public void run() {
-        trackState = new StartedState(player, this, listInternalEvents);
+        trackState = new StartedState(player, this, notifier);
         while (trackStatusData.canTrackContinue()) {
             trackState.execute();
         }

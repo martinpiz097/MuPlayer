@@ -6,7 +6,7 @@ import lombok.extern.java.Log;
 import cl.estencia.labs.muplayer.audio.player.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.TrackFactory;
-import cl.estencia.labs.muplayer.listener.PlayerEvent;
+import cl.estencia.labs.muplayer.audio.player.listener.PlayerEvent;
 import cl.estencia.labs.muplayer.model.SeekOption;
 import cl.estencia.labs.muplayer.model.TrackIndexed;
 import cl.estencia.labs.muplayer.thread.TracksLoader;

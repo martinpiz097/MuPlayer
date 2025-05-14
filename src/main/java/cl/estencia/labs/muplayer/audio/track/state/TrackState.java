@@ -5,7 +5,9 @@ import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.TrackStatusData;
 import cl.estencia.labs.muplayer.audio.track.TrackIOUtil;
-import cl.estencia.labs.muplayer.listener.TrackEvent;
+import cl.estencia.labs.muplayer.audio.track.listener.TrackEvent;
+import cl.estencia.labs.muplayer.audio.track.listener.TrackNotifier;
+import cl.estencia.labs.muplayer.audio.track.listener.TrackStateListener;
 import lombok.Getter;
 
 import javax.sound.sampled.AudioInputStream;
@@ -20,40 +22,28 @@ public abstract class TrackState {
     protected final Speaker speaker;
     protected final AudioInputStream decodedAudioStream;
 
-    protected final List<TrackEvent> listInternalEvents;
+    protected final TrackNotifier notifier;
 
     @Getter protected final TrackStateName name;
 
     public TrackState(Player player, Track track,
-                      TrackStateName name, List<TrackEvent> listInternalEvents) {
+                      TrackStateName name, TrackNotifier notifier) {
         this.player = player;
         this.track = track;
         this.trackData = track.getTrackStatusData();
         this.trackIOUtil = track.getTrackIOUtil();
         this.speaker = track.getSpeaker();
         this.decodedAudioStream = track.getAudioDecoder().getDecodedStream();
-        this.listInternalEvents = listInternalEvents;
+        this.notifier = notifier;
         this.name = name;
     }
 
-    protected void getNotifyAction(TrackEvent trackEvent) {
-        trackEvent.onStateChange(track, name);
-    }
-
-    protected CompletableFuture<Void> notifyState() {
-        var internalEventsTask = CompletableFuture.runAsync(() ->
-                listInternalEvents.parallelStream().forEach(this::getNotifyAction));
-
-        var userEventsTask = CompletableFuture.runAsync(() ->
-                track.getListUserEvents().parallelStream().forEach(this::getNotifyAction));
-
-        return CompletableFuture.allOf(internalEventsTask, userEventsTask);
-    }
 
     protected abstract void handle();
 
     public void execute() {
-        notifyState();
+        CompletableFuture.runAsync(() ->
+                notifier.addEvent(new TrackEvent(track, getName())));
         handle();
     }
 }

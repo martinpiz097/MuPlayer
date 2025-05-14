@@ -20,7 +20,7 @@ public class DefaultAudioDecoder extends AudioDecoder {
     }
 
     @Override
-    protected AudioFormat convertToPcmFormat(AudioFormat baseFormat) {
+    public AudioFormat convertToPcmFormat(AudioFormat baseFormat) {
         return new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
                 baseFormat.getSampleRate(),
                 16,

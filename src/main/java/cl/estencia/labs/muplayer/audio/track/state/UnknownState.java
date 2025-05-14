@@ -2,15 +2,16 @@ package cl.estencia.labs.muplayer.audio.track.state;
 
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.listener.TrackEvent;
+import cl.estencia.labs.muplayer.audio.track.listener.TrackNotifier;
+import cl.estencia.labs.muplayer.audio.track.listener.TrackStateListener;
 
 import java.util.List;
 
 // para evitar null
 public class UnknownState extends TrackState {
 
-    public UnknownState(Player player, Track track, List<TrackEvent> listInternalEvents) {
-        super(player, track, TrackStateName.UNKNOWN, listInternalEvents);
+    public UnknownState(Player player, Track track, TrackNotifier notifier) {
+        super(player, track, TrackStateName.UNKNOWN, notifier);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package cl.estencia.labs.muplayer.audio.track.state;
 
-import cl.estencia.labs.muplayer.listener.TrackEvent;
+import cl.estencia.labs.muplayer.audio.track.listener.TrackNotifier;
+import cl.estencia.labs.muplayer.audio.track.listener.TrackStateListener;
 import lombok.extern.java.Log;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
@@ -8,7 +9,6 @@ import cl.estencia.labs.muplayer.thread.TPlayingTrack;
 import cl.estencia.labs.muplayer.thread.TaskRunner;
 import cl.estencia.labs.muplayer.thread.ThreadUtil;
 
-import javax.sound.sampled.AudioInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -21,8 +21,8 @@ public class PlayingState extends TrackState {
     private final byte[] audioBuffer;
     private final TPlayingTrack trackThread;
 
-    public PlayingState(Player player, Track track, List<TrackEvent> listInternalEvents) {
-        super(player, track, TrackStateName.PLAYING, listInternalEvents);
+    public PlayingState(Player player, Track track, TrackNotifier notifier) {
+        super(player, track, TrackStateName.PLAYING, notifier);
         this.audioBuffer = new byte[DEFAULT_BUFF_SIZE];
         this.trackThread = new TPlayingTrack(track);
     }

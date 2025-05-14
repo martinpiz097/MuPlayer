@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.listener;
+package cl.estencia.labs.muplayer.audio.player.listener;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
 
