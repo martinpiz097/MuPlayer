@@ -10,8 +10,8 @@ import java.util.List;
 // para evitar null
 public class UnknownState extends TrackState {
 
-    public UnknownState(Player player, Track track, TrackNotifier notifier) {
-        super(player, track, TrackStateName.UNKNOWN, notifier);
+    public UnknownState(Track track, TrackNotifier notifier) {
+        super(track, TrackStateName.UNKNOWN, notifier);
     }
 
     @Override

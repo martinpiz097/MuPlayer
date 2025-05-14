@@ -1,16 +1,12 @@
 package cl.estencia.labs.muplayer.audio.track.state;
 
-import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.listener.TrackNotifier;
-import cl.estencia.labs.muplayer.audio.track.listener.TrackStateListener;
 
-import java.util.List;
+public class FinishedState extends TrackState {
 
-public class KilledState extends TrackState {
-
-    public KilledState(Player player, Track track, TrackNotifier notifier) {
-        super(player, track, TrackStateName.KILLED, notifier);
+    public FinishedState(Track track, TrackNotifier notifier) {
+        super(track, TrackStateName.FINISHED, notifier);
     }
 
     @Override
@@ -18,5 +14,7 @@ public class KilledState extends TrackState {
         trackIOUtil.closeStream(decodedAudioStream);
         speaker.close();
         trackData.setCanTrackContinue(false);
+
+        notifier.shutdown();
     }
 }

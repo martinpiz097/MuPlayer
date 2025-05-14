@@ -1,19 +1,19 @@
 package cl.estencia.labs.muplayer.audio.track.state;
 
-import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.listener.TrackNotifier;
-import cl.estencia.labs.muplayer.audio.track.listener.TrackStateListener;
-
-import java.util.List;
 
 public class StartedState extends TrackState {
-    public StartedState(Player player, Track track, TrackNotifier notifier) {
-        super(player, track, TrackStateName.STARTED, notifier);
+    public StartedState(Track track, TrackNotifier notifier) {
+        super(track, TrackStateName.STARTED, notifier);
     }
 
     @Override
     protected void handle() {
+        if (notifier.getState() == Thread.State.NEW) {
+            notifier.start();
+        }
+
         if (trackData.isMute()) {
             track.mute();
         }

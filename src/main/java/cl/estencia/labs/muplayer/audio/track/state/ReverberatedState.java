@@ -13,8 +13,8 @@ import java.util.List;
 public class ReverberatedState extends TrackState {
     private final double seekSeconds;
 
-    public ReverberatedState(Player player, Track track, double seekSeconds, TrackNotifier notifier) {
-        super(player, track, TrackStateName.REVERBERATED, notifier);
+    public ReverberatedState(Track track, double seekSeconds, TrackNotifier notifier) {
+        super(track, TrackStateName.REVERBERATED, notifier);
         this.seekSeconds = seekSeconds;
     }
 

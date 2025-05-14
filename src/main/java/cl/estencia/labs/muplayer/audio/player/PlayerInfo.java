@@ -8,7 +8,6 @@ import java.text.DecimalFormat;
 
 @Data
 public class PlayerInfo {
-
     private final Track current;
     private final File trackFolder;
     private final File rootFolder;

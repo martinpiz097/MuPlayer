@@ -6,13 +6,14 @@ import static cl.estencia.labs.aucom.util.DecoderFormatUtil.DEFAULT_VOLUME;
 
 @Data
 public class PlayerStatusData {
-    private volatile int trackIndex;
+    private volatile int currentTrackIndex;
+    private volatile int newTrackIndex;
     private volatile float volume;
     private volatile boolean on;
     private volatile boolean isMute;
 
     public PlayerStatusData() {
-        this.trackIndex = -1;
+        this.currentTrackIndex = -1;
         this.volume = DEFAULT_VOLUME;
         this.on = false;
         this.isMute = false;
@@ -28,10 +29,10 @@ public class PlayerStatusData {
     }
 
     public synchronized void increaseTrackIndex(int steps) {
-        trackIndex+=steps;
+        currentTrackIndex +=steps;
     }
 
     public synchronized void decreaseTrackIndex(int steps) {
-        trackIndex-=steps;
+        currentTrackIndex -=steps;
     }
 }

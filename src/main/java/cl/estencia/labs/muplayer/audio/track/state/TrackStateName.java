@@ -1,7 +1,7 @@
 package cl.estencia.labs.muplayer.audio.track.state;
 
 public enum TrackStateName {
-    KILLED,
+    FINISHED,
     PAUSED,
     PLAYING,
     REVERBERATED,

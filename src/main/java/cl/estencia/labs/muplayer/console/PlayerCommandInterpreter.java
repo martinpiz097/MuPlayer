@@ -508,7 +508,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     on = false;
                     break;
 
-                case k:
+                case sk:
                     if (isPlayerOn() && cmd.hasOptions()) {
                         Number seekSec = cmd.getOptionAsNumber(0);
                         if (seekSec == null) {

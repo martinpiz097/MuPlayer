@@ -31,17 +31,17 @@ public class TrackNotifier extends Thread {
 
     private void waitForNotification() throws InterruptedException {
         while (!notified.get()) {
-            Thread.sleep(1);
+            Thread.sleep(10);
         }
     }
 
-    public void addUserEvent(TrackStateListener trackStateListener) {
+    public void addUserListener(TrackStateListener trackStateListener) {
         synchronized (listUserListeners) {
             listUserListeners.add(trackStateListener);
         }
     }
 
-    public void removeUserEvent(TrackStateListener trackStateListener) {
+    public void removeUserListener(TrackStateListener trackStateListener) {
         synchronized (listUserListeners) {
             listUserListeners.remove(trackStateListener);
         }
@@ -53,6 +53,7 @@ public class TrackNotifier extends Thread {
             return CompletableFuture.runAsync(() -> {});
         }
 
+        System.out.println("New event " + trackEvent);
         var internalEventsTask = CompletableFuture.runAsync(() ->
                 listInternalListeners.parallelStream().forEach(
                         listener -> listener.onStateChange(trackEvent)));
@@ -65,11 +66,22 @@ public class TrackNotifier extends Thread {
         return CompletableFuture.allOf(internalEventsTask, userEventsTask);
     }
 
-    public void addEvent(TrackEvent trackEvent) {
+    public void sendEvent(TrackEvent trackEvent) {
         synchronized (eventsQueue) {
             eventsQueue.add(trackEvent);
         }
         notified.set(true);
+    }
+
+    public void shutdown() {
+        clearObjects();
+        interrupt();
+    }
+
+    public void clearObjects() {
+        listInternalListeners.clear();
+        listUserListeners.clear();
+        eventsQueue.clear();
     }
 
     @Override
@@ -81,6 +93,7 @@ public class TrackNotifier extends Thread {
                 waitForNotification();
                 while (!eventsQueue.isEmpty()) {
                     notifyListeners(eventsQueue.pollFirst());
+                    Thread.sleep(10);
                 }
             } catch (InterruptedException e) {
                 on.set(false);

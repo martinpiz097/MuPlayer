@@ -1,11 +1,9 @@
 package cl.estencia.labs.muplayer.util;
 
-import cl.estencia.labs.muplayer.audio.track.StandardTrackFactory;
 import cl.estencia.labs.muplayer.model.AudioFileExtension;
 import lombok.extern.java.Log;
 import cl.estencia.labs.muplayer.audio.player.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.audio.track.TrackFactory;
 import cl.estencia.labs.muplayer.audio.player.listener.PlayerEvent;
 import cl.estencia.labs.muplayer.model.SeekOption;
 import cl.estencia.labs.muplayer.model.TrackIndexed;
@@ -28,7 +26,6 @@ public class MuPlayerUtil {
     private final List<PlayerEvent> listListeners;
     private final PlayerStatusData playerStatusData;
 
-    private final TrackFactory trackFactory;
     private final FilterUtil filterUtil;
 
     public static final Comparator<Track> TRACKS_SORT_COMPARATOR = (o1, o2) -> {
@@ -49,7 +46,6 @@ public class MuPlayerUtil {
         this.listListeners = listListeners;
         this.playerStatusData = playerStatusData;
 
-        this.trackFactory = new StandardTrackFactory();
         this.filterUtil = new FilterUtil();
     }
 
@@ -119,6 +115,11 @@ public class MuPlayerUtil {
         }
     }
 
+    public void updateTrackIndex(SeekOption seekOption) {
+        int newIndex = getNextIndex(seekOption);
+        playerStatusData.setCurrentTrackIndex(newIndex);
+    }
+
     public void startTrackThread(Track current) {
         if (current != null) {
             current.setName(generateTrackThreadName(current.getClass(), current));
@@ -159,18 +160,6 @@ public class MuPlayerUtil {
 //        }
 //    }
 
-    public void restartCurrent(Track current) {
-        try {
-            if (current != null) {
-                Track cur = trackFactory.getTrack(current.getDataSource());
-                current.kill();
-                listTracks.set(playerStatusData.getTrackIndex(), cur);
-            }
-        } catch (Exception e) {
-            log.severe(e.getMessage());
-        }
-    }
-
     public int seekToFolder(String folderPath) {
         final File parentFile = new File(folderPath);
 
@@ -181,58 +170,32 @@ public class MuPlayerUtil {
         return trackIndexed != null ? trackIndexed.getIndex() : -1;
     }
 
-    public synchronized Track changeTrack(SeekOption seekOption, Track current) {
-        final int currentIndex = playerStatusData.getTrackIndex();
-        final int newIndex;
+    public int getNextIndex(SeekOption seekOption) {
+        final int currentIndex = playerStatusData.getCurrentTrackIndex();
         final int tracksSize = listTracks.size();
 
+        int newIndex;
         if (seekOption == SeekOption.NEXT) {
             newIndex = currentIndex == tracksSize - 1 ? 0 : currentIndex + 1;
         } else {
             newIndex = currentIndex == 0 ? tracksSize - 1 : currentIndex - 1;
         }
-        return changeTrack(newIndex, current);
+
+        return newIndex;
     }
 
-    public synchronized Track changeTrack(int newTrackIndex, Track current) {
-        final Track track = listTracks.get(newTrackIndex);
-        if (track != null) {
-            final TrackIndexed trackIndexed = new TrackIndexed(track, newTrackIndex);
-            return changeTrack(trackIndexed, current);
+    public int getNextIndex(SeekOption seekOption, int jumps) {
+        int newIndex = playerStatusData.getCurrentTrackIndex();
+
+        for (int i = Math.abs(jumps); i >= 0; i--) {
+            newIndex = getNextIndex(seekOption);
         }
-        return null;
-    }
 
-    public synchronized Track changeTrack(TrackIndexed newTrackIndexed, Track current) {
-        if (newTrackIndexed != null) {
-            restartCurrent(current);
-            playerStatusData.setTrackIndex(newTrackIndexed.getIndex());
-            final Track newCurrent = newTrackIndexed.getTrack();
-            initCurrentTrack(newCurrent);
-
-            return newCurrent;
-        }
-        return current;
-    }
-
-    private void initCurrentTrack(Track current) {
-        startTrackThread(current);
-        //loadListenerMethod(ON_SONG_CHANGE, current);
-    }
-
-    public int getNewIndex(SeekOption seekOption) {
-        final int trackIndex = playerStatusData.getTrackIndex();
-        final int songsCount = getSongsCount();
-
-        if (seekOption == SeekOption.NEXT) {
-            return trackIndex == -1 ? 0 : (trackIndex == songsCount - 1 ? 0 : trackIndex + 1);
-        } else {
-            return trackIndex == -1 ? songsCount - 1 : (trackIndex == 0 ? songsCount - 1 : trackIndex - 1);
-        }
+        return newIndex;
     }
 
     public Track getTrackBySeekOption(SeekOption seekOption) {
-        return listTracks.get(getNewIndex(seekOption));
+        return listTracks.get(getNextIndex(seekOption));
     }
 
 }
