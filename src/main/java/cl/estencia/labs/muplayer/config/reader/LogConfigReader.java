@@ -1,9 +1,9 @@
 package cl.estencia.labs.muplayer.config.reader;
 
-import lombok.Getter;
 import cl.estencia.labs.muplayer.config.ResourceFiles;
 import cl.estencia.labs.muplayer.config.base.properties.PropertiesInfo;
 import cl.estencia.labs.muplayer.config.base.properties.source.StreamPropertiesSource;
+import lombok.Getter;
 
 import java.io.InputStream;
 

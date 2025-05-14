@@ -1,7 +1,7 @@
 package cl.estencia.labs.muplayer.config.model;
 
-import lombok.Data;
 import cl.estencia.labs.muplayer.console.ConsoleOrderCode;
+import lombok.Data;
 
 import java.util.Map;
 import java.util.TreeMap;

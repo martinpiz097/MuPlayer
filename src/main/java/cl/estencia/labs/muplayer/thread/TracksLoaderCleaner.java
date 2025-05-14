@@ -3,7 +3,6 @@ package cl.estencia.labs.muplayer.thread;
 import lombok.extern.java.Log;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 @Log

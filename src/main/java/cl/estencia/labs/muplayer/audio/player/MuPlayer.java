@@ -1,12 +1,15 @@
 package cl.estencia.labs.muplayer.audio.player;
 
+import cl.estencia.labs.muplayer.audio.player.listener.PlayerEvent;
 import cl.estencia.labs.muplayer.audio.track.StandardTrackFactory;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.TrackFactory;
 import cl.estencia.labs.muplayer.audio.track.state.TrackStateName;
 import cl.estencia.labs.muplayer.exception.FormatNotSupportedException;
-import cl.estencia.labs.muplayer.audio.player.listener.PlayerEvent;
-import cl.estencia.labs.muplayer.model.*;
+import cl.estencia.labs.muplayer.model.Album;
+import cl.estencia.labs.muplayer.model.Artist;
+import cl.estencia.labs.muplayer.model.SeekOption;
+import cl.estencia.labs.muplayer.model.TrackIndexed;
 import cl.estencia.labs.muplayer.service.LogService;
 import cl.estencia.labs.muplayer.service.impl.LogServiceImpl;
 import cl.estencia.labs.muplayer.thread.ThreadUtil;

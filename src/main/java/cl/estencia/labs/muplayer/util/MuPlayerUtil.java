@@ -1,13 +1,13 @@
 package cl.estencia.labs.muplayer.util;
 
-import cl.estencia.labs.muplayer.model.AudioFileExtension;
-import lombok.extern.java.Log;
 import cl.estencia.labs.muplayer.audio.player.PlayerStatusData;
-import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.player.listener.PlayerEvent;
+import cl.estencia.labs.muplayer.audio.track.Track;
+import cl.estencia.labs.muplayer.model.AudioFileExtension;
 import cl.estencia.labs.muplayer.model.SeekOption;
 import cl.estencia.labs.muplayer.model.TrackIndexed;
 import cl.estencia.labs.muplayer.thread.TracksLoader;
+import lombok.extern.java.Log;
 
 import java.io.File;
 import java.nio.file.Path;

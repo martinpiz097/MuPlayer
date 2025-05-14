@@ -2,19 +2,19 @@ package cl.estencia.labs.muplayer.audio.track;
 
 import cl.estencia.labs.aucom.audio.device.Speaker;
 import cl.estencia.labs.aucom.io.AudioDecoder;
+import cl.estencia.labs.muplayer.audio.info.AudioTag;
+import cl.estencia.labs.muplayer.audio.player.AudioComponent;
+import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.header.HeaderData;
 import cl.estencia.labs.muplayer.audio.track.listener.TrackNotifier;
 import cl.estencia.labs.muplayer.audio.track.state.*;
+import cl.estencia.labs.muplayer.interfaces.ControllableMusic;
 import cl.estencia.labs.muplayer.interfaces.TrackData;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.java.Log;
 import org.jaudiotagger.tag.FieldKey;
-import cl.estencia.labs.muplayer.audio.info.AudioTag;
-import cl.estencia.labs.muplayer.audio.player.AudioComponent;
-import cl.estencia.labs.muplayer.audio.player.Player;
-import cl.estencia.labs.muplayer.interfaces.ControllableMusic;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;

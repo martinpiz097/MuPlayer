@@ -1,8 +1,8 @@
 package cl.estencia.labs.muplayer.audio.track.state;
 
+import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.listener.TrackNotifier;
 import lombok.extern.java.Log;
-import cl.estencia.labs.muplayer.audio.track.Track;
 
 import java.io.IOException;
 import java.util.logging.Level;

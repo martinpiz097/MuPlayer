@@ -1,7 +1,7 @@
 package cl.estencia.labs.muplayer.audio.player;
 
-import lombok.Data;
 import cl.estencia.labs.muplayer.audio.track.Track;
+import lombok.Data;
 
 import java.io.File;
 import java.text.DecimalFormat;

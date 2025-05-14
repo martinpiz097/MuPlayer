@@ -4,7 +4,9 @@ import cl.estencia.labs.aucom.audio.device.Speaker;
 import lombok.Data;
 import lombok.extern.java.Log;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.SourceDataLine;
 
 @Data
 @Log

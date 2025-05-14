@@ -4,7 +4,9 @@ import cl.estencia.labs.muplayer.console.ConsoleExecution;
 import cl.estencia.labs.muplayer.console.PlayerCommandInterpreter;
 import org.orangelogger.sys.Logger;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 

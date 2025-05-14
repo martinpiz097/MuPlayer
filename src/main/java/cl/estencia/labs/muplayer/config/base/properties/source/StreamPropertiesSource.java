@@ -3,7 +3,8 @@ package cl.estencia.labs.muplayer.config.base.properties.source;
 import cl.estencia.labs.muplayer.config.ResourceFiles;
 import cl.estencia.labs.muplayer.config.base.properties.PropertiesSource;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 public class StreamPropertiesSource extends PropertiesSource<InputStream> {

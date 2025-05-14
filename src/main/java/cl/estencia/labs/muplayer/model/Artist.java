@@ -1,8 +1,8 @@
 package cl.estencia.labs.muplayer.model;
 
-import lombok.Data;
 import cl.estencia.labs.muplayer.interfaces.TrackData;
 import cl.estencia.labs.muplayer.util.CollectionUtil;
+import lombok.Data;
 
 import java.util.List;
 

@@ -4,16 +4,12 @@ import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.decoder.DefaultAudioDecoder;
 import cl.estencia.labs.muplayer.audio.track.header.HeaderData;
-import cl.estencia.labs.muplayer.model.AudioFileExtension;
-import org.tritonus.sampled.file.jorbis.JorbisAudioFileReader;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import javax.sound.sampled.spi.AudioFileReader;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 public class OGGTrack extends Track {
 

@@ -2,14 +2,13 @@ package cl.estencia.labs.muplayer.audio.track.state;
 
 import cl.estencia.labs.aucom.audio.device.Speaker;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.audio.track.TrackStatusData;
 import cl.estencia.labs.muplayer.audio.track.TrackIOUtil;
+import cl.estencia.labs.muplayer.audio.track.TrackStatusData;
 import cl.estencia.labs.muplayer.audio.track.listener.TrackEvent;
 import cl.estencia.labs.muplayer.audio.track.listener.TrackNotifier;
 import lombok.Getter;
 
 import javax.sound.sampled.AudioInputStream;
-import java.util.concurrent.CompletableFuture;
 
 public abstract class TrackState {
     protected final Track track;

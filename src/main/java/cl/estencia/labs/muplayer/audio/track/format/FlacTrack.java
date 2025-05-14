@@ -1,8 +1,8 @@
 package cl.estencia.labs.muplayer.audio.track.format;
 
-import cl.estencia.labs.muplayer.audio.track.decoder.FlacAudioDecoder;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
+import cl.estencia.labs.muplayer.audio.track.decoder.FlacAudioDecoder;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;

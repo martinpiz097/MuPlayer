@@ -4,8 +4,6 @@ import cl.estencia.labs.muplayer.audio.player.Player;
 
 import java.io.File;
 
-import static cl.estencia.labs.muplayer.util.FileUtil.getFileFormatName;
-
 public interface TrackFactory {
     default Track getTrack(String dataSource) {
         return getTrack(new File(dataSource));

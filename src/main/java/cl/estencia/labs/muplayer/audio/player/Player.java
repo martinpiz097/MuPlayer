@@ -1,7 +1,7 @@
 package cl.estencia.labs.muplayer.audio.player;
 
-import cl.estencia.labs.muplayer.interfaces.ControllableMusic;
 import cl.estencia.labs.muplayer.audio.player.listener.PlayerEvent;
+import cl.estencia.labs.muplayer.interfaces.ControllableMusic;
 import cl.estencia.labs.muplayer.interfaces.ReportablePlayer;
 import cl.estencia.labs.muplayer.model.SeekOption;
 
