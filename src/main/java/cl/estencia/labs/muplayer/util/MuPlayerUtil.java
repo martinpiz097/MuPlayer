@@ -1,6 +1,7 @@
-package cl.estencia.labs.muplayer.utils;
+package cl.estencia.labs.muplayer.util;
 
 import cl.estencia.labs.muplayer.audio.track.StandardTrackFactory;
+import cl.estencia.labs.muplayer.model.AudioFileExtension;
 import lombok.extern.java.Log;
 import cl.estencia.labs.muplayer.audio.player.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;
@@ -11,6 +12,7 @@ import cl.estencia.labs.muplayer.model.TrackIndexed;
 import cl.estencia.labs.muplayer.thread.TracksLoader;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
@@ -53,6 +55,25 @@ public class MuPlayerUtil {
 
     public synchronized int getSongsCount() {
         return listTracks.size();
+    }
+
+    public boolean hasAudioFormatExtension(Path audioFilePath) {
+        return audioFilePath != null && hasAudioFormatExtension(audioFilePath.toFile());
+    }
+
+    public boolean hasAudioFormatExtension(File audioFile) {
+        if (audioFile == null || !audioFile.exists() || audioFile.isDirectory()) {
+            return false;
+        }
+
+        String fileFormatName = FileUtil.getFileFormatName(audioFile);
+
+        try {
+            AudioFileExtension.valueOf(fileFormatName);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public void waitForSongs() {

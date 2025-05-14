@@ -1,26 +1,26 @@
 package cl.estencia.labs.muplayer.console;
 
-import lombok.Getter;
-import lombok.Setter;
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
-import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.player.Player;
+import cl.estencia.labs.muplayer.audio.track.Track;
+import cl.estencia.labs.muplayer.cache.CacheManager;
+import cl.estencia.labs.muplayer.config.model.ConsoleCodesData;
+import cl.estencia.labs.muplayer.config.reader.ConsoleCodesReader;
 import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
+import cl.estencia.labs.muplayer.console.runner.DaemonRunner;
 import cl.estencia.labs.muplayer.console.runner.LocalRunner;
 import cl.estencia.labs.muplayer.console.runner.RunnerMode;
-import cl.estencia.labs.muplayer.data.CacheManager;
-import cl.estencia.labs.muplayer.data.json.command.model.ConsoleCodesData;
 import cl.estencia.labs.muplayer.model.Album;
 import cl.estencia.labs.muplayer.model.Artist;
 import cl.estencia.labs.muplayer.model.SeekOption;
-import cl.estencia.labs.muplayer.console.runner.DaemonRunner;
-import cl.estencia.labs.muplayer.data.json.command.ConsoleCodesInfo;
 import cl.estencia.labs.muplayer.service.LogService;
 import cl.estencia.labs.muplayer.service.impl.LogServiceImpl;
 import cl.estencia.labs.muplayer.system.SysInfo;
 import cl.estencia.labs.muplayer.thread.TaskRunner;
 import cl.estencia.labs.muplayer.util.CollectionUtil;
 import cl.estencia.labs.muplayer.util.TrackUtil;
+import lombok.Getter;
+import lombok.Setter;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
 
@@ -29,13 +29,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static java.nio.file.StandardOpenOption.WRITE;
+import static cl.estencia.labs.muplayer.cache.CacheVar.RUNNER;
 import static cl.estencia.labs.muplayer.console.OutputType.*;
-import static cl.estencia.labs.muplayer.data.CacheVar.RUNNER;
+import static java.nio.file.StandardOpenOption.WRITE;
 
 public class PlayerCommandInterpreter implements CommandInterpreter {
     private Player player;
@@ -46,7 +47,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
     private boolean on;
 
     private final CacheManager globalCacheManager;
-    private final ConsoleCodesInfo consoleCodesInfo;
+    private final ConsoleCodesReader consoleCodesReader;
     private final LogService logService;
 
     private final TrackUtil trackUtil;
@@ -57,7 +58,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
         this.player = player;
         this.playerFolder = player.getRootFolder();
         this.globalCacheManager = CacheManager.getGlobalCache();
-        this.consoleCodesInfo = ConsoleCodesInfo.getInstance();
+        this.consoleCodesReader = ConsoleCodesReader.getInstance();
         this.logService = new LogServiceImpl();
         trackUtil = new TrackUtil();
     }
@@ -277,7 +278,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
         final String helpElementSeparator = "\n\n";
         final String orderSelementsSeparator = ",";
 
-        var consoleCodesDataMap = consoleCodesInfo.getJsonSource().getData();
+        var consoleCodesDataMap = consoleCodesReader.getJsonSource().getData();
         String helpInfoData = consoleCodesDataMap.parallelStream()
                 .sorted(Comparator.comparing(ConsoleCodesData::getCode))
                 .sequential()
@@ -324,7 +325,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
     @Override
     public ConsoleExecution executeCommand(Command cmd) throws Exception {
         final String cmdOrder = cmd.getOrder();
-        final ConsoleOrderCode consoleOrderCode = consoleCodesInfo.getConsoleOrderCodeByCmdOrder(cmdOrder);
+        final ConsoleOrderCode consoleOrderCode = consoleCodesReader.getConsoleOrderCodeByCmdOrder(cmdOrder);
         Track current;
 
         final ConsoleExecution execution = new ConsoleExecution(cmd);

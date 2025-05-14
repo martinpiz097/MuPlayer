@@ -68,6 +68,27 @@
                 <version>3.1.0</version>
                 <configuration>
                     <mainClass>cl.estencia.labs.muplayer.Main</mainClass>
+                    <arguments>
+                        <argument>--add-opens</argument>
+                        <argument>java.desktop/com.sun.media.sound=ALL-UNNAMED</argument>
+                        <argument>--add-exports</argument>
+                        <argument>java.desktop/com.sun.media.sound=ALL-UNNAMED</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Add-Modules>java.desktop,java.logging</Add-Modules>
+                            <Add-Opens>java.desktop/com.sun.media.sound=ALL-UNNAMED</Add-Opens>
+                            <Add-Exports>java.desktop/com.sun.media.sound=ALL-UNNAMED</Add-Exports>
+                        </manifestEntries>
+                    </archive>
                 </configuration>
             </plugin>
 
@@ -88,11 +109,11 @@
                     <transformers>
                         <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                             <mainClass>cl.estencia.labs.muplayer.Main</mainClass>
-<!--                            <manifestEntries>-->
-<!--                                <Add-Modules>java.desktop,java.logging</Add-Modules>-->
-<!--                                <Add-Opens>java.desktop/com.sun.media.sound=ALL-UNNAMED</Add-Opens>-->
-<!--                                <Add-Exports>java.desktop/com.sun.media.sound=ALL-UNNAMED</Add-Exports>-->
-<!--                            </manifestEntries>-->
+                            <manifestEntries>
+                                <Add-Modules>java.desktop,java.logging</Add-Modules>
+                                <Add-Opens>java.desktop/com.sun.media.sound=ALL-UNNAMED</Add-Opens>
+                                <Add-Exports>java.desktop/com.sun.media.sound=ALL-UNNAMED</Add-Exports>
+                            </manifestEntries>
                         </transformer>
                     </transformers>
                 </configuration>

@@ -1,16 +1,16 @@
 package cl.estencia.labs.muplayer;
 
-import lombok.extern.java.Log;
+import cl.estencia.labs.muplayer.cache.CacheManager;
+import cl.estencia.labs.muplayer.cache.CacheVar;
+import cl.estencia.labs.muplayer.config.model.LogConfigKeys;
+import cl.estencia.labs.muplayer.config.model.MessagesInfoKeys;
+import cl.estencia.labs.muplayer.config.reader.LogConfigReader;
+import cl.estencia.labs.muplayer.config.reader.MessagesInfoReader;
 import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
 import cl.estencia.labs.muplayer.console.runner.DaemonRunner;
 import cl.estencia.labs.muplayer.console.runner.LocalRunner;
-import cl.estencia.labs.muplayer.data.CacheManager;
-import cl.estencia.labs.muplayer.data.CacheVar;
-import cl.estencia.labs.muplayer.data.properties.log.LogConfig;
-import cl.estencia.labs.muplayer.data.properties.log.LogConfigKeys;
-import cl.estencia.labs.muplayer.data.properties.msg.MessagesInfo;
-import cl.estencia.labs.muplayer.data.properties.msg.MessagesInfoKeys;
 import cl.estencia.labs.muplayer.thread.TaskRunner;
+import lombok.extern.java.Log;
 
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -19,7 +19,7 @@ import java.util.logging.LogManager;
 public class Main {
 
     public static void main(String[] args) {
-        MessagesInfo messagesInfo = MessagesInfo.getInstance();
+        MessagesInfoReader messagesInfoReader = MessagesInfoReader.getInstance();
         CacheManager globalCache = CacheManager.getGlobalCache();
 
         try {
@@ -32,7 +32,7 @@ public class Main {
                     case 1:
                         String firstArg = args[0].trim();
                         if (firstArg.startsWith("-")) {
-                            throw new NullPointerException(messagesInfo.getProperty(MessagesInfoKeys.PROPERTY_NOT_FOUND_MSG));
+                            throw new NullPointerException(messagesInfoReader.getProperty(MessagesInfoKeys.PROPERTY_NOT_FOUND_MSG));
                         } else {
                             consoleRunner = new LocalRunner(firstArg);
                         }
@@ -64,8 +64,8 @@ public class Main {
     }
 
     private static void loadLogConfig() {
-        final LogConfig logConfig = LogConfig.getInstance();
-        final String levelName = logConfig.getProperty(LogConfigKeys.JAVA_LOG_LEVEL);
+        final LogConfigReader logConfigReader = LogConfigReader.getInstance();
+        final String levelName = logConfigReader.getProperty(LogConfigKeys.JAVA_LOG_LEVEL);
         final Level logLevel = Level.parse(levelName);
         final LogManager logManager = LogManager.getLogManager();
 

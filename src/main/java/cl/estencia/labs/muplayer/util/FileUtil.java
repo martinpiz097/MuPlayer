@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.utils;
+package cl.estencia.labs.muplayer.util;
 
 import java.io.File;
 import java.io.IOException;

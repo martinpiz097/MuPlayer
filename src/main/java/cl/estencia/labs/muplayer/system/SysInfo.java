@@ -1,7 +1,7 @@
 package cl.estencia.labs.muplayer.system;
 
-import cl.estencia.labs.muplayer.data.properties.info.MuPlayerInfo;
-import cl.estencia.labs.muplayer.data.properties.info.MuPlayerInfoKeys;
+import cl.estencia.labs.muplayer.config.model.MuPlayerInfoKeys;
+import cl.estencia.labs.muplayer.config.reader.MuPlayerInfoReader;
 
 public class SysInfo {
 
@@ -19,6 +19,6 @@ public class SysInfo {
     public static final String USERNAME = System.getProperty("user.name");
 
     public static String readVersion() {
-        return MuPlayerInfo.getInstance().getProperty(MuPlayerInfoKeys.MU_PLAYER_VERSION);
+        return MuPlayerInfoReader.getInstance().getProperty(MuPlayerInfoKeys.MU_PLAYER_VERSION);
     }
 }

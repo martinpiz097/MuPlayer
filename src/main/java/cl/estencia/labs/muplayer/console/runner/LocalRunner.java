@@ -2,8 +2,8 @@ package cl.estencia.labs.muplayer.console.runner;
 
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.audio.player.Player;
+import cl.estencia.labs.muplayer.cache.CacheVar;
 import cl.estencia.labs.muplayer.console.ConsoleExecution;
-import cl.estencia.labs.muplayer.data.CacheVar;
 import cl.estencia.labs.muplayer.system.SysInfo;
 import org.orangelogger.sys.Logger;
 

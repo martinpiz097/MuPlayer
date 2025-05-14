@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.utils;
+package cl.estencia.labs.muplayer.util;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.TrackIOUtil;

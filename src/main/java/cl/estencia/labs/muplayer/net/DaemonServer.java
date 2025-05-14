@@ -1,9 +1,9 @@
 package cl.estencia.labs.muplayer.net;
 
-import lombok.Data;
-import cl.estencia.labs.muplayer.data.properties.info.MuPlayerInfo;
-import cl.estencia.labs.muplayer.data.properties.info.MuPlayerInfoKeys;
+import cl.estencia.labs.muplayer.config.model.MuPlayerInfoKeys;
+import cl.estencia.labs.muplayer.config.reader.MuPlayerInfoReader;
 import cl.estencia.labs.muplayer.util.CollectionUtil;
+import lombok.Data;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -24,7 +24,7 @@ public class DaemonServer {
     }
 
     private int getServerSetupPort() {
-        String portProperty = MuPlayerInfo.getInstance().getProperty(
+        String portProperty = MuPlayerInfoReader.getInstance().getProperty(
                 MuPlayerInfoKeys.DAEMON_SERVER_PORT);
         return portProperty != null ? Integer.parseInt(portProperty) : 0;
     }

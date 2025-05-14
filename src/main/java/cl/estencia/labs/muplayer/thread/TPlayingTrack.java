@@ -2,7 +2,6 @@ package cl.estencia.labs.muplayer.thread;
 
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.listener.ListenerMethodName;
 import cl.estencia.labs.muplayer.util.MuPlayerUtil;
 
 import java.io.File;
@@ -36,7 +35,7 @@ public class TPlayingTrack implements Runnable {
         if (trackPlayer != null) {
             while (track.isPlaying()) {
                 try {
-                    trackPlayerUtil.loadListenerMethod(ListenerMethodName.ON_PLAYING, track);
+//                    trackPlayerUtil.loadListenerMethod(ListenerMethodName.ON_PLAYING, track);
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();

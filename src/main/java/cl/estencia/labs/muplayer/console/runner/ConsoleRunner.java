@@ -1,15 +1,18 @@
 package cl.estencia.labs.muplayer.console.runner;
 
-import lombok.Getter;
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.audio.player.Player;
+import cl.estencia.labs.muplayer.cache.CacheManager;
 import cl.estencia.labs.muplayer.console.ConsoleExecution;
 import cl.estencia.labs.muplayer.console.PlayerCommandInterpreter;
-import cl.estencia.labs.muplayer.data.CacheManager;
+import lombok.Getter;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Scanner;
 
 public abstract class ConsoleRunner implements Runnable {

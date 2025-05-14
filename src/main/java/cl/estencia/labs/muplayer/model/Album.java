@@ -1,7 +1,7 @@
 package cl.estencia.labs.muplayer.model;
 
 import lombok.Data;
-import cl.estencia.labs.muplayer.interfaces.ReportableTrack;
+import cl.estencia.labs.muplayer.interfaces.TrackData;
 import cl.estencia.labs.muplayer.util.CollectionUtil;
 
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 public class Album {
     private final String name;
-    private final List<ReportableTrack> listTracks;
+    private final List<TrackData> listTracks;
     private final byte[] coverData;
 
     public Album(String name) {
@@ -20,12 +20,12 @@ public class Album {
 
     private byte[] getCover() {
         return listTracks.parallelStream()
-                .filter(ReportableTrack::hasCover)
-                .findFirst().map(ReportableTrack::getCoverData)
+                .filter(TrackData::hasCover)
+                .findFirst().map(TrackData::getCoverData)
                 .orElse(null);
     }
 
-    public void addTrack(ReportableTrack trackInfo) {
+    public void addTrack(TrackData trackInfo) {
         listTracks.add(trackInfo);
     }
 
