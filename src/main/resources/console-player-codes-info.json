@@ -41,7 +41,7 @@
   },
   {
     "code": "g",
-    "orders": ["g", "goto", "go-to-second"],
+    "orders": ["g", "gt", "goto", "go-to-second"],
     "helpInfo": "Se dirige a un segundo específico de la canción actual"
   },
   {
@@ -71,7 +71,7 @@
   },
   {
     "code": "sk",
-    "orders": ["sk", "seek", "seek-seconds", "seek-track-seconds", "seek-song-seconds"],
+    "orders": ["sk", "k", "seek", "seek-seconds", "seek-track-seconds", "seek-song-seconds"],
     "helpInfo": "Salta segundos de la canción actual"
   },
   {
