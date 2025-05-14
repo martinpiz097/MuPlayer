@@ -1,21 +1,14 @@
 package cl.estencia.labs.muplayer.audio.track.format;
 
 import cl.estencia.labs.muplayer.audio.track.decoder.DefaultAudioDecoder;
-import com.sun.media.sound.AiffFileReader;
-import com.sun.media.sound.AuFileReader;
-import com.sun.media.sound.WaveFileReader;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.model.AudioFileExtension;
-import cl.estencia.labs.muplayer.util.FileUtil;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import javax.sound.sampled.spi.AudioFileReader;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 public class PCMTrack extends Track {
 

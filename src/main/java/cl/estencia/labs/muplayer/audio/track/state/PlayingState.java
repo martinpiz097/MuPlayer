@@ -20,13 +20,11 @@ import static cl.estencia.labs.aucom.common.IOConstants.EOF;
 public class PlayingState extends TrackState {
     private final byte[] audioBuffer;
     private final TPlayingTrack trackThread;
-    private final AudioInputStream decodedAudioStream;
 
     public PlayingState(Player player, Track track, List<TrackEvent> listInternalEvents) {
         super(player, track, TrackStateName.PLAYING, listInternalEvents);
         this.audioBuffer = new byte[DEFAULT_BUFF_SIZE];
         this.trackThread = new TPlayingTrack(track);
-        this.decodedAudioStream = trackIO.getDecodedInputStream();
     }
 
     private int readNextBytes() throws IOException {

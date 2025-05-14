@@ -21,7 +21,7 @@ public class ReverberatedState extends TrackState {
     protected void handle() {
         try {
             track.resetStream();
-            track.getTrackStatusData().setSecsSeeked(0);
+            track.getTrackStatusData().setSecsSeeked(0.0d);
             track.seek(Math.max(seekSeconds, 0));
             track.play();
         } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {

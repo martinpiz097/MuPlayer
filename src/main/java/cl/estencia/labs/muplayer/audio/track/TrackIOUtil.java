@@ -5,35 +5,16 @@ import lombok.Data;
 import lombok.extern.java.Log;
 
 import javax.sound.sampled.*;
-import javax.sound.sampled.spi.AudioFileReader;
-import java.io.IOException;
 
 @Data
 @Log
-public class TrackIO {
-    private final Speaker speaker;
-    private volatile AudioInputStream decodedInputStream;
+public class TrackIOUtil {
 
-    public TrackIO(AudioInputStream decodedInputStream) {
-        this.speaker = initSpeaker(decodedInputStream.getFormat());
-        this.decodedInputStream = decodedInputStream;
-    }
-
-    private Speaker initSpeaker(AudioFormat format) {
-        final Speaker speaker = new Speaker(format);
-        speaker.open();
-        return speaker;
-    }
-
-    public boolean isTrackStreamsOpened() {
+    public boolean isTrackStreamsOpened(Speaker speaker, AudioInputStream decodedInputStream) {
         return decodedInputStream != null && speaker.isOpen();
     }
 
-    public boolean closeSpeaker() {
-        return speaker.close();
-    }
-
-    public boolean closeStream() {
+    public boolean closeStream(AudioInputStream decodedInputStream) {
         try {
             boolean streamOpened = decodedInputStream != null;
             if (streamOpened) {
@@ -46,7 +27,20 @@ public class TrackIO {
         }
     }
 
-    public double getSecondsPosition() {
+    public Speaker initSpeaker(AudioFormat format) {
+        final Speaker speaker = new Speaker(format);
+        speaker.open();
+
+        return speaker;
+    }
+
+    public Speaker initSpeaker(AudioInputStream decodedInputStream) {
+        return decodedInputStream != null
+                ? initSpeaker(decodedInputStream.getFormat())
+                : null;
+    }
+
+    public double getSecondsPosition(Speaker speaker) {
         SourceDataLine driver = speaker.getDriver();
         if (driver == null) {
             return 0;

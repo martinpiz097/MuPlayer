@@ -14,8 +14,8 @@ public class KilledState extends TrackState {
 
     @Override
     protected void handle() {
-        trackIO.closeStream();
-        trackIO.closeSpeaker();
+        trackIOUtil.closeStream(decodedAudioStream);
+        speaker.close();
         trackData.setCanTrackContinue(false);
     }
 }

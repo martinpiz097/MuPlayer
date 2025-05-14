@@ -4,10 +4,11 @@ import cl.estencia.labs.aucom.audio.device.Speaker;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.TrackStatusData;
-import cl.estencia.labs.muplayer.audio.track.TrackIO;
+import cl.estencia.labs.muplayer.audio.track.TrackIOUtil;
 import cl.estencia.labs.muplayer.listener.TrackEvent;
 import lombok.Getter;
 
+import javax.sound.sampled.AudioInputStream;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -15,8 +16,9 @@ public abstract class TrackState {
     protected final Player player;
     protected final Track track;
     protected final TrackStatusData trackData;
-    protected final TrackIO trackIO;
+    protected final TrackIOUtil trackIOUtil;
     protected final Speaker speaker;
+    protected final AudioInputStream decodedAudioStream;
 
     protected final List<TrackEvent> listInternalEvents;
 
@@ -27,8 +29,9 @@ public abstract class TrackState {
         this.player = player;
         this.track = track;
         this.trackData = track.getTrackStatusData();
-        this.trackIO = track.getTrackIO();
+        this.trackIOUtil = track.getTrackIOUtil();
         this.speaker = track.getSpeaker();
+        this.decodedAudioStream = track.getAudioDecoder().getDecodedStream();
         this.listInternalEvents = listInternalEvents;
         this.name = name;
     }

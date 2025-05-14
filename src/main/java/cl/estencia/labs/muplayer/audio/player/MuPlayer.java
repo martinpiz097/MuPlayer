@@ -1,25 +1,23 @@
 package cl.estencia.labs.muplayer.audio.player;
 
-import lombok.Getter;
-import lombok.SneakyThrows;
-import lombok.extern.java.Log;
+import cl.estencia.labs.muplayer.audio.track.StandardTrackFactory;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.audio.track.TrackBuilder;
-import cl.estencia.labs.muplayer.audio.track.state.TrackState;
-import cl.estencia.labs.muplayer.audio.track.state.UnknownState;
+import cl.estencia.labs.muplayer.audio.track.TrackFactory;
+import cl.estencia.labs.muplayer.audio.track.state.TrackStateName;
 import cl.estencia.labs.muplayer.exception.FormatNotSupportedException;
-import cl.estencia.labs.muplayer.listener.PlayerListener;
-import cl.estencia.labs.muplayer.model.Album;
-import cl.estencia.labs.muplayer.model.Artist;
-import cl.estencia.labs.muplayer.model.SeekOption;
-import cl.estencia.labs.muplayer.model.TrackIndexed;
+import cl.estencia.labs.muplayer.listener.PlayerEvent;
+import cl.estencia.labs.muplayer.model.*;
+import cl.estencia.labs.muplayer.service.LogService;
+import cl.estencia.labs.muplayer.service.impl.LogServiceImpl;
 import cl.estencia.labs.muplayer.thread.ThreadUtil;
 import cl.estencia.labs.muplayer.thread.TracksLoader;
 import cl.estencia.labs.muplayer.util.CollectionUtil;
+import cl.estencia.labs.muplayer.util.FileUtil;
 import cl.estencia.labs.muplayer.util.FilterUtil;
 import cl.estencia.labs.muplayer.util.MuPlayerUtil;
-import cl.estencia.labs.muplayer.service.LogService;
-import cl.estencia.labs.muplayer.service.impl.LogServiceImpl;
+import lombok.Getter;
+import lombok.SneakyThrows;
+import lombok.extern.java.Log;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -33,7 +31,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static cl.estencia.labs.muplayer.listener.ListenerMethodName.*;
 import static cl.estencia.labs.muplayer.model.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.model.SeekOption.PREV;
 
@@ -42,13 +39,13 @@ public class MuPlayer extends Player {
     private volatile File rootFolder;
     private volatile Track current;
 
+    private final TrackFactory trackFactory;
     private final List<Track> listTracks;
     private final List<File> listFolders;
-    private final List<PlayerListener> listListeners;
+    private final List<PlayerEvent> listListeners;
 
     private final PlayerStatusData playerStatusData;
     private final TracksLoader tracksLoader;
-    private final TrackBuilder trackBuilder;
     private final FilterUtil filterUtil;
     @Getter private final MuPlayerUtil muPlayerUtil;
 
@@ -65,7 +62,7 @@ public class MuPlayer extends Player {
         this.listListeners = CollectionUtil.newLinkedList();
         this.playerStatusData = new PlayerStatusData();
         this.tracksLoader = TracksLoader.getInstance();
-        this.trackBuilder = new TrackBuilder();
+        this.trackFactory = new StandardTrackFactory();
         this.filterUtil = new FilterUtil();
         this.losService = new LogServiceImpl();
         this.muPlayerUtil = new MuPlayerUtil(listTracks, listFolders, listListeners, playerStatusData);
@@ -90,34 +87,46 @@ public class MuPlayer extends Player {
 
     private Track loadTrackFromFile(File audioFile) {
         try {
-            return trackBuilder.getTrack(audioFile, this);
+            return trackFactory.getTrack(audioFile, this);
         } catch (FormatNotSupportedException e) {
+            log.severe("Error on load track ("
+                    + e.getClass().getSimpleName()
+                    + "): " + e.getMessage());
             return null;
         }
     }
 
     private void loadTracks(File folderToLoad) {
 //        Files.find()
-        try (Stream<Path> folderPaths = Files.walk(Path.of(folderToLoad.toURI())).parallel()) {
-            folderPaths.map(path -> loadTrackFromFile(path.toFile()))
+        try (Stream<Path> folderPaths = Files.walk(
+                Path.of(folderToLoad.toURI())).parallel()) {
+            if (hasSounds()) {
+                listTracks.clear();
+                listFolders.clear();
+            }
+
+            folderPaths
+                    .filter(muPlayerUtil::hasAudioFormatExtension)
+                    .map(path -> loadTrackFromFile(path.toFile()))
                     .filter(Objects::nonNull)
-                    .forEach(track -> {
-                        listTracks.add(track);
-                        listFolders.add(track.getDataSource().getParentFile());
-                    });
+                    .sorted(MuPlayerUtil.TRACKS_SORT_COMPARATOR)
+                    .sequential()
+                    .forEach(listTracks::add);
+
+            listTracks.parallelStream()
+                    .map(track -> track.getDataSource().getParentFile())
+                    .distinct()
+                    .sorted(MuPlayerUtil.FOLDERS_COMPARATOR)
+                    .sequential()
+                    .forEach(listFolders::add);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
     }
 
-
-
     private void setupTracksList() {
         loadTracks(rootFolder);
-        muPlayerUtil.sortTracks();
-        muPlayerUtil.cleanUpFoldersList();
-        System.out.println("");
     }
 
     private void playFolderSongs(String fldPath) {
@@ -130,8 +139,8 @@ public class MuPlayer extends Player {
     }
 
     @Override
-    public TrackState getCurrentTrackState() {
-        return current == null ? new UnknownState(this, current) : current.getTrackState();
+    public TrackStateName getCurrentTrackState() {
+        return current != null ? current.getStateName() : TrackStateName.UNKNOWN;
     }
 
     @Override
@@ -232,17 +241,17 @@ public class MuPlayer extends Player {
     }
 
     @Override
-    public synchronized void addPlayerListener(PlayerListener listener) {
+    public synchronized void addPlayerListener(PlayerEvent listener) {
         listListeners.add(listener);
     }
 
     @Override
-    public synchronized List<PlayerListener> getListeners() {
+    public synchronized List<PlayerEvent> getListeners() {
         return listListeners;
     }
 
     @Override
-    public synchronized void removePlayerListener(PlayerListener reference) {
+    public synchronized void removePlayerListener(PlayerEvent reference) {
         listListeners.removeIf(listener -> listener.equals(reference));
     }
 
@@ -310,34 +319,34 @@ public class MuPlayer extends Player {
     // puede ocasionar problemas
     @Override
     public synchronized void addMusic(Collection<File> soundCollection) {
-        if (!soundCollection.isEmpty()) {
-            soundCollection.forEach(this::loadTracks);
-            muPlayerUtil.waitForTracksLoading();
-        }
+//        if (!soundCollection.isEmpty()) {
+//            soundCollection.forEach(this::loadTracks);
+//            muPlayerUtil.waitForTracksLoading();
+//        }
     }
 
     @Override
     public synchronized void addMusic(File folderOrFile) {
-        if (folderOrFile.isDirectory()) {
-            if (rootFolder == null) {
-                rootFolder = folderOrFile;
-            }
-            final boolean validSort = !hasSounds();
-            loadTracks(folderOrFile);
-            muPlayerUtil.waitForTracksLoading();
-            if (validSort) {
-                muPlayerUtil.sortTracks();
-            }
-        } else if (audioSupportUtil.isSupportedFile(folderOrFile)) {
-            final Track track = trackBuilder.getTrack(folderOrFile, this);
-            if (track != null) {
-                listTracks.add(track);
-                final File parent = folderOrFile.getParentFile();
-                if (listFolders.parallelStream().noneMatch(parent::equals)) {
-                    listFolders.add(parent);
-                }
-            }
-        }
+//        if (folderOrFile.isDirectory()) {
+//            if (rootFolder == null) {
+//                rootFolder = folderOrFile;
+//            }
+//            final boolean validSort = !hasSounds();
+//            loadTracks(folderOrFile);
+//            muPlayerUtil.waitForTracksLoading();
+//            if (validSort) {
+//                muPlayerUtil.sortTracks();
+//            }
+//        } else if (audioSupportUtil.isSupportedFile(folderOrFile)) {
+//            final Track track = trackBuilder.getTrack(folderOrFile, this);
+//            if (track != null) {
+//                listTracks.add(track);
+//                final File parent = folderOrFile.getParentFile();
+//                if (listFolders.parallelStream().noneMatch(parent::equals)) {
+//                    listFolders.add(parent);
+//                }
+//            }
+//        }
     }
 
     @Override
@@ -373,7 +382,7 @@ public class MuPlayer extends Player {
             start();
         } else if (current != null) {
             current.play();
-            muPlayerUtil.loadListenerMethod(ON_PLAYED, current);
+            //muPlayerUtil.loadListenerMethod(ON_PLAYED, current);
         }
     }
 
@@ -388,7 +397,7 @@ public class MuPlayer extends Player {
             current = track;
             muPlayerUtil.startTrackThread(current);
             playerStatusData.setTrackIndex(index);
-            muPlayerUtil.loadListenerMethod(ON_PLAYED, current);
+            //muPlayerUtil.loadListenerMethod(ON_PLAYED, current);
         }
     }
 
@@ -404,15 +413,13 @@ public class MuPlayer extends Player {
     // (is alive)
     @Override
     public synchronized void play(File track) {
-        Predicate<Track> filter = filterUtil.getPlayByPathFilter(track.getPath());
+        Predicate<Track> filter = filterUtil.getTrackFilterByPath(track.getPath());
         TrackIndexed trackIndexed = muPlayerUtil.getTrackIndexedFromCondition(filter);
 
         if (trackIndexed == null) {
-            if (audioSupportUtil.isSupportedFile(track)) {
-                listTracks.add(trackBuilder.getTrack(track, this));
-                if (!CollectionUtil.existsFolder(listFolders, track.getParent())) {
-                    listFolders.add(track.getParentFile());
-                }
+            listTracks.add(trackFactory.getTrack(track, this));
+            if (!CollectionUtil.existsFolder(listFolders, track.getParent())) {
+                listFolders.add(track.getParentFile());
             }
         } else {
             playerStatusData.setTrackIndex(playerStatusData.getTrackIndex());
@@ -421,13 +428,13 @@ public class MuPlayer extends Player {
             }
             current = listTracks.get(playerStatusData.getTrackIndex());
             muPlayerUtil.startTrackThread(current);
-            muPlayerUtil.loadListenerMethod(ON_PLAYED, current);
+            //muPlayerUtil.loadListenerMethod(ON_PLAYED, current);
         }
     }
 
     @Override
     public synchronized void play(String trackName) {
-        Predicate<Track> filter = filterUtil.getPlayByNameFilter(trackName);
+        Predicate<Track> filter = filterUtil.getTrackFilterByName(trackName);
         TrackIndexed trackIndexed = muPlayerUtil.getTrackIndexedFromCondition(filter);
 
         if (trackIndexed != null) {
@@ -437,7 +444,7 @@ public class MuPlayer extends Player {
             }
             current = trackIndexed.getTrack();
             muPlayerUtil.startTrackThread(current);
-            muPlayerUtil.loadListenerMethod(ON_PLAYED, current);
+            //muPlayerUtil.loadListenerMethod(ON_PLAYED, current);
         }
     }
 
@@ -445,7 +452,7 @@ public class MuPlayer extends Player {
     public synchronized void pause() {
         if (current != null) {
             current.pause();
-            muPlayerUtil.loadListenerMethod(ON_PAUSED, current);
+            //muPlayerUtil.loadListenerMethod(ON_PAUSED, current);
         }
     }
 
@@ -453,7 +460,7 @@ public class MuPlayer extends Player {
     public synchronized void resumeTrack() {
         if (current != null) {
             current.resumeTrack();
-            muPlayerUtil.loadListenerMethod(ON_RESUMED, current);
+            //muPlayerUtil.loadListenerMethod(ON_RESUMED, current);
         }
     }
 
@@ -461,7 +468,7 @@ public class MuPlayer extends Player {
     public synchronized void stopTrack() {
         if (current != null) {
             current.stopTrack();
-            muPlayerUtil.loadListenerMethod(ON_STOPPED, current);
+            //muPlayerUtil.loadListenerMethod(ON_STOPPED, current);
         }
     }
 
@@ -483,7 +490,7 @@ public class MuPlayer extends Player {
         if (current != null) {
             try {
                 current.seek(seconds);
-                muPlayerUtil.loadListenerMethod(ON_GO_TO_SECOND, current);
+                //muPlayerUtil.loadListenerMethod(ON_GO_TO_SECOND, current);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -495,7 +502,7 @@ public class MuPlayer extends Player {
         if (current != null) {
             try {
                 current.gotoSecond(second);
-                muPlayerUtil.loadListenerMethod(ON_GO_TO_SECOND, current);
+                //muPlayerUtil.loadListenerMethod(ON_GO_TO_SECOND, current);
             } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
                 e.printStackTrace();
             }
@@ -579,7 +586,7 @@ public class MuPlayer extends Player {
         playerStatusData.setOn(false);
         muPlayerUtil.restartCurrent(current);
         this.interrupt();
-        muPlayerUtil.loadListenerMethod(ON_SHUTDOWN, null);
+        //muPlayerUtil.loadListenerMethod(ON_SHUTDOWN, null);
     }
 
     @SneakyThrows(Exception.class)
@@ -587,7 +594,7 @@ public class MuPlayer extends Player {
     public synchronized void run() {
         checkRootFolder();
         playerStatusData.setOn(true);
-        muPlayerUtil.loadListenerMethod(ON_STARTED, null);
+        //muPlayerUtil.loadListenerMethod(ON_STARTED, null);
         muPlayerUtil.waitForSongs();
         playNext();
         ThreadUtil.freezeThread(this);

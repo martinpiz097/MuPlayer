@@ -16,10 +16,8 @@ import cl.estencia.labs.muplayer.audio.player.AudioComponent;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.interfaces.ControllableMusic;
 
-import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import javax.sound.sampled.spi.AudioFileReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,7 +34,7 @@ import static cl.estencia.labs.aucom.util.DecoderFormatUtil.DEFAULT_VOLUME;
 public abstract class Track extends AudioComponent implements Runnable, ControllableMusic, TrackData {
     @Getter protected final File dataSource;
     @Getter protected final AudioDecoder audioDecoder;
-    @Getter protected final TrackIO trackIO;
+    @Getter protected final TrackIOUtil trackIOUtil;
     @Getter protected final Speaker speaker;
     @Getter protected final TrackStatusData trackStatusData;
 
@@ -67,8 +65,8 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
             throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this.dataSource = dataSource;
         this.audioDecoder = audioDecoder;
-        this.trackIO = new TrackIO(audioDecoder.getDecodedStream());
-        this.speaker = trackIO.getSpeaker();
+        this.trackIOUtil = new TrackIOUtil();
+        this.speaker = trackIOUtil.initSpeaker(audioDecoder.getDecodedStream());
         this.trackStatusData = new TrackStatusData();
         this.listInternalEvents = new ArrayList<>();
         this.listUserEvents = new LinkedList<>();
@@ -86,7 +84,7 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
             trackStatusData.setVolume(DEFAULT_VOLUME);
             trackStatusData.setMute(false);
             trackStatusData.setCanTrackContinue(true);
-            setTagInfo(loadTagInfo(getDataSource()));
+            setTagInfo(loadTagInfo(dataSource));
         } catch (Exception e) {
             log.log(Level.SEVERE, e.getMessage());
             kill();
@@ -101,15 +99,6 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
         return new HeaderData(0L, 0d);
     }
 
-    public void updateIOData() {
-        AudioInputStream decodedStream = audioDecoder.getDecodedStream();
-
-//        trackIO.setAudioFileReader(getAudioFileReader());
-        trackIO.setDecodedInputStream(decodedStream);
-
-        speaker.reopen(decodedStream.getFormat());
-    }
-
     public AudioTag loadTagInfo(File dataSource) {
         try {
             final AudioTag audioTag = new AudioTag(dataSource);
@@ -120,9 +109,8 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
     }
 
     public void resetStream() throws IOException, LineUnavailableException, UnsupportedAudioFileException {
-        if (trackIO.closeStream() && trackIO.closeSpeaker()) {
-            updateIOData();
-        }
+        audioDecoder.reDecode();
+        speaker.reopen(audioDecoder.getDecodedFormat());
     }
 
     // Posible motivo de error para mas adelante
@@ -154,7 +142,7 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
 
     @Override
     public synchronized double getProgress() {
-        return trackIO.getSecondsPosition() + trackStatusData.getSecsSeeked();
+        return trackIOUtil.getSecondsPosition(speaker) + trackStatusData.getSecsSeeked();
     }
 
     @Override
@@ -227,7 +215,7 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
             throws IOException {
         if (seconds > 0) {
             final long bytesToSeek = Math.round(convertSecondsToBytes(seconds));
-            final long skip = trackIO.getDecodedInputStream().skip(bytesToSeek);
+            final long skip = audioDecoder.getDecodedStream().skip(bytesToSeek);
             final double skippedSeconds = convertBytesToSeconds(skip);
 
             if (skip > 0) {
@@ -270,7 +258,7 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
     @Override
     public void setVolume(float volume) {
         trackStatusData.setVolume(volume);
-        if (trackIO != null && trackIO.isTrackStreamsOpened()) {
+        if (trackIOUtil != null && trackIOUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedStream())) {
             speaker.setVolume(volume);
             if (trackStatusData.isVolumeZero()) {
                 audioHardware.setMuteValue(speaker.getDriver(), true);
@@ -281,7 +269,7 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
     @Override
     public void mute() {
         trackStatusData.setMute(true);
-        if (trackIO != null && trackIO.isTrackStreamsOpened()) {
+        if (trackIOUtil != null && trackIOUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedStream())) {
             audioHardware.setMuteValue(speaker.getDriver(), trackStatusData.isMute());
         }
     }
@@ -290,13 +278,13 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
     public void unMute() {
         if (trackStatusData.isVolumeZero()) {
             trackStatusData.setVolume(DEFAULT_MAX_VOL);
-            if (trackIO != null && trackIO.isTrackStreamsOpened()) {
+            if (trackIOUtil != null && trackIOUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedStream())) {
                 speaker.setVolume(trackStatusData.getVolume());
             }
         } else {
             trackStatusData.setMute(false);
         }
-        if (trackIO != null && trackIO.isTrackStreamsOpened()) {
+        if (trackIOUtil != null && trackIOUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedStream())) {
             audioHardware.setMuteValue(speaker.getDriver(), false);
         }
     }
@@ -357,7 +345,7 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
 
     @Override
     public String getFormat() {
-        return trackIO.getDecodedInputStream().getFormat().toString();
+        return audioDecoder.getDecodedFormat().toString();
     }
 
     @Override
