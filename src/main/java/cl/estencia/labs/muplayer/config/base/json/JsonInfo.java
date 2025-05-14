@@ -19,7 +19,7 @@ public abstract class JsonInfo<T, O> {
 
     protected abstract void loadDefaultData();
 
-    public O getObject() throws Exception {
+    public O getObject() {
         return jsonSource.getData();
     }
 

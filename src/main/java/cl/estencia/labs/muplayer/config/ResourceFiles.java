@@ -6,9 +6,6 @@ import java.io.InputStream;
 public class ResourceFiles {
     public static final String CONFIG_FILE_PATH = getJarParentPath()+"/config.properties";
 
-    public static final String AUDIO_FORMATS_RES_PATH = "/audio-formats.json";
-    public static final String AUDIO_FORMATS_FILE_PATH = getFilePath(AUDIO_FORMATS_RES_PATH);
-
     public static final String HELP_RES_PATH = "/help.properties";
     public static final String HELP_FILE_PATH = getFilePath(HELP_RES_PATH);
 
