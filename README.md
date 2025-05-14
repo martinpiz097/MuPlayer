@@ -2,7 +2,7 @@
 MuPlayer is a music player library written in pure Java.
 
 ## Requirements
-- JDK 11 or higher
+- JDK 21 or higher
 
 ## Compilation
 To compile the project, use Maven with the following command:
@@ -29,7 +29,7 @@ Add the following repository to your pom.xml file:
 Add the following dependency to your pom.xml file:
 ```xml
 <dependency>
-    <groupId>org.orangeplayer</groupId>
+    <groupId>cl.estencia.labs</groupId>
     <artifactId>muplayer</artifactId>
     <version>RELEASE</version>
 </dependency>
@@ -52,7 +52,7 @@ Add the following dependency to your build.gradle file:
 
 ```groovy
 dependencies {
-    implementation 'org.orangeplayer:muplayer'
+    implementation 'cl.estencia.labs:muplayer'
 }
 ```
 
