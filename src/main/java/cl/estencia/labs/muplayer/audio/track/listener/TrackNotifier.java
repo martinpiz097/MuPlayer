@@ -53,7 +53,7 @@ public class TrackNotifier extends Thread {
             return CompletableFuture.runAsync(() -> {});
         }
 
-        System.out.println("New event " + trackEvent);
+        log.warning("New event: " + trackEvent);
         var internalEventsTask = CompletableFuture.runAsync(() ->
                 listInternalListeners.parallelStream().forEach(
                         listener -> listener.onStateChange(trackEvent)));

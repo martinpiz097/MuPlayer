@@ -49,16 +49,6 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
-                    <compilerArgs>
-                        <arg>--add-modules</arg>
-                        <arg>java.desktop</arg>
-                        <arg>--add-modules</arg>
-                        <arg>java.logging</arg>
-                        <arg>--add-opens</arg>
-                        <arg>java.desktop/com.sun.media.sound=ALL-UNNAMED</arg>
-                        <arg>--add-exports</arg>
-                        <arg>java.desktop/com.sun.media.sound=ALL-UNNAMED</arg>
-                    </compilerArgs>
                 </configuration>
             </plugin>
 
@@ -73,22 +63,9 @@
                         <argument>java.desktop/com.sun.media.sound=ALL-UNNAMED</argument>
                         <argument>--add-exports</argument>
                         <argument>java.desktop/com.sun.media.sound=ALL-UNNAMED</argument>
+                        <argument>--add-modules</argument>
+                        <argument>java.logging</argument>
                     </arguments>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.3.0</version>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Add-Modules>java.desktop,java.logging</Add-Modules>
-                            <Add-Opens>java.desktop/com.sun.media.sound=ALL-UNNAMED</Add-Opens>
-                            <Add-Exports>java.desktop/com.sun.media.sound=ALL-UNNAMED</Add-Exports>
-                        </manifestEntries>
-                    </archive>
                 </configuration>
             </plugin>
 
@@ -109,11 +86,6 @@
                     <transformers>
                         <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                             <mainClass>cl.estencia.labs.muplayer.Main</mainClass>
-                            <manifestEntries>
-                                <Add-Modules>java.desktop,java.logging</Add-Modules>
-                                <Add-Opens>java.desktop/com.sun.media.sound=ALL-UNNAMED</Add-Opens>
-                                <Add-Exports>java.desktop/com.sun.media.sound=ALL-UNNAMED</Add-Exports>
-                            </manifestEntries>
                         </transformer>
                     </transformers>
                 </configuration>
@@ -146,29 +118,29 @@
             <version>0.4.1</version>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>dev.mccue</groupId>-->
-<!--            <artifactId>mp3spi</artifactId>-->
-<!--            <version>2024.04.19</version>-->
-<!--        </dependency>-->
-
-<!--        <dependency>-->
-<!--            <groupId>dev.mccue</groupId>-->
-<!--            <artifactId>vorbisspi</artifactId>-->
-<!--            <version>2024.04.19</version>-->
-<!--        </dependency>-->
-
         <dependency>
             <groupId>org.orangeplayer.audiolibs</groupId>
             <artifactId>tritonus-jorbis</artifactId>
             <version>0.4</version>
         </dependency>
 
+        <!--        <dependency>-->
+        <!--            <groupId>dev.mccue</groupId>-->
+        <!--            <artifactId>vorbisspi</artifactId>-->
+        <!--            <version>2024.04.19</version>-->
+        <!--        </dependency>-->
+
         <dependency>
             <groupId>com.googlecode.soundlibs</groupId>
             <artifactId>mp3spi</artifactId>
             <version>1.9.5.4</version>
         </dependency>
+
+        <!--        <dependency>-->
+        <!--            <groupId>dev.mccue</groupId>-->
+        <!--            <artifactId>mp3spi</artifactId>-->
+        <!--            <version>2024.04.19</version>-->
+        <!--        </dependency>-->
 
 <!--        <dependency>-->
 <!--            <groupId>org.orangeplayer.audiolibs</groupId>-->
