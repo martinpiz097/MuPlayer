@@ -1,7 +1,7 @@
 package cl.estencia.labs.muplayer.util;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.audio.track.TrackIOUtil;
+import cl.estencia.labs.muplayer.audio.track.io.TrackIOUtil;
 import lombok.extern.java.Log;
 
 import javax.sound.sampled.FloatControl;

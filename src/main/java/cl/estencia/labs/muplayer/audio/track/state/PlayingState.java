@@ -1,7 +1,7 @@
 package cl.estencia.labs.muplayer.audio.track.state;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.audio.track.listener.TrackNotifier;
+import cl.estencia.labs.muplayer.listener.notifier.TrackEventNotifier;
 import lombok.extern.java.Log;
 
 import java.io.IOException;
@@ -14,7 +14,7 @@ import static cl.estencia.labs.aucom.common.IOConstants.EOF;
 public class PlayingState extends TrackState {
     private final byte[] audioBuffer;
 
-    public PlayingState(Track track, TrackNotifier notifier) {
+    public PlayingState(Track track, TrackEventNotifier notifier) {
         super(track, TrackStateName.PLAYING, notifier);
         this.audioBuffer = new byte[DEFAULT_BUFF_SIZE];
     }
@@ -30,7 +30,6 @@ public class PlayingState extends TrackState {
             while (track.isPlaying() && (read = readNextBytes()) != EOF) {
                 speaker.playAudio(audioBuffer, read);
             }
-
         } catch (IOException | IndexOutOfBoundsException | IllegalArgumentException e) {
             log.log(Level.SEVERE, "Error on playing sound " + track.getTitle() + ": ", e);
         }

@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.audio.track;
+package cl.estencia.labs.muplayer.audio.track.io;
 
 import cl.estencia.labs.aucom.audio.device.Speaker;
 import lombok.Data;

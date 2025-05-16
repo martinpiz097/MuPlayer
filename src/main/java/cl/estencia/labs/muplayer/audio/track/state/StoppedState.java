@@ -1,7 +1,7 @@
 package cl.estencia.labs.muplayer.audio.track.state;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.audio.track.listener.TrackNotifier;
+import cl.estencia.labs.muplayer.listener.notifier.TrackEventNotifier;
 import lombok.extern.java.Log;
 
 import java.util.logging.Level;
@@ -9,7 +9,7 @@ import java.util.logging.Level;
 @Log
 public class StoppedState extends TrackState {
 
-    public StoppedState(Track track, TrackNotifier notifier) {
+    public StoppedState(Track track, TrackEventNotifier notifier) {
         super(track, TrackStateName.STOPPED, notifier);
     }
 

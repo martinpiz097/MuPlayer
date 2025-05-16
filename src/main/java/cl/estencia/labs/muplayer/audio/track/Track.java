@@ -6,10 +6,11 @@ import cl.estencia.labs.muplayer.audio.info.AudioTag;
 import cl.estencia.labs.muplayer.audio.player.AudioComponent;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.header.HeaderData;
-import cl.estencia.labs.muplayer.audio.track.listener.TrackNotifier;
+import cl.estencia.labs.muplayer.audio.track.io.TrackIOUtil;
 import cl.estencia.labs.muplayer.audio.track.state.*;
 import cl.estencia.labs.muplayer.interfaces.ControllableMusic;
 import cl.estencia.labs.muplayer.interfaces.TrackData;
+import cl.estencia.labs.muplayer.listener.notifier.TrackEventNotifier;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,7 +36,8 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
     @Getter protected final Speaker speaker;
     @Getter protected final TrackStatusData trackStatusData;
 
-    @Getter protected final TrackNotifier notifier;
+    @Getter
+    protected final TrackEventNotifier notifier;
 
     @Getter @Setter protected volatile AudioTag tagInfo;
     protected volatile TrackState trackState;
@@ -63,7 +65,7 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
         this.speaker = trackIOUtil.initSpeaker(audioDecoder.getDecodedStream());
         this.trackStatusData = new TrackStatusData();
         this.headerData = initHeaderData();
-        this.notifier = new TrackNotifier();
+        this.notifier = new TrackEventNotifier();
         this.trackState = new UnknownState(this, notifier);
 
         initValues();
@@ -114,8 +116,6 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
     public TrackStateName getStateName() {
         return trackState.getName();
     }
-
-
 
     @Override
     public long getDuration() {
@@ -185,6 +185,7 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
     @Override
     public void reload() throws Exception {
         //trackState = new ReloadedState(this, notifier);
+        throw new UnsupportedOperationException("Reload not supported yet!");
     }
 
     public void finish() {
@@ -348,6 +349,9 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
         trackState = new StartedState(this, notifier);
         while (trackStatusData.canTrackContinue()) {
             trackState.execute();
+            System.out.println("WHILE");
         }
+
+        System.out.println();
     }
 }

@@ -1,10 +1,10 @@
 package cl.estencia.labs.muplayer.audio.track.state;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.audio.track.listener.TrackNotifier;
+import cl.estencia.labs.muplayer.listener.notifier.TrackEventNotifier;
 
 public class StartedState extends TrackState {
-    public StartedState(Track track, TrackNotifier notifier) {
+    public StartedState(Track track, TrackEventNotifier notifier) {
         super(track, TrackStateName.STARTED, notifier);
     }
 

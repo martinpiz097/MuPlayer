@@ -8,12 +8,13 @@ import cl.estencia.labs.muplayer.model.Artist;
 
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public interface ReportablePlayer {
     TrackStateName getCurrentTrackState();
     int getFoldersCount();
     int getSongsCount();
-    Track getCurrent();
+    AtomicReference<Track> getCurrent();
     Track getNext();
     Track getPrevious();
     File getRootFolder();
