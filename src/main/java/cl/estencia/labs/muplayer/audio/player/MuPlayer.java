@@ -1,12 +1,8 @@
 package cl.estencia.labs.muplayer.audio.player;
 
-import cl.estencia.labs.muplayer.listener.PlayerEventType;
 import cl.estencia.labs.muplayer.listener.PlayerListener;
-import cl.estencia.labs.muplayer.audio.track.StandardTrackFactory;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.audio.track.TrackFactory;
 import cl.estencia.labs.muplayer.audio.track.state.TrackStateName;
-import cl.estencia.labs.muplayer.listener.event.PlayerEvent;
 import cl.estencia.labs.muplayer.listener.notifier.PlayerEventNotifier;
 import cl.estencia.labs.muplayer.model.Album;
 import cl.estencia.labs.muplayer.model.Artist;
@@ -42,7 +38,7 @@ import static cl.estencia.labs.muplayer.model.SeekOption.PREV;
 @Log
 public class MuPlayer extends Player {
     private final AtomicReference<File> rootFolder;
-    private final AtomicReference<Track> current;
+    private final AtomicReference<Track> currentTrack;
 
     private final List<Track> listTracks;
     private final List<File> listFolders;
@@ -60,7 +56,7 @@ public class MuPlayer extends Player {
 
     public MuPlayer(File rootFolder) throws FileNotFoundException {
         this.rootFolder = new AtomicReference<>(rootFolder);
-        this.current = new AtomicReference<>();
+        this.currentTrack = new AtomicReference<>();
         this.listTracks = CollectionUtil.newFastArrayList();
         this.listFolders = CollectionUtil.newMinimalFastArrayList();
         this.playerStatusData = new PlayerStatusData();
@@ -133,7 +129,7 @@ public class MuPlayer extends Player {
 
     @Override
     public TrackStateName getCurrentTrackState() {
-        return current.get() != null ? current.get().getStateName() : TrackStateName.UNKNOWN;
+        return currentTrack.get() != null ? currentTrack.get().getStateName() : TrackStateName.UNKNOWN;
     }
 
     @Override
@@ -258,9 +254,8 @@ public class MuPlayer extends Player {
         return new PlayerInfo(this);
     }
 
-    @Override
-    public synchronized AtomicReference<Track> getCurrent() {
-        return current;
+    public synchronized AtomicReference<Track> getCurrentTrack() {
+        return currentTrack;
     }
 
     @Override
@@ -290,17 +285,17 @@ public class MuPlayer extends Player {
 
     @Override
     public synchronized boolean isPlaying() {
-        return current.get() != null && current.get().isPlaying();
+        return currentTrack.get() != null && currentTrack.get().isPlaying();
     }
 
     @Override
     public synchronized boolean isPaused() {
-        return current.get() != null && current.get().isPaused();
+        return currentTrack.get() != null && currentTrack.get().isPaused();
     }
 
     @Override
     public synchronized boolean isStopped() {
-        return current.get() != null && current.get().isStopped();
+        return currentTrack.get() != null && currentTrack.get().isStopped();
     }
 
     @Override
@@ -349,7 +344,7 @@ public class MuPlayer extends Player {
 
     @Override
     public synchronized void seekFolder(SeekOption option, int jumps) {
-        final int folderIndex = muPlayerUtil.getFolderIndex(current.get());
+        final int folderIndex = muPlayerUtil.getFolderIndex(currentTrack.get());
         if (folderIndex != -1) {
             final int newFolderIndex;
             final File parentToFind;
@@ -373,8 +368,8 @@ public class MuPlayer extends Player {
     public synchronized void play() {
         if (!isAlive()) {
             start();
-        } else if (current.get() != null) {
-            current.get().play();
+        } else if (currentTrack.get() != null) {
+            currentTrack.get().play();
         }
     }
 
@@ -384,8 +379,8 @@ public class MuPlayer extends Player {
             return;
         }
 
-        if (current.get() != null) {
-            current.get().finish();
+        if (currentTrack.get() != null) {
+            currentTrack.get().finish();
         } else {
             muPlayerUtil.playTrackByNewIndex();
         }
@@ -425,22 +420,22 @@ public class MuPlayer extends Player {
 
     @Override
     public synchronized void pause() {
-        if (current.get() != null) {
-            current.get().pause();
+        if (currentTrack.get() != null) {
+            currentTrack.get().pause();
         }
     }
 
     @Override
     public synchronized void resumeTrack() {
-        if (current.get() != null) {
-            current.get().resumeTrack();
+        if (currentTrack.get() != null) {
+            currentTrack.get().resumeTrack();
         }
     }
 
     @Override
     public synchronized void stopTrack() {
-        if (current.get() != null) {
-            current.get().stopTrack();
+        if (currentTrack.get() != null) {
+            currentTrack.get().stopTrack();
         }
     }
 
@@ -461,9 +456,9 @@ public class MuPlayer extends Player {
     // SeekedState o monitorear mejor el Playing?
     @Override
     public synchronized void seek(double seconds) {
-        if (current.get() != null) {
+        if (currentTrack.get() != null) {
             try {
-                current.get().seek(seconds);
+                currentTrack.get().seek(seconds);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -472,9 +467,9 @@ public class MuPlayer extends Player {
 
     @Override
     public synchronized void gotoSecond(double second) {
-        if (current.get() != null) {
+        if (currentTrack.get() != null) {
             try {
-                current.get().gotoSecond(second);
+                currentTrack.get().gotoSecond(second);
             } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
                 e.printStackTrace();
             }
@@ -483,24 +478,24 @@ public class MuPlayer extends Player {
 
     @Override
     public synchronized float getVolume() {
-        return current.get() == null
-                ? playerStatusData.getVolume() : current.get().getVolume();
+        return currentTrack.get() == null
+                ? playerStatusData.getVolume() : currentTrack.get().getVolume();
     }
 
     // 0-100
     @Override
     public synchronized void setVolume(float volume) {
         playerStatusData.setVolume(volume);
-        if (current.get() != null) {
-            current.get().setVolume(volume);
+        if (currentTrack.get() != null) {
+            currentTrack.get().setVolume(volume);
         }
     }
 
     @Override
     public synchronized void mute() {
         playerStatusData.setMute(true);
-        if (current.get() != null) {
-            current.get().mute();
+        if (currentTrack.get() != null) {
+            currentTrack.get().mute();
         }
     }
 
@@ -511,14 +506,14 @@ public class MuPlayer extends Player {
         } else {
             playerStatusData.setMute(false);
         }
-        if (current.get() != null) {
-            current.get().unMute();
+        if (currentTrack.get() != null) {
+            currentTrack.get().unMute();
         }
     }
 
     @Override
     public double getProgress() {
-        return current.get() == null ? 0 : current.get().getProgress();
+        return currentTrack.get() == null ? 0 : currentTrack.get().getProgress();
     }
 
     @Override

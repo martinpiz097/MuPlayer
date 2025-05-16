@@ -5,10 +5,11 @@ import lombok.Data;
 
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Data
 public class PlayerInfo {
-    private final Track current;
+    private final AtomicReference<Track> current;
     private final File trackFolder;
     private final File rootFolder;
     private final float volume;
@@ -18,9 +19,9 @@ public class PlayerInfo {
     private static final String ENTER_TAB = ",\n\t";
 
     public PlayerInfo(MuPlayer muPlayer) {
-        this.current = muPlayer.getCurrent();
-        trackFolder = current != null && current.getDataSource() != null
-                ? current.getDataSource().getParentFile() : null;
+        this.current = muPlayer.getCurrentTrack();
+        trackFolder = current.get() != null && current.get().getDataSource() != null
+                ? current.get().getDataSource().getParentFile() : null;
         rootFolder = muPlayer.getRootFolder();
         volume = muPlayer.getVolume();
         songsCount = muPlayer.getSongsCount();
@@ -28,11 +29,13 @@ public class PlayerInfo {
     }
 
     public String getCurrentTrackTitle() {
-        return current == null ? "Title Unknown" : current.getTitle();
+        return current.get() == null
+                ? "Title Unknown"
+                : current.get().getTitle();
     }
 
     public String getCurrentTrackFormat() {
-        if (current == null)
+        if (current.get() == null)
             return "Track Unknown";
         else {
             String currentClass = current.getClass().getSimpleName();

@@ -13,7 +13,6 @@ import cl.estencia.labs.muplayer.listener.notifier.PlayerEventNotifier;
 import cl.estencia.labs.muplayer.model.AudioFileExtension;
 import cl.estencia.labs.muplayer.model.SeekOption;
 import cl.estencia.labs.muplayer.model.TrackIndexed;
-import cl.estencia.labs.muplayer.thread.TracksLoader;
 import lombok.extern.java.Log;
 
 import java.io.File;
@@ -22,10 +21,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static cl.estencia.labs.muplayer.listener.PlayerEventType.CHANGED_CURRENT_TRACK;
-import static cl.estencia.labs.muplayer.listener.PlayerEventType.SHUTDOWN;
 import static cl.estencia.labs.muplayer.model.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.thread.ThreadUtil.generateTrackThreadName;
 
@@ -56,7 +53,7 @@ public class MuPlayerUtil {
 
     public MuPlayerUtil(Player player, PlayerStatusData playerStatusData, PlayerEventNotifier playerEventNotifier) {
         this.player = player;
-        this.current = player.getCurrent();
+        this.current = player.getCurrentTrack();
         this.listTracks = player.getTracks();
         this.listFolders = player.getListFolders();
         this.playerStatusData = playerStatusData;
@@ -136,7 +133,7 @@ public class MuPlayerUtil {
 
             @Override
             public void onCurrentTrackChange(PlayerEvent event) {
-                Track current = event.player().getCurrent().get();
+                Track current = event.player().getCurrentTrack().get();
                 if (current != null) {
                     log.info("New current: " + current.getTitle());
                 } else {

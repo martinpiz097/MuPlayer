@@ -32,6 +32,7 @@ import java.nio.file.Files;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static cl.estencia.labs.muplayer.cache.CacheVar.RUNNER;
@@ -85,7 +86,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
     private void printTracks(ConsoleExecution execution) {
         final File rootFolder = player.getRootFolder();
         final List<Track> listTracks = player.getTracks();
-        final Track current = player.getCurrent();
+        final Track current = player.getCurrentTrack().get();
 
         execution.appendOutput("------------------------------", info);
         if (rootFolder == null) {
@@ -116,7 +117,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
     private void printDetailedTracks(ConsoleExecution execution) {
         final File rootFolder = player.getRootFolder();
         final List<Track> listTracks = player.getTracks();
-        final Track current = player.getCurrent();
+        final Track current = player.getCurrentTrack().get();
 
         execution.appendOutput("------------------------------", info);
         if (rootFolder == null) {
@@ -156,7 +157,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
 
     private synchronized void printFolderTracks(ConsoleExecution execution) {
         final List<Track> listTracks = player.getTracks();
-        final Track current = player.getCurrent();
+        final Track current = player.getCurrentTrack().get();
         final int songsCount = player.getSongsCount();
 
         File parentFolder = current == null ? null : current.getDataSource().getParentFile();
@@ -190,8 +191,11 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
     }
 
     private synchronized void printFolderTracks(ConsoleExecution execution, int index) {
+        final AtomicReference<Track> current = player.getCurrentTrack();
         final File folder = player.getListFolders().get(index - 1);
-        final File currentFile = player.getCurrent().getDataSource();
+        final File currentFile = current.get() != null
+                ? current.get().getDataSource()
+                : null;
 
         execution.appendOutput("------------------------------", info);
 
@@ -219,9 +223,9 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
 
     private synchronized void printFolders(ConsoleExecution execution) {
         final File rootFolder = player.getRootFolder();
-        final List<String> listFolderPaths = player.getListFolders().stream().map(
-                File::getPath).collect(Collectors.toList());
-        final Track current = player.getCurrent();
+        final List<String> listFolderPaths = player.getListFolders()
+                .stream().map(File::getPath).toList();
+        final Track current = player.getCurrentTrack().get();
 
         execution.appendOutput("------------------------------", info);
         if (rootFolder == null) {
@@ -326,7 +330,10 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
     public ConsoleExecution executeCommand(Command cmd) throws Exception {
         final String cmdOrder = cmd.getOrder();
         final ConsoleOrderCode consoleOrderCode = consoleCodesReader.getConsoleOrderCodeByCmdOrder(cmdOrder);
-        Track current;
+        final AtomicReference<Track> currentRef = player != null
+                ? player.getCurrentTrack()
+                : new AtomicReference<>(null);
+        final Track currentTrack = currentRef.get();
 
         final ConsoleExecution execution = new ConsoleExecution(cmd);
         // imprimir output de este objeto no mas
@@ -350,8 +357,8 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     } else if (!player.isAlive()) {
                         player.start();
                     }
-                    if (player.getCurrent() != null) {
-                        showSongInfo(player.getCurrent(), execution);
+                    if (currentTrack != null) {
+                        showSongInfo(currentTrack, execution);
                     }
                     break;
                 case ist:
@@ -366,7 +373,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                                     playIndex.intValue() > 0 && playIndex.intValue() <= player.getSongsCount()) {
                                 player.play(playIndex.intValue() - 1);
                             }
-                            showSongInfo(player.getCurrent(), execution);
+                            showSongInfo(player.getCurrentTrack().get(), execution);
                         } else {
                             player.play();
                         }
@@ -402,7 +409,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                             player.playNext();
                         }
                     }
-                    showSongInfo(player.getCurrent(), execution);
+                    showSongInfo(player.getCurrentTrack().get(), execution);
                     break;
 
                 case p:
@@ -417,7 +424,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                         } else {
                             player.playPrevious();
                         }
-                        showSongInfo(player.getCurrent(), execution);
+                        showSongInfo(player.getCurrentTrack().get(), execution);
                     }
                     break;
 
@@ -543,7 +550,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                         } else {
                             player.seekFolder(SeekOption.NEXT);
                         }
-                        showSongInfo(player.getCurrent(), execution);
+                        showSongInfo(currentTrack, execution);
                     }
                     break;
 
@@ -569,23 +576,24 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     break;
                 case d:
                     if (player != null) {
-                        execution.appendOutput(player.getCurrent().getFormattedDuration(), info);
+                        String formattedDuration = currentTrack != null
+                                ? currentTrack.getFormattedDuration() : "";
+                        execution.appendOutput(formattedDuration, info);
                     }
                     break;
                 case cover:
-                    current = player.getCurrent();
-                    if (current == null) {
+                    if (currentTrack == null) {
                         execution.appendOutput("Current track unavailable", error);
-                    } else if (!current.hasCover()) {
+                    } else if (!currentTrack.hasCover()) {
                         execution.appendOutput("Current song don't have cover", error);
                     } else if (cmd.hasOptions()) {
                         File folderPath = new File(cmd.getOptionAt(0));
                         if (!folderPath.exists()) {
                             folderPath = player.getRootFolder();
                         }
-                        File fileCover = new File(folderPath, "cover-" + current.getTitle() + ".png");
+                        File fileCover = new File(folderPath, "cover-" + currentTrack.getTitle() + ".png");
                         fileCover.createNewFile();
-                        Files.write(fileCover.toPath(), current.getCoverData(), WRITE);
+                        Files.write(fileCover.toPath(), currentTrack.getCoverData(), WRITE);
                         execution.appendOutput("Created cover with name " + fileCover.getName(), warn);
                     } else {
                         execution.appendOutput("Cover path not defined", error);
@@ -593,20 +601,23 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     break;
 
                 case info:
-                    if (player.hasSounds() && player.getCurrent() != null) {
-                        showSongInfo(player.getCurrent(), execution);
+                    if (player != null) {
+                        if (player.hasSounds() && player.getCurrentTrack() != null) {
+                            showSongInfo(currentTrack, execution);
+                        } else {
+                            execution.appendOutput("No song available", warn);
+                        }
                     } else {
-                        execution.appendOutput("No song available", warn);
+                        execution.appendOutput("No song available, player not initialized", warn);
                     }
                     break;
 
                 case prog:
-                    current = player.getCurrent();
-                    if (current == null) {
+                    if (currentTrack == null) {
                         execution.appendOutput("Current track unavailable", error);
                     } else {
-                        final String formattedProgress = current.getFormattedProgress();
-                        final String formattedDuration = current.getFormattedDuration();
+                        final String formattedProgress = currentTrack.getFormattedProgress();
+                        final String formattedDuration = currentTrack.getFormattedDuration();
                         execution.appendOutput(formattedProgress + "/" + formattedDuration, warn);
                     }
                     break;
@@ -616,30 +627,27 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     break;
 
                 case format:
-                    current = player.getCurrent();
-                    if (current == null) {
+                    if (currentTrack == null) {
                         execution.appendOutput("Current track unavailable", error);
                     } else {
-                        final String className = current.getClass().getSimpleName();
+                        final String className = currentTrack.getClass().getSimpleName();
                         execution.appendOutput(className.substring(0, className.length() - 5).toLowerCase(), warn);
                     }
                     break;
 
                 case title:
-                    current = player.getCurrent();
-                    if (current == null) {
+                    if (currentTrack == null) {
                         execution.appendOutput("Current track unavailable", error);
                     } else {
-                        execution.appendOutput(current.getTitle(), warn);
+                        execution.appendOutput(currentTrack.getTitle(), warn);
                     }
                     break;
 
                 case name:
-                    current = player.getCurrent();
-                    if (current == null) {
+                    if (currentTrack == null) {
                         execution.appendOutput("Current track unavailable", error);
                     } else {
-                        execution.appendOutput(current.getDataSource().getName(), warn);
+                        execution.appendOutput(currentTrack.getDataSource().getName(), warn);
                     }
                     break;
 
@@ -670,7 +678,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                         final Number fldIndex = cmd.getOptionAsNumber(0);
                         if (fldIndex != null && fldIndex.intValue() > 0) {
                             player.playFolder(fldIndex.intValue() - 1);
-                            showSongInfo(player.getCurrent(), execution);
+                            showSongInfo(currentTrack, execution);
                         }
                     }
                     break;
@@ -700,7 +708,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     break;
 
                 case arts:
-                    if (player.isAlive() && player.hasSounds()) {
+                    if (player != null && player.isAlive() && player.hasSounds()) {
                         final List<Artist> listArtists = player.getArtists();
                         for (Artist artist : listArtists) {
                             execution.appendOutput(artist.getName(), info);
@@ -713,7 +721,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     break;
 
                 case albs:
-                    if (player.isAlive() && player.hasSounds()) {
+                    if (player != null && player.isAlive() && player.hasSounds()) {
                         List<Album> listAlbums = player.getAlbums();
                         for (Album album : listAlbums) {
                             execution.appendOutput(album.getName(), info);
