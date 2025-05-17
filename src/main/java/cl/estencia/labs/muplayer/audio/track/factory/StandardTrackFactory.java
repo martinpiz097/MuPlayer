@@ -1,11 +1,12 @@
-package cl.estencia.labs.muplayer.audio.track;
+package cl.estencia.labs.muplayer.audio.track.factory;
 
-import cl.estencia.labs.muplayer.audio.player.Player;
+import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.format.FlacTrack;
 import cl.estencia.labs.muplayer.audio.track.format.MP3Track;
 import cl.estencia.labs.muplayer.audio.track.format.OGGTrack;
 import cl.estencia.labs.muplayer.audio.track.format.PCMTrack;
 import cl.estencia.labs.muplayer.exception.FormatNotSupportedException;
+import cl.estencia.labs.muplayer.listener.notifier.internal.TrackInternalEventNotifier;
 import cl.estencia.labs.muplayer.model.AudioFileExtension;
 import cl.estencia.labs.muplayer.util.FileUtil;
 import cl.estencia.labs.muplayer.util.LogUtil;
@@ -17,16 +18,16 @@ import java.io.File;
 public class StandardTrackFactory implements TrackFactory {
 
     @Override
-    public Track getTrack(File dataSource, Player player) {
+    public Track getTrack(File dataSource, TrackInternalEventNotifier internalEventNotifier) throws FormatNotSupportedException {
         try {
             String fileFormatName = FileUtil.getFileFormatName(dataSource);
             AudioFileExtension audioFileExtension = AudioFileExtension.valueOf(fileFormatName);
 
             return switch (audioFileExtension) {
-                case au, wav, aiff, aifc, snd -> new PCMTrack(dataSource, player);
-                case mp3 -> new MP3Track(dataSource, player);
-                case flac -> new FlacTrack(dataSource, player);
-                case ogg -> new OGGTrack(dataSource, player);
+                case au, wav, aiff, aifc, snd -> new PCMTrack(dataSource, internalEventNotifier);
+                case mp3 -> new MP3Track(dataSource, internalEventNotifier);
+                case flac -> new FlacTrack(dataSource, internalEventNotifier);
+                case ogg -> new OGGTrack(dataSource, internalEventNotifier);
                 default -> throw new FormatNotSupportedException(fileFormatName);
             };
 

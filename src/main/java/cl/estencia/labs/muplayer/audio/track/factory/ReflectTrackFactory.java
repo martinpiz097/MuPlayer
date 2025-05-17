@@ -1,12 +1,14 @@
-package cl.estencia.labs.muplayer.audio.track;
+package cl.estencia.labs.muplayer.audio.track.factory;
 
-import cl.estencia.labs.muplayer.audio.player.Player;
+import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.exception.FormatNotSupportedException;
 import cl.estencia.labs.muplayer.exception.MuPlayerException;
+import cl.estencia.labs.muplayer.listener.notifier.internal.TrackInternalEventNotifier;
 import cl.estencia.labs.muplayer.util.TrackClassLoader;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
+import java.util.Objects;
+import java.util.Optional;
 
 import static cl.estencia.labs.muplayer.util.FileUtil.getFileFormatName;
 
@@ -17,25 +19,22 @@ public class ReflectTrackFactory implements TrackFactory {
         this.trackClassLoader = new TrackClassLoader();
     }
 
-    private Track instanceTrackFromClass(File dataSource, Player player) {
+    private Track instanceTrackFromClass(Object... parameter) {
         var listInitConstructors = trackClassLoader.getListInitConstructors();
 
-        Track track = null;
-        for (Constructor<? extends Track> initConstructor : listInitConstructors) {
-            track = trackClassLoader.tryInstance(initConstructor,
-                    dataSource, player);
-            if (track != null) {
-                break;
-            }
-        }
+        Optional<Track> instance = listInitConstructors.parallelStream()
+                .map(initConstructor ->
+                        (Track) trackClassLoader.tryInstance(initConstructor, parameter))
+                .filter(Objects::nonNull)
+                .findFirst();
 
-        return track;
+        return instance.orElse(null);
     }
 
     @Override
-    public Track getTrack(File dataSource, Player player) {
+    public Track getTrack(File dataSource, TrackInternalEventNotifier internalEventNotifier) throws FormatNotSupportedException {
         if (dataSource != null && dataSource.exists()) {
-            Track result = instanceTrackFromClass(dataSource, player);
+            Track result = instanceTrackFromClass(dataSource, internalEventNotifier);
             if (result == null) {
                 throw new FormatNotSupportedException(
                         getFileFormatName(dataSource.getName()));

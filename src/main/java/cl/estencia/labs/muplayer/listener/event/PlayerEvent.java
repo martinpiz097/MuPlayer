@@ -9,5 +9,6 @@ import java.util.List;
 
 public record PlayerEvent(PlayerEventType type,
                           Player player,
+
                           List<Track> listTracks,
                           List<File> listFolders) {}

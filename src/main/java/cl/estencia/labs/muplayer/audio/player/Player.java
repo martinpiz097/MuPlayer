@@ -3,6 +3,7 @@ package cl.estencia.labs.muplayer.audio.player;
 import cl.estencia.labs.muplayer.listener.PlayerListener;
 import cl.estencia.labs.muplayer.interfaces.ControllableMusic;
 import cl.estencia.labs.muplayer.interfaces.ReportablePlayer;
+import cl.estencia.labs.muplayer.listener.TrackStateListener;
 import cl.estencia.labs.muplayer.model.SeekOption;
 
 import java.io.File;
@@ -30,9 +31,17 @@ public abstract class Player extends AudioComponent implements ControllableMusic
     public abstract void shutdown();
 
     public abstract void addPlayerListener(PlayerListener listener);
-    public abstract List<PlayerListener> getListeners();
+    public abstract void addTrackListener(TrackStateListener trackStateListener);
+    public abstract List<PlayerListener> getPlayerListeners();
+    public abstract List<TrackStateListener> getTrackListeners();
     public abstract void removePlayerListener(PlayerListener reference);
-    public abstract void removeAllListeners();
+    public abstract void removeTrackListener(TrackStateListener trackStateListener);
+    public abstract void removeAllPlayerListeners();
+    public abstract void removeAllTrackListeners();
+    public void removeAllListeners() {
+        removeAllTrackListeners();
+        removeAllPlayerListeners();
+    }
     //public abstract void reloadTracks();
 
 }

@@ -1,7 +1,8 @@
 package cl.estencia.labs.muplayer.audio.track.state;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.listener.notifier.TrackEventNotifier;
+import cl.estencia.labs.muplayer.listener.notifier.internal.TrackInternalEventNotifier;
+import cl.estencia.labs.muplayer.listener.notifier.user.TrackUserEventNotifier;
 import lombok.extern.java.Log;
 
 import java.util.logging.Level;
@@ -9,16 +10,19 @@ import java.util.logging.Level;
 @Log
 public class StoppedState extends TrackState {
 
-    public StoppedState(Track track, TrackEventNotifier notifier) {
-        super(track, TrackStateName.STOPPED, notifier);
+    public StoppedState(Track track,
+                         TrackInternalEventNotifier internalEventNotifier,
+                         TrackUserEventNotifier userEventNotifier) {
+        super(TrackStateName.STOPPED, track, internalEventNotifier, userEventNotifier);
     }
 
     @Override
-    protected void handle() {
-       synchronized (track) {
+    public void handle() {
+        sendStateEvent();
+        synchronized (track) {
            try {
                track.resetStream();
-               trackData.setSecsSeeked(0);
+               trackStatusData.setSecsSeeked(0);
                track.wait();
            } catch (Exception e) {
                log.log(Level.SEVERE, e.getMessage());

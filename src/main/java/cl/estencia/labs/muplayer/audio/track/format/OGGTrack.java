@@ -1,9 +1,9 @@
 package cl.estencia.labs.muplayer.audio.track.format;
 
-import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.decoder.DefaultAudioDecoder;
 import cl.estencia.labs.muplayer.audio.track.header.HeaderData;
+import cl.estencia.labs.muplayer.listener.notifier.internal.TrackInternalEventNotifier;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.LineUnavailableException;
@@ -13,20 +13,12 @@ import java.io.IOException;
 
 public class OGGTrack extends Track {
 
-    public OGGTrack(File dataSource) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        super(dataSource, new DefaultAudioDecoder(dataSource));
+    public OGGTrack(String trackPath, TrackInternalEventNotifier internalEventNotifier) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        this(new File(trackPath), internalEventNotifier);
     }
 
-    public OGGTrack(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        super(trackPath, new DefaultAudioDecoder(trackPath));
-    }
-
-    public OGGTrack(File dataSource, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        super(dataSource, new DefaultAudioDecoder(dataSource), player);
-    }
-
-    public OGGTrack(String trackPath, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        super(trackPath, new DefaultAudioDecoder(trackPath), player);
+    public OGGTrack(File dataSource, TrackInternalEventNotifier internalEventNotifier) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        super(dataSource, new DefaultAudioDecoder(dataSource), internalEventNotifier);
     }
 
     @Override

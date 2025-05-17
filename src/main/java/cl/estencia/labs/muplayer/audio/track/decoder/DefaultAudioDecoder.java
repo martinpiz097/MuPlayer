@@ -1,6 +1,6 @@
 package cl.estencia.labs.muplayer.audio.track.decoder;
 
-import cl.estencia.labs.aucom.io.AudioDecoder;
+import cl.estencia.labs.aucom.core.io.AudioDecoder;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.UnsupportedAudioFileException;

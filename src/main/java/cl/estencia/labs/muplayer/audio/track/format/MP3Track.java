@@ -1,9 +1,9 @@
 package cl.estencia.labs.muplayer.audio.track.format;
 
-import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.decoder.DefaultAudioDecoder;
 import cl.estencia.labs.muplayer.audio.track.header.HeaderData;
+import cl.estencia.labs.muplayer.listener.notifier.internal.TrackInternalEventNotifier;
 import lombok.extern.java.Log;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.mp3.MP3AudioHeader;
@@ -16,24 +16,12 @@ import java.io.IOException;
 @Log
 public class MP3Track extends Track {
 
-    public MP3Track(File dataSource) throws IOException,
-            UnsupportedAudioFileException, LineUnavailableException, InvalidAudioFrameException {
-        this(dataSource, null);
+    public MP3Track(String trackPath, TrackInternalEventNotifier internalEventNotifier) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        this(new File(trackPath), internalEventNotifier);
     }
 
-    public MP3Track(File dataSource, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException, InvalidAudioFrameException {
-        super(dataSource, new DefaultAudioDecoder(dataSource), player);
-    }
-
-    public MP3Track(String trackPath)
-            throws UnsupportedAudioFileException, IOException,
-            LineUnavailableException, InvalidAudioFrameException {
-        this(new File(trackPath), null);
-    }
-
-    public MP3Track(String trackPath, Player player) throws LineUnavailableException, IOException,
-            UnsupportedAudioFileException, InvalidAudioFrameException {
-        this(new File(trackPath), player);
+    public MP3Track(File dataSource, TrackInternalEventNotifier internalEventNotifier) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        super(dataSource, new DefaultAudioDecoder(dataSource), internalEventNotifier);
     }
 
     private long calculateFrameSize(MP3AudioHeader mp3AudioHeader) {

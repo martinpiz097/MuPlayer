@@ -1,8 +1,8 @@
 package cl.estencia.labs.muplayer.audio.track.format;
 
-import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.decoder.FlacAudioDecoder;
+import cl.estencia.labs.muplayer.listener.notifier.internal.TrackInternalEventNotifier;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -13,20 +13,12 @@ import java.io.IOException;
 
 public class FlacTrack extends Track {
 
-    public FlacTrack(File dataSource) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        super(dataSource, new FlacAudioDecoder(dataSource));
+    public FlacTrack(String trackPath, TrackInternalEventNotifier internalEventNotifier) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        this(new File(trackPath), internalEventNotifier);
     }
 
-    public FlacTrack(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        super(trackPath, new FlacAudioDecoder(trackPath));
-    }
-
-    public FlacTrack(File dataSource, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        super(dataSource, new FlacAudioDecoder(dataSource), player);
-    }
-
-    public FlacTrack(String trackPath, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        super(trackPath, new FlacAudioDecoder(trackPath), player);
+    public FlacTrack(File dataSource, TrackInternalEventNotifier internalEventNotifier) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        super(dataSource, new FlacAudioDecoder(dataSource), internalEventNotifier);
     }
 
     @Override

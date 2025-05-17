@@ -1,6 +1,6 @@
 package cl.estencia.labs.muplayer.audio.track.io;
 
-import cl.estencia.labs.aucom.audio.device.Speaker;
+import cl.estencia.labs.aucom.core.device.output.Speaker;
 import lombok.Data;
 import lombok.extern.java.Log;
 
@@ -29,19 +29,6 @@ public class TrackIOUtil {
         }
     }
 
-    public Speaker initSpeaker(AudioFormat format) {
-        final Speaker speaker = new Speaker(format);
-        speaker.open();
-
-        return speaker;
-    }
-
-    public Speaker initSpeaker(AudioInputStream decodedInputStream) {
-        return decodedInputStream != null
-                ? initSpeaker(decodedInputStream.getFormat())
-                : null;
-    }
-
     public double getSecondsPosition(Speaker speaker) {
         SourceDataLine driver = speaker.getDriver();
         if (driver == null) {
@@ -49,18 +36,5 @@ public class TrackIOUtil {
         }
         return ((double) driver.getMicrosecondPosition()) / 1000000;
     }
-
-//    public AudioFileFormat getAudioFileFormat(Object dataSource) throws IOException, UnsupportedAudioFileException {
-//        if (audioReader != null && dataSource != null) {
-//            if (dataSource instanceof File) {
-//                return audioReader.getAudioFileFormat((File) dataSource);
-//            } else if (dataSource instanceof InputStream) {
-//                return audioReader.getAudioFileFormat((InputStream) dataSource);
-//            } else {
-//                return audioReader.getAudioFileFormat((URL) dataSource);
-//            }
-//        }
-//        return null;
-//    }
 
 }

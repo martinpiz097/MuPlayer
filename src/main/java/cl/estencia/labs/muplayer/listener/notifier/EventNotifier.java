@@ -1,8 +1,11 @@
 package cl.estencia.labs.muplayer.listener.notifier;
 
+import cl.estencia.labs.muplayer.interfaces.Listenable;
+import cl.estencia.labs.muplayer.listener.TrackStateListener;
 import lombok.Getter;
 import lombok.extern.java.Log;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -11,18 +14,15 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Log
-public abstract class EventNotifier<L, E> extends Thread {
-    @Getter protected final List<L> listInternalListeners;
-
-    @Getter protected final List<L> listUserListeners;
+public abstract class EventNotifier<L, E> extends Thread implements Listenable<L, E> {
+    @Getter protected final List<L> listListeners;
     protected final Deque<E> eventsQueue;
 
     protected final AtomicBoolean on;
     protected final AtomicBoolean notified;
 
     public EventNotifier() {
-        this.listInternalListeners = new ArrayList<>();
-        this.listUserListeners = new LinkedList<>();
+        this.listListeners = new ArrayList<>();
         this.eventsQueue = new LinkedList<>();
 
         this.notified = new AtomicBoolean(false);
@@ -42,73 +42,58 @@ public abstract class EventNotifier<L, E> extends Thread {
             return CompletableFuture.runAsync(() -> {});
         }
 
-        var internalEventsTask = CompletableFuture.runAsync(() ->
-                listInternalListeners.parallelStream().forEach(
+        return CompletableFuture.runAsync(() ->
+                listListeners.parallelStream().forEach(
                         listener ->
                                 onEventNotified(listener, event)));
-
-        var userEventsTask = CompletableFuture.runAsync(() ->
-                listUserListeners.parallelStream().forEach(
-                        listener ->
-                                onEventNotified(listener, event)
-                ));
-
-        return CompletableFuture.allOf(internalEventsTask, userEventsTask);
     }
 
-    public void addInternalListener(L L) {
-        synchronized (listInternalListeners) {
-            listInternalListeners.add(L);
+    @Override
+    public void addListener(L listener) {
+        synchronized (listListeners) {
+            listListeners.add(listener);
         }
     }
 
-    public void removeInternalListener(L L) {
-        synchronized (listInternalListeners) {
-            listInternalListeners.remove(L);
+    @Override
+    public List<L> getAllListeners() {
+        return listListeners;
+    }
+
+    @Override
+    public void removeListener(L listener) {
+        synchronized (listListeners) {
+            listListeners.remove(listener);
         }
     }
 
-    public void removeAllInternalListeners() {
-        synchronized (listInternalListeners) {
-            listInternalListeners.clear();
-        }
-    }
-    
-    public void addUserListener(L L) {
-        synchronized (listUserListeners) {
-            listUserListeners.add(L);
+    @Override
+    public void removeAllListeners() {
+        synchronized (listListeners) {
+            listListeners.clear();
         }
     }
 
-    public void removeUserListener(L L) {
-        synchronized (listUserListeners) {
-            listUserListeners.remove(L);
-        }
-    }
-
-    public void removeAllUserListeners() {
-        synchronized (listUserListeners) {
-            listUserListeners.clear();
-        }
-    }
-
-    public void sendEvent(E E) {
+    @Override
+    public void sendEvent(E event) {
         synchronized (eventsQueue) {
-            eventsQueue.add(E);
+            eventsQueue.add(event);
         }
         notified.set(true);
     }
 
     public void shutdown() {
-        clearObjects();
         interrupt();
+        clearObjects();
     }
 
     public void clearObjects() {
-        listInternalListeners.clear();
-        listUserListeners.clear();
+        listListeners.clear();
         eventsQueue.clear();
+        clearCustomObjects();
     }
+
+    public abstract void clearCustomObjects();
 
     @Override
     public void run() {

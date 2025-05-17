@@ -4,8 +4,10 @@ import cl.estencia.labs.muplayer.cache.CacheManager;
 import cl.estencia.labs.muplayer.cache.CacheVar;
 import cl.estencia.labs.muplayer.config.model.LogConfigKeys;
 import cl.estencia.labs.muplayer.config.model.MessagesInfoKeys;
+import cl.estencia.labs.muplayer.config.model.MuPlayerInfoKeys;
 import cl.estencia.labs.muplayer.config.reader.LogConfigReader;
 import cl.estencia.labs.muplayer.config.reader.MessagesInfoReader;
+import cl.estencia.labs.muplayer.config.reader.MuPlayerInfoReader;
 import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
 import cl.estencia.labs.muplayer.console.runner.DaemonRunner;
 import cl.estencia.labs.muplayer.console.runner.LocalRunner;
@@ -19,6 +21,7 @@ import java.util.logging.LogManager;
 public class Main {
 
     public static void main(String[] args) {
+        setJvmAppName();
         MessagesInfoReader messagesInfoReader = MessagesInfoReader.getInstance();
         CacheManager globalCache = CacheManager.getGlobalCache();
 
@@ -61,6 +64,12 @@ public class Main {
             e.printStackTrace();
             log.severe("Error on MuPlayer class: " + e);
         }
+    }
+
+    private static void setJvmAppName() {
+        MuPlayerInfoReader muPlayerInfo = MuPlayerInfoReader.getInstance();
+        System.setProperty("jvm.name", "MuPlayer v" + muPlayerInfo.getProperty(
+                MuPlayerInfoKeys.MU_PLAYER_VERSION));
     }
 
     private static void loadLogConfig() {

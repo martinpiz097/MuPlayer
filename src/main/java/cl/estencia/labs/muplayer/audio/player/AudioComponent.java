@@ -1,19 +1,19 @@
 package cl.estencia.labs.muplayer.audio.player;
 
-import cl.estencia.labs.aucom.audio.AudioHardware;
+import cl.estencia.labs.aucom.core.util.AudioSystemManager;
 
 public abstract class AudioComponent extends Thread {
-    protected final AudioHardware audioHardware;
+    protected final AudioSystemManager audioSystemManager;
 
     protected AudioComponent() {
-        this.audioHardware = new AudioHardware();
+        this.audioSystemManager = new AudioSystemManager();
     }
 
     public float getSystemVolume() {
-        return new AudioHardware().getFormattedSpeakerVolume();
+        return audioSystemManager.getFormattedSpeakerVolume();
     }
     public void setSystemVolume(float volume) {
-        audioHardware.setFormattedSpeakerVolume(volume);
+        audioSystemManager.setFormattedSpeakerVolume(volume);
     }
 
 }

@@ -1,19 +1,22 @@
 package cl.estencia.labs.muplayer.audio.track;
 
-import cl.estencia.labs.aucom.audio.device.Speaker;
-import cl.estencia.labs.aucom.io.AudioDecoder;
+import cl.estencia.labs.aucom.core.device.output.Speaker;
+import cl.estencia.labs.aucom.core.io.AudioDecoder;
 import cl.estencia.labs.muplayer.audio.info.AudioTag;
 import cl.estencia.labs.muplayer.audio.player.AudioComponent;
-import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.header.HeaderData;
 import cl.estencia.labs.muplayer.audio.track.io.TrackIOUtil;
 import cl.estencia.labs.muplayer.audio.track.state.*;
+import cl.estencia.labs.muplayer.exception.MuPlayerException;
 import cl.estencia.labs.muplayer.interfaces.ControllableMusic;
+import cl.estencia.labs.muplayer.interfaces.Listenable;
 import cl.estencia.labs.muplayer.interfaces.TrackData;
-import cl.estencia.labs.muplayer.listener.notifier.TrackEventNotifier;
+import cl.estencia.labs.muplayer.listener.TrackStateListener;
+import cl.estencia.labs.muplayer.listener.event.TrackEvent;
+import cl.estencia.labs.muplayer.listener.notifier.internal.TrackInternalEventNotifier;
+import cl.estencia.labs.muplayer.listener.notifier.user.TrackUserEventNotifier;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.java.Log;
 import org.jaudiotagger.tag.FieldKey;
 
@@ -21,68 +24,56 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
 import static cl.estencia.labs.aucom.common.AudioConstants.DEFAULT_MAX_VOL;
 import static cl.estencia.labs.aucom.common.AudioConstants.DEFAULT_MIN_VOL;
-import static cl.estencia.labs.aucom.util.DecoderFormatUtil.DEFAULT_VOLUME;
+import static cl.estencia.labs.aucom.core.util.AudioDecodingUtil.DEFAULT_VOLUME;
 
 @EqualsAndHashCode(callSuper = true)
 @Log
-public abstract class Track extends AudioComponent implements Runnable, ControllableMusic, TrackData {
+public abstract class Track extends AudioComponent
+        implements Runnable, ControllableMusic, TrackData, Listenable<TrackStateListener, TrackEvent> {
     @Getter protected final File dataSource;
     @Getter protected final AudioDecoder audioDecoder;
     @Getter protected final TrackIOUtil trackIOUtil;
     @Getter protected final Speaker speaker;
-    @Getter protected final TrackStatusData trackStatusData;
-
-    @Getter
-    protected final TrackEventNotifier notifier;
-
-    @Getter @Setter protected volatile AudioTag tagInfo;
-    protected volatile TrackState trackState;
-
     protected final HeaderData headerData;
 
-    public Track(String trackPath, AudioDecoder audioDecoder) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        this(new File(trackPath), audioDecoder, null);
+    @Getter protected final TrackStatusData trackStatusData;
+    protected final AudioTag tagInfo;
+
+    protected final TrackInternalEventNotifier internalEventNotifier;
+    @Getter protected final TrackUserEventNotifier userEventNotifier;
+
+    protected final AtomicReference<TrackState> trackState;
+
+    public Track(String trackPath, AudioDecoder audioDecoder, TrackInternalEventNotifier internalEventNotifier) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        this(new File(trackPath), audioDecoder, internalEventNotifier);
     }
 
-    public Track(File dataSource, AudioDecoder audioDecoder)
+    public Track(File dataSource, AudioDecoder audioDecoder, TrackInternalEventNotifier internalEventNotifier)
             throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        this(dataSource, audioDecoder, null);
-    }
+        if (internalEventNotifier == null) {
+            throw new MuPlayerException("eventNotifier cannot be null");
+        }
 
-    public Track(String trackPath, AudioDecoder audioDecoder, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        this(new File(trackPath), audioDecoder, player);
-    }
-
-    public Track(File dataSource, AudioDecoder audioDecoder, Player player)
-            throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this.dataSource = dataSource;
         this.audioDecoder = audioDecoder;
         this.trackIOUtil = new TrackIOUtil();
-        this.speaker = trackIOUtil.initSpeaker(audioDecoder.getDecodedStream());
-        this.trackStatusData = new TrackStatusData();
+        this.speaker = new Speaker(audioDecoder.getDecodedStream());
         this.headerData = initHeaderData();
-        this.notifier = new TrackEventNotifier();
-        this.trackState = new UnknownState(this, notifier);
+        this.trackStatusData = new TrackStatusData();
 
-        initValues();
-    }
+        this.internalEventNotifier = internalEventNotifier;
+        this.userEventNotifier = new TrackUserEventNotifier();
 
-    private void initValues() {
-        try {
-            trackStatusData.setSecsSeeked(0);
-            trackStatusData.setBytesPerSecond(0);
-            trackStatusData.setVolume(DEFAULT_VOLUME);
-            trackStatusData.setMute(false);
-            trackStatusData.setCanTrackContinue(true);
-            setTagInfo(loadTagInfo(dataSource));
-        } catch (Exception e) {
-            log.log(Level.SEVERE, e.getMessage());
-            finish();
-        }
+        this.tagInfo = loadTagInfo(dataSource);
+        this.trackState = new AtomicReference<>();
+
+        this.trackState.set(new UnknownState(this, internalEventNotifier, userEventNotifier));
     }
 
     protected abstract double convertSecondsToBytes(Number seconds);
@@ -114,7 +105,7 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
     }*/
 
     public TrackStateName getStateName() {
-        return trackState.getName();
+        return trackState.get().getName();
     }
 
     @Override
@@ -154,14 +145,14 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
     @Override
     public void play() {
         if (isAlive()) {
-            trackState = new PlayingState(this, notifier);
+            trackState.set(new PlayingState(this, internalEventNotifier, userEventNotifier));
         }
     }
 
     @Override
     public void pause() {
         if (isPlaying()) {
-            trackState = new PausedState(this, notifier);
+            trackState.set(new PausedState(this, internalEventNotifier, userEventNotifier));
         }
     }
 
@@ -178,7 +169,7 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
     @Override
     public synchronized void stopTrack() {
         if (isAlive() && (isPlaying() || isPaused())) {
-            trackState = new StoppedState(this, notifier);
+            trackState.set(new StoppedState(this, internalEventNotifier, userEventNotifier));
         }
     }
 
@@ -189,7 +180,7 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
     }
 
     public void finish() {
-        trackState = new FinishedState(this, notifier);
+        trackState.set(new FinishedState(this, internalEventNotifier, userEventNotifier));
     }
 
     // en este caso pasan a ser seconds
@@ -232,7 +223,8 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
             final int gotoValue = (int) Math.round(second - getProgress());
             seek(gotoValue);
         } else {
-            trackState = new ReverberatedState(this, second, notifier);
+            trackState.set(new ReverberatedState(this,
+                    internalEventNotifier, userEventNotifier, second));
         }
     }
 
@@ -248,7 +240,7 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
         if (trackIOUtil != null && trackIOUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedStream())) {
             speaker.setVolume(volume);
             if (trackStatusData.isVolumeZero()) {
-                audioHardware.setMuteValue(speaker.getDriver(), true);
+                audioSystemManager.setMuteValue(speaker.getDriver(), true);
             }
         }
     }
@@ -257,7 +249,7 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
     public void mute() {
         trackStatusData.setMute(true);
         if (trackIOUtil != null && trackIOUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedStream())) {
-            audioHardware.setMuteValue(speaker.getDriver(), trackStatusData.isMute());
+            audioSystemManager.setMuteValue(speaker.getDriver(), trackStatusData.isMute());
         }
     }
 
@@ -272,7 +264,7 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
             trackStatusData.setMute(false);
         }
         if (trackIOUtil != null && trackIOUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedStream())) {
-            audioHardware.setMuteValue(speaker.getDriver(), false);
+            audioSystemManager.setMuteValue(speaker.getDriver(), false);
         }
     }
 
@@ -340,18 +332,44 @@ public abstract class Track extends AudioComponent implements Runnable, Controll
         if (getState() == State.NEW) {
             super.start();
         } else {
-            trackState = new StartedState(this, notifier);
+            throw new MuPlayerException("Already started track");
         }
     }
 
     @Override
+    public void addListener(TrackStateListener listener) {
+        userEventNotifier.addListener(listener);
+    }
+
+    @Override
+    public List<TrackStateListener> getAllListeners() {
+        return userEventNotifier.getAllListeners();
+    }
+
+    @Override
+    public void removeListener(TrackStateListener listener) {
+        userEventNotifier.removeListener(listener);
+    }
+
+    @Override
+    public void removeAllListeners() {
+        userEventNotifier.removeAllListeners();
+    }
+
+    @Override
+    public void sendEvent(TrackEvent trackEvent) {
+        userEventNotifier.sendEvent(trackEvent);
+        internalEventNotifier.sendEvent(trackEvent);
+    }
+
+    @Override
     public void run() {
-        trackState = new StartedState(this, notifier);
+        trackState.set(new StartedState(this, internalEventNotifier, userEventNotifier));
         while (trackStatusData.canTrackContinue()) {
-            trackState.execute();
-            System.out.println("WHILE");
+            trackState.get().handle();
+            System.out.println("WHILE " + getTitle());
         }
 
-        System.out.println();
+        System.out.println("TRACK CLOSED " + getTitle());
     }
 }

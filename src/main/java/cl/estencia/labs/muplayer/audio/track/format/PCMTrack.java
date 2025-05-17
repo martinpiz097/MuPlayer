@@ -1,8 +1,8 @@
 package cl.estencia.labs.muplayer.audio.track.format;
 
-import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.decoder.DefaultAudioDecoder;
+import cl.estencia.labs.muplayer.listener.notifier.internal.TrackInternalEventNotifier;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.LineUnavailableException;
@@ -12,20 +12,12 @@ import java.io.IOException;
 
 public class PCMTrack extends Track {
 
-    public PCMTrack(File dataSource) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        super(dataSource, new DefaultAudioDecoder(dataSource));
+    public PCMTrack(String trackPath, TrackInternalEventNotifier internalEventNotifier) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        this(new File(trackPath), internalEventNotifier);
     }
 
-    public PCMTrack(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        super(trackPath, new DefaultAudioDecoder(trackPath));
-    }
-
-    public PCMTrack(File dataSource, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        super(dataSource, new DefaultAudioDecoder(dataSource), player);
-    }
-
-    public PCMTrack(String trackPath, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        super(trackPath, new DefaultAudioDecoder(trackPath), player);
+    public PCMTrack(File dataSource, TrackInternalEventNotifier internalEventNotifier) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        super(dataSource, new DefaultAudioDecoder(dataSource), internalEventNotifier);
     }
 
     @Override

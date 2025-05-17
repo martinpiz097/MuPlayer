@@ -1,15 +1,20 @@
 package cl.estencia.labs.muplayer.audio.track.state;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.listener.notifier.TrackEventNotifier;
+import cl.estencia.labs.muplayer.listener.notifier.internal.TrackInternalEventNotifier;
+import cl.estencia.labs.muplayer.listener.notifier.user.TrackUserEventNotifier;
 
 public class PausedState extends TrackState {
-    public PausedState(Track track, TrackEventNotifier notifier) {
-        super(track, TrackStateName.PAUSED, notifier);
+
+    public PausedState(Track track,
+                         TrackInternalEventNotifier internalEventNotifier,
+                         TrackUserEventNotifier userEventNotifier) {
+        super(TrackStateName.PAUSED, track, internalEventNotifier, userEventNotifier);
     }
 
     @Override
-    protected void handle() {
+    public void handle() {
+        sendStateEvent();
         synchronized (track) {
             try {
                 track.wait();

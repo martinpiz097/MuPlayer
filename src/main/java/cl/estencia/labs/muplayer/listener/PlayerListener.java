@@ -2,13 +2,15 @@ package cl.estencia.labs.muplayer.listener;
 
 import cl.estencia.labs.muplayer.listener.event.PlayerEvent;
 
+import java.io.FileNotFoundException;
+
 public interface PlayerListener {
-    void onPreStart(PlayerEvent event);
-    void onStarted(PlayerEvent event);
+    void onPreStart(PlayerEvent event) throws FileNotFoundException;
+    void onStarted(PlayerEvent event) throws FileNotFoundException;
     void onUpdateTrackList(PlayerEvent event);
     void onCurrentTrackChange(PlayerEvent event);
     void onShutdown(PlayerEvent event);
-    default void onEventReceived(PlayerEvent event) {
+    default void onEventReceived(PlayerEvent event) throws FileNotFoundException {
         switch (event.type()) {
             case PRE_START -> onPreStart(event);
             case START -> onStarted(event);

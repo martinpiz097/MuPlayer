@@ -2,41 +2,55 @@ package cl.estencia.labs.muplayer.util;
 
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.player.PlayerStatusData;
-import cl.estencia.labs.muplayer.audio.track.StandardTrackFactory;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.audio.track.TrackFactory;
+import cl.estencia.labs.muplayer.audio.track.factory.StandardTrackFactory;
+import cl.estencia.labs.muplayer.audio.track.factory.TrackFactory;
 import cl.estencia.labs.muplayer.exception.FormatNotSupportedException;
 import cl.estencia.labs.muplayer.listener.PlayerEventType;
 import cl.estencia.labs.muplayer.listener.PlayerListener;
+import cl.estencia.labs.muplayer.listener.TrackStateListener;
 import cl.estencia.labs.muplayer.listener.event.PlayerEvent;
-import cl.estencia.labs.muplayer.listener.notifier.PlayerEventNotifier;
-import cl.estencia.labs.muplayer.model.AudioFileExtension;
+import cl.estencia.labs.muplayer.listener.notifier.internal.PlayerInternalEventNotifier;
+import cl.estencia.labs.muplayer.listener.notifier.internal.TrackInternalEventNotifier;
+import cl.estencia.labs.muplayer.listener.notifier.user.PlayerUserEventNotifier;
 import cl.estencia.labs.muplayer.model.SeekOption;
+import cl.estencia.labs.muplayer.model.SupportedAudioExtensions;
 import cl.estencia.labs.muplayer.model.TrackIndexed;
+import cl.estencia.labs.muplayer.service.LogService;
+import cl.estencia.labs.muplayer.service.impl.LogServiceImpl;
 import lombok.extern.java.Log;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static cl.estencia.labs.muplayer.listener.PlayerEventType.CHANGED_CURRENT_TRACK;
+import static cl.estencia.labs.muplayer.listener.PlayerEventType.UPDATED_TRACK_LIST;
 import static cl.estencia.labs.muplayer.model.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.thread.ThreadUtil.generateTrackThreadName;
 
 @Log
 public class MuPlayerUtil {
     private final Player player;
-    private final AtomicReference<Track> current;
     private final List<Track> listTracks;
     private final List<File> listFolders;
     private final PlayerStatusData playerStatusData;
-    private final PlayerEventNotifier playerEventNotifier;
+    private final PlayerInternalEventNotifier internalEventNotifier;
 
     private final TrackFactory trackFactory;
     private final FilterUtil filterUtil;
+
+    private final List<TrackStateListener> listInternalTrackListeners;
+
+    private final LogService logService;
 
     private static final byte NULL_INDEX_VALUE = Byte.MIN_VALUE;
 
@@ -51,51 +65,55 @@ public class MuPlayerUtil {
 
     public static final Comparator<File> FOLDERS_COMPARATOR = Comparator.comparing(File::getPath);
 
-    public MuPlayerUtil(Player player, PlayerStatusData playerStatusData, PlayerEventNotifier playerEventNotifier) {
+    public MuPlayerUtil(Player player, PlayerStatusData playerStatusData,
+                        PlayerInternalEventNotifier internalEventNotifier,
+                        List<TrackStateListener> listInternalTrackListeners) {
         this.player = player;
-        this.current = player.getCurrentTrack();
         this.listTracks = player.getTracks();
         this.listFolders = player.getListFolders();
         this.playerStatusData = playerStatusData;
-        this.playerEventNotifier = playerEventNotifier;
+        this.internalEventNotifier = internalEventNotifier;
         this.trackFactory = new StandardTrackFactory();
         this.filterUtil = new FilterUtil();
+        this.listInternalTrackListeners = listInternalTrackListeners;
 
-        configurePlayer();
+        this.logService = new LogServiceImpl();
     }
 
-    private void configurePlayer() {
-        this.playerEventNotifier.addInternalListener(createDefaultListener());
-        this.playerEventNotifier.start();
-    }
-
-    private boolean existsNewIndex() {
+    private boolean existsNewIndex(PlayerStatusData playerStatusData) {
         return playerStatusData.getNewTrackIndex() != NULL_INDEX_VALUE;
     }
 
-    private void deleteNewIndex() {
-        playerStatusData.setNewTrackIndex(NULL_INDEX_VALUE);
-    }
-
-    private int getIndexToPlay(SeekOption seekOption) {
-        return existsNewIndex()
+    private int getIndexToPlay(SeekOption seekOption, PlayerStatusData playerStatusData) {
+        return existsNewIndex(playerStatusData)
                 ? playerStatusData.getNewTrackIndex()
                 : getIndexFromOption(seekOption);
     }
 
-    private void moveNewIndexCursorIfNotExists(SeekOption seekOption) {
-        if (!existsNewIndex()) {
-            final int index = getIndexToPlay(seekOption);
+    private void moveNewIndexCursorIfNotExists(SeekOption seekOption, PlayerStatusData playerStatusData) {
+        if (!existsNewIndex(playerStatusData)) {
+            final int index = getIndexToPlay(seekOption, playerStatusData);
             playerStatusData.setNewTrackIndex(index);
         }
     }
 
+    // agregar los listeners (internals y user) del track anterior
+    private void configureTrackEvents(TrackInternalEventNotifier newTrackEventNotifier) {
+        if (listInternalTrackListeners.isEmpty()) {
+            TrackStateListener defaultTrackEvents = createDefaultTrackEvents();
+            listInternalTrackListeners.add(defaultTrackEvents);
+        }
+
+        listInternalTrackListeners.forEach(newTrackEventNotifier::addListener);
+    }
+
     public Track loadTrackFromFile(File audioFile) {
         try {
-            Track track = trackFactory.getTrack(audioFile, player);
-            if (track != null) {
-                loadTrackEvents(track);
-            }
+            TrackInternalEventNotifier trackEventNotifier = new TrackInternalEventNotifier();
+            Track track = trackFactory.getTrack(audioFile,
+                    trackEventNotifier);
+
+            configureTrackEvents(trackEventNotifier);
             return track;
         } catch (FormatNotSupportedException e) {
             log.severe("Error on load track ("
@@ -105,25 +123,90 @@ public class MuPlayerUtil {
         }
     }
 
-    private void recreateCurrentTrackIfExists() {
-        if (current.get() != null) {
-            Track recreatedTrack = loadTrackFromFile(current.get().getDataSource());
+    public void transferUserListeners(Track oldTrack, Track newTrack) {
+        if (oldTrack == null || newTrack == null) {
+            return;
+        }
+
+        oldTrack.getAllListeners().forEach(newTrack::addListener);
+    }
+
+    private void recreateCurrentTrackIfExists(AtomicReference<Track> currentTrack,
+                                              List<Track> listTracks,
+                                              PlayerStatusData playerStatusData) {
+        if (currentTrack.get() != null) {
+            Track recreatedTrack = loadTrackFromFile(currentTrack.get().getDataSource());
             int currentTrackIndex = playerStatusData.getCurrentTrackIndex();
 
             listTracks.set(currentTrackIndex, recreatedTrack);
         }
     }
 
-    private PlayerListener createDefaultListener() {
+    private void loadTracks(File folderToLoad) {
+//        Files.find()
+        try (Stream<Path> folderPaths = Files.walk(
+                Path.of(folderToLoad.toURI())).parallel()) {
+            if (player.hasSounds()) {
+                listTracks.clear();
+                listFolders.clear();
+            }
+
+            folderPaths
+                    .filter(this::hasAudioFormatExtension)
+                    .map(path -> loadTrackFromFile(path.toFile()))
+                    .filter(Objects::nonNull)
+                    .sorted(MuPlayerUtil.TRACKS_SORT_COMPARATOR)
+                    .sequential()
+                    .forEach(listTracks::add);
+
+            listTracks.parallelStream()
+                    .map(track -> track.getDataSource().getParentFile())
+                    .distinct()
+                    .sorted(MuPlayerUtil.FOLDERS_COMPARATOR)
+                    .sequential()
+                    .forEach(listFolders::add);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+    
+    private void setupTracksList() {
+        loadTracks(player.getRootFolder());
+        internalEventNotifier.sendEvent(createPlayerEvent(UPDATED_TRACK_LIST));
+    }
+
+    private void checkRootFolder(Player player) throws FileNotFoundException {
+        File rootFolder = player.getRootFolder();
+        if (rootFolder != null && rootFolder.exists()
+                && filterUtil.getDirectoriesFilter().accept(rootFolder)) {
+            setupTracksList();
+        } else if (rootFolder == null) {
+            logService.warningLog("To set music folder run this: smf ${music-folder-path}\n");
+        } else {
+            throw new FileNotFoundException(rootFolder.getPath());
+        }
+    }
+
+    public PlayerListener createDefaultListener() {
         return new PlayerListener() {
             @Override
-            public void onPreStart(PlayerEvent event) {
+            public void onPreStart(PlayerEvent event) throws FileNotFoundException {
                 log.info("Pre start");
             }
 
             @Override
-            public void onStarted(PlayerEvent event) {
-                log.info("Player started!!");
+            public void onStarted(PlayerEvent event) throws FileNotFoundException {
+                log.info("Start");
+
+                Player eventPlayer = event.player();
+                PlayerStatusData statusData = eventPlayer.getPlayerStatusData();
+
+                checkRootFolder(eventPlayer);
+                statusData.setOn(true);
+                waitForSongs(eventPlayer);
+
+                eventPlayer.play(0);
             }
 
             @Override
@@ -133,12 +216,32 @@ public class MuPlayerUtil {
 
             @Override
             public void onCurrentTrackChange(PlayerEvent event) {
-                Track current = event.player().getCurrentTrack().get();
-                if (current != null) {
-                    log.info("New current: " + current.getTitle());
+                Player eventPlayer = event.player();
+                PlayerStatusData statusData = eventPlayer.getPlayerStatusData();
+                AtomicReference<Track> oldTrackRef = eventPlayer.getCurrentTrack();
+
+                moveNewIndexCursorIfNotExists(NEXT, statusData);
+                recreateCurrentTrackIfExists(oldTrackRef,
+                        event.listTracks(),
+                        eventPlayer.getPlayerStatusData());
+
+                final int index = statusData.getNewTrackIndex();
+                statusData.setCurrentTrackIndex(index);
+                playerStatusData.setNewTrackIndex(NULL_INDEX_VALUE);
+
+                Track oldTrack = oldTrackRef.get();
+                Track newTrack = event.listTracks().get(index);
+                transferUserListeners(oldTrack, newTrack);
+
+                oldTrackRef.set(newTrack);
+                startTrackThread(oldTrackRef.get());
+
+                if (newTrack != null) {
+                    log.info("New current track: " + newTrack.getTitle());
                 } else {
-                    log.info("New current is null");
+                    log.info("New current track is null");
                 }
+
             }
 
             @Override
@@ -146,17 +249,18 @@ public class MuPlayerUtil {
                 event.listFolders().clear();
                 event.listTracks().clear();
 
-                event.player().removeAllListeners();
+                event.player().removeAllPlayerListeners();
             }
         };
     }
 
-    private void loadTrackEvents(Track track) {
-        track.getNotifier().addInternalListener(trackEvent -> {
+    // idealmente que aca vayan operaciones especificas del player, las de track deberian gestionarse
+    // en los estados
+    private TrackStateListener createDefaultTrackEvents() {
+        return trackEvent -> {
             switch (trackEvent.trackStateName()) {
                 case FINISHED -> {
-                    moveNewIndexCursorIfNotExists(NEXT);
-                    playTrackByNewIndex();
+                    internalEventNotifier.sendEvent(createPlayerEvent(CHANGED_CURRENT_TRACK));
                 }
                 case PAUSED -> {
                 }
@@ -172,11 +276,7 @@ public class MuPlayerUtil {
                 case UNKNOWN -> {
                 }
             }
-        });
-    }
-
-    public synchronized int getSongsCount() {
-        return listTracks.size();
+        };
     }
 
     public boolean hasAudioFormatExtension(Path audioFilePath) {
@@ -191,29 +291,18 @@ public class MuPlayerUtil {
         String fileFormatName = FileUtil.getFileFormatName(audioFile);
 
         try {
-            AudioFileExtension.valueOf(fileFormatName);
+            SupportedAudioExtensions.valueOf(fileFormatName);
             return true;
         } catch (Exception e) {
             return false;
         }
     }
 
-    public synchronized void playTrackByNewIndex() {
-        final int index = playerStatusData.getNewTrackIndex();
+    public void waitForSongs(Player player) {
+        PlayerStatusData statusData = player.getPlayerStatusData();
 
-        recreateCurrentTrackIfExists();
-        playerStatusData.setCurrentTrackIndex(index);
-        deleteNewIndex();
-
-        current.set(listTracks.get(index));
-        startTrackThread(current.get());
-
-        playerEventNotifier.sendEvent(createPlayerEvent(CHANGED_CURRENT_TRACK));
-    }
-
-    public void waitForSongs() {
         int songsCount;
-        while (playerStatusData.isOn() && (songsCount = getSongsCount()) == 0) {
+        while (statusData.isOn() && (songsCount = player.getSongsCount()) == 0) {
             try {
                 log.info("WaitForSongs::Songs count: " + songsCount);
                 Thread.sleep(1);
@@ -233,14 +322,14 @@ public class MuPlayerUtil {
         }
     }
 
-    public void startTrackThread(Track current) {
-        if (current != null) {
-            current.setName(generateTrackThreadName(current.getClass(), current));
-            current.setVolume(playerStatusData.getVolume());
+    public void startTrackThread(Track currentTrack) {
+        if (currentTrack != null) {
+            currentTrack.setName(generateTrackThreadName(currentTrack.getClass(), currentTrack));
+            currentTrack.setVolume(playerStatusData.getVolume());
             if (playerStatusData.isMute()) {
-                current.mute();
+                currentTrack.mute();
             }
-            current.start();
+            currentTrack.start();
         }
     }
 
@@ -277,13 +366,13 @@ public class MuPlayerUtil {
 
     public int getIndexFromOption(SeekOption seekOption) {
         final int currentIndex = playerStatusData.getCurrentTrackIndex();
-        final int tracksSize = listTracks.size();
+        final int tracksCount = listTracks.size();
 
         int newIndex;
         if (seekOption == SeekOption.NEXT) {
-            newIndex = currentIndex == tracksSize - 1 ? 0 : currentIndex + 1;
+            newIndex = currentIndex == tracksCount - 1 ? 0 : currentIndex + 1;
         } else {
-            newIndex = currentIndex == 0 ? tracksSize - 1 : currentIndex - 1;
+            newIndex = currentIndex == 0 ? tracksCount - 1 : currentIndex - 1;
         }
 
         return newIndex;

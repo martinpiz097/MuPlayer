@@ -1,6 +1,8 @@
 package cl.estencia.labs.muplayer.interfaces;
 
 import cl.estencia.labs.muplayer.audio.player.PlayerInfo;
+import cl.estencia.labs.muplayer.audio.player.PlayerStatusData;
+import cl.estencia.labs.muplayer.audio.player.ReadableStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.state.TrackStateName;
 import cl.estencia.labs.muplayer.model.Album;
@@ -12,6 +14,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public interface ReportablePlayer {
     TrackStateName getCurrentTrackState();
+    PlayerStatusData getPlayerStatusData();
+    ReadableStatusData getStatusData();
     int getFoldersCount();
     int getSongsCount();
     AtomicReference<Track> getCurrentTrack();
