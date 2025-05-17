@@ -1,6 +1,6 @@
-package cl.estencia.labs.muplayer.listener;
+package cl.estencia.labs.muplayer.event;
 
-import cl.estencia.labs.muplayer.listener.event.PlayerEvent;
+import cl.estencia.labs.muplayer.event.model.PlayerEvent;
 
 import java.io.FileNotFoundException;
 
