@@ -1,7 +1,7 @@
 package cl.estencia.labs.muplayer;
 
-import cl.estencia.labs.muplayer.cache.CacheManager;
-import cl.estencia.labs.muplayer.cache.CacheVar;
+import cl.estencia.labs.muplayer.core.cache.CacheManager;
+import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import cl.estencia.labs.muplayer.config.model.LogConfigKeys;
 import cl.estencia.labs.muplayer.config.model.MessagesInfoKeys;
 import cl.estencia.labs.muplayer.config.model.MuPlayerInfoKeys;

@@ -4,9 +4,9 @@ import cl.estencia.labs.aucom.core.device.output.Speaker;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.io.TrackIOUtil;
 import cl.estencia.labs.muplayer.audio.track.TrackStatusData;
-import cl.estencia.labs.muplayer.listener.event.TrackEvent;
-import cl.estencia.labs.muplayer.listener.notifier.internal.TrackInternalEventNotifier;
-import cl.estencia.labs.muplayer.listener.notifier.user.TrackUserEventNotifier;
+import cl.estencia.labs.muplayer.event.model.TrackEvent;
+import cl.estencia.labs.muplayer.event.notifier.internal.TrackInternalEventNotifier;
+import cl.estencia.labs.muplayer.event.notifier.user.TrackUserEventNotifier;
 import lombok.Getter;
 
 import javax.sound.sampled.AudioInputStream;

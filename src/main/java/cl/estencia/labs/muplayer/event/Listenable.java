@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.interfaces;
+package cl.estencia.labs.muplayer.event;
 
 import java.util.List;
 

@@ -1,8 +1,8 @@
-package cl.estencia.labs.muplayer.listener.notifier.internal;
+package cl.estencia.labs.muplayer.event.notifier.internal;
 
-import cl.estencia.labs.muplayer.listener.TrackStateListener;
-import cl.estencia.labs.muplayer.listener.event.TrackEvent;
-import cl.estencia.labs.muplayer.listener.notifier.EventNotifier;
+import cl.estencia.labs.muplayer.event.listener.TrackStateListener;
+import cl.estencia.labs.muplayer.event.model.TrackEvent;
+import cl.estencia.labs.muplayer.event.notifier.EventNotifier;
 
 public class TrackInternalEventNotifier extends EventNotifier<TrackStateListener, TrackEvent> {
     public TrackInternalEventNotifier() {

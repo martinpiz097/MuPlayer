@@ -1,11 +1,9 @@
-package cl.estencia.labs.muplayer.listener.notifier;
+package cl.estencia.labs.muplayer.event.notifier;
 
-import cl.estencia.labs.muplayer.interfaces.Listenable;
-import cl.estencia.labs.muplayer.listener.TrackStateListener;
+import cl.estencia.labs.muplayer.event.Listenable;
 import lombok.Getter;
 import lombok.extern.java.Log;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;

@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.event;
+package cl.estencia.labs.muplayer.event.listener;
 
 import cl.estencia.labs.muplayer.event.model.PlayerEvent;
 

@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.listener.event;
+package cl.estencia.labs.muplayer.event.model;
 
 import cl.estencia.labs.muplayer.audio.track.state.TrackStateName;
 import cl.estencia.labs.muplayer.interfaces.TrackData;

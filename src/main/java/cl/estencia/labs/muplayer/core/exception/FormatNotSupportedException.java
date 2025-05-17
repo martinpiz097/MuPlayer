@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.exception;
+package cl.estencia.labs.muplayer.core.exception;
 
 public class FormatNotSupportedException extends MuPlayerException {
     public FormatNotSupportedException(String formatName) {

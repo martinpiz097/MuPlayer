@@ -1,9 +1,9 @@
 package cl.estencia.labs.muplayer.audio.track.factory;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.exception.FormatNotSupportedException;
-import cl.estencia.labs.muplayer.exception.MuPlayerException;
-import cl.estencia.labs.muplayer.listener.notifier.internal.TrackInternalEventNotifier;
+import cl.estencia.labs.muplayer.core.exception.FormatNotSupportedException;
+import cl.estencia.labs.muplayer.core.exception.MuPlayerException;
+import cl.estencia.labs.muplayer.event.notifier.internal.TrackInternalEventNotifier;
 import cl.estencia.labs.muplayer.util.TrackClassLoader;
 
 import java.io.File;

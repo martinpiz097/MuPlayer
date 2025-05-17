@@ -1,7 +1,7 @@
 package cl.estencia.labs.muplayer.config.base.json;
 
-import cl.estencia.labs.muplayer.cache.CacheManager;
-import cl.estencia.labs.muplayer.cache.CacheVar;
+import cl.estencia.labs.muplayer.core.cache.CacheManager;
+import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;

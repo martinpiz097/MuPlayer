@@ -1,11 +1,9 @@
 package cl.estencia.labs.muplayer.util;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.listener.notifier.internal.TrackInternalEventNotifier;
 import lombok.Getter;
 import lombok.extern.java.Log;
 
-import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;

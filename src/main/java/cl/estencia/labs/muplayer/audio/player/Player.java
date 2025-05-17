@@ -1,9 +1,9 @@
 package cl.estencia.labs.muplayer.audio.player;
 
-import cl.estencia.labs.muplayer.listener.PlayerListener;
+import cl.estencia.labs.muplayer.event.listener.PlayerListener;
+import cl.estencia.labs.muplayer.event.listener.TrackStateListener;
 import cl.estencia.labs.muplayer.interfaces.ControllableMusic;
 import cl.estencia.labs.muplayer.interfaces.ReportablePlayer;
-import cl.estencia.labs.muplayer.listener.TrackStateListener;
 import cl.estencia.labs.muplayer.model.SeekOption;
 
 import java.io.File;

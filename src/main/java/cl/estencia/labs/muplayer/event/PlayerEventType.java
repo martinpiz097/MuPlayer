@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.listener;
+package cl.estencia.labs.muplayer.event.listener;
 
 public enum PlayerEventType {
     PRE_START,

@@ -5,14 +5,13 @@ import cl.estencia.labs.muplayer.audio.player.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.factory.StandardTrackFactory;
 import cl.estencia.labs.muplayer.audio.track.factory.TrackFactory;
-import cl.estencia.labs.muplayer.exception.FormatNotSupportedException;
-import cl.estencia.labs.muplayer.listener.PlayerEventType;
-import cl.estencia.labs.muplayer.listener.PlayerListener;
-import cl.estencia.labs.muplayer.listener.TrackStateListener;
-import cl.estencia.labs.muplayer.listener.event.PlayerEvent;
-import cl.estencia.labs.muplayer.listener.notifier.internal.PlayerInternalEventNotifier;
-import cl.estencia.labs.muplayer.listener.notifier.internal.TrackInternalEventNotifier;
-import cl.estencia.labs.muplayer.listener.notifier.user.PlayerUserEventNotifier;
+import cl.estencia.labs.muplayer.event.model.PlayerEvent;
+import cl.estencia.labs.muplayer.core.exception.FormatNotSupportedException;
+import cl.estencia.labs.muplayer.event.listener.PlayerEventType;
+import cl.estencia.labs.muplayer.event.listener.PlayerListener;
+import cl.estencia.labs.muplayer.event.listener.TrackStateListener;
+import cl.estencia.labs.muplayer.event.notifier.internal.PlayerInternalEventNotifier;
+import cl.estencia.labs.muplayer.event.notifier.internal.TrackInternalEventNotifier;
 import cl.estencia.labs.muplayer.model.SeekOption;
 import cl.estencia.labs.muplayer.model.SupportedAudioExtensions;
 import cl.estencia.labs.muplayer.model.TrackIndexed;
@@ -32,8 +31,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static cl.estencia.labs.muplayer.listener.PlayerEventType.CHANGED_CURRENT_TRACK;
-import static cl.estencia.labs.muplayer.listener.PlayerEventType.UPDATED_TRACK_LIST;
+import static cl.estencia.labs.muplayer.event.listener.PlayerEventType.CHANGED_CURRENT_TRACK;
+import static cl.estencia.labs.muplayer.event.listener.PlayerEventType.UPDATED_TRACK_LIST;
 import static cl.estencia.labs.muplayer.model.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.thread.ThreadUtil.generateTrackThreadName;
 
@@ -47,6 +46,7 @@ public class MuPlayerUtil {
 
     private final TrackFactory trackFactory;
     private final FilterUtil filterUtil;
+    private final AudioFormatUtil audioFormatUtil;
 
     private final List<TrackStateListener> listInternalTrackListeners;
 
@@ -75,6 +75,7 @@ public class MuPlayerUtil {
         this.internalEventNotifier = internalEventNotifier;
         this.trackFactory = new StandardTrackFactory();
         this.filterUtil = new FilterUtil();
+        this.audioFormatUtil = new AudioFormatUtil();
         this.listInternalTrackListeners = listInternalTrackListeners;
 
         this.logService = new LogServiceImpl();
@@ -87,7 +88,8 @@ public class MuPlayerUtil {
     private int getIndexToPlay(SeekOption seekOption, PlayerStatusData playerStatusData) {
         return existsNewIndex(playerStatusData)
                 ? playerStatusData.getNewTrackIndex()
-                : getIndexFromOption(seekOption);
+                : audioFormatUtil.getIndexFromOption(seekOption, playerStatusData,
+                player.getSongsCount());
     }
 
     private void moveNewIndexCursorIfNotExists(SeekOption seekOption, PlayerStatusData playerStatusData) {
@@ -364,22 +366,10 @@ public class MuPlayerUtil {
         return trackIndexed != null ? trackIndexed.getIndex() : -1;
     }
 
-    public int getIndexFromOption(SeekOption seekOption) {
-        final int currentIndex = playerStatusData.getCurrentTrackIndex();
-        final int tracksCount = listTracks.size();
-
-        int newIndex;
-        if (seekOption == SeekOption.NEXT) {
-            newIndex = currentIndex == tracksCount - 1 ? 0 : currentIndex + 1;
-        } else {
-            newIndex = currentIndex == 0 ? tracksCount - 1 : currentIndex - 1;
-        }
-
-        return newIndex;
-    }
-
     public Track getTrackBySeekOption(SeekOption seekOption) {
-        return listTracks.get(getIndexFromOption(seekOption));
+        int indexFromOption = audioFormatUtil.getIndexFromOption(seekOption, playerStatusData, player.getSongsCount());
+
+        return listTracks.get(indexFromOption);
     }
 
     public PlayerEvent createPlayerEvent(PlayerEventType type) {

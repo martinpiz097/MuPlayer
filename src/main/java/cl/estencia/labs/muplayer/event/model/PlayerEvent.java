@@ -1,8 +1,8 @@
-package cl.estencia.labs.muplayer.listener.event;
+package cl.estencia.labs.muplayer.event.model;
 
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.listener.PlayerEventType;
+import cl.estencia.labs.muplayer.event.listener.PlayerEventType;
 
 import java.io.File;
 import java.util.List;

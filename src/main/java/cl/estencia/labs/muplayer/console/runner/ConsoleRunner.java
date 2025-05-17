@@ -2,7 +2,7 @@ package cl.estencia.labs.muplayer.console.runner;
 
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.audio.player.Player;
-import cl.estencia.labs.muplayer.cache.CacheManager;
+import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import cl.estencia.labs.muplayer.console.ConsoleExecution;
 import cl.estencia.labs.muplayer.console.PlayerCommandInterpreter;
 import lombok.Getter;

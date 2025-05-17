@@ -3,13 +3,13 @@ package cl.estencia.labs.muplayer.console;
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.cache.CacheManager;
 import cl.estencia.labs.muplayer.config.model.ConsoleCodesData;
 import cl.estencia.labs.muplayer.config.reader.ConsoleCodesReader;
 import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
 import cl.estencia.labs.muplayer.console.runner.DaemonRunner;
 import cl.estencia.labs.muplayer.console.runner.LocalRunner;
 import cl.estencia.labs.muplayer.console.runner.RunnerMode;
+import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import cl.estencia.labs.muplayer.model.Album;
 import cl.estencia.labs.muplayer.model.Artist;
 import cl.estencia.labs.muplayer.model.SeekOption;
@@ -35,8 +35,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import static cl.estencia.labs.muplayer.cache.CacheVar.RUNNER;
 import static cl.estencia.labs.muplayer.console.OutputType.*;
+import static cl.estencia.labs.muplayer.core.cache.CacheVar.RUNNER;
 import static java.nio.file.StandardOpenOption.WRITE;
 
 public class PlayerCommandInterpreter implements CommandInterpreter {

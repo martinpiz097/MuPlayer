@@ -1,19 +1,17 @@
 package cl.estencia.labs.muplayer.audio.player;
 
-import cl.estencia.labs.muplayer.listener.PlayerEventType;
-import cl.estencia.labs.muplayer.listener.PlayerListener;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.state.TrackStateName;
-import cl.estencia.labs.muplayer.listener.TrackStateListener;
-import cl.estencia.labs.muplayer.listener.notifier.internal.PlayerInternalEventNotifier;
-import cl.estencia.labs.muplayer.listener.notifier.user.PlayerUserEventNotifier;
+import cl.estencia.labs.muplayer.event.listener.PlayerListener;
+import cl.estencia.labs.muplayer.event.listener.TrackStateListener;
+import cl.estencia.labs.muplayer.event.notifier.internal.PlayerInternalEventNotifier;
+import cl.estencia.labs.muplayer.event.notifier.user.PlayerUserEventNotifier;
 import cl.estencia.labs.muplayer.model.Album;
 import cl.estencia.labs.muplayer.model.Artist;
 import cl.estencia.labs.muplayer.model.SeekOption;
 import cl.estencia.labs.muplayer.model.TrackIndexed;
-import cl.estencia.labs.muplayer.service.LogService;
-import cl.estencia.labs.muplayer.service.impl.LogServiceImpl;
 import cl.estencia.labs.muplayer.thread.ThreadUtil;
+import cl.estencia.labs.muplayer.util.AudioFormatUtil;
 import cl.estencia.labs.muplayer.util.CollectionUtil;
 import cl.estencia.labs.muplayer.util.FilterUtil;
 import cl.estencia.labs.muplayer.util.MuPlayerUtil;
@@ -34,7 +32,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static cl.estencia.labs.muplayer.listener.PlayerEventType.*;
+import static cl.estencia.labs.muplayer.event.listener.PlayerEventType.*;
 import static cl.estencia.labs.muplayer.model.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.model.SeekOption.PREV;
 
@@ -52,6 +50,7 @@ public class MuPlayer extends Player {
     private final PlayerStatusData playerStatusData;
     private final FilterUtil filterUtil;
     @Getter private final MuPlayerUtil muPlayerUtil;
+    private final AudioFormatUtil audioFormatUtil;
 
     private final PlayerInternalEventNotifier internalEventNotifier;
     private final PlayerUserEventNotifier userEventNotifier;
@@ -73,6 +72,7 @@ public class MuPlayer extends Player {
         this.userEventNotifier = new PlayerUserEventNotifier();
         this.muPlayerUtil = new MuPlayerUtil(this, playerStatusData,
                 internalEventNotifier, listInternalTrackListeners);
+        this.audioFormatUtil = new AudioFormatUtil();
 
         setName("MuPlayer " + getId());
     }
@@ -570,13 +570,13 @@ public class MuPlayer extends Player {
 
     @Override
     public synchronized void playNext() {
-        int nextIndex = muPlayerUtil.getIndexFromOption(NEXT);
+        int nextIndex = audioFormatUtil.getIndexFromOption(NEXT, playerStatusData, getSongsCount());
         play(nextIndex);
     }
 
     @Override
     public synchronized void playPrevious() {
-        int prevIndex = muPlayerUtil.getIndexFromOption(PREV);
+        int prevIndex = audioFormatUtil.getIndexFromOption(PREV, playerStatusData, getSongsCount());
         play(prevIndex);
     }
 
