@@ -3,8 +3,8 @@ package cl.estencia.labs.muplayer.console.runner;
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.core.cache.CacheVar;
-import cl.estencia.labs.muplayer.console.ConsoleExecution;
-import cl.estencia.labs.muplayer.system.SysInfo;
+import cl.estencia.labs.muplayer.console.exception.ConsoleExecution;
+import cl.estencia.labs.muplayer.core.system.SysInfo;
 import org.orangelogger.sys.Logger;
 
 import java.io.File;

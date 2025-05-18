@@ -1,10 +1,12 @@
-package cl.estencia.labs.muplayer.console;
+package cl.estencia.labs.muplayer.console.command;
 
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.config.model.ConsoleCodesData;
 import cl.estencia.labs.muplayer.config.reader.ConsoleCodesReader;
+import cl.estencia.labs.muplayer.console.enums.ConsoleOrderCode;
+import cl.estencia.labs.muplayer.console.exception.ConsoleExecution;
 import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
 import cl.estencia.labs.muplayer.console.runner.DaemonRunner;
 import cl.estencia.labs.muplayer.console.runner.LocalRunner;
@@ -13,10 +15,10 @@ import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import cl.estencia.labs.muplayer.audio.model.Album;
 import cl.estencia.labs.muplayer.audio.model.Artist;
 import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
-import cl.estencia.labs.muplayer.service.LogService;
-import cl.estencia.labs.muplayer.service.impl.LogServiceImpl;
-import cl.estencia.labs.muplayer.system.SysInfo;
-import cl.estencia.labs.muplayer.thread.TaskRunner;
+import cl.estencia.labs.muplayer.core.service.LogService;
+import cl.estencia.labs.muplayer.core.service.impl.LogServiceImpl;
+import cl.estencia.labs.muplayer.core.system.SysInfo;
+import cl.estencia.labs.muplayer.core.thread.TaskRunner;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import cl.estencia.labs.muplayer.audio.util.TrackUtil;
 import lombok.Getter;
@@ -35,7 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import static cl.estencia.labs.muplayer.console.OutputType.*;
+import static cl.estencia.labs.muplayer.console.enums.OutputType.*;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.RUNNER;
 import static java.nio.file.StandardOpenOption.WRITE;
 

@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.thread;
+package cl.estencia.labs.muplayer.core.thread;
 
 public class TaskRunner {
     public static void execute(Runnable runnable, String threadName) {

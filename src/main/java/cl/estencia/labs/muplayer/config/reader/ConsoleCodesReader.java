@@ -4,7 +4,7 @@ import cl.estencia.labs.muplayer.config.base.json.JsonInfo;
 import cl.estencia.labs.muplayer.config.base.json.source.InternalJsonSource;
 import cl.estencia.labs.muplayer.config.model.ConsoleCodeResult;
 import cl.estencia.labs.muplayer.config.model.ConsoleCodesData;
-import cl.estencia.labs.muplayer.console.ConsoleOrderCode;
+import cl.estencia.labs.muplayer.console.enums.ConsoleOrderCode;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.Getter;
 

@@ -1,6 +1,6 @@
 package cl.estencia.labs.muplayer.config.model;
 
-import cl.estencia.labs.muplayer.console.ConsoleOrderCode;
+import cl.estencia.labs.muplayer.console.enums.ConsoleOrderCode;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;

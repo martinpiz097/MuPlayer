@@ -1,7 +1,7 @@
 package cl.estencia.labs.muplayer.net;
 
-import cl.estencia.labs.muplayer.console.ConsoleExecution;
-import cl.estencia.labs.muplayer.console.PlayerCommandInterpreter;
+import cl.estencia.labs.muplayer.console.exception.ConsoleExecution;
+import cl.estencia.labs.muplayer.console.command.PlayerCommandInterpreter;
 import org.orangelogger.sys.Logger;
 
 import java.io.IOException;

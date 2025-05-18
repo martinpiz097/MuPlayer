@@ -4,7 +4,6 @@ import cl.estencia.labs.aucom.core.device.output.Speaker;
 import lombok.Data;
 import lombok.extern.java.Log;
 
-import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.SourceDataLine;
 
@@ -34,6 +33,7 @@ public class TrackIOUtil {
         if (driver == null) {
             return 0;
         }
+
         return ((double) driver.getMicrosecondPosition()) / 1000000;
     }
 

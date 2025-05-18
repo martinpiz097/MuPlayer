@@ -1,7 +1,7 @@
-package cl.estencia.labs.muplayer.thread;
+package cl.estencia.labs.muplayer.core.thread;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.system.Time;
+import cl.estencia.labs.muplayer.core.system.Time;
 import org.orangelogger.sys.Logger;
 
 import java.io.File;

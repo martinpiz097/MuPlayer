@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.service;
+package cl.estencia.labs.muplayer.core.service;
 
 public interface LogService {
     void errorLog(String message);

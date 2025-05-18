@@ -1,6 +1,6 @@
 package cl.estencia.labs.muplayer.interfaces;
 
-import cl.estencia.labs.muplayer.system.Time;
+import cl.estencia.labs.muplayer.core.system.Time;
 
 public interface ControllableMusic {
     boolean isPlaying() throws Exception;

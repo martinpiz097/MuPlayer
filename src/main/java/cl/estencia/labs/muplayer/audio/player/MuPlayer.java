@@ -12,7 +12,7 @@ import cl.estencia.labs.muplayer.audio.model.Album;
 import cl.estencia.labs.muplayer.audio.model.Artist;
 import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.audio.model.TrackIndexed;
-import cl.estencia.labs.muplayer.thread.ThreadUtil;
+import cl.estencia.labs.muplayer.core.thread.ThreadUtil;
 import cl.estencia.labs.muplayer.audio.util.AudioFormatUtil;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import cl.estencia.labs.muplayer.audio.util.FilterUtil;

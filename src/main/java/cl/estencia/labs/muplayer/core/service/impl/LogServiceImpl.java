@@ -1,6 +1,6 @@
-package cl.estencia.labs.muplayer.service.impl;
+package cl.estencia.labs.muplayer.core.service.impl;
 
-import cl.estencia.labs.muplayer.service.LogService;
+import cl.estencia.labs.muplayer.core.service.LogService;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
 

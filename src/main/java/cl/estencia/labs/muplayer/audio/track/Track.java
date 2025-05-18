@@ -5,7 +5,7 @@ import cl.estencia.labs.aucom.core.io.AudioDecoder;
 import cl.estencia.labs.aucom.core.util.AudioSystemManager;
 import cl.estencia.labs.muplayer.audio.info.AudioTag;
 import cl.estencia.labs.muplayer.audio.interfaces.TrackData;
-import cl.estencia.labs.muplayer.audio.track.header.HeaderData;
+import cl.estencia.labs.muplayer.audio.track.data.HeaderData;
 import cl.estencia.labs.muplayer.audio.track.io.TrackIOUtil;
 import cl.estencia.labs.muplayer.audio.track.state.*;
 import cl.estencia.labs.muplayer.event.Listenable;

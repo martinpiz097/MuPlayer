@@ -1,5 +1,7 @@
-package cl.estencia.labs.muplayer.console;
+package cl.estencia.labs.muplayer.console.exception;
 
+import cl.estencia.labs.muplayer.console.command.Command;
+import cl.estencia.labs.muplayer.console.enums.OutputType;
 import lombok.Data;
 import org.orangelogger.sys.ConsoleColor;
 import org.orangelogger.sys.Logger;

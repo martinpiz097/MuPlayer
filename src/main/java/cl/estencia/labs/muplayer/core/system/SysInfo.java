@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.system;
+package cl.estencia.labs.muplayer.core.system;
 
 import cl.estencia.labs.muplayer.config.model.MuPlayerInfoKeys;
 import cl.estencia.labs.muplayer.config.reader.MuPlayerInfoReader;

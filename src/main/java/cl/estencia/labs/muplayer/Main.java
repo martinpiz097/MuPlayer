@@ -11,7 +11,7 @@ import cl.estencia.labs.muplayer.config.reader.MuPlayerInfoReader;
 import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
 import cl.estencia.labs.muplayer.console.runner.DaemonRunner;
 import cl.estencia.labs.muplayer.console.runner.LocalRunner;
-import cl.estencia.labs.muplayer.thread.TaskRunner;
+import cl.estencia.labs.muplayer.core.thread.TaskRunner;
 import lombok.extern.java.Log;
 
 import java.util.logging.Level;

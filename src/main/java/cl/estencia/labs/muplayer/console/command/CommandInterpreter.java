@@ -1,4 +1,6 @@
-package cl.estencia.labs.muplayer.console;
+package cl.estencia.labs.muplayer.console.command;
+
+import cl.estencia.labs.muplayer.console.exception.ConsoleExecution;
 
 public interface CommandInterpreter {
     ConsoleExecution executeCommand(Command cmd) throws Exception;

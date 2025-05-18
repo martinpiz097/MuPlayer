@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.console;
+package cl.estencia.labs.muplayer.console.enums;
 
 public enum ConsoleOrderCode {
     albs,

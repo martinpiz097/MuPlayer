@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.console;
+package cl.estencia.labs.muplayer.console.command;
 
 import java.util.Arrays;
 

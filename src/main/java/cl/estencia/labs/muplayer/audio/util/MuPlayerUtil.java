@@ -16,8 +16,8 @@ import cl.estencia.labs.muplayer.event.notifier.internal.TrackInternalEventNotif
 import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.core.common.enums.SupportedAudioExtensions;
 import cl.estencia.labs.muplayer.audio.model.TrackIndexed;
-import cl.estencia.labs.muplayer.service.LogService;
-import cl.estencia.labs.muplayer.service.impl.LogServiceImpl;
+import cl.estencia.labs.muplayer.core.service.LogService;
+import cl.estencia.labs.muplayer.core.service.impl.LogServiceImpl;
 import lombok.extern.java.Log;
 
 import java.io.File;
@@ -35,7 +35,7 @@ import java.util.stream.Stream;
 import static cl.estencia.labs.muplayer.event.listener.PlayerEventType.CHANGED_CURRENT_TRACK;
 import static cl.estencia.labs.muplayer.event.listener.PlayerEventType.UPDATED_TRACK_LIST;
 import static cl.estencia.labs.muplayer.core.common.enums.SeekOption.NEXT;
-import static cl.estencia.labs.muplayer.thread.ThreadUtil.generateTrackThreadName;
+import static cl.estencia.labs.muplayer.core.thread.ThreadUtil.generateTrackThreadName;
 
 @Log
 public class MuPlayerUtil {

@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.system;
+package cl.estencia.labs.muplayer.core.system;
 
 import lombok.Data;
 
