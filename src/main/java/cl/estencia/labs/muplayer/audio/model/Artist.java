@@ -1,7 +1,7 @@
-package cl.estencia.labs.muplayer.model;
+package cl.estencia.labs.muplayer.audio.model;
 
-import cl.estencia.labs.muplayer.interfaces.TrackData;
-import cl.estencia.labs.muplayer.util.CollectionUtil;
+import cl.estencia.labs.muplayer.audio.interfaces.TrackData;
+import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import lombok.Data;
 
 import java.util.List;

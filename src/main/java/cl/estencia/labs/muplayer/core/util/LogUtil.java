@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.util;
+package cl.estencia.labs.muplayer.core.util;
 
 public class LogUtil {
     public static String getExceptionMsg(Exception exception, String methodName) {

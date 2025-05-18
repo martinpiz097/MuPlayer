@@ -1,6 +1,8 @@
-package cl.estencia.labs.muplayer.util;
+package cl.estencia.labs.muplayer.audio.util;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
+import cl.estencia.labs.muplayer.core.util.LogUtil;
+import cl.estencia.labs.muplayer.core.util.ReflectionUtil;
 import lombok.Getter;
 import lombok.extern.java.Log;
 

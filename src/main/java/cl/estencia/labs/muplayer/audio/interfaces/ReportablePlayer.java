@@ -1,12 +1,12 @@
-package cl.estencia.labs.muplayer.interfaces;
+package cl.estencia.labs.muplayer.audio.interfaces;
 
 import cl.estencia.labs.muplayer.audio.player.PlayerInfo;
 import cl.estencia.labs.muplayer.audio.player.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.player.ReadableStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.state.TrackStateName;
-import cl.estencia.labs.muplayer.model.Album;
-import cl.estencia.labs.muplayer.model.Artist;
+import cl.estencia.labs.muplayer.audio.model.Album;
+import cl.estencia.labs.muplayer.audio.model.Artist;
 
 import java.io.File;
 import java.util.List;

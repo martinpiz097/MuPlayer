@@ -2,8 +2,9 @@ package cl.estencia.labs.muplayer.audio.track;
 
 import cl.estencia.labs.aucom.core.device.output.Speaker;
 import cl.estencia.labs.aucom.core.io.AudioDecoder;
+import cl.estencia.labs.aucom.core.util.AudioSystemManager;
 import cl.estencia.labs.muplayer.audio.info.AudioTag;
-import cl.estencia.labs.muplayer.audio.player.AudioComponent;
+import cl.estencia.labs.muplayer.audio.interfaces.TrackData;
 import cl.estencia.labs.muplayer.audio.track.header.HeaderData;
 import cl.estencia.labs.muplayer.audio.track.io.TrackIOUtil;
 import cl.estencia.labs.muplayer.audio.track.state.*;
@@ -13,7 +14,6 @@ import cl.estencia.labs.muplayer.event.model.TrackEvent;
 import cl.estencia.labs.muplayer.event.notifier.internal.TrackInternalEventNotifier;
 import cl.estencia.labs.muplayer.core.exception.MuPlayerException;
 import cl.estencia.labs.muplayer.interfaces.ControllableMusic;
-import cl.estencia.labs.muplayer.interfaces.TrackData;
 import cl.estencia.labs.muplayer.event.notifier.user.TrackUserEventNotifier;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -26,15 +26,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Level;
 
 import static cl.estencia.labs.aucom.common.AudioConstants.DEFAULT_MAX_VOL;
 import static cl.estencia.labs.aucom.common.AudioConstants.DEFAULT_MIN_VOL;
-import static cl.estencia.labs.aucom.core.util.AudioDecodingUtil.DEFAULT_VOLUME;
 
 @EqualsAndHashCode(callSuper = true)
 @Log
-public abstract class Track extends AudioComponent
+public abstract class Track extends Thread
         implements Runnable, ControllableMusic, TrackData, Listenable<TrackStateListener, TrackEvent> {
     @Getter protected final File dataSource;
     @Getter protected final AudioDecoder audioDecoder;
@@ -49,6 +47,8 @@ public abstract class Track extends AudioComponent
     @Getter protected final TrackUserEventNotifier userEventNotifier;
 
     protected final AtomicReference<TrackState> trackState;
+
+    protected final AudioSystemManager audioSystemManager;
 
     public Track(String trackPath, AudioDecoder audioDecoder, TrackInternalEventNotifier internalEventNotifier) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this(new File(trackPath), audioDecoder, internalEventNotifier);
@@ -74,6 +74,7 @@ public abstract class Track extends AudioComponent
         this.trackState = new AtomicReference<>();
 
         this.trackState.set(new UnknownState(this, internalEventNotifier, userEventNotifier));
+        this.audioSystemManager = new AudioSystemManager();
     }
 
     protected abstract double convertSecondsToBytes(Number seconds);

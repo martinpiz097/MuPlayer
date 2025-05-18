@@ -1,10 +1,11 @@
-package cl.estencia.labs.muplayer.util;
+package cl.estencia.labs.muplayer.audio.util;
 
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.player.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.factory.StandardTrackFactory;
 import cl.estencia.labs.muplayer.audio.track.factory.TrackFactory;
+import cl.estencia.labs.muplayer.core.util.FileUtil;
 import cl.estencia.labs.muplayer.event.model.PlayerEvent;
 import cl.estencia.labs.muplayer.core.exception.FormatNotSupportedException;
 import cl.estencia.labs.muplayer.event.listener.PlayerEventType;
@@ -12,9 +13,9 @@ import cl.estencia.labs.muplayer.event.listener.PlayerListener;
 import cl.estencia.labs.muplayer.event.listener.TrackStateListener;
 import cl.estencia.labs.muplayer.event.notifier.internal.PlayerInternalEventNotifier;
 import cl.estencia.labs.muplayer.event.notifier.internal.TrackInternalEventNotifier;
-import cl.estencia.labs.muplayer.model.SeekOption;
-import cl.estencia.labs.muplayer.model.SupportedAudioExtensions;
-import cl.estencia.labs.muplayer.model.TrackIndexed;
+import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
+import cl.estencia.labs.muplayer.core.common.enums.SupportedAudioExtensions;
+import cl.estencia.labs.muplayer.audio.model.TrackIndexed;
 import cl.estencia.labs.muplayer.service.LogService;
 import cl.estencia.labs.muplayer.service.impl.LogServiceImpl;
 import lombok.extern.java.Log;
@@ -33,7 +34,7 @@ import java.util.stream.Stream;
 
 import static cl.estencia.labs.muplayer.event.listener.PlayerEventType.CHANGED_CURRENT_TRACK;
 import static cl.estencia.labs.muplayer.event.listener.PlayerEventType.UPDATED_TRACK_LIST;
-import static cl.estencia.labs.muplayer.model.SeekOption.NEXT;
+import static cl.estencia.labs.muplayer.core.common.enums.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.thread.ThreadUtil.generateTrackThreadName;
 
 @Log

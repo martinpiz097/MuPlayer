@@ -7,9 +7,9 @@ import cl.estencia.labs.muplayer.audio.track.format.OGGTrack;
 import cl.estencia.labs.muplayer.audio.track.format.PCMTrack;
 import cl.estencia.labs.muplayer.core.exception.FormatNotSupportedException;
 import cl.estencia.labs.muplayer.event.notifier.internal.TrackInternalEventNotifier;
-import cl.estencia.labs.muplayer.model.AudioFileExtension;
-import cl.estencia.labs.muplayer.util.FileUtil;
-import cl.estencia.labs.muplayer.util.LogUtil;
+import cl.estencia.labs.muplayer.core.common.enums.AudioFileExtension;
+import cl.estencia.labs.muplayer.core.util.FileUtil;
+import cl.estencia.labs.muplayer.core.util.LogUtil;
 import lombok.extern.java.Log;
 
 import java.io.File;

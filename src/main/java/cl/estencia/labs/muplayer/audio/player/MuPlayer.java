@@ -1,20 +1,22 @@
 package cl.estencia.labs.muplayer.audio.player;
 
+import cl.estencia.labs.aucom.core.util.AudioSystemManager;
+import cl.estencia.labs.muplayer.audio.interfaces.SystemAudioController;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.state.TrackStateName;
 import cl.estencia.labs.muplayer.event.listener.PlayerListener;
 import cl.estencia.labs.muplayer.event.listener.TrackStateListener;
 import cl.estencia.labs.muplayer.event.notifier.internal.PlayerInternalEventNotifier;
 import cl.estencia.labs.muplayer.event.notifier.user.PlayerUserEventNotifier;
-import cl.estencia.labs.muplayer.model.Album;
-import cl.estencia.labs.muplayer.model.Artist;
-import cl.estencia.labs.muplayer.model.SeekOption;
-import cl.estencia.labs.muplayer.model.TrackIndexed;
+import cl.estencia.labs.muplayer.audio.model.Album;
+import cl.estencia.labs.muplayer.audio.model.Artist;
+import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
+import cl.estencia.labs.muplayer.audio.model.TrackIndexed;
 import cl.estencia.labs.muplayer.thread.ThreadUtil;
-import cl.estencia.labs.muplayer.util.AudioFormatUtil;
-import cl.estencia.labs.muplayer.util.CollectionUtil;
-import cl.estencia.labs.muplayer.util.FilterUtil;
-import cl.estencia.labs.muplayer.util.MuPlayerUtil;
+import cl.estencia.labs.muplayer.audio.util.AudioFormatUtil;
+import cl.estencia.labs.muplayer.core.util.CollectionUtil;
+import cl.estencia.labs.muplayer.audio.util.FilterUtil;
+import cl.estencia.labs.muplayer.audio.util.MuPlayerUtil;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
@@ -33,11 +35,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static cl.estencia.labs.muplayer.event.listener.PlayerEventType.*;
-import static cl.estencia.labs.muplayer.model.SeekOption.NEXT;
-import static cl.estencia.labs.muplayer.model.SeekOption.PREV;
+import static cl.estencia.labs.muplayer.core.common.enums.SeekOption.NEXT;
+import static cl.estencia.labs.muplayer.core.common.enums.SeekOption.PREV;
 
 @Log
-public class MuPlayer extends Player {
+public class MuPlayer extends Player implements SystemAudioController {
     private final File rootFolder;
     private final AtomicReference<Track> currentTrack;
 
@@ -51,6 +53,7 @@ public class MuPlayer extends Player {
     private final FilterUtil filterUtil;
     @Getter private final MuPlayerUtil muPlayerUtil;
     private final AudioFormatUtil audioFormatUtil;
+    private final AudioSystemManager audioSystemManager;
 
     private final PlayerInternalEventNotifier internalEventNotifier;
     private final PlayerUserEventNotifier userEventNotifier;
@@ -73,6 +76,7 @@ public class MuPlayer extends Player {
         this.muPlayerUtil = new MuPlayerUtil(this, playerStatusData,
                 internalEventNotifier, listInternalTrackListeners);
         this.audioFormatUtil = new AudioFormatUtil();
+        this.audioSystemManager = new AudioSystemManager();
 
         setName("MuPlayer " + getId());
     }
@@ -609,6 +613,16 @@ public class MuPlayer extends Player {
         configureNotifiers();
         internalEventNotifier.sendEvent(muPlayerUtil.createPlayerEvent(START));
         ThreadUtil.freezeThread(this);
+    }
+
+    @Override
+    public float getSystemVolume() {
+        return audioSystemManager.getFormattedMasterVolume();
+    }
+
+    @Override
+    public void setSystemVolume(float volume) {
+        audioSystemManager.setFormattedMasterVolume(volume);
     }
 
 }

@@ -10,12 +10,12 @@ import cl.estencia.labs.muplayer.event.listener.TrackStateListener;
 import cl.estencia.labs.muplayer.event.model.PlayerEvent;
 import cl.estencia.labs.muplayer.event.notifier.internal.PlayerInternalEventNotifier;
 import cl.estencia.labs.muplayer.event.notifier.internal.TrackInternalEventNotifier;
-import cl.estencia.labs.muplayer.model.SeekOption;
+import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.service.LogService;
 import cl.estencia.labs.muplayer.service.impl.LogServiceImpl;
-import cl.estencia.labs.muplayer.util.AudioFormatUtil;
-import cl.estencia.labs.muplayer.util.FilterUtil;
-import cl.estencia.labs.muplayer.util.MuPlayerUtil;
+import cl.estencia.labs.muplayer.audio.util.AudioFormatUtil;
+import cl.estencia.labs.muplayer.audio.util.FilterUtil;
+import cl.estencia.labs.muplayer.audio.util.MuPlayerUtil;
 import lombok.extern.java.Log;
 
 import java.io.File;
@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 import static cl.estencia.labs.muplayer.event.listener.PlayerEventType.UPDATED_TRACK_LIST;
-import static cl.estencia.labs.muplayer.model.SeekOption.NEXT;
+import static cl.estencia.labs.muplayer.core.common.enums.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.thread.ThreadUtil.generateTrackThreadName;
 
 @Log

@@ -1,12 +1,12 @@
-package cl.estencia.labs.muplayer.util;
+package cl.estencia.labs.muplayer.audio.util;
 
 import cl.estencia.labs.muplayer.audio.player.PlayerStatusData;
-import cl.estencia.labs.muplayer.model.SeekOption;
-import cl.estencia.labs.muplayer.model.SupportedAudioExtensions;
+import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
+import cl.estencia.labs.muplayer.core.common.enums.SupportedAudioExtensions;
+import cl.estencia.labs.muplayer.core.util.FileUtil;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.List;
 
 public class AudioFormatUtil {
     public boolean hasAudioFormatExtension(Path audioFilePath) {

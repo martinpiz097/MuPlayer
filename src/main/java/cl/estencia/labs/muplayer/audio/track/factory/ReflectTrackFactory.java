@@ -4,13 +4,13 @@ import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.core.exception.FormatNotSupportedException;
 import cl.estencia.labs.muplayer.core.exception.MuPlayerException;
 import cl.estencia.labs.muplayer.event.notifier.internal.TrackInternalEventNotifier;
-import cl.estencia.labs.muplayer.util.TrackClassLoader;
+import cl.estencia.labs.muplayer.audio.util.TrackClassLoader;
 
 import java.io.File;
 import java.util.Objects;
 import java.util.Optional;
 
-import static cl.estencia.labs.muplayer.util.FileUtil.getFileFormatName;
+import static cl.estencia.labs.muplayer.core.util.FileUtil.getFileFormatName;
 
 public class ReflectTrackFactory implements TrackFactory {
     private final TrackClassLoader trackClassLoader;

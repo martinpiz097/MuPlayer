@@ -1,7 +1,7 @@
 package cl.estencia.labs.muplayer.config.base.properties.source;
 
 import cl.estencia.labs.muplayer.config.base.properties.PropertiesSource;
-import cl.estencia.labs.muplayer.util.IOUtil;
+import cl.estencia.labs.muplayer.core.util.IOUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;

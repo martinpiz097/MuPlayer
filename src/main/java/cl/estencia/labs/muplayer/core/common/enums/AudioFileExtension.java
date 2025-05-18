@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.model;
+package cl.estencia.labs.muplayer.core.common.enums;
 
 public enum AudioFileExtension {
     aac,    // Advanced Audio Coding

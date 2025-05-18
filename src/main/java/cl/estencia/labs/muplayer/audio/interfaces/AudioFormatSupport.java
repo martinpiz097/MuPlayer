@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.util;
+package cl.estencia.labs.muplayer.audio.interfaces;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.config.model.CompatibleAudioFormat;

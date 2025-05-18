@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.model;
+package cl.estencia.labs.muplayer.core.common.enums;
 
 // luego cargar desde un archivo
 public enum SupportedAudioExtensions {

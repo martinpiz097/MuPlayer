@@ -1,16 +1,17 @@
 package cl.estencia.labs.muplayer.audio.player;
 
+import cl.estencia.labs.muplayer.audio.interfaces.ReportablePlayer;
+import cl.estencia.labs.muplayer.audio.interfaces.SystemAudioController;
 import cl.estencia.labs.muplayer.event.listener.PlayerListener;
 import cl.estencia.labs.muplayer.event.listener.TrackStateListener;
 import cl.estencia.labs.muplayer.interfaces.ControllableMusic;
-import cl.estencia.labs.muplayer.interfaces.ReportablePlayer;
-import cl.estencia.labs.muplayer.model.SeekOption;
+import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
 
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
-public abstract class Player extends AudioComponent implements ControllableMusic, ReportablePlayer {
+public abstract class Player extends Thread implements ControllableMusic, ReportablePlayer, SystemAudioController {
     public abstract boolean isOn();
     public abstract boolean hasSounds();
 

@@ -7,7 +7,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
 
-import static cl.estencia.labs.muplayer.util.IOUtil.isSystemBigEndian;
+import static cl.estencia.labs.muplayer.core.util.IOUtil.isSystemBigEndian;
 
 public class DefaultAudioDecoder extends AudioDecoder {
 

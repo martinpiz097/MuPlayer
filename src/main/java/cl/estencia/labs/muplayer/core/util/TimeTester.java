@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.util;
+package cl.estencia.labs.muplayer.core.util;
 
 import cl.estencia.labs.muplayer.config.model.LogConfigKeys;
 import cl.estencia.labs.muplayer.config.reader.LogConfigReader;
