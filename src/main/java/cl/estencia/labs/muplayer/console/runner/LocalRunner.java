@@ -58,7 +58,8 @@ public class LocalRunner extends ConsoleRunner {
         }
 
         final ConsoleRunner runner = globalCacheManager.loadValue(CacheVar.RUNNER);
-        if (runner == null || runner instanceof LocalRunner)
+        if (runner == null || runner instanceof LocalRunner) {
             System.exit(0);
+        }
     }
 }

@@ -1,7 +1,5 @@
 package cl.estencia.labs.muplayer.core.util;
 
-import org.bytebuffer.ByteBuffer;
-
 import java.io.*;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
@@ -40,13 +38,14 @@ public class IOUtil {
     }
 
     public static byte[] getBytesFromStream(InputStream inputStream) throws IOException {
-        final ByteBuffer byteBuffer = new ByteBuffer(DEFAULT_BUFFER_SIZE);
-
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
         int read;
+
         while ((read = inputStream.read()) != -1) {
-            byteBuffer.add(read);
+            baos.write(read);
         }
-        return byteBuffer.toArray();
+
+        return baos.toByteArray();
     }
 
     public static String getAsciiStringFromStream(InputStream inputStream) throws IOException {

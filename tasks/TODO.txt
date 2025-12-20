@@ -1,3 +1,6 @@
+FACTORIES POR FORMATO INICIALIZADAS CON REFLECTION
+
+
 - opcion para mostrar las siguientes o anteriores x canciones y si son de otra carpeta se muestra carpeta como prefijo
 - opcion para trabajar con mejoramiento de audio
 - crear opcion para mostrar una gui del reproductor en consola
