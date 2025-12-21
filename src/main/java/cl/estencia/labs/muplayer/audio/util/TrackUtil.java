@@ -2,17 +2,30 @@ package cl.estencia.labs.muplayer.audio.util;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.io.TrackIOUtil;
+import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.jaudiotagger.tag.FieldKey;
 
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.SourceDataLine;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 public class TrackUtil {
 
+    private static void appendMargin(StringBuilder stringBuilder, int biggerLength) {
+        for (int i = 0; i < biggerLength; i++) {
+            stringBuilder.append('-');
+        }
+
+        stringBuilder.append('\n');
+    }
+
     public static String getSongInfo(Track track) {
         final StringBuilder sbInfo = new StringBuilder();
+        final StringBuilder sbContent = new StringBuilder();
+
         final String title = track.getTitle();
         final String album = track.getAlbum();
         final String artist = track.getArtist();
@@ -20,97 +33,57 @@ public class TrackUtil {
         final String duration = track.getFormattedDuration();
         final String genre = track.getGenre();
         final String hasCover = track.hasCover() ? "Yes" : "No";
-//        final String encoder = track.getEncoder();
         final String bitrate = track.getBitrate();
 
-        final StringBuilder sbTabs = new StringBuilder();
         String currentLine = "Title: " + title;
         int biggerLength = currentLine.length();
-        sbInfo.append(currentLine).append('\n');
+        sbContent.append(currentLine).append('\n');
 
         if (album != null) {
-            //sbTabs.append('\t');
-            currentLine = sbTabs + "Album: " + album;
-            if (biggerLength < currentLine.length()) {
-                biggerLength = currentLine.length();
-            }
-            sbInfo.append(currentLine).append('\n');
+            currentLine = "Album: " + album;
+            biggerLength = Math.max(biggerLength, currentLine.length());
+            sbContent.append(currentLine).append('\n');
         }
 
         if (artist != null) {
-            //sbTabs.append('\t');
-            currentLine = sbTabs + "Artist: " + artist;
-            if (biggerLength < currentLine.length()) {
-                biggerLength = currentLine.length();
-            }
-            sbInfo.append(currentLine).append('\n');
+            currentLine = "Artist: " + artist;
+            biggerLength = Math.max(biggerLength, currentLine.length());
+            sbContent.append(currentLine).append('\n');
         }
 
         if (year != null) {
-            //sbTabs.append('\t');
-            currentLine = sbTabs + "Year: " + year;
-            if (biggerLength < currentLine.length()) {
-                biggerLength = currentLine.length();
-            }
-            sbInfo.append(currentLine).append('\n');
+            currentLine = "Year: " + year;
+            biggerLength = Math.max(biggerLength, currentLine.length());
+            sbContent.append(currentLine).append('\n');
         }
 
         if (duration != null) {
-            //sbTabs.append('\t');
-            currentLine = sbTabs + "Duration: " + duration;
-            if (biggerLength < currentLine.length()) {
-                biggerLength = currentLine.length();
-            }
-            sbInfo.append(currentLine).append('\n');
+            currentLine = "Duration: " + duration;
+            biggerLength = Math.max(biggerLength, currentLine.length());
+            sbContent.append(currentLine).append('\n');
         }
 
         if (genre != null) {
-            //sbTabs.append('\t');
-            currentLine = sbTabs + "Genre: " + genre;
-            if (biggerLength < currentLine.length()) {
-                biggerLength = currentLine.length();
-            }
-            sbInfo.append(currentLine).append('\n');
+            currentLine = "Genre: " + genre;
+            biggerLength = Math.max(biggerLength, currentLine.length());
+            sbContent.append(currentLine).append('\n');
         }
 
-        //sbTabs.append('\t');
-        currentLine = sbTabs + "Has Cover: " + hasCover;
-        if (biggerLength < currentLine.length()) {
-            biggerLength = currentLine.length();
-        }
-        sbInfo.append(currentLine).append('\n');
-
-//        if (encoder != null) {
-//            //sbTabs.append('\t');
-//            currentLine = sbTabs + "Encoder: " + encoder;
-//            if (biggerLength < currentLine.length()) {
-//                biggerLength = currentLine.length();
-//            }
-//            sbInfo.append(currentLine).append('\n');
-//        }
+        currentLine = "Has Cover: " + hasCover;
+        biggerLength = Math.max(biggerLength, currentLine.length());
+        sbContent.append(currentLine).append('\n');
 
         if (bitrate != null) {
-            //sbTabs.append('\t');
-            currentLine = sbTabs + "Bitrate: " + bitrate + " kbps";
-            if (biggerLength < currentLine.length()) {
-                biggerLength = currentLine.length();
-            }
-            sbInfo.append(currentLine).append('\n');
+            currentLine = "Bitrate: " + bitrate + " kbps";
+            biggerLength = Math.max(biggerLength, currentLine.length());
+            sbContent.append(currentLine).append('\n');
         }
 
-        sbTabs.delete(0, sbTabs.length());
+        appendMargin(sbInfo, biggerLength);
+        sbInfo.append(sbContent);
+        appendMargin(sbInfo, biggerLength);
 
-        for (int i = 0; i < biggerLength; i++) {
-            sbTabs.append('-');
-        }
-        sbTabs.append('\n').append(sbInfo);
-
-        for (int i = 0; i < biggerLength; i++) {
-            sbTabs.append('-');
-        }
-        sbTabs.append('\n');
-
-        return sbTabs.toString();
+        return sbInfo.toString();
     }
 
     public static String getLineInfo(Track track) {
