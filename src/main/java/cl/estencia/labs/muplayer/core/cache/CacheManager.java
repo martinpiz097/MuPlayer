@@ -2,6 +2,7 @@ package cl.estencia.labs.muplayer.core.cache;
 
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CacheManager {
     private final Map<String, Object> mapCache;
@@ -17,22 +18,34 @@ public class CacheManager {
     }
 
     private CacheManager() {
-        this.mapCache = new TreeMap<>();
+        this.mapCache = new ConcurrentHashMap<>();
     }
 
-    public void saveValue(CacheVar cacheVar, Object value) {
-        saveValue(cacheVar.name(), value);
+    public <V> V saveValue(CacheVar cacheVar, V value) {
+        return saveValue(cacheVar.name(), value);
     }
 
-    public void saveValue(String cacheVarName, Object value) {
-        mapCache.put(cacheVarName, value);
+    public <V> V saveValue(String cacheVarName, V value) {
+        synchronized (mapCache) {
+            mapCache.put(cacheVarName, value);
+        }
+        return value;
     }
 
-    public <T> T loadValue(CacheVar cacheVar) {
+    public <V> V loadValue(CacheVar cacheVar) {
         return loadValue(cacheVar.name());
     }
 
-    public <T> T loadValue(String cacheVarName) {
-        return (T) mapCache.get(cacheVarName);
+    public <V> V loadValue(String cacheVarName) {
+        return (V) mapCache.get(cacheVarName);
     }
+
+    public <V> V loadValue(CacheVar cacheVar, Class<V> valueClass) {
+        return loadValue(cacheVar.name(), valueClass);
+    }
+
+    public <V> V loadValue(String cacheVarName, Class<V> valueClass) {
+        return valueClass.cast(mapCache.get(cacheVarName));
+    }
+
 }
