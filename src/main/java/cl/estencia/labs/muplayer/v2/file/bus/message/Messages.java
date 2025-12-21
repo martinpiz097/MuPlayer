@@ -3,8 +3,13 @@ package cl.estencia.labs.muplayer.v2.file.bus.message;
 import cl.estencia.labs.ebot.bus.model.message.Message;
 import cl.estencia.labs.ebot.bus.model.message.MessageType;
 import cl.estencia.labs.ebot.bus.model.message.SerializationType;
+import cl.estencia.labs.muplayer.audio.player.PlayerStatusData;
+import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
-import cl.estencia.labs.muplayer.v2.file.bus.model.SkipTrackData;
+import cl.estencia.labs.muplayer.model.MuPlayerResponse;
+import cl.estencia.labs.muplayer.v2.file.bus.model.SkipData;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 import static cl.estencia.labs.muplayer.v2.file.bus.message.MuPlayerTopic.*;
 
@@ -18,8 +23,21 @@ public class Messages {
         return createMsg(topic, "");
     }
 
+    public static Message playerResponse(MuPlayerResponse muPlayerResponse) {
+        return createMsg(PLAYER_RESPONSE, muPlayerResponse);
+    }
+
+    public static Message playerResponse(AtomicReference<Track> currentTrack, PlayerStatusData playerStatusData) {
+        return playerResponse(new MuPlayerResponse(
+                currentTrack.get(), playerStatusData));
+    }
+
     public static Message start() {
         return createMsg(START);
+    }
+
+    public static Message reload() {
+        return createMsg(RELOAD);
     }
 
     public static Message playNext() {
@@ -54,8 +72,20 @@ public class Messages {
         return createMsg(STOP);
     }
     
+    public static Message skipTracks(SkipData skipData) {
+        return createMsg(SKIP_TRACKS, skipData);
+    }
+
     public static Message skipTracks(int skipCount, SeekOption seekOption) {
-        return createMsg(SKIP_TRACKS, new SkipTrackData(skipCount, seekOption));
+        return skipTracks(new SkipData(skipCount, seekOption));
+    }
+
+    public static Message seekFolder(SkipData skipData) {
+        return createMsg(SEEK_FOLDER, skipData);
+    }
+
+    public static Message seekFolder(int skipCount, SeekOption seekOption) {
+        return seekFolder(new SkipData(skipCount, seekOption));
     }
 
     public static Message mute() {

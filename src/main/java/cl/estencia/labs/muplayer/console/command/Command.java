@@ -40,15 +40,16 @@ public class Command {
     }
 
     public String getOptionAt(int index) {
-        return hasOptions() ?
-                ((getOptionsCount() > index)
-                        ? options[index] : null) : null;
+        return hasOptions() && getOptionsCount() > index
+                ? options[index]
+                : null;
     }
 
     public Number getOptionAsNumber(int index) {
-        final String option = getOptionAt(index);
         try {
-            return option == null ? null : Double.parseDouble(option);
+            final String option = getOptionAt(index);
+
+            return option != null ? Integer.parseInt(option.trim()) : null;
         } catch (NumberFormatException e){
             return null;
         }

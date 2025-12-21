@@ -3,7 +3,7 @@ package cl.estencia.labs.muplayer.console.runner;
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
-import cl.estencia.labs.muplayer.console.exception.ConsoleExecution;
+import cl.estencia.labs.muplayer.console.exception.ConsoleOutput;
 import cl.estencia.labs.muplayer.console.command.PlayerCommandInterpreter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +40,7 @@ public abstract class ConsoleRunner implements Runnable {
 
     public ConsoleRunner(Player player) {
         this.player = player;
-        interpreter = new PlayerCommandInterpreter(player);
+        this.interpreter = new PlayerCommandInterpreter(player);
         scanner = new Scanner(System.in);
         globalCacheManager = CacheManager.getGlobalCache();
     }
@@ -56,7 +56,7 @@ public abstract class ConsoleRunner implements Runnable {
         }
     }
 
-    public ConsoleExecution execCommand(String strCmd) {
+    public ConsoleOutput execCommand(String strCmd) {
         try {
             return interpreter.executeCommand(strCmd);
         } catch (Exception e) {

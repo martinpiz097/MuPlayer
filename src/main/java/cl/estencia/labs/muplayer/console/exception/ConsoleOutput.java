@@ -2,7 +2,6 @@ package cl.estencia.labs.muplayer.console.exception;
 
 import cl.estencia.labs.muplayer.console.command.Command;
 import cl.estencia.labs.muplayer.console.enums.OutputType;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.orangelogger.sys.ConsoleColor;
@@ -10,16 +9,16 @@ import org.orangelogger.sys.Logger;
 
 @Getter
 @Setter
-public class ConsoleExecution {
+public class ConsoleOutput {
     private final Command cmd;
     private Object outputObject;
     private final StringBuilder sbOutputMsg;
 
-    public ConsoleExecution(String cmdString) {
+    public ConsoleOutput(String cmdString) {
         this(new Command(cmdString));
     }
 
-    public ConsoleExecution(Command cmd) {
+    public ConsoleOutput(Command cmd) {
         this.cmd = cmd;
         this.sbOutputMsg = new StringBuilder();
     }

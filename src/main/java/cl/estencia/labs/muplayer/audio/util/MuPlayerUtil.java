@@ -14,7 +14,7 @@ import cl.estencia.labs.muplayer.audio.model.TrackIndexed;
 import cl.estencia.labs.muplayer.core.service.LogService;
 import cl.estencia.labs.muplayer.core.service.impl.LogServiceImpl;
 import cl.estencia.labs.muplayer.v2.file.bus.MuPlayerBusUtil;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 import static cl.estencia.labs.muplayer.core.common.enums.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.core.thread.ThreadUtil.generateTrackThreadName;
 
-@Log
+@Slf4j
 public class MuPlayerUtil {
     private final Player player;
     private final List<Track> listTracks;
@@ -90,7 +90,7 @@ public class MuPlayerUtil {
         try {
             return trackFactory.getTrack(audioFile);
         } catch (Exception e) {
-            log.severe("Error on load track ("
+            log.error("Error on load track ("
                     + e.getClass().getSimpleName()
                     + "): " + e.getMessage());
             return null;
@@ -157,86 +157,6 @@ public class MuPlayerUtil {
         }
     }
 
-    public PlayerListener createDefaultListener() {
-        return new PlayerListener() {
-            @Override
-            public void onPreStart(PlayerEvent event) throws FileNotFoundException {
-                log.info("Pre start");
-            }
-
-            @Override
-            public void onStarted(PlayerEvent event) throws FileNotFoundException {
-                log.info("Start");
-
-                Player eventPlayer = event.player();
-                PlayerStatusData statusData = eventPlayer.getPlayerStatusData();
-
-                checkRootFolder(eventPlayer);
-                statusData.setOn(true);
-                waitForSongs(eventPlayer);
-
-                eventPlayer.play(0);
-            }
-
-            @Override
-            public void onUpdateTrackList(PlayerEvent event) {
-                log.info("Updated track list!!");
-            }
-
-            @Override
-            public void onCurrentTrackChange(PlayerEvent event) {
-                Player eventPlayer = event.player();
-                PlayerStatusData statusData = eventPlayer.getPlayerStatusData();
-                AtomicReference<Track> oldTrackRef = eventPlayer.getCurrentTrack();
-
-                moveNewIndexCursorIfNotExists(NEXT, statusData);
-                recreateCurrentTrackIfExists(oldTrackRef,
-                        event.listTracks(),
-                        eventPlayer.getPlayerStatusData());
-
-                final int index = statusData.getNewTrackIndex();
-                statusData.setCurrentTrackIndex(index);
-                playerStatusData.setNewTrackIndex(NULL_INDEX_VALUE);
-
-                Track oldTrack = oldTrackRef.get();
-                Track newTrack = event.listTracks().get(index);
-                transferUserListeners(oldTrack, newTrack);
-
-                oldTrackRef.set(newTrack);
-                startTrackThread(oldTrackRef.get());
-
-                if (newTrack != null) {
-                    log.info("New current track: " + newTrack.getTitle());
-                } else {
-                    log.info("New current track is null");
-                }
-
-            }
-
-            @Override
-            public void onShutdown(PlayerEvent event) {
-                event.listFolders().clear();
-                event.listTracks().clear();
-
-                event.player().removeAllPlayerListeners();
-            }
-        };
-    }
-
-    public void waitForSongs(Player player) {
-        PlayerStatusData statusData = player.getPlayerStatusData();
-
-        int songsCount;
-        while (statusData.isOn() && (songsCount = player.getSongsCount()) == 0) {
-            try {
-                log.info("WaitForSongs::Songs count: " + songsCount);
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     public int getFolderIndex(Track current) {
         if (current != null) {
             final File dataSource = current.getDataSource();
@@ -244,17 +164,6 @@ public class MuPlayerUtil {
             return listFolders.indexOf(currentParent);
         } else {
             return -1;
-        }
-    }
-
-    public void startTrackThread(Track currentTrack) {
-        if (currentTrack != null) {
-            currentTrack.setName(generateTrackThreadName(currentTrack.getClass(), currentTrack));
-            currentTrack.setVolume(playerStatusData.getVolume());
-            if (playerStatusData.isMute()) {
-                currentTrack.mute();
-            }
-            currentTrack.start();
         }
     }
 
@@ -294,18 +203,40 @@ public class MuPlayerUtil {
         return listTracks.get(indexFromOption);
     }
 
-    public PlayerEvent createPlayerEvent(PlayerEventType type) {
-        return new PlayerEvent(type, player, listTracks, listFolders);
+    public void restartCurrentTrack() {
+        AtomicReference<Track> currentTrack = player.getCurrentTrack();
+        if (currentTrack.get() != null) {
+            File dataSource = currentTrack.get().getDataSource();
+            Track trackFromFile = loadTrackFromFile(dataSource);
+            listTracks.set(playerStatusData.getCurrentTrackIndex(), trackFromFile);
+
+            if (currentTrack.get().isActive()) {
+                synchronized (currentTrack) {
+                    currentTrack.get().kill();
+                }
+            }
+        }
+    }
+
+    public void startTrackThread(Track currentTrack) {
+        if (currentTrack != null) {
+            currentTrack.setName(generateTrackThreadName(currentTrack.getClass(), currentTrack));
+            currentTrack.setVolume(playerStatusData.getVolume());
+            if (playerStatusData.isMute()) {
+                currentTrack.mute();
+            }
+            currentTrack.start();
+        }
     }
 
     public void playNewTrack(int index) {
         synchronized (player.getCurrentTrack()) {
+            restartCurrentTrack();
             playerStatusData.setCurrentTrackIndex(index);
 
             Track newTrack = listTracks.get(index);
             player.getCurrentTrack().set(newTrack);
-
-            newTrack.start();
+            startTrackThread(newTrack);
         }
     }
 

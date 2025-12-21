@@ -29,6 +29,7 @@ public enum ConsoleOrderCode {
     pl,
     prog,
     ps,
+    pwd,
     r,
     s,
     sh,

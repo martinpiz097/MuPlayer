@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.interfaces;
+package cl.estencia.labs.muplayer.audio.interfaces;
 
 import cl.estencia.labs.muplayer.core.system.Time;
 

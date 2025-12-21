@@ -3,6 +3,7 @@ package cl.estencia.labs.muplayer.audio.util;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.io.TrackIOUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.jaudiotagger.tag.FieldKey;
 
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.SourceDataLine;
@@ -15,19 +16,20 @@ public class TrackUtil {
         final String title = track.getTitle();
         final String album = track.getAlbum();
         final String artist = track.getArtist();
-        final String date = track.getDate();
+        final String year = track.getYear();
         final String duration = track.getFormattedDuration();
+        final String genre = track.getGenre();
         final String hasCover = track.hasCover() ? "Yes" : "No";
-        final String encoder = track.getEncoder();
+//        final String encoder = track.getEncoder();
         final String bitrate = track.getBitrate();
 
         final StringBuilder sbTabs = new StringBuilder();
-        String currentLine = "Song: " + title;
+        String currentLine = "Title: " + title;
         int biggerLength = currentLine.length();
         sbInfo.append(currentLine).append('\n');
 
         if (album != null) {
-            sbTabs.append("    ");
+            //sbTabs.append('\t');
             currentLine = sbTabs + "Album: " + album;
             if (biggerLength < currentLine.length()) {
                 biggerLength = currentLine.length();
@@ -36,7 +38,7 @@ public class TrackUtil {
         }
 
         if (artist != null) {
-            sbTabs.append("    ");
+            //sbTabs.append('\t');
             currentLine = sbTabs + "Artist: " + artist;
             if (biggerLength < currentLine.length()) {
                 biggerLength = currentLine.length();
@@ -44,9 +46,9 @@ public class TrackUtil {
             sbInfo.append(currentLine).append('\n');
         }
 
-        if (date != null) {
-            sbTabs.append("    ");
-            currentLine = sbTabs + "Date: " + date;
+        if (year != null) {
+            //sbTabs.append('\t');
+            currentLine = sbTabs + "Year: " + year;
             if (biggerLength < currentLine.length()) {
                 biggerLength = currentLine.length();
             }
@@ -54,7 +56,7 @@ public class TrackUtil {
         }
 
         if (duration != null) {
-            sbTabs.append("    ");
+            //sbTabs.append('\t');
             currentLine = sbTabs + "Duration: " + duration;
             if (biggerLength < currentLine.length()) {
                 biggerLength = currentLine.length();
@@ -62,24 +64,33 @@ public class TrackUtil {
             sbInfo.append(currentLine).append('\n');
         }
 
-        sbTabs.append("    ");
-        currentLine = sbTabs + "Has Cover: " + hasCover;
-        if (biggerLength < currentLine.length()) {
-            biggerLength = currentLine.length();
-        }
-        sbInfo.append(currentLine).append('\n');
-
-        if (encoder != null) {
-            sbTabs.append("    ");
-            currentLine = sbTabs + "Encoder: " + encoder;
+        if (genre != null) {
+            //sbTabs.append('\t');
+            currentLine = sbTabs + "Genre: " + genre;
             if (biggerLength < currentLine.length()) {
                 biggerLength = currentLine.length();
             }
             sbInfo.append(currentLine).append('\n');
         }
 
+        //sbTabs.append('\t');
+        currentLine = sbTabs + "Has Cover: " + hasCover;
+        if (biggerLength < currentLine.length()) {
+            biggerLength = currentLine.length();
+        }
+        sbInfo.append(currentLine).append('\n');
+
+//        if (encoder != null) {
+//            //sbTabs.append('\t');
+//            currentLine = sbTabs + "Encoder: " + encoder;
+//            if (biggerLength < currentLine.length()) {
+//                biggerLength = currentLine.length();
+//            }
+//            sbInfo.append(currentLine).append('\n');
+//        }
+
         if (bitrate != null) {
-            sbTabs.append("    ");
+            //sbTabs.append('\t');
             currentLine = sbTabs + "Bitrate: " + bitrate + " kbps";
             if (biggerLength < currentLine.length()) {
                 biggerLength = currentLine.length();

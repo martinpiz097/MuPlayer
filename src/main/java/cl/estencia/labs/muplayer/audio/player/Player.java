@@ -1,10 +1,11 @@
 package cl.estencia.labs.muplayer.audio.player;
 
+import cl.estencia.labs.muplayer.audio.interfaces.ControllableMusic;
 import cl.estencia.labs.muplayer.audio.interfaces.ReportablePlayer;
 import cl.estencia.labs.muplayer.audio.interfaces.SystemVolumeController;
 import cl.estencia.labs.muplayer.event.listener.PlayerListener;
+import cl.estencia.labs.muplayer.event.listener.PlayerResponseListener;
 import cl.estencia.labs.muplayer.event.listener.TrackStateListener;
-import cl.estencia.labs.muplayer.interfaces.ControllableMusic;
 import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
 
 import java.io.File;
@@ -44,5 +45,8 @@ public abstract class Player extends Thread implements ControllableMusic, Report
         removeAllPlayerListeners();
     }
     //public abstract void reloadTracks();
+
+    public abstract void addResponseListener(PlayerResponseListener responseListener);
+    public abstract void removeAllResponseListeners();
 
 }

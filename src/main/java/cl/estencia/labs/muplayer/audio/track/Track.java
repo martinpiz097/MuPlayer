@@ -3,6 +3,7 @@ package cl.estencia.labs.muplayer.audio.track;
 import cl.estencia.labs.aucom.core.device.output.Speaker;
 import cl.estencia.labs.aucom.core.io.AudioDecoder;
 import cl.estencia.labs.aucom.core.util.AudioSystemManager;
+import cl.estencia.labs.muplayer.audio.interfaces.ControllableMusic;
 import cl.estencia.labs.muplayer.audio.interfaces.TrackData;
 import cl.estencia.labs.muplayer.audio.track.data.AudioTag;
 import cl.estencia.labs.muplayer.audio.track.data.HeaderData;
@@ -12,7 +13,6 @@ import cl.estencia.labs.muplayer.event.Listenable;
 import cl.estencia.labs.muplayer.event.listener.TrackStateListener;
 import cl.estencia.labs.muplayer.event.model.TrackEvent;
 import cl.estencia.labs.muplayer.core.exception.MuPlayerException;
-import cl.estencia.labs.muplayer.interfaces.ControllableMusic;
 import cl.estencia.labs.muplayer.event.notifier.user.TrackUserEventNotifier;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -102,6 +102,11 @@ public abstract class Track extends Thread
     @Override
     public long getDuration() {
         return tagInfo != null ? tagInfo.getDuration() : 0;
+    }
+
+    @Override
+    public String getGenre() {
+        return getProperty(FieldKey.GENRE);
     }
 
     @Override
@@ -303,7 +308,7 @@ public abstract class Track extends Thread
     }
 
     @Override
-    public String getDate() {
+    public String getYear() {
         return getProperty(FieldKey.YEAR);
     }
 

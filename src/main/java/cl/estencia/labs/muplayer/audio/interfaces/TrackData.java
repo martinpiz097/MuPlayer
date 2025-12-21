@@ -9,10 +9,11 @@ public interface TrackData {
     String getTitle();
     String getAlbum();
     String getArtist();
-    String getDate();
+    String getYear();
     byte[] getCoverData();
 
     String getEncoder();
     String getBitrate();
     String getFormat();
+    String getGenre();
 }

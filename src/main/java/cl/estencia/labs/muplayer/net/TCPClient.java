@@ -1,6 +1,6 @@
 package cl.estencia.labs.muplayer.net;
 
-import cl.estencia.labs.muplayer.console.exception.ConsoleExecution;
+import cl.estencia.labs.muplayer.console.exception.ConsoleOutput;
 import cl.estencia.labs.muplayer.console.command.PlayerCommandInterpreter;
 import org.orangelogger.sys.Logger;
 
@@ -57,7 +57,7 @@ public class TCPClient extends Client {
     @Override
     public void run() {
         String command;
-        ConsoleExecution consoleExecution;
+        ConsoleOutput consoleOutput;
         Logger.getLogger(this, "Client connected from IP "+clientSocket.getRemoteSocketAddress().toString());
         while (true) {
             try {
@@ -66,13 +66,13 @@ public class TCPClient extends Client {
                     command = command.trim();
                     Logger.getLogger(this, getLoggerHeader()+"Command received: "+command).info();
 
-                    consoleExecution = playerCommandInterpreter.executeCommand(command.toLowerCase());
+                    consoleOutput = playerCommandInterpreter.executeCommand(command.toLowerCase());
                     Logger.getLogger(this, getLoggerHeader()+"Command executed. ").info();
 
-                    if (consoleExecution != null && consoleExecution.hasOutput()) {
+                    if (consoleOutput != null && consoleOutput.hasOutput()) {
                         Logger.getLogger(this, getLoggerHeader()+"Waiting for command processing...").info();
-                        sendString(consoleExecution.getOutputMsg());
-                        Logger.getLogger(this, getLoggerHeader()+"Command response sent: "+consoleExecution.getOutputMsg()).info();
+                        sendString(consoleOutput.getOutputMsg());
+                        Logger.getLogger(this, getLoggerHeader()+"Command response sent: "+ consoleOutput.getOutputMsg()).info();
                     }
                 }
                 Thread.sleep(1);

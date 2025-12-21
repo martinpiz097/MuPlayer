@@ -3,7 +3,7 @@ package cl.estencia.labs.muplayer.console.runner;
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.core.cache.CacheVar;
-import cl.estencia.labs.muplayer.console.exception.ConsoleExecution;
+import cl.estencia.labs.muplayer.console.exception.ConsoleOutput;
 import cl.estencia.labs.muplayer.core.system.SysInfo;
 import org.orangelogger.sys.Logger;
 
@@ -44,16 +44,16 @@ public class LocalRunner extends ConsoleRunner {
         Logger.getLogger(this, msg).rawInfo();
         interpreter.setOn(true);
 
-        ConsoleExecution consoleExecution;
+        ConsoleOutput consoleOutput;
 
         String cmd;
         while (interpreter.isOn()) {
             printHeader();
             cmd = scanner.nextLine().trim();
             if (!cmd.isEmpty()) {
-                consoleExecution = execCommand(cmd);
-                if (consoleExecution.hasOutput())
-                    System.out.println(consoleExecution.getOutputMsg());
+                consoleOutput = execCommand(cmd);
+                if (consoleOutput.hasOutput())
+                    System.out.println(consoleOutput.getOutputMsg());
             }
         }
 
