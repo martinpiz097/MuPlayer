@@ -140,6 +140,11 @@
     "helpInfo": "Pausa la canción actual"
   },
   {
+    "code": "pwd",
+    "orders": ["pwd"],
+    "helpInfo": "Muestra el directorio de trabajo actual"
+  },
+  {
     "code": "r",
     "orders": ["r", "resume", "resume-track", "resume-song"],
     "helpInfo": "Inicia la canción actual si está pausada o detenida"
@@ -151,7 +156,7 @@
   },
   {
     "code": "sh",
-    "orders": ["sh", "shutdown", "exit", "quit"],
+    "orders": ["sh", "shutdown", "exit", "quit", "e", "q"],
     "helpInfo": "Apaga el reproductor"
   },
   {
