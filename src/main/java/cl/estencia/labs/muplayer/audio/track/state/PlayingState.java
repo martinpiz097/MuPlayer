@@ -21,7 +21,7 @@ public class PlayingState extends TrackState {
     @Override
     public void handle() {
         try {
-            byte[] audioBuffer = new byte[DEFAULT_BUFF_SIZE];
+            final byte[] audioBuffer = new byte[DEFAULT_BUFF_SIZE];
             int read;
             while (track.isPlaying() && (read = decodedAudioStream.read(audioBuffer)) != EOF) {
                 speaker.playAudio(audioBuffer, read);
