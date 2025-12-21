@@ -1,7 +1,6 @@
 package cl.estencia.labs.muplayer.config.model;
 
 import cl.estencia.labs.muplayer.console.enums.ConsoleOrderCode;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 

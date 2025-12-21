@@ -2,7 +2,6 @@ package cl.estencia.labs.muplayer.audio.model;
 
 import cl.estencia.labs.muplayer.audio.interfaces.TrackData;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 

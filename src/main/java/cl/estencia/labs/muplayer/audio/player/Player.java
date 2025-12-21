@@ -3,10 +3,10 @@ package cl.estencia.labs.muplayer.audio.player;
 import cl.estencia.labs.muplayer.audio.interfaces.ControllableMusic;
 import cl.estencia.labs.muplayer.audio.interfaces.ReportablePlayer;
 import cl.estencia.labs.muplayer.audio.interfaces.SystemVolumeController;
+import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.event.listener.PlayerListener;
 import cl.estencia.labs.muplayer.event.listener.PlayerResponseListener;
 import cl.estencia.labs.muplayer.event.listener.TrackStateListener;
-import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
 
 import java.io.File;
 import java.util.Collection;

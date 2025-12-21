@@ -2,7 +2,6 @@ package cl.estencia.labs.muplayer.audio.track.factory;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.core.exception.FormatNotSupportedException;
-import cl.estencia.labs.muplayer.event.notifier.internal.TrackInternalEventNotifier;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;

@@ -3,8 +3,8 @@ package cl.estencia.labs.muplayer.audio.track.state;
 import cl.estencia.labs.aucom.core.device.output.Speaker;
 import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.audio.track.io.TrackIOUtil;
 import cl.estencia.labs.muplayer.audio.track.TrackStatusData;
+import cl.estencia.labs.muplayer.audio.track.io.TrackIOUtil;
 import cl.estencia.labs.muplayer.v2.file.bus.MuPlayerBusUtil;
 import lombok.Getter;
 

@@ -1,7 +1,6 @@
 package cl.estencia.labs.muplayer.audio.track.io;
 
 import cl.estencia.labs.aucom.core.device.output.Speaker;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

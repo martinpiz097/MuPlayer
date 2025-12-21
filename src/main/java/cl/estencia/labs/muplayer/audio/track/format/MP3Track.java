@@ -1,9 +1,8 @@
 package cl.estencia.labs.muplayer.audio.track.format;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.audio.track.decoder.DefaultAudioDecoder;
 import cl.estencia.labs.muplayer.audio.track.data.HeaderData;
-import cl.estencia.labs.muplayer.event.notifier.internal.TrackInternalEventNotifier;
+import cl.estencia.labs.muplayer.audio.track.decoder.DefaultAudioDecoder;
 import lombok.extern.slf4j.Slf4j;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.mp3.MP3AudioHeader;

@@ -1,7 +1,7 @@
 package cl.estencia.labs.muplayer.core.util;
 
-import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.model.TrackIndexed;
+import cl.estencia.labs.muplayer.audio.track.Track;
 
 import java.io.File;
 import java.util.*;

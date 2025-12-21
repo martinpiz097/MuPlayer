@@ -1,7 +1,6 @@
 package cl.estencia.labs.muplayer.core.cache;
 
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class CacheManager {

@@ -1,7 +1,10 @@
 package cl.estencia.labs.muplayer.audio.model;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter

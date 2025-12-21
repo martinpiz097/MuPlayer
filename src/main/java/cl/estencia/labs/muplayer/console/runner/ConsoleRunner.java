@@ -2,9 +2,9 @@ package cl.estencia.labs.muplayer.console.runner;
 
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.audio.player.Player;
-import cl.estencia.labs.muplayer.core.cache.CacheManager;
-import cl.estencia.labs.muplayer.console.exception.ConsoleOutput;
 import cl.estencia.labs.muplayer.console.command.PlayerCommandInterpreter;
+import cl.estencia.labs.muplayer.console.exception.ConsoleOutput;
+import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.orangelogger.sys.Logger;

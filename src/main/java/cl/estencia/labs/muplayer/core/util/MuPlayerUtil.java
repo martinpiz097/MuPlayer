@@ -1,16 +1,16 @@
 package cl.estencia.labs.muplayer.util;
 
 import cl.estencia.labs.ebot.bus.MessageBus;
+import cl.estencia.labs.muplayer.audio.model.TrackIndexed;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.player.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.factory.StandardTrackFactory;
 import cl.estencia.labs.muplayer.audio.track.factory.TrackFactory;
+import cl.estencia.labs.muplayer.bus.MuPlayerBusUtil;
 import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
-import cl.estencia.labs.muplayer.audio.model.TrackIndexed;
 import cl.estencia.labs.muplayer.core.service.LogService;
 import cl.estencia.labs.muplayer.core.service.impl.LogServiceImpl;
-import cl.estencia.labs.muplayer.bus.MuPlayerBusUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;

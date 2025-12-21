@@ -2,7 +2,10 @@ package cl.estencia.labs.muplayer.config.model;
 
 import cl.estencia.labs.muplayer.console.enums.ConsoleOrderCode;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.StringJoiner;
 

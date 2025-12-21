@@ -2,7 +2,6 @@ package cl.estencia.labs.muplayer.audio.track.format;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.decoder.DefaultAudioDecoder;
-import cl.estencia.labs.muplayer.event.notifier.internal.TrackInternalEventNotifier;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.LineUnavailableException;

@@ -1,6 +1,5 @@
 package cl.estencia.labs.muplayer.audio.player;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 

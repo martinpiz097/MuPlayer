@@ -1,12 +1,9 @@
 package cl.estencia.labs.muplayer.audio.track.state;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.event.notifier.internal.TrackInternalEventNotifier;
-import cl.estencia.labs.muplayer.event.notifier.user.TrackUserEventNotifier;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.util.logging.Level;
 
 import static cl.estencia.labs.aucom.common.IOConstants.DEFAULT_BUFF_SIZE;
 import static cl.estencia.labs.aucom.common.IOConstants.EOF;
