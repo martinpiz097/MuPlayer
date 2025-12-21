@@ -1,10 +1,12 @@
 package cl.estencia.labs.muplayer.config.base.properties;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 public abstract class PropertiesInfo<T> {
     @Getter
     protected final PropertiesSource<T> propertiesSource;
@@ -18,7 +20,7 @@ public abstract class PropertiesInfo<T> {
                 loadDefaultData();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
     }
 

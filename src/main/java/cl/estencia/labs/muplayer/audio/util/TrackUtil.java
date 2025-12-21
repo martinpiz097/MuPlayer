@@ -2,12 +2,12 @@ package cl.estencia.labs.muplayer.audio.util;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.io.TrackIOUtil;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.SourceDataLine;
 
-@Log
+@Slf4j
 public class TrackUtil {
 
     public static String getSongInfo(Track track) {

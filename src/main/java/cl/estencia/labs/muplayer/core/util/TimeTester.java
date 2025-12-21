@@ -2,14 +2,14 @@ package cl.estencia.labs.muplayer.core.util;
 
 import cl.estencia.labs.muplayer.config.model.LogConfigKeys;
 import cl.estencia.labs.muplayer.config.reader.LogConfigReader;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-@Log
+@Slf4j
 public class TimeTester {
     private volatile double startTimestamp;
     private volatile double finishTimestamp;

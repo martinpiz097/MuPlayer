@@ -2,7 +2,7 @@ package cl.estencia.labs.muplayer.event.notifier;
 
 import cl.estencia.labs.muplayer.event.Listenable;
 import lombok.Getter;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.Deque;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@Log
+@Slf4j
 public abstract class EventNotifier<L, E> extends Thread implements Listenable<L, E> {
     @Getter protected final List<L> listListeners;
     protected final Deque<E> eventsQueue;

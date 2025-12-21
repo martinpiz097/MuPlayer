@@ -2,7 +2,9 @@ package cl.estencia.labs.muplayer.audio.track.state;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.v2.file.bus.message.Messages;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class FinishedState extends TrackState {
 
     public FinishedState(Track track) {
@@ -18,7 +20,7 @@ public class FinishedState extends TrackState {
 
             messageBus.publish(Messages.playNext());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
     }
 }

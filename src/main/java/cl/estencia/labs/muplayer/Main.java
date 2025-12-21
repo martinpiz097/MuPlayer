@@ -14,14 +14,14 @@ import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
 import cl.estencia.labs.muplayer.console.runner.DaemonRunner;
 import cl.estencia.labs.muplayer.console.runner.LocalRunner;
 import cl.estencia.labs.muplayer.core.thread.TaskRunner;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.MESSAGE_BUS;
 
-@Log
+@Slf4j
 public class Main {
 
     public static void main(String[] args) {
@@ -72,7 +72,7 @@ public class Main {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            log.severe("Error on MuPlayer class: " + e);
+            log.error("Error on MuPlayer class", e);
 
             messageBus.shutdown();
         }

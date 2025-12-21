@@ -5,9 +5,9 @@ import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
-@Log
+@Slf4j
 public abstract class JsonSource<T, O> {
     protected final T source;
     protected final TypeReference<O> dataType;

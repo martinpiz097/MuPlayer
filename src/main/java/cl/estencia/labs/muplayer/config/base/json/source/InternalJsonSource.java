@@ -4,12 +4,12 @@ import cl.estencia.labs.muplayer.config.ResourceFiles;
 import cl.estencia.labs.muplayer.config.base.json.JsonSource;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectReader;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-@Log
+@Slf4j
 public class InternalJsonSource<O> extends JsonSource<String, O> {
 
     public InternalJsonSource(String sourcePath, TypeReference<O> dataType, boolean enableCache) {
@@ -25,7 +25,7 @@ public class InternalJsonSource<O> extends JsonSource<String, O> {
             }
             return valid;
         } catch (Exception e) {
-            log.severe("Error on PropertiesSource: " + e);
+            log.error("Error on PropertiesSource: ", e);
             return false;
         }
     }

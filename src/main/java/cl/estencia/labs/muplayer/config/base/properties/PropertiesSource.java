@@ -1,10 +1,10 @@
 package cl.estencia.labs.muplayer.config.base.properties;
 
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Properties;
 
-@Log
+@Slf4j
 public abstract class PropertiesSource<T> {
     protected final T source;
 
@@ -23,7 +23,7 @@ public abstract class PropertiesSource<T> {
             }
             return valid;
         } catch (Exception e) {
-            log.severe("Error on PropertiesSource: " + e);
+            log.error("Error on PropertiesSource", e);
             return false;
         }
     }

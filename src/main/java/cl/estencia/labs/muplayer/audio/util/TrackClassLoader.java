@@ -4,7 +4,7 @@ import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.core.util.LogUtil;
 import cl.estencia.labs.muplayer.core.util.ReflectionUtil;
 import lombok.Getter;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-@Log
+@Slf4j
 public class TrackClassLoader {
     private final ReflectionUtil reflectionUtil;
     private final Set<Class<? extends Track>> trackClassesSet;
@@ -46,7 +46,7 @@ public class TrackClassLoader {
 
             return constructor;
         } catch (NoSuchMethodException e) {
-            log.severe(LogUtil.getExceptionMsg(e, "getInitConstructor"));
+            log.error(LogUtil.getExceptionMsg(e, "getInitConstructor"));
             return null;
         }
     }
@@ -65,7 +65,7 @@ public class TrackClassLoader {
 
             return (T) initConstructor.newInstance(params[0], anotherParameters);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            log.severe(LogUtil.getExceptionMsg(e, "tryInstance"));
+            log.error(LogUtil.getExceptionMsg(e, "tryInstance"));
             return null;
         }
     }

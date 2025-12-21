@@ -11,14 +11,14 @@ import cl.estencia.labs.muplayer.event.notifier.internal.TrackInternalEventNotif
 import cl.estencia.labs.muplayer.core.common.enums.AudioFileExtension;
 import cl.estencia.labs.muplayer.core.util.LogUtil;
 import cl.estencia.labs.muplayer.v2.file.AudioFileScanner;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
 
-@Log
+@Slf4j
 public class StandardTrackFactory implements TrackFactory {
 
     @Override

@@ -1,7 +1,9 @@
 package cl.estencia.labs.muplayer.config.base.json;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public abstract class JsonInfo<T, O> {
     @Getter
     protected final JsonSource<T, O> jsonSource;
@@ -13,7 +15,7 @@ public abstract class JsonInfo<T, O> {
                 loadDefaultData();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
     }
 

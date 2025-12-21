@@ -4,14 +4,14 @@ import cl.estencia.labs.aucom.core.device.output.Speaker;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.SourceDataLine;
 
 @Getter
 @Setter
-@Log
+@Slf4j
 public class TrackIOUtil {
 
     public boolean isTrackStreamsOpened(Speaker speaker, AudioInputStream decodedInputStream) {
@@ -26,7 +26,7 @@ public class TrackIOUtil {
             }
             return streamOpened;
         } catch (Exception e) {
-            log.severe(e.getMessage());
+            log.error(e.getMessage(), e);
             return false;
         }
     }

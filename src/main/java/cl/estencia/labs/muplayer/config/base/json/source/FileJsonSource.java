@@ -3,12 +3,12 @@ package cl.estencia.labs.muplayer.config.base.json.source;
 import cl.estencia.labs.muplayer.config.base.json.JsonSource;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectReader;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 
 // Falta validar comportamiento
-@Log
+@Slf4j
 public class FileJsonSource<O> extends JsonSource<File, O> {
     public FileJsonSource(String sourcePath, TypeReference<O> dataType) {
         this(new File(sourcePath), dataType);
@@ -30,7 +30,7 @@ public class FileJsonSource<O> extends JsonSource<File, O> {
             }
             return valid;
         } catch (Exception e) {
-            log.severe("Error on PropertiesSource: " + e);
+            log.error("Error on PropertiesSource: ", e);
             return false;
         }
     }

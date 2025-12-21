@@ -16,7 +16,7 @@ import cl.estencia.labs.muplayer.interfaces.ControllableMusic;
 import cl.estencia.labs.muplayer.event.notifier.user.TrackUserEventNotifier;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.jaudiotagger.tag.FieldKey;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -29,7 +29,7 @@ import static cl.estencia.labs.aucom.common.AudioConstants.DEFAULT_MAX_VOL;
 import static cl.estencia.labs.aucom.common.AudioConstants.DEFAULT_MIN_VOL;
 
 @EqualsAndHashCode(callSuper = true)
-@Log
+@Slf4j
 public abstract class Track extends Thread
         implements Runnable, ControllableMusic, TrackData, Listenable<TrackStateListener, TrackEvent> {
     @Getter protected final File dataSource;
@@ -208,7 +208,7 @@ public abstract class Track extends Thread
             try {
                 gotoSecond(getProgress() + seconds);
             } catch (LineUnavailableException | UnsupportedAudioFileException e) {
-                log.severe(e.getMessage());
+                log.error(e.getMessage(), e);
             }
         }
 

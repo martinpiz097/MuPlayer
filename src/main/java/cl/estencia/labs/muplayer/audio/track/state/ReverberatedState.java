@@ -1,13 +1,13 @@
 package cl.estencia.labs.muplayer.audio.track.state;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.event.notifier.internal.TrackInternalEventNotifier;
-import cl.estencia.labs.muplayer.event.notifier.user.TrackUserEventNotifier;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 
+@Slf4j
 public class ReverberatedState extends TrackState {
     private final double seekSeconds;
 
@@ -24,7 +24,7 @@ public class ReverberatedState extends TrackState {
             track.seek(Math.max(seekSeconds, 0));
             track.play();
         } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
     }
 }

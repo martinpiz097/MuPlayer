@@ -6,6 +6,7 @@ import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import cl.estencia.labs.muplayer.console.exception.ConsoleExecution;
 import cl.estencia.labs.muplayer.console.command.PlayerCommandInterpreter;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
 
@@ -15,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Scanner;
 
+@Slf4j
 public abstract class ConsoleRunner implements Runnable {
     @Getter
     protected final Player player;
@@ -58,7 +60,7 @@ public abstract class ConsoleRunner implements Runnable {
         try {
             return interpreter.executeCommand(strCmd);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
         return null;
     }

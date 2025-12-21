@@ -1,6 +1,6 @@
 package cl.estencia.labs.muplayer.core.util;
 
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.net.URL;
@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Log
+@Slf4j
 public class ReflectionUtil {
     private Set<Class<?>> findClasses(File directory, String packageName) throws ClassNotFoundException {
         if (!directory.exists()) {
@@ -67,7 +67,7 @@ public class ReflectionUtil {
                     .map(clazz -> (Class<? extends T>) clazz)
                     .collect(Collectors.toSet());
         } catch (Exception e) {
-            log.severe(LogUtil.getExceptionMsg(e, "findAllSubclassesOf"));
+            log.error(LogUtil.getExceptionMsg(e, "findAllSubclassesOf"));
             return Set.of();
         }
     }

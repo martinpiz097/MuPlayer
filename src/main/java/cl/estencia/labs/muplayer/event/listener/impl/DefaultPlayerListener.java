@@ -16,7 +16,7 @@ import cl.estencia.labs.muplayer.core.service.impl.LogServiceImpl;
 import cl.estencia.labs.muplayer.audio.util.AudioFileUtil;
 import cl.estencia.labs.muplayer.audio.util.FilterUtil;
 import cl.estencia.labs.muplayer.audio.util.MuPlayerUtil;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,7 +32,7 @@ import static cl.estencia.labs.muplayer.event.listener.PlayerEventType.UPDATED_T
 import static cl.estencia.labs.muplayer.core.common.enums.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.core.thread.ThreadUtil.generateTrackThreadName;
 
-@Log
+@Slf4j
 public class DefaultPlayerListener implements PlayerListener {
 
     private final List<TrackStateListener> listInternalTrackListeners;
@@ -90,7 +90,7 @@ public class DefaultPlayerListener implements PlayerListener {
                 log.info("WaitForSongs::Songs count: " + songsCount);
                 Thread.sleep(1);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error(e.getMessage(), e);
             }
         }
     }
@@ -135,7 +135,7 @@ public class DefaultPlayerListener implements PlayerListener {
             configureTrackEvents(trackEventNotifier);
             return track;
         } catch (Exception e) {
-            log.severe("Error on load track ("
+            log.error("Error on load track ("
                     + e.getClass().getSimpleName()
                     + "): " + e.getMessage());
             return null;

@@ -77,10 +77,12 @@ public class TCPClient extends Client {
                 }
                 Thread.sleep(1);
             } catch (Exception e) {
-                if (e.getMessage().equalsIgnoreCase("Socket closed"))
+                if (e.getMessage().equalsIgnoreCase("Socket closed")) {
                     break;
-                else
+                }
+                else {
                     e.printStackTrace();
+                }
             }
         }
         Logger.getLogger(this, "Client with IP "+clientSocket.getRemoteSocketAddress().toString() + " closed");
