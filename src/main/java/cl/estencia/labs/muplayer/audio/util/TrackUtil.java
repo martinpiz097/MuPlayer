@@ -12,15 +12,15 @@ import java.util.List;
 @Slf4j
 public class TrackUtil {
 
-    private static final String LINE_START = "|    ";
-    private static final String LINE_END = "    |";
+    private static final String LINE_START = "│    ";
+    private static final String LINE_END = "    │";
     private static final String TOP_LEFT_CORNER = "┌";
     private static final String TOP_RIGHT_CORNER = "┐";
     private static final String BOTTOM_LEFT_CORNER = "└";
     private static final String BOTTOM_RIGHT_CORNER = "┘";
 
     private static final String LINE_BREAK = "\n";
-    private static final char DASH = '-';
+    private static final char DASH = '─';
 
     private static void appendMargin(StringBuilder stringBuilder,
                                      int biggerLength, boolean top) {
