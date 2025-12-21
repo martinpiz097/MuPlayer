@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.audio.util;
+package cl.estencia.labs.muplayer.util;
 
 import cl.estencia.labs.muplayer.audio.player.PlayerStatusData;
 import cl.estencia.labs.muplayer.core.common.enums.SeekOption;

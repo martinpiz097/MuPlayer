@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.audio.util;
+package cl.estencia.labs.muplayer.util;
 
 import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.muplayer.audio.player.Player;
@@ -6,14 +6,11 @@ import cl.estencia.labs.muplayer.audio.player.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.factory.StandardTrackFactory;
 import cl.estencia.labs.muplayer.audio.track.factory.TrackFactory;
-import cl.estencia.labs.muplayer.event.model.PlayerEvent;
-import cl.estencia.labs.muplayer.event.listener.PlayerEventType;
-import cl.estencia.labs.muplayer.event.listener.PlayerListener;
 import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.audio.model.TrackIndexed;
 import cl.estencia.labs.muplayer.core.service.LogService;
 import cl.estencia.labs.muplayer.core.service.impl.LogServiceImpl;
-import cl.estencia.labs.muplayer.v2.file.bus.MuPlayerBusUtil;
+import cl.estencia.labs.muplayer.bus.MuPlayerBusUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -28,7 +25,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static cl.estencia.labs.muplayer.core.common.enums.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.core.thread.ThreadUtil.generateTrackThreadName;
 
 @Slf4j
