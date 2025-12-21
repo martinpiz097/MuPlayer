@@ -6,19 +6,13 @@ import cl.estencia.labs.muplayer.event.notifier.user.TrackUserEventNotifier;
 
 public class StartedState extends TrackState {
 
-    public StartedState(Track track,
-                         TrackInternalEventNotifier internalEventNotifier,
-                         TrackUserEventNotifier userEventNotifier) {
-        super(TrackStateName.STARTED, track, internalEventNotifier, userEventNotifier);
+    public StartedState(Track track) {
+        super(TrackStateName.STARTED, track);
     }
 
     @Override
     public void handle() {
         speaker.open();
-
-        sendStateEvent();
-        internalEventNotifier.start();
-        userEventNotifier.start();
 
         if (trackStatusData.isMute()) {
             track.mute();

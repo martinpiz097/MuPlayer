@@ -1,22 +1,26 @@
 package cl.estencia.labs.muplayer.audio.player;
 
 import cl.estencia.labs.aucom.core.util.AudioSystemManager;
-import cl.estencia.labs.muplayer.audio.interfaces.SystemAudioController;
-import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.audio.track.state.TrackStateName;
-import cl.estencia.labs.muplayer.event.listener.PlayerListener;
-import cl.estencia.labs.muplayer.event.listener.TrackStateListener;
-import cl.estencia.labs.muplayer.event.notifier.internal.PlayerInternalEventNotifier;
-import cl.estencia.labs.muplayer.event.notifier.user.PlayerUserEventNotifier;
+import cl.estencia.labs.ebot.bus.MessageBus;
+import cl.estencia.labs.ebot.bus.exception.BusException;
+import cl.estencia.labs.ebot.utils.threads.Interruptor;
+import cl.estencia.labs.muplayer.audio.interfaces.SystemVolumeController;
 import cl.estencia.labs.muplayer.audio.model.Album;
 import cl.estencia.labs.muplayer.audio.model.Artist;
-import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.audio.model.TrackIndexed;
-import cl.estencia.labs.muplayer.core.thread.ThreadUtil;
-import cl.estencia.labs.muplayer.audio.util.AudioFormatUtil;
-import cl.estencia.labs.muplayer.core.util.CollectionUtil;
+import cl.estencia.labs.muplayer.audio.track.Track;
+import cl.estencia.labs.muplayer.audio.track.state.TrackStateName;
+import cl.estencia.labs.muplayer.audio.util.AudioFileUtil;
 import cl.estencia.labs.muplayer.audio.util.FilterUtil;
 import cl.estencia.labs.muplayer.audio.util.MuPlayerUtil;
+import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
+import cl.estencia.labs.muplayer.core.util.CollectionUtil;
+import cl.estencia.labs.muplayer.event.listener.PlayerListener;
+import cl.estencia.labs.muplayer.event.listener.TrackStateListener;
+import cl.estencia.labs.muplayer.v2.file.AudioFileScanner;
+import cl.estencia.labs.muplayer.v2.file.bus.MuPlayerBusUtil;
+import cl.estencia.labs.muplayer.v2.file.bus.message.MuPlayerTopic;
+import cl.estencia.labs.muplayer.v2.file.bus.model.SkipTrackData;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
@@ -34,29 +38,27 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static cl.estencia.labs.muplayer.event.listener.PlayerEventType.*;
 import static cl.estencia.labs.muplayer.core.common.enums.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.core.common.enums.SeekOption.PREV;
 
 @Log
-public class MuPlayer extends Player implements SystemAudioController {
+public class MuPlayer extends Player implements SystemVolumeController {
     private final File rootFolder;
     private final AtomicReference<Track> currentTrack;
 
     private final List<Track> listTracks;
+    private final List<AudioFileScanner> listAudioFileScanners;
     private final List<File> listFolders;
 
     private final List<TrackStateListener> listInternalTrackListeners;
     @Getter private final List<TrackStateListener> listTrackUserListeners;
 
     private final PlayerStatusData playerStatusData;
-    private final FilterUtil filterUtil;
     @Getter private final MuPlayerUtil muPlayerUtil;
-    private final AudioFormatUtil audioFormatUtil;
     private final AudioSystemManager audioSystemManager;
 
-    private final PlayerInternalEventNotifier internalEventNotifier;
-    private final PlayerUserEventNotifier userEventNotifier;
+    private final Interruptor interruptor;
+    private final MessageBus messageBus;
 
     public MuPlayer() throws FileNotFoundException {
         this((File) null);
@@ -66,17 +68,15 @@ public class MuPlayer extends Player implements SystemAudioController {
         this.rootFolder = rootFolder;
         this.currentTrack = new AtomicReference<>();
         this.listTracks = CollectionUtil.newFastArrayList();
+        this.listAudioFileScanners = CollectionUtil.newFastArrayList();
         this.listFolders = CollectionUtil.newMinimalFastArrayList();
         this.listInternalTrackListeners = CollectionUtil.newMinimalFastArrayList();
         this.listTrackUserListeners = CollectionUtil.newMinimalFastArrayList();
         this.playerStatusData = new PlayerStatusData();
-        this.filterUtil = new FilterUtil();
-        this.internalEventNotifier = new PlayerInternalEventNotifier();
-        this.userEventNotifier = new PlayerUserEventNotifier();
-        this.muPlayerUtil = new MuPlayerUtil(this, playerStatusData,
-                internalEventNotifier, listInternalTrackListeners);
-        this.audioFormatUtil = new AudioFormatUtil();
+        this.muPlayerUtil = new MuPlayerUtil(this, playerStatusData);
         this.audioSystemManager = new AudioSystemManager();
+        this.interruptor = Interruptor.manual(this);
+        this.messageBus = MuPlayerBusUtil.getMessageBus();
 
         setName("MuPlayer " + getId());
     }
@@ -84,8 +84,6 @@ public class MuPlayer extends Player implements SystemAudioController {
     public MuPlayer(String folderPath) throws FileNotFoundException {
         this(new File(folderPath));
     }
-
-   
 
     private void loadTracks(File folderToLoad) {
 //        Files.find()
@@ -97,7 +95,7 @@ public class MuPlayer extends Player implements SystemAudioController {
             }
 
             folderPaths
-                    .filter(muPlayerUtil::hasAudioFormatExtension)
+                    .filter(AudioFileUtil::hasAudioFormatExtension)
                     .map(path -> muPlayerUtil.
                             loadTrackFromFile(path.toFile()))
                     .filter(Objects::nonNull)
@@ -119,11 +117,10 @@ public class MuPlayer extends Player implements SystemAudioController {
 
     private void setupTracksList() {
         loadTracks(rootFolder);
-        internalEventNotifier.sendEvent(muPlayerUtil.createPlayerEvent(UPDATED_TRACK_LIST));
     }
 
     private void playFolderSongs(String fldPath) {
-        final Predicate<Track> filter = filterUtil.getPlayFolderFilter(fldPath);
+        final Predicate<Track> filter = FilterUtil.getPlayFolderFilter(fldPath);
         final TrackIndexed trackIndexed = muPlayerUtil.getTrackIndexedFromCondition(filter);
 
         if (trackIndexed != null) {
@@ -131,10 +128,65 @@ public class MuPlayer extends Player implements SystemAudioController {
         }
     }
 
-    private void configureNotifiers() {
-        this.internalEventNotifier.addListener(muPlayerUtil.createDefaultListener());
-        this.internalEventNotifier.start();
-        this.userEventNotifier.start();
+    private void configureEventListeners() throws BusException {
+        messageBus.subscribe(MuPlayerTopic.START.name(), message -> {
+            loadTracks(rootFolder);
+            playNext();
+        });
+
+        messageBus.subscribe(MuPlayerTopic.PLAY_NEXT.name(), message -> {
+            playNext();
+        });
+
+        messageBus.subscribe(MuPlayerTopic.PLAY_PREVIOUS.name(), message -> {
+            playPrevious();
+        });
+
+        messageBus.subscribe(MuPlayerTopic.PLAY_INDEX.name(), message -> {
+            int index = message.getData(Integer.class);
+            play(index);
+        });
+
+        messageBus.subscribe(MuPlayerTopic.PLAY.name(), message -> {
+            play();
+        });
+
+        messageBus.subscribe(MuPlayerTopic.SHUTDOWN.name(), message -> {
+            messageBus.shutdown();
+        });
+
+        messageBus.subscribe(MuPlayerTopic.PAUSE.name(), message -> {
+            pause();
+        });
+
+        messageBus.subscribe(MuPlayerTopic.RESUME.name(), message -> {
+            resumeTrack();
+        });
+
+        messageBus.subscribe(MuPlayerTopic.STOP.name(), message -> {
+            stopTrack();
+        });
+
+        messageBus.subscribe(MuPlayerTopic.SKIP_TRACKS.name(), message -> {
+            SkipTrackData skipTrackData = message.getData(SkipTrackData.class);
+            skipTracks(skipTrackData.getSkipCount(), skipTrackData.getSeekOption());
+        });
+
+        messageBus.subscribe(MuPlayerTopic.MUTE.name(), message -> {
+            mute();
+        });
+
+        messageBus.subscribe(MuPlayerTopic.UNMUTE.name(), message -> {
+            unMute();
+        });
+    }
+
+    private boolean isCurrentTrackActive() {
+        if (currentTrack.get() == null) {
+            return false;
+        }
+
+        return currentTrack.get().isActive();
     }
 
     @Override
@@ -176,19 +228,20 @@ public class MuPlayer extends Player implements SystemAudioController {
     }
 
     @Override
-    public synchronized void jumpTrack(int jumps, SeekOption option) {
+    public synchronized void skipTracks(int skipCount, SeekOption option) {
         int newIndex;
         if (option == NEXT) {
-            newIndex = playerStatusData.getCurrentTrackIndex() + jumps;
+            newIndex = playerStatusData.getCurrentTrackIndex() + skipCount;
             if (newIndex >= listTracks.size()) {
                 newIndex = 0;
             }
         } else {
-            newIndex = playerStatusData.getCurrentTrackIndex() - jumps;
+            newIndex = playerStatusData.getCurrentTrackIndex() - skipCount;
             if (newIndex < 0) {
                 newIndex = listTracks.size() - 1;
             }
         }
+
         play(newIndex);
     }
 
@@ -226,6 +279,7 @@ public class MuPlayer extends Player implements SystemAudioController {
                         }
                     }
                 });
+
         final List<Artist> listArtists = CollectionUtil.newFastList(setArtists);
         listArtists.sort(Comparator.comparing(Artist::getName));
         return listArtists;
@@ -252,6 +306,7 @@ public class MuPlayer extends Player implements SystemAudioController {
                         }
                     }
                 });
+
         final List<Album> listAlbums = CollectionUtil.newFastList(setAlbums);
         listAlbums.sort(Comparator.comparing(Album::getName));
         return listAlbums;
@@ -259,17 +314,15 @@ public class MuPlayer extends Player implements SystemAudioController {
 
     @Override
     public synchronized void addPlayerListener(PlayerListener listener) {
-        userEventNotifier.addListener(listener);
     }
 
     @Override
     public void addTrackListener(TrackStateListener trackStateListener) {
-        listTrackUserListeners.add(trackStateListener);
     }
 
     @Override
     public synchronized List<PlayerListener> getPlayerListeners() {
-        return userEventNotifier.getAllListeners();
+        return List.of();
     }
 
     @Override
@@ -279,7 +332,6 @@ public class MuPlayer extends Player implements SystemAudioController {
 
     @Override
     public synchronized void removePlayerListener(PlayerListener playerListener) {
-        userEventNotifier.removeListener(playerListener);
     }
 
     @Override
@@ -289,7 +341,6 @@ public class MuPlayer extends Player implements SystemAudioController {
 
     @Override
     public synchronized void removeAllPlayerListeners() {
-        userEventNotifier.removeAllListeners();
     }
 
     @Override
@@ -422,18 +473,50 @@ public class MuPlayer extends Player implements SystemAudioController {
         }
     }
 
+    @SneakyThrows
     @Override
     public void play(int index) {
         if (index < 0 || index >= getSongsCount()) {
             return;
         }
 
-        if (currentTrack.get() != null) {
-            currentTrack.get().finish();
-        } else {
-            internalEventNotifier.sendEvent(
-                    muPlayerUtil.createPlayerEvent(CHANGED_CURRENT_TRACK));
+        if (isCurrentTrackActive()) {
+            synchronized (currentTrack) {
+                currentTrack.get().kill();
+            }
         }
+
+        muPlayerUtil.playNewTrack(index);
+    }
+
+    @SneakyThrows
+    @Override
+    public synchronized void playNext() {
+        int nextIndex = AudioFileUtil.getIndexFromOption(NEXT, playerStatusData, getSongsCount());
+        play(nextIndex);
+    }
+
+    @SneakyThrows
+    @Override
+    public synchronized void playPrevious() {
+        int prevIndex = AudioFileUtil.getIndexFromOption(PREV, playerStatusData, getSongsCount());
+        play(prevIndex);
+    }
+
+    @Override
+    public void playFolder(String path) {
+        playFolderSongs(path);
+    }
+
+    @Override
+    public void playFolder(int folderIndex) {
+        final int foldersCount = getFoldersCount();
+        if (folderIndex >= foldersCount) {
+            folderIndex = foldersCount - 1;
+        }
+
+        final int newIndex = muPlayerUtil.seekToFolder(listFolders.get(folderIndex).getPath());
+        play(newIndex);
     }
 
     // Reproduce archivo de audio en la lista
@@ -441,7 +524,7 @@ public class MuPlayer extends Player implements SystemAudioController {
     // TODO REVISAR
     @Override
     public synchronized void play(File trackFile) {
-        Predicate<Track> filter = filterUtil.getTrackFilterByPath(trackFile.getPath());
+        Predicate<Track> filter = FilterUtil.getTrackFilterByPath(trackFile.getPath());
         TrackIndexed trackIndexed = muPlayerUtil.getTrackIndexedFromCondition(filter);
 
         if (trackIndexed == null) {
@@ -451,7 +534,6 @@ public class MuPlayer extends Player implements SystemAudioController {
                 listFolders.add(trackFile.getParentFile());
             }
 
-            internalEventNotifier.sendEvent(muPlayerUtil.createPlayerEvent(UPDATED_TRACK_LIST));
             trackIndexed = new TrackIndexed(newTrack, getSongsCount());
         }
 
@@ -460,7 +542,7 @@ public class MuPlayer extends Player implements SystemAudioController {
 
     @Override
     public synchronized void play(String trackName) {
-        Predicate<Track> filter = filterUtil.getTrackFilterByName(trackName);
+        Predicate<Track> filter = FilterUtil.getTrackFilterByName(trackName);
         TrackIndexed trackIndexed = muPlayerUtil.getTrackIndexedFromCondition(filter);
 
         if (trackIndexed != null) {
@@ -573,46 +655,10 @@ public class MuPlayer extends Player implements SystemAudioController {
     }
 
     @Override
-    public synchronized void playNext() {
-        int nextIndex = audioFormatUtil.getIndexFromOption(NEXT, playerStatusData, getSongsCount());
-        play(nextIndex);
-    }
-
-    @Override
-    public synchronized void playPrevious() {
-        int prevIndex = audioFormatUtil.getIndexFromOption(PREV, playerStatusData, getSongsCount());
-        play(prevIndex);
-    }
-
-    @Override
-    public void playFolder(String path) {
-        playFolderSongs(path);
-    }
-
-    @Override
-    public void playFolder(int folderIndex) {
-        final int foldersCount = getFoldersCount();
-        if (folderIndex >= foldersCount) {
-            folderIndex = foldersCount - 1;
-        }
-        final int newIndex = muPlayerUtil.seekToFolder(listFolders.get(folderIndex).getPath());
-        play(newIndex);
-    }
-
-    @Override
     public synchronized void shutdown() {
         playerStatusData.setOn(false);
-        internalEventNotifier.sendEvent(muPlayerUtil.createPlayerEvent(SHUTDOWN));
+        interruptor.switchOn();
         this.interrupt();
-    }
-
-    @SneakyThrows(Exception.class)
-    @Override
-    public synchronized void run() {
-        internalEventNotifier.sendEvent(muPlayerUtil.createPlayerEvent(PRE_START));
-        configureNotifiers();
-        internalEventNotifier.sendEvent(muPlayerUtil.createPlayerEvent(START));
-        ThreadUtil.freezeThread(this);
     }
 
     @Override
@@ -623,6 +669,18 @@ public class MuPlayer extends Player implements SystemAudioController {
     @Override
     public void setSystemVolume(float volume) {
         audioSystemManager.setFormattedMasterVolume(volume);
+    }
+
+    @SneakyThrows(Exception.class)
+    @Override
+    public void run() {
+        configureEventListeners();
+//        ThreadUtil.freezeThread(this);
+
+        while (!isInterrupted()) {
+            interruptor.checkSignal();
+        }
+
     }
 
 }

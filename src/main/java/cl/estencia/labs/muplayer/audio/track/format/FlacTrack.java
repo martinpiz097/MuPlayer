@@ -13,12 +13,12 @@ import java.io.IOException;
 
 public class FlacTrack extends Track {
 
-    public FlacTrack(String trackPath, TrackInternalEventNotifier internalEventNotifier) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        this(new File(trackPath), internalEventNotifier);
+    public FlacTrack(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        this(new File(trackPath));
     }
 
-    public FlacTrack(File dataSource, TrackInternalEventNotifier internalEventNotifier) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        super(dataSource, new FlacAudioDecoder(dataSource), internalEventNotifier);
+    public FlacTrack(File dataSource) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        super(dataSource, new FlacAudioDecoder(dataSource));
     }
 
     @Override

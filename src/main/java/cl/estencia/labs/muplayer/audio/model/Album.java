@@ -3,10 +3,13 @@ package cl.estencia.labs.muplayer.audio.model;
 import cl.estencia.labs.muplayer.audio.interfaces.TrackData;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 public class Album {
     private final String name;
     private final List<TrackData> listTracks;

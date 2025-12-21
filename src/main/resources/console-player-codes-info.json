@@ -61,7 +61,7 @@
   },
   {
     "code": "info",
-    "orders": ["info", "show-track-info", "show-song-info"],
+    "orders": ["info", "i", "show-track-info", "show-song-info"],
     "helpInfo": "Obtiene información de la canción actual"
   },
   {

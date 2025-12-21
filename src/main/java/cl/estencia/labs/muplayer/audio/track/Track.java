@@ -3,15 +3,14 @@ package cl.estencia.labs.muplayer.audio.track;
 import cl.estencia.labs.aucom.core.device.output.Speaker;
 import cl.estencia.labs.aucom.core.io.AudioDecoder;
 import cl.estencia.labs.aucom.core.util.AudioSystemManager;
-import cl.estencia.labs.muplayer.audio.info.AudioTag;
 import cl.estencia.labs.muplayer.audio.interfaces.TrackData;
+import cl.estencia.labs.muplayer.audio.track.data.AudioTag;
 import cl.estencia.labs.muplayer.audio.track.data.HeaderData;
 import cl.estencia.labs.muplayer.audio.track.io.TrackIOUtil;
 import cl.estencia.labs.muplayer.audio.track.state.*;
 import cl.estencia.labs.muplayer.event.Listenable;
 import cl.estencia.labs.muplayer.event.listener.TrackStateListener;
 import cl.estencia.labs.muplayer.event.model.TrackEvent;
-import cl.estencia.labs.muplayer.event.notifier.internal.TrackInternalEventNotifier;
 import cl.estencia.labs.muplayer.core.exception.MuPlayerException;
 import cl.estencia.labs.muplayer.interfaces.ControllableMusic;
 import cl.estencia.labs.muplayer.event.notifier.user.TrackUserEventNotifier;
@@ -25,7 +24,6 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static cl.estencia.labs.aucom.common.AudioConstants.DEFAULT_MAX_VOL;
 import static cl.estencia.labs.aucom.common.AudioConstants.DEFAULT_MIN_VOL;
@@ -43,23 +41,18 @@ public abstract class Track extends Thread
     @Getter protected final TrackStatusData trackStatusData;
     protected final AudioTag tagInfo;
 
-    protected final TrackInternalEventNotifier internalEventNotifier;
     @Getter protected final TrackUserEventNotifier userEventNotifier;
 
-    protected final AtomicReference<TrackState> trackState;
+    protected volatile TrackState trackState;
 
     protected final AudioSystemManager audioSystemManager;
 
-    public Track(String trackPath, AudioDecoder audioDecoder, TrackInternalEventNotifier internalEventNotifier) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        this(new File(trackPath), audioDecoder, internalEventNotifier);
+    public Track(String trackPath, AudioDecoder audioDecoder) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        this(new File(trackPath), audioDecoder);
     }
 
-    public Track(File dataSource, AudioDecoder audioDecoder, TrackInternalEventNotifier internalEventNotifier)
+    public Track(File dataSource, AudioDecoder audioDecoder)
             throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        if (internalEventNotifier == null) {
-            throw new MuPlayerException("eventNotifier cannot be null");
-        }
-
         this.dataSource = dataSource;
         this.audioDecoder = audioDecoder;
         this.trackIOUtil = new TrackIOUtil();
@@ -67,13 +60,10 @@ public abstract class Track extends Thread
         this.headerData = initHeaderData();
         this.trackStatusData = new TrackStatusData();
 
-        this.internalEventNotifier = internalEventNotifier;
         this.userEventNotifier = new TrackUserEventNotifier();
 
         this.tagInfo = loadTagInfo(dataSource);
-        this.trackState = new AtomicReference<>();
-
-        this.trackState.set(new UnknownState(this, internalEventNotifier, userEventNotifier));
+        this.trackState = new UnknownState(this);
         this.audioSystemManager = new AudioSystemManager();
     }
 
@@ -106,7 +96,7 @@ public abstract class Track extends Thread
     }*/
 
     public TrackStateName getStateName() {
-        return trackState.get().getName();
+        return trackState.getName();
     }
 
     @Override
@@ -138,6 +128,14 @@ public abstract class Track extends Thread
         return getStateName() == TrackStateName.FINISHED;
     }
 
+    public synchronized boolean isKilled() {
+        return getStateName() == TrackStateName.KILLED;
+    }
+
+    public boolean isActive() {
+        return isAlive() && (!isFinished() && !isKilled());
+    }
+
     @Override
     public boolean isMute() {
         return trackStatusData.isMute();
@@ -146,14 +144,14 @@ public abstract class Track extends Thread
     @Override
     public void play() {
         if (isAlive()) {
-            trackState.set(new PlayingState(this, internalEventNotifier, userEventNotifier));
+            trackState = new PlayingState(this);
         }
     }
 
     @Override
     public void pause() {
         if (isPlaying()) {
-            trackState.set(new PausedState(this, internalEventNotifier, userEventNotifier));
+            trackState = new PausedState(this);
         }
     }
 
@@ -170,7 +168,7 @@ public abstract class Track extends Thread
     @Override
     public synchronized void stopTrack() {
         if (isAlive() && (isPlaying() || isPaused())) {
-            trackState.set(new StoppedState(this, internalEventNotifier, userEventNotifier));
+            trackState = new StoppedState(this);
         }
     }
 
@@ -181,7 +179,11 @@ public abstract class Track extends Thread
     }
 
     public void finish() {
-        trackState.set(new FinishedState(this, internalEventNotifier, userEventNotifier));
+        trackState = new FinishedState(this);
+    }
+
+    public void kill() {
+        trackState = new KilledState(this);
     }
 
     // en este caso pasan a ser seconds
@@ -224,8 +226,7 @@ public abstract class Track extends Thread
             final int gotoValue = (int) Math.round(second - getProgress());
             seek(gotoValue);
         } else {
-            trackState.set(new ReverberatedState(this,
-                    internalEventNotifier, userEventNotifier, second));
+            trackState = new ReverberatedState(this, second);
         }
     }
 
@@ -359,18 +360,17 @@ public abstract class Track extends Thread
 
     @Override
     public void sendEvent(TrackEvent trackEvent) {
-        userEventNotifier.sendEvent(trackEvent);
-        internalEventNotifier.sendEvent(trackEvent);
     }
 
     @Override
     public void run() {
-        trackState.set(new StartedState(this, internalEventNotifier, userEventNotifier));
+        trackState = new StartedState(this);
         while (trackStatusData.canTrackContinue()) {
-            trackState.get().handle();
-            System.out.println("WHILE " + getTitle());
+            trackState.handle();
+//            System.out.println("WHILE " + getTitle());
         }
 
-        System.out.println("TRACK CLOSED " + getTitle());
+//        System.out.println("TRACK CLOSED " + getTitle());
     }
+
 }

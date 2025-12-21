@@ -4,11 +4,14 @@ import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.core.exception.FormatNotSupportedException;
 import cl.estencia.labs.muplayer.event.notifier.internal.TrackInternalEventNotifier;
 
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
+import java.io.IOException;
 
 public interface TrackFactory {
-    default Track getTrack(String dataSource, TrackInternalEventNotifier internalEventNotifier) {
-        return getTrack(new File(dataSource), internalEventNotifier);
+    default Track getTrack(String dataSource) throws UnsupportedAudioFileException, LineUnavailableException, IOException {
+        return getTrack(new File(dataSource));
     }
-    Track getTrack(File dataSource, TrackInternalEventNotifier internalEventNotifier) throws FormatNotSupportedException;
+    Track getTrack(File dataSource) throws FormatNotSupportedException, UnsupportedAudioFileException, LineUnavailableException, IOException;
 }

@@ -1,8 +1,13 @@
 package cl.estencia.labs.muplayer.console.command;
 
+import cl.estencia.labs.ebot.bus.MessageBus;
+import cl.estencia.labs.ebot.bus.exception.BusException;
+import cl.estencia.labs.muplayer.audio.model.Album;
+import cl.estencia.labs.muplayer.audio.model.Artist;
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
+import cl.estencia.labs.muplayer.audio.util.TrackUtil;
 import cl.estencia.labs.muplayer.config.model.ConsoleCodesData;
 import cl.estencia.labs.muplayer.config.reader.ConsoleCodesReader;
 import cl.estencia.labs.muplayer.console.enums.ConsoleOrderCode;
@@ -12,15 +17,14 @@ import cl.estencia.labs.muplayer.console.runner.DaemonRunner;
 import cl.estencia.labs.muplayer.console.runner.LocalRunner;
 import cl.estencia.labs.muplayer.console.runner.RunnerMode;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
-import cl.estencia.labs.muplayer.audio.model.Album;
-import cl.estencia.labs.muplayer.audio.model.Artist;
 import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.core.service.LogService;
 import cl.estencia.labs.muplayer.core.service.impl.LogServiceImpl;
 import cl.estencia.labs.muplayer.core.system.SysInfo;
 import cl.estencia.labs.muplayer.core.thread.TaskRunner;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
-import cl.estencia.labs.muplayer.audio.util.TrackUtil;
+import cl.estencia.labs.muplayer.v2.file.bus.MuPlayerBusUtil;
+import cl.estencia.labs.muplayer.v2.file.bus.message.Messages;
 import lombok.Getter;
 import lombok.Setter;
 import org.orangelogger.sys.Logger;
@@ -39,6 +43,8 @@ import java.util.stream.Collectors;
 
 import static cl.estencia.labs.muplayer.console.enums.OutputType.*;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.RUNNER;
+import static cl.estencia.labs.muplayer.core.common.enums.SeekOption.NEXT;
+import static cl.estencia.labs.muplayer.core.common.enums.SeekOption.PREV;
 import static java.nio.file.StandardOpenOption.WRITE;
 
 public class PlayerCommandInterpreter implements CommandInterpreter {
@@ -52,8 +58,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
     private final CacheManager globalCacheManager;
     private final ConsoleCodesReader consoleCodesReader;
     private final LogService logService;
-
-    private final TrackUtil trackUtil;
+    private volatile MessageBus messageBus;
 
     private static final String CMD_DIVISOR = " && ";
 
@@ -63,7 +68,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
         this.globalCacheManager = CacheManager.getGlobalCache();
         this.consoleCodesReader = ConsoleCodesReader.getInstance();
         this.logService = new LogServiceImpl();
-        trackUtil = new TrackUtil();
+        this.messageBus = MuPlayerBusUtil.getMessageBus();
     }
 
     private boolean isPlayerOn() {
@@ -86,6 +91,10 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
     }
 
     private void printTracks(ConsoleExecution execution) {
+        if (player == null) {
+            return;
+        }
+
         final File rootFolder = player.getRootFolder();
         final List<Track> listTracks = player.getTracks();
         final Track current = player.getCurrentTrack().get();
@@ -158,6 +167,10 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
     }
 
     private synchronized void printFolderTracks(ConsoleExecution execution) {
+        if (player == null) {
+            return;
+        }
+
         final List<Track> listTracks = player.getTracks();
         final Track current = player.getCurrentTrack().get();
         final int songsCount = player.getSongsCount();
@@ -303,7 +316,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
         if (track == null) {
             execution.appendOutput("Current track unavailable", error);
         } else {
-            execution.appendOutput(trackUtil.getSongInfo(track), warn);
+            execution.appendOutput(TrackUtil.getSongInfo(track), warn);
         }
     }
 
@@ -328,6 +341,21 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
         }
     }
 
+    private void changeOrSkipTrack(Command cmd, ConsoleExecution execution, SeekOption seekOption) throws BusException {
+        if (cmd.hasOptions()) {
+            Number skipCount = cmd.getOptionAsNumber(0);
+            if (skipCount == null) {
+                execution.appendOutput("Jump value incorrect", error);
+            } else {
+                messageBus.publish(Messages.skipTracks(skipCount.intValue(), seekOption));
+            }
+        } else {
+            messageBus.publish(seekOption == NEXT ? Messages.playNext() : Messages.playPrev());
+        }
+
+        showSongInfo(player.getCurrentTrack().get(), execution);
+    }
+
     @Override
     public ConsoleExecution executeCommand(Command cmd) throws Exception {
         final String cmdOrder = cmd.getOrder();
@@ -346,101 +374,73 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     if (player == null) {
                         player = new MuPlayer(playerFolder);
                     }
-                    if (player.isAlive() && cmd.hasOptions()) {
-                        File musicFolder = new File(cmd.getOptionAt(0));
-                        if (musicFolder.exists()) {
-                            Player newMusicPlayer = new MuPlayer(musicFolder);
-                            player.shutdown();
-                            newMusicPlayer.start();
-                            player = newMusicPlayer;
-                        } else {
-                            execution.appendOutput("Folder not exists", error);
+
+//                    synchronized (player != null ? player : null)
+                    synchronized (player) {
+                        if (player.isAlive() && cmd.hasOptions()) {
+                            File musicFolder = new File(cmd.getOptionAt(0));
+                            if (musicFolder.exists()) {
+                                synchronized (messageBus) {
+                                    messageBus.publish(Messages.shutdown());
+                                    messageBus = MuPlayerBusUtil.createMessageBus();
+
+                                    Player newMusicPlayer = new MuPlayer(musicFolder);
+                                    newMusicPlayer.start();
+                                    player = newMusicPlayer;
+                                }
+                            } else {
+                                execution.appendOutput("Folder not exists", error);
+                            }
+                        } else if (!player.isAlive()) {
+                            player.start();
+
+                            messageBus.publish(Messages.start());
                         }
-                    } else if (!player.isAlive()) {
-                        player.start();
+                        if (currentTrack != null) {
+                            showSongInfo(currentTrack, execution);
+                        }
                     }
-                    if (currentTrack != null) {
-                        showSongInfo(currentTrack, execution);
-                    }
+
                 }
                 case ist -> execution.appendOutput(isPlayerOn() ? "Is playing" : "Is not playing", warn);
                 case pl -> {
-                    if (isPlayerOn()) {
-                        if (cmd.hasOptions()) {
-                            Number playIndex = cmd.getOptionAsNumber(0);
-                            if (playIndex != null && playIndex.intValue() > 0 && playIndex.intValue() <= player.getSongsCount()) {
-                                player.play(playIndex.intValue() - 1);
-                            }
-                            showSongInfo(player.getCurrentTrack().get(), execution);
-                        } else {
-                            player.play();
+                    if (cmd.hasOptions()) {
+                        Number playIndex = cmd.getOptionAsNumber(0);
+                        if (playIndex != null && playIndex.intValue() > 0 && playIndex.intValue() <= player.getSongsCount()) {
+                            messageBus.publish(Messages.playIndex(playIndex.intValue() - 1));
                         }
+
+                        showSongInfo(player.getCurrentTrack().get(), execution);
+                    } else {
+                        messageBus.publish(Messages.play());
                     }
                 }
                 case ps -> {
-                    if (isPlayerOn()) {
-                        player.pause();
-                    }
+                    messageBus.publish(Messages.pause());
                 }
                 case r -> {
-                    if (isPlayerOn()) {
-                        player.resumeTrack();
-                    }
+                    messageBus.publish(Messages.resume());
                 }
                 case s -> {
-                    if (isPlayerOn()) {
-                        player.stopTrack();
-                    }
+                    messageBus.publish(Messages.stop());
                 }
                 case n -> {
-                    if (isPlayerOn()) {
-                        if (cmd.hasOptions()) {
-                            Number jumps = cmd.getOptionAsNumber(0);
-                            if (jumps == null) {
-                                execution.appendOutput("Jump value incorrect", error);
-                            } else {
-                                player.jumpTrack(jumps.intValue(), SeekOption.NEXT);
-                            }
-                        } else {
-                            player.playNext();
-                        }
-                        showSongInfo(player.getCurrentTrack().get(), execution);
-                    }
+                    changeOrSkipTrack(cmd, execution, NEXT);
                 }
                 case p -> {
-                    if (isPlayerOn()) {
-                        if (cmd.hasOptions()) {
-                            Number jumps = cmd.getOptionAsNumber(0);
-                            if (jumps == null) {
-                                execution.appendOutput("Jump value incorrect", error);
-                            } else {
-                                player.jumpTrack(jumps.intValue(), SeekOption.PREV);
-                            }
-                        } else {
-                            player.playPrevious();
-                        }
-                        showSongInfo(player.getCurrentTrack().get(), execution);
-                    }
+                    changeOrSkipTrack(cmd, execution, PREV);
                 }
                 case m -> {
-                    if (isPlayerOn()) {
-                        player.mute();
-                    }
+                    messageBus.publish(Messages.mute());
                 }
                 case um -> {
-                    if (isPlayerOn()) {
-                        player.unMute();
-                    }
+                    messageBus.publish(Messages.unmute());
                 }
                 case l -> {
-                    if (player != null) {
-                        printTracks(execution);
-                    }
+                    printTracks(execution);
                 }
                 case lc -> {
-                    if (isPlayerOn()) {
-                        printFolderTracks(execution);
-                    }
+                    printFolderTracks(execution);
                 }
                 case lf -> {
                     if (isPlayerOn()) {
@@ -513,7 +513,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     if (isPlayerOn()) {
                         if (cmd.hasOptions()) {
                             String optionParam = cmd.getOptionAt(0);
-                            SeekOption option = optionParam.equals("next") ? SeekOption.NEXT
+                            SeekOption option = optionParam.equals("next") ? NEXT
                                     : (optionParam.equals("prev") ? SeekOption.PREV : null);
                             Number jumps = cmd.getOptionAsNumber(1);
 
@@ -531,7 +531,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                                 }
                             }
                         } else {
-                            player.seekFolder(SeekOption.NEXT);
+                            player.seekFolder(NEXT);
                         }
                         showSongInfo(currentTrack, execution);
                     }
@@ -631,12 +631,12 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                 }
                 case sn -> {
                     if (isPlayerOn()) {
-                        execution.appendOutput(trackUtil.getSongInfo(player.getNext()), warn);
+                        execution.appendOutput(TrackUtil.getSongInfo(player.getNext()), warn);
                     }
                 }
                 case sp -> {
                     if (isPlayerOn()) {
-                        execution.appendOutput(trackUtil.getSongInfo(player.getPrevious()), warn);
+                        execution.appendOutput(TrackUtil.getSongInfo(player.getPrevious()), warn);
                     }
                 }
                 case pf -> {

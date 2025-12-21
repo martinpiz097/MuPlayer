@@ -3,10 +3,13 @@ package cl.estencia.labs.muplayer.console.exception;
 import cl.estencia.labs.muplayer.console.command.Command;
 import cl.estencia.labs.muplayer.console.enums.OutputType;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.orangelogger.sys.ConsoleColor;
 import org.orangelogger.sys.Logger;
 
-@Data
+@Getter
+@Setter
 public class ConsoleExecution {
     private final Command cmd;
     private Object outputObject;

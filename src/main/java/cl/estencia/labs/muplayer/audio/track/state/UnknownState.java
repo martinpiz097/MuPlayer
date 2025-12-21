@@ -6,14 +6,12 @@ import cl.estencia.labs.muplayer.event.notifier.user.TrackUserEventNotifier;
 
 public class UnknownState extends TrackState {
 
-    public UnknownState(Track track,
-                         TrackInternalEventNotifier internalEventNotifier,
-                         TrackUserEventNotifier userEventNotifier) {
-        super(TrackStateName.UNKNOWN, track, internalEventNotifier, userEventNotifier);
+    public UnknownState(Track track) {
+        super(TrackStateName.UNKNOWN, track);
     }
 
     @Override
     public void handle() {
-        sendStateEvent();
     }
+
 }

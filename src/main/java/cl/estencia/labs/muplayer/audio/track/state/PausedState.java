@@ -6,15 +6,12 @@ import cl.estencia.labs.muplayer.event.notifier.user.TrackUserEventNotifier;
 
 public class PausedState extends TrackState {
 
-    public PausedState(Track track,
-                         TrackInternalEventNotifier internalEventNotifier,
-                         TrackUserEventNotifier userEventNotifier) {
-        super(TrackStateName.PAUSED, track, internalEventNotifier, userEventNotifier);
+    public PausedState(Track track) {
+        super(TrackStateName.PAUSED, track);
     }
 
     @Override
     public void handle() {
-        sendStateEvent();
         synchronized (track) {
             try {
                 track.wait();

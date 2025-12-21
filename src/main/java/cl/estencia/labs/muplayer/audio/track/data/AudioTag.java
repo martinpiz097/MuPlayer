@@ -1,6 +1,7 @@
-package cl.estencia.labs.muplayer.audio.info;
+package cl.estencia.labs.muplayer.audio.track.data;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
@@ -17,7 +18,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
-@Data
+@Getter
+@Setter
 public class AudioTag {
     private final File fileSource;
     private final AudioFile audioFile;

@@ -10,15 +10,12 @@ import java.util.logging.Level;
 @Log
 public class StoppedState extends TrackState {
 
-    public StoppedState(Track track,
-                         TrackInternalEventNotifier internalEventNotifier,
-                         TrackUserEventNotifier userEventNotifier) {
-        super(TrackStateName.STOPPED, track, internalEventNotifier, userEventNotifier);
+    public StoppedState(Track track) {
+        super(TrackStateName.STOPPED, track);
     }
 
     @Override
     public void handle() {
-        sendStateEvent();
         synchronized (track) {
            try {
                track.resetStream();

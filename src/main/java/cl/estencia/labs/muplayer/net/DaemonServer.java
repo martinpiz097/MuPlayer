@@ -4,6 +4,8 @@ import cl.estencia.labs.muplayer.config.model.MuPlayerInfoKeys;
 import cl.estencia.labs.muplayer.config.reader.MuPlayerInfoReader;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -12,7 +14,8 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 public class DaemonServer {
     private final ServerSocket serverSocket;
     private final List<Client> listClients;

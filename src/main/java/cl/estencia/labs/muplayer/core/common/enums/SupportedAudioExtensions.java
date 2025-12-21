@@ -9,7 +9,7 @@ public enum SupportedAudioExtensions {
     mp3,    // MPEG-1/2 Audio Layer III
     ogg,    // Ogg Vorbis
     opus,   // Opus Audio Format
-    pcm,    // Pulse Code Modulation (raw)
+//    pcm,    // Pulse Code Modulation (raw)
     snd,    // Sound
     wav,    // Waveform Audio File Format
 }

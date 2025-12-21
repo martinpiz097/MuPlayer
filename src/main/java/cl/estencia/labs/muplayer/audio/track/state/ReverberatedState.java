@@ -11,17 +11,14 @@ import java.io.IOException;
 public class ReverberatedState extends TrackState {
     private final double seekSeconds;
 
-    public ReverberatedState(Track track,
-                             TrackInternalEventNotifier internalEventNotifier,
-                             TrackUserEventNotifier userEventNotifier, double seekSeconds) {
-        super(TrackStateName.REVERBERATED, track, internalEventNotifier, userEventNotifier);
+    public ReverberatedState(Track track, double seekSeconds) {
+        super(TrackStateName.REVERBERATED, track);
         this.seekSeconds = seekSeconds;
     }
 
     @Override
     public void handle() {
         try {
-            sendStateEvent();
             track.resetStream();
             track.getTrackStatusData().setSecsSeeked(0.0d);
             track.seek(Math.max(seekSeconds, 0));

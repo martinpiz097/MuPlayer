@@ -10,7 +10,7 @@ import javax.sound.sampled.SourceDataLine;
 @Log
 public class TrackUtil {
 
-    public String getSongInfo(Track track) {
+    public static String getSongInfo(Track track) {
         final StringBuilder sbInfo = new StringBuilder();
         final String title = track.getTitle();
         final String album = track.getAlbum();
@@ -102,7 +102,7 @@ public class TrackUtil {
         return sbTabs.toString();
     }
 
-    public String getLineInfo(Track track) {
+    public static String getLineInfo(Track track) {
         final TrackIOUtil trackIOUtil = track.getTrackIOUtil();
         final SourceDataLine driver = track.getSpeaker().getDriver();
 

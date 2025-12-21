@@ -1,11 +1,10 @@
 package cl.estencia.labs.muplayer.audio.model;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class TrackIndexed {

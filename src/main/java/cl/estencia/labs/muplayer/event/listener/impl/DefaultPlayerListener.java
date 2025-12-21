@@ -13,7 +13,7 @@ import cl.estencia.labs.muplayer.event.notifier.internal.TrackInternalEventNotif
 import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.core.service.LogService;
 import cl.estencia.labs.muplayer.core.service.impl.LogServiceImpl;
-import cl.estencia.labs.muplayer.audio.util.AudioFormatUtil;
+import cl.estencia.labs.muplayer.audio.util.AudioFileUtil;
 import cl.estencia.labs.muplayer.audio.util.FilterUtil;
 import cl.estencia.labs.muplayer.audio.util.MuPlayerUtil;
 import lombok.extern.java.Log;
@@ -42,7 +42,7 @@ public class DefaultPlayerListener implements PlayerListener {
     private final TrackFactory trackFactory;
 
 
-    private final AudioFormatUtil audioFormatUtil;
+    private final AudioFileUtil audioFileUtil;
     private final FilterUtil filterUtil;
     private final LogService logService;
 
@@ -53,7 +53,7 @@ public class DefaultPlayerListener implements PlayerListener {
         this.playerInternalEventNotifier = playerInternalEventNotifier;
         this.defaultTrackStateListener = defaultTrackStateListener;
         this.trackFactory = trackFactory;
-        this.audioFormatUtil = new AudioFormatUtil();
+        this.audioFileUtil = new AudioFileUtil();
         this.filterUtil = new FilterUtil();
         this.logService = new LogServiceImpl();
     }
@@ -68,7 +68,7 @@ public class DefaultPlayerListener implements PlayerListener {
                                List<Track> listTracks) {
         return existsNewIndex(playerStatusData)
                 ? playerStatusData.getNewTrackIndex()
-                : audioFormatUtil.getIndexFromOption(seekOption, playerStatusData,
+                : audioFileUtil.getIndexFromOption(seekOption, playerStatusData,
                 listTracks.size());
     }
 
@@ -130,12 +130,11 @@ public class DefaultPlayerListener implements PlayerListener {
     public Track loadTrackFromFile(File audioFile) {
         try {
             TrackInternalEventNotifier trackEventNotifier = new TrackInternalEventNotifier();
-            Track track = trackFactory.getTrack(audioFile,
-                    trackEventNotifier);
+            Track track = trackFactory.getTrack(audioFile);
 
             configureTrackEvents(trackEventNotifier);
             return track;
-        } catch (FormatNotSupportedException e) {
+        } catch (Exception e) {
             log.severe("Error on load track ("
                     + e.getClass().getSimpleName()
                     + "): " + e.getMessage());
@@ -154,7 +153,7 @@ public class DefaultPlayerListener implements PlayerListener {
             }
 
             folderPaths
-                    .filter(audioFormatUtil::hasAudioFormatExtension)
+                    .filter(AudioFileUtil::hasAudioFormatExtension)
                     .map(path -> loadTrackFromFile(path.toFile()))
                     .filter(Objects::nonNull)
                     .sorted(MuPlayerUtil.TRACKS_SORT_COMPARATOR)

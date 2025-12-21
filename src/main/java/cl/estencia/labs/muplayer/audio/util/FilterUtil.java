@@ -8,46 +8,46 @@ import java.util.function.Predicate;
 
 public class FilterUtil {
 
-    public Predicate<Track> newSeekToFolderFilter(File parentFile) {
+    public static Predicate<Track> newSeekToFolderFilter(File parentFile) {
         return track -> {
             File dataSource = track.getDataSource();
             return dataSource != null && dataSource.getParentFile().equals(parentFile);
         };
     }
 
-    public Predicate<Track> getPlayFolderFilter(String fldPath) {
+    public static Predicate<Track> getPlayFolderFilter(String fldPath) {
         return track -> {
             File dataSource = track.getDataSource();
             return dataSource != null && dataSource.getParent().equals(fldPath);
         };
     }
 
-    public Predicate<Track> getTrackFilterByPath(String trackPath) {
+    public static Predicate<Track> getTrackFilterByPath(String trackPath) {
         return track -> {
             File dataSource = track.getDataSource();
             return dataSource != null && dataSource.getPath().equals(trackPath);
         };
     }
 
-    public Predicate<Track> getTrackFilterByName(String trackName) {
+    public static Predicate<Track> getTrackFilterByName(String trackName) {
         return track -> {
             File dataSource = track.getDataSource();
             return dataSource != null && dataSource.getName().equals(trackName);
         };
     }
 
-    public Predicate<Track> getFindFirstInFilter(File parentFile) {
+    public static Predicate<Track> getFindFirstInFilter(File parentFile) {
         return track -> {
             File dataSource = track.getDataSource();
             return dataSource != null && dataSource.getParentFile().equals(parentFile);
         };
     }
 
-    public FileFilter getBaseFilter() {
+    public static FileFilter getBaseFilter() {
         return pathname -> pathname.canRead() && !pathname.isHidden();
     }
 
-    public FileFilter getDirectoriesFilter() {
+    public static FileFilter getDirectoriesFilter() {
         return pathname -> getBaseFilter().accept(pathname) && pathname.isDirectory();
     }
 

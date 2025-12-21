@@ -1,12 +1,10 @@
 package cl.estencia.labs.muplayer.audio.track.state;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.v2.file.bus.message.Messages;
 
-public class FinishedState extends TrackState {
-
-    public FinishedState(Track track) {
-        super(TrackStateName.FINISHED, track);
+public class KilledState extends TrackState {
+    public KilledState(Track track) {
+        super(TrackStateName.KILLED, track);
     }
 
     @Override
@@ -16,9 +14,10 @@ public class FinishedState extends TrackState {
             speaker.close();
             trackStatusData.setCanTrackContinue(false);
 
-            messageBus.publish(Messages.playNext());
+//            track.interrupt();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 }

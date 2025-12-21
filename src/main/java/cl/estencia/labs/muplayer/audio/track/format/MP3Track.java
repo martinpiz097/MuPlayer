@@ -16,12 +16,12 @@ import java.io.IOException;
 @Log
 public class MP3Track extends Track {
 
-    public MP3Track(String trackPath, TrackInternalEventNotifier internalEventNotifier) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        this(new File(trackPath), internalEventNotifier);
+    public MP3Track(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        this(new File(trackPath));
     }
 
-    public MP3Track(File dataSource, TrackInternalEventNotifier internalEventNotifier) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        super(dataSource, new DefaultAudioDecoder(dataSource), internalEventNotifier);
+    public MP3Track(File dataSource) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        super(dataSource, new DefaultAudioDecoder(dataSource));
     }
 
     private long calculateFrameSize(MP3AudioHeader mp3AudioHeader) {

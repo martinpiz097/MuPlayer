@@ -4,7 +4,8 @@ import lombok.*;
 
 import static cl.estencia.labs.aucom.core.util.AudioDecodingUtil.DEFAULT_VOLUME;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @Builder
 public class TrackStatusData {
@@ -21,7 +22,6 @@ public class TrackStatusData {
         this.canTrackContinue = true;
     }
 
-    @Getter(AccessLevel.NONE)
     private volatile boolean canTrackContinue;
 
     public synchronized boolean isVolumeZero() {

@@ -13,12 +13,12 @@ import java.io.IOException;
 
 public class OGGTrack extends Track {
 
-    public OGGTrack(String trackPath, TrackInternalEventNotifier internalEventNotifier) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        this(new File(trackPath), internalEventNotifier);
+    public OGGTrack(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        this(new File(trackPath));
     }
 
-    public OGGTrack(File dataSource, TrackInternalEventNotifier internalEventNotifier) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        super(dataSource, new DefaultAudioDecoder(dataSource), internalEventNotifier);
+    public OGGTrack(File dataSource) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        super(dataSource, new DefaultAudioDecoder(dataSource));
     }
 
     @Override

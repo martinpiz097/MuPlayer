@@ -1,5 +1,7 @@
 package cl.estencia.labs.muplayer;
 
+import cl.estencia.labs.ebot.bus.MessageBus;
+import cl.estencia.labs.ebot.bus.model.message.Message;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import cl.estencia.labs.muplayer.config.model.LogConfigKeys;
@@ -17,6 +19,8 @@ import lombok.extern.java.Log;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
+import static cl.estencia.labs.muplayer.core.cache.CacheVar.MESSAGE_BUS;
+
 @Log
 public class Main {
 
@@ -25,8 +29,14 @@ public class Main {
         MessagesInfoReader messagesInfoReader = MessagesInfoReader.getInstance();
         CacheManager globalCache = CacheManager.getGlobalCache();
 
+        MessageBus messageBus = globalCache.saveValue(MESSAGE_BUS,
+                MessageBus.multiPublisherPerTopic(2, false));
+
         try {
             loadLogConfig();
+
+            messageBus.start();
+
             ConsoleRunner consoleRunner = null;
             if (args.length == 0) {
                 consoleRunner = new LocalRunner();
@@ -63,6 +73,8 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
             log.severe("Error on MuPlayer class: " + e);
+
+            messageBus.shutdown();
         }
     }
 
@@ -82,4 +94,5 @@ public class Main {
                 logManager.getLogger(logName).setLevel(logLevel)
         );
     }
+
 }

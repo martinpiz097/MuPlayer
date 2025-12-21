@@ -1,7 +1,7 @@
 package cl.estencia.labs.muplayer.audio.player;
 
 import cl.estencia.labs.muplayer.audio.interfaces.ReportablePlayer;
-import cl.estencia.labs.muplayer.audio.interfaces.SystemAudioController;
+import cl.estencia.labs.muplayer.audio.interfaces.SystemVolumeController;
 import cl.estencia.labs.muplayer.event.listener.PlayerListener;
 import cl.estencia.labs.muplayer.event.listener.TrackStateListener;
 import cl.estencia.labs.muplayer.interfaces.ControllableMusic;
@@ -11,7 +11,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
-public abstract class Player extends Thread implements ControllableMusic, ReportablePlayer, SystemAudioController {
+public abstract class Player extends Thread implements ControllableMusic, ReportablePlayer, SystemVolumeController {
     public abstract boolean isOn();
     public abstract boolean hasSounds();
 
@@ -27,7 +27,7 @@ public abstract class Player extends Thread implements ControllableMusic, Report
     public abstract void playPrevious();
     public abstract void seekFolder(SeekOption seekOption);
     public abstract void seekFolder(SeekOption seekOption, int jumps);
-    public abstract void jumpTrack(int jumps, SeekOption option);
+    public abstract void skipTracks(int skipCount, SeekOption option);
 
     public abstract void shutdown();
 

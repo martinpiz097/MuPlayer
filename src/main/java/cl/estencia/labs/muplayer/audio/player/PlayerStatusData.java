@@ -1,10 +1,13 @@
 package cl.estencia.labs.muplayer.audio.player;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import static cl.estencia.labs.aucom.core.util.AudioDecodingUtil.DEFAULT_VOLUME;
 
-@Data
+@Getter
+@Setter
 public class PlayerStatusData {
     private volatile int currentTrackIndex;
     private volatile int newTrackIndex;

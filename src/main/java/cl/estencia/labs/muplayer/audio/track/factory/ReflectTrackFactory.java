@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.Objects;
 import java.util.Optional;
 
-import static cl.estencia.labs.muplayer.core.util.FileUtil.getFileFormatName;
+import static cl.estencia.labs.muplayer.audio.util.AudioFileUtil.getFileFormatName;
 
 public class ReflectTrackFactory implements TrackFactory {
     private final TrackClassLoader trackClassLoader;
@@ -32,12 +32,11 @@ public class ReflectTrackFactory implements TrackFactory {
     }
 
     @Override
-    public Track getTrack(File dataSource, TrackInternalEventNotifier internalEventNotifier) throws FormatNotSupportedException {
+    public Track getTrack(File dataSource) throws FormatNotSupportedException {
         if (dataSource != null && dataSource.exists()) {
-            Track result = instanceTrackFromClass(dataSource, internalEventNotifier);
+            Track result = instanceTrackFromClass(dataSource);
             if (result == null) {
-                throw new FormatNotSupportedException(
-                        getFileFormatName(dataSource.getName()));
+                throw new FormatNotSupportedException(getFileFormatName(dataSource.getName()));
             }
 
             return result;

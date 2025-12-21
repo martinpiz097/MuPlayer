@@ -2,12 +2,15 @@ package cl.estencia.labs.muplayer.audio.track.io;
 
 import cl.estencia.labs.aucom.core.device.output.Speaker;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.java.Log;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.SourceDataLine;
 
-@Data
+@Getter
+@Setter
 @Log
 public class TrackIOUtil {
 

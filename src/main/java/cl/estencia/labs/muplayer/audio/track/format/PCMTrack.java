@@ -12,12 +12,12 @@ import java.io.IOException;
 
 public class PCMTrack extends Track {
 
-    public PCMTrack(String trackPath, TrackInternalEventNotifier internalEventNotifier) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        this(new File(trackPath), internalEventNotifier);
+    public PCMTrack(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        this(new File(trackPath));
     }
 
-    public PCMTrack(File dataSource, TrackInternalEventNotifier internalEventNotifier) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        super(dataSource, new DefaultAudioDecoder(dataSource), internalEventNotifier);
+    public PCMTrack(File dataSource) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        super(dataSource, new DefaultAudioDecoder(dataSource));
     }
 
     @Override

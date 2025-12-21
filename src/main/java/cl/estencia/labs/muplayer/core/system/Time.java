@@ -1,10 +1,12 @@
 package cl.estencia.labs.muplayer.core.system;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.GregorianCalendar;
 
-@Data
+@Getter
+@Setter
 public class Time {
 
     private static final Time time = new Time();

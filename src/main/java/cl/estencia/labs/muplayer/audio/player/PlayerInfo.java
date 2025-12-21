@@ -2,12 +2,15 @@ package cl.estencia.labs.muplayer.audio.player;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.concurrent.atomic.AtomicReference;
 
-@Data
+@Getter
+@Setter
 public class PlayerInfo {
     private final AtomicReference<Track> current;
     private final File trackFolder;
