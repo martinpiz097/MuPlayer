@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.v2.file.bus;
+package cl.estencia.labs.muplayer.bus;
 
 import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;

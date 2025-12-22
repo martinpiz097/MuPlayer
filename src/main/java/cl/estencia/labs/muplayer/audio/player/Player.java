@@ -3,14 +3,11 @@ package cl.estencia.labs.muplayer.audio.player;
 import cl.estencia.labs.muplayer.audio.interfaces.ControllableMusic;
 import cl.estencia.labs.muplayer.audio.interfaces.ReportablePlayer;
 import cl.estencia.labs.muplayer.audio.interfaces.SystemVolumeController;
+import cl.estencia.labs.muplayer.bus.listener.PlayerResponseListener;
 import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
-import cl.estencia.labs.muplayer.event.listener.PlayerListener;
-import cl.estencia.labs.muplayer.event.listener.PlayerResponseListener;
-import cl.estencia.labs.muplayer.event.listener.TrackStateListener;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.List;
 
 public abstract class Player extends Thread implements ControllableMusic, ReportablePlayer, SystemVolumeController {
     public abstract boolean isOn();
@@ -31,20 +28,6 @@ public abstract class Player extends Thread implements ControllableMusic, Report
     public abstract void skipTracks(int skipCount, SeekOption option);
 
     public abstract void shutdown();
-
-    public abstract void addPlayerListener(PlayerListener listener);
-    public abstract void addTrackListener(TrackStateListener trackStateListener);
-    public abstract List<PlayerListener> getPlayerListeners();
-    public abstract List<TrackStateListener> getTrackListeners();
-    public abstract void removePlayerListener(PlayerListener reference);
-    public abstract void removeTrackListener(TrackStateListener trackStateListener);
-    public abstract void removeAllPlayerListeners();
-    public abstract void removeAllTrackListeners();
-    public void removeAllListeners() {
-        removeAllTrackListeners();
-        removeAllPlayerListeners();
-    }
-    //public abstract void reloadTracks();
 
     public abstract void addResponseListener(PlayerResponseListener responseListener);
     public abstract void removeAllResponseListeners();

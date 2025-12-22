@@ -2,7 +2,7 @@ package cl.estencia.labs.muplayer.audio.track.factory;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.core.exception.FormatNotSupportedException;
-import cl.estencia.labs.muplayer.v2.file.AudioFileScanner;
+import cl.estencia.labs.muplayer.file.AudioFileScanner;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.sampled.LineUnavailableException;

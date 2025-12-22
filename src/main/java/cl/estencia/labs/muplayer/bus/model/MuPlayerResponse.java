@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.model;
+package cl.estencia.labs.muplayer.bus.model;
 
 import cl.estencia.labs.muplayer.audio.player.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;

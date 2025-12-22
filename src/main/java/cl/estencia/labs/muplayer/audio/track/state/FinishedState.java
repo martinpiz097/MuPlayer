@@ -1,7 +1,7 @@
 package cl.estencia.labs.muplayer.audio.track.state;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.v2.file.bus.message.Messages;
+import cl.estencia.labs.muplayer.bus.message.Messages;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

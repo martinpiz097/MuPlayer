@@ -5,7 +5,7 @@ import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.TrackStatusData;
 import cl.estencia.labs.muplayer.audio.track.io.TrackIOUtil;
-import cl.estencia.labs.muplayer.v2.file.bus.MuPlayerBusUtil;
+import cl.estencia.labs.muplayer.bus.MuPlayerBusUtil;
 import lombok.Getter;
 
 import javax.sound.sampled.AudioInputStream;

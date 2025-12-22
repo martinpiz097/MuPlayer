@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.v2.file.bus.model;
+package cl.estencia.labs.muplayer.bus.model;
 
 import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
 import lombok.AllArgsConstructor;

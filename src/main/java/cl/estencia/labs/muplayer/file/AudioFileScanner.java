@@ -1,12 +1,12 @@
-package cl.estencia.labs.muplayer.v2.file;
+package cl.estencia.labs.muplayer.file;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.format.FlacTrack;
 import cl.estencia.labs.muplayer.audio.track.format.MP3Track;
 import cl.estencia.labs.muplayer.audio.track.format.OGGTrack;
 import cl.estencia.labs.muplayer.audio.track.format.PCMTrack;
-import cl.estencia.labs.muplayer.audio.util.AudioFileUtil;
 import cl.estencia.labs.muplayer.core.common.enums.SupportedAudioExtensions;
+import cl.estencia.labs.muplayer.core.util.AudioFileUtil;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;

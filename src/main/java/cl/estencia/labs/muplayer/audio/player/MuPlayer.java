@@ -10,20 +10,20 @@ import cl.estencia.labs.muplayer.audio.model.Artist;
 import cl.estencia.labs.muplayer.audio.model.TrackIndexed;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.state.TrackStateName;
-import cl.estencia.labs.muplayer.audio.util.AudioFileUtil;
-import cl.estencia.labs.muplayer.audio.util.FilterUtil;
-import cl.estencia.labs.muplayer.audio.util.MuPlayerUtil;
+import cl.estencia.labs.muplayer.bus.MuPlayerBusUtil;
+import static cl.estencia.labs.muplayer.bus.message.MuPlayerTopic.*;
+
+import cl.estencia.labs.muplayer.bus.listener.PlayerResponseListener;
+import cl.estencia.labs.muplayer.bus.message.Messages;
+import cl.estencia.labs.muplayer.bus.message.MuPlayerTopic;
+import cl.estencia.labs.muplayer.bus.model.MuPlayerResponse;
+import cl.estencia.labs.muplayer.bus.model.SkipData;
 import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
+import cl.estencia.labs.muplayer.core.util.AudioFileUtil;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
-import cl.estencia.labs.muplayer.event.listener.PlayerListener;
-import cl.estencia.labs.muplayer.event.listener.PlayerResponseListener;
-import cl.estencia.labs.muplayer.event.listener.TrackStateListener;
-import cl.estencia.labs.muplayer.model.MuPlayerResponse;
-import cl.estencia.labs.muplayer.v2.file.AudioFileScanner;
-import cl.estencia.labs.muplayer.v2.file.bus.MuPlayerBusUtil;
-import cl.estencia.labs.muplayer.v2.file.bus.message.Messages;
-import cl.estencia.labs.muplayer.v2.file.bus.message.MuPlayerTopic;
-import cl.estencia.labs.muplayer.v2.file.bus.model.SkipData;
+import cl.estencia.labs.muplayer.core.util.FilterUtil;
+import cl.estencia.labs.muplayer.core.util.MuPlayerUtil;
+import cl.estencia.labs.muplayer.file.AudioFileScanner;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,7 +42,6 @@ import java.util.stream.Stream;
 
 import static cl.estencia.labs.muplayer.core.common.enums.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.core.common.enums.SeekOption.PREV;
-import static cl.estencia.labs.muplayer.v2.file.bus.message.MuPlayerTopic.PLAYER_RESPONSE;
 
 @Slf4j
 public class MuPlayer extends Player implements SystemVolumeController {
@@ -333,42 +332,6 @@ public class MuPlayer extends Player implements SystemVolumeController {
         final List<Album> listAlbums = CollectionUtil.newFastList(setAlbums);
         listAlbums.sort(Comparator.comparing(Album::getName));
         return listAlbums;
-    }
-
-    @Override
-    public synchronized void addPlayerListener(PlayerListener listener) {
-    }
-
-    @Override
-    public void addTrackListener(TrackStateListener trackStateListener) {
-    }
-
-    @Override
-    public synchronized List<PlayerListener> getPlayerListeners() {
-        return List.of();
-    }
-
-    @Override
-    public List<TrackStateListener> getTrackListeners() {
-        return List.of();
-    }
-
-    @Override
-    public synchronized void removePlayerListener(PlayerListener playerListener) {
-    }
-
-    @Override
-    public void removeTrackListener(TrackStateListener trackStateListener) {
-//        listInternalTrackListeners.remove(trackStateListener);
-    }
-
-    @Override
-    public synchronized void removeAllPlayerListeners() {
-    }
-
-    @Override
-    public void removeAllTrackListeners() {
-//        listTrackUserListeners.clear();
     }
 
     @Override

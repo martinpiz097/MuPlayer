@@ -10,10 +10,6 @@ import cl.estencia.labs.muplayer.audio.track.data.HeaderData;
 import cl.estencia.labs.muplayer.audio.track.io.TrackIOUtil;
 import cl.estencia.labs.muplayer.audio.track.state.*;
 import cl.estencia.labs.muplayer.core.exception.MuPlayerException;
-import cl.estencia.labs.muplayer.event.Listenable;
-import cl.estencia.labs.muplayer.event.listener.TrackStateListener;
-import cl.estencia.labs.muplayer.event.model.TrackEvent;
-import cl.estencia.labs.muplayer.event.notifier.user.TrackUserEventNotifier;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +19,6 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import static cl.estencia.labs.aucom.common.AudioConstants.DEFAULT_MAX_VOL;
 import static cl.estencia.labs.aucom.common.AudioConstants.DEFAULT_MIN_VOL;
@@ -31,7 +26,7 @@ import static cl.estencia.labs.aucom.common.AudioConstants.DEFAULT_MIN_VOL;
 @EqualsAndHashCode(callSuper = true)
 @Slf4j
 public abstract class Track extends Thread
-        implements Runnable, ControllableMusic, TrackData, Listenable<TrackStateListener, TrackEvent> {
+        implements Runnable, ControllableMusic, TrackData {
     @Getter protected final File dataSource;
     @Getter protected final AudioDecoder audioDecoder;
     @Getter protected final TrackIOUtil trackIOUtil;
@@ -40,8 +35,6 @@ public abstract class Track extends Thread
 
     @Getter protected final TrackStatusData trackStatusData;
     protected final AudioTag tagInfo;
-
-    @Getter protected final TrackUserEventNotifier userEventNotifier;
 
     protected volatile TrackState trackState;
 
@@ -59,8 +52,6 @@ public abstract class Track extends Thread
         this.speaker = new Speaker(audioDecoder.getDecodedStream());
         this.headerData = initHeaderData();
         this.trackStatusData = new TrackStatusData();
-
-        this.userEventNotifier = new TrackUserEventNotifier();
 
         this.tagInfo = loadTagInfo(dataSource);
         this.trackState = new UnknownState(this);
@@ -341,30 +332,6 @@ public abstract class Track extends Thread
         } else {
             throw new MuPlayerException("Already started track");
         }
-    }
-
-    @Override
-    public void addListener(TrackStateListener listener) {
-        userEventNotifier.addListener(listener);
-    }
-
-    @Override
-    public List<TrackStateListener> getAllListeners() {
-        return userEventNotifier.getAllListeners();
-    }
-
-    @Override
-    public void removeListener(TrackStateListener listener) {
-        userEventNotifier.removeListener(listener);
-    }
-
-    @Override
-    public void removeAllListeners() {
-        userEventNotifier.removeAllListeners();
-    }
-
-    @Override
-    public void sendEvent(TrackEvent trackEvent) {
     }
 
     @Override

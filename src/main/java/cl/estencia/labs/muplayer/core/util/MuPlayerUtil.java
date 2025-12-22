@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.util;
+package cl.estencia.labs.muplayer.core.util;
 
 import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.muplayer.audio.model.TrackIndexed;
@@ -11,6 +11,8 @@ import cl.estencia.labs.muplayer.bus.MuPlayerBusUtil;
 import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.core.service.LogService;
 import cl.estencia.labs.muplayer.core.service.impl.LogServiceImpl;
+import cl.estencia.labs.muplayer.core.util.AudioFileUtil;
+import cl.estencia.labs.muplayer.core.util.FilterUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -90,25 +92,6 @@ public class MuPlayerUtil {
                     + e.getClass().getSimpleName()
                     + "): " + e.getMessage());
             return null;
-        }
-    }
-
-    public void transferUserListeners(Track oldTrack, Track newTrack) {
-        if (oldTrack == null || newTrack == null) {
-            return;
-        }
-
-        oldTrack.getAllListeners().forEach(newTrack::addListener);
-    }
-
-    private void recreateCurrentTrackIfExists(AtomicReference<Track> currentTrack,
-                                              List<Track> listTracks,
-                                              PlayerStatusData playerStatusData) {
-        if (currentTrack.get() != null) {
-            Track recreatedTrack = loadTrackFromFile(currentTrack.get().getDataSource());
-            int currentTrackIndex = playerStatusData.getCurrentTrackIndex();
-
-            listTracks.set(currentTrackIndex, recreatedTrack);
         }
     }
 

@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.v2.file.bus.message;
+package cl.estencia.labs.muplayer.bus.message;
 
 public enum MuPlayerTopic {
     PLAYER_RESPONSE,
