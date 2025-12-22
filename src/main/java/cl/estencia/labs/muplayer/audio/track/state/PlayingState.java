@@ -18,8 +18,11 @@ public class PlayingState extends TrackState {
     @Override
     public void handle() {
         try {
+            // TODO arreglar el goto y el seek, cagaron de nuevo
             final byte[] audioBuffer = new byte[DEFAULT_BUFF_SIZE];
             int read;
+            // track.isPlaying() necesario, sino la pista se queda reproduciendo aunque
+            // pase a la siguiente manualmente
             while (track.isPlaying() && (read = decodedAudioStream.read(audioBuffer)) != EOF) {
                 speaker.playAudio(audioBuffer, read);
             }
@@ -27,7 +30,9 @@ public class PlayingState extends TrackState {
             log.error("Error on playing sound " + track.getTitle() + ": ", e);
         }
 
-        if (track.isActive()) {
+        // problematico cuando pauso, ya que provoca salida del while
+        // y lo considera como que la pista termino
+        if (track.isActive() && !(track.isPaused() || track.isStopped())) {
             track.finish();
         }
     }

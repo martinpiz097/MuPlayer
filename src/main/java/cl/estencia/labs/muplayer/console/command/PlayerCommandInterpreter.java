@@ -399,37 +399,15 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     messageBus.publish(Messages.play());
                 }
             }
-            case ps -> {
-                messageBus.publish(Messages.pause());
-            }
-            case pwd -> {
-                consoleOutput.appendOutput("Current working directory: "
-                        + new File(".").getCanonicalPath(), info);
-            }
-            case r -> {
-                messageBus.publish(Messages.resume());
-            }
-            case s -> {
-                messageBus.publish(Messages.stop());
-            }
-            case n -> {
-                changeOrSkipTrack(cmd, consoleOutput, NEXT);
-            }
-            case p -> {
-                changeOrSkipTrack(cmd, consoleOutput, PREV);
-            }
-            case m -> {
-                messageBus.publish(Messages.mute());
-            }
-            case um -> {
-                messageBus.publish(Messages.unmute());
-            }
-            case l -> {
-                printTracks(consoleOutput);
-            }
-            case lc -> {
-                printFolderTracks(consoleOutput);
-            }
+            case ps -> messageBus.publish(Messages.pause());
+            case r -> messageBus.publish(Messages.resume());
+            case s -> messageBus.publish(Messages.stop());
+            case n -> changeOrSkipTrack(cmd, consoleOutput, NEXT);
+            case p -> changeOrSkipTrack(cmd, consoleOutput, PREV);
+            case m -> messageBus.publish(Messages.mute());
+            case um -> messageBus.publish(Messages.unmute());
+            case l -> printTracks(consoleOutput);
+            case lc -> printFolderTracks(consoleOutput);
             case lf -> {
                 if (isPlayerOn()) {
                     if (cmd.hasOptions()) {
@@ -598,7 +576,6 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     consoleOutput.appendOutput(formattedProgress + "/" + formattedDuration, warn);
                 }
             }
-            case cls -> clearConsole();
             case format -> {
                 if (playerCurrentData.get().getCurrentTrack() == null) {
                     consoleOutput.appendOutput("Current track unavailable", error);
@@ -626,6 +603,11 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                 if (cmd.hasOptions()) {
                     execSysCommand(cmd.getOptionsAsString());
                 }
+            }
+            case cls -> clearConsole();
+            case pwd -> {
+                consoleOutput.appendOutput("Current working directory: "
+                        + new File(".").getCanonicalPath(), info);
             }
             case sn -> {
                 if (isPlayerOn()) {
