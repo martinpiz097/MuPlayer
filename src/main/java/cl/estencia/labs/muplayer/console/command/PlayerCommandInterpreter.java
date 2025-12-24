@@ -6,6 +6,7 @@ import cl.estencia.labs.muplayer.audio.model.Album;
 import cl.estencia.labs.muplayer.audio.model.Artist;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
+import cl.estencia.labs.muplayer.audio.track.io.TrackIOUtil;
 import cl.estencia.labs.muplayer.bus.MuPlayerBusUtil;
 import cl.estencia.labs.muplayer.bus.message.Messages;
 import cl.estencia.labs.muplayer.bus.model.MuPlayerResponse;
@@ -25,7 +26,7 @@ import cl.estencia.labs.muplayer.core.service.impl.LogServiceImpl;
 import cl.estencia.labs.muplayer.core.system.SysInfo;
 import cl.estencia.labs.muplayer.core.thread.TaskRunner;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
-import cl.estencia.labs.muplayer.core.util.TrackUtil;
+import cl.estencia.labs.muplayer.core.util.ConsolePainterUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +39,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -134,8 +137,8 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
         final File rootFolder = player.getRootFolder();
         final List<Track> listTracks = player.getTracks();
         final Track current = playerCurrentData.get().getCurrentTrack();
+        final Map<Object, Object> mapValues = new HashMap<>();
 
-        execution.appendOutput("------------------------------", info);
         if (rootFolder == null) {
             execution.appendOutput("Music in folder", info);
         } else {
@@ -321,7 +324,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
         if (track == null) {
             Logger.getLogger(this, "Current track unavailable").rawError();
         } else {
-            Logger.getLogger(this, TrackUtil.getSongInfo(track)).rawWarning();
+            Logger.getLogger(this, ConsolePainterUtil.getSongInfo(track)).rawWarning();
         }
     }
 
@@ -643,12 +646,12 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
             }
             case sn -> {
                 if (isPlayerOn()) {
-                    consoleOutput.appendOutput(TrackUtil.getSongInfo(player.getNext()), warn);
+                    consoleOutput.appendOutput(ConsolePainterUtil.getSongInfo(player.getNext()), warn);
                 }
             }
             case sp -> {
                 if (isPlayerOn()) {
-                    consoleOutput.appendOutput(TrackUtil.getSongInfo(player.getPrevious()), warn);
+                    consoleOutput.appendOutput(ConsolePainterUtil.getSongInfo(player.getPrevious()), warn);
                 }
             }
             case pf -> {

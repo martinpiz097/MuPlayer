@@ -2,15 +2,18 @@ package cl.estencia.labs.muplayer.core.util;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.io.TrackIOUtil;
-import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.SourceDataLine;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
-public class TrackUtil {
+public class ConsolePainterUtil {
 
     private static final String LINE_START = "│    ";
     private static final String LINE_END = "    │";
@@ -21,6 +24,7 @@ public class TrackUtil {
 
     private static final String LINE_BREAK = "\n";
     private static final char DASH = '─';
+    public static final String DEFAULT_VALUES_SEPARATOR = ": ";
 
     private static void appendMargin(StringBuilder stringBuilder,
                                      int biggerLength, boolean top) {
@@ -50,14 +54,20 @@ public class TrackUtil {
 
         return sbSpaces.toString();
     }
-    
-    private static int completeLineLength(String originalLine) {
-        return originalLine.length() + LINE_START.length() + LINE_END.length();
-    }
 
+    private static void appendTableTitle(StringBuilder sbInfo, String tableTitle) {
+        if (tableTitle == null || tableTitle.isBlank()) {
+            return;
+        }
+
+        sbInfo.append(tableTitle.trim());
+        if (!tableTitle.endsWith(LINE_BREAK)) {
+            sbInfo.append(LINE_BREAK);
+        }
+    }
+    
     public static String getSongInfo(Track track) {
-        final StringBuilder sbInfo = new StringBuilder();
-        final List<String> listContentLines = CollectionUtil.newFastList(20);
+        final Map<String, Object> mapValues = new HashMap<>();
 
         final String title = track.getTitle();
         final String album = track.getAlbum();
@@ -68,63 +78,67 @@ public class TrackUtil {
         final String hasCover = track.hasCover() ? "Yes" : "No";
         final String bitrate = track.getBitrate();
 
-        String currentLine = "Title: " + title;
-        int biggerLength = currentLine.length();
-        listContentLines.add(currentLine);
+        mapValues.put("Title", title);
 
         if (album != null) {
-            currentLine = "Album: " + album;
-            biggerLength = Math.max(biggerLength, currentLine.length());
-            listContentLines.add(currentLine);
+            mapValues.put("Album", album);
         }
 
         if (artist != null) {
-            currentLine = "Artist: " + artist;
-            biggerLength = Math.max(biggerLength, currentLine.length());
-            listContentLines.add(currentLine);
+            mapValues.put("Artist", artist);
         }
 
         if (year != null) {
-            currentLine = "Year: " + year;
-            biggerLength = Math.max(biggerLength, currentLine.length());
-            listContentLines.add(currentLine);
+            mapValues.put("Year", year);
         }
 
         if (duration != null) {
-            currentLine = "Duration: " + duration;
-            biggerLength = Math.max(biggerLength, currentLine.length());
-            listContentLines.add(currentLine);
+            mapValues.put("Duration", duration);
         }
 
         if (genre != null) {
-            currentLine = "Genre: " + genre;
-            biggerLength = Math.max(biggerLength, currentLine.length());
-            listContentLines.add(currentLine);
+            mapValues.put("Genre", genre);
         }
 
-        currentLine = "Has Cover: " + hasCover;
-        biggerLength = Math.max(biggerLength, currentLine.length());
-        listContentLines.add(currentLine);
-
+        mapValues.put("Has Cover", hasCover);
         if (bitrate != null) {
-            currentLine = "Bitrate: " + bitrate + " kbps";
-            biggerLength = Math.max(biggerLength, currentLine.length());
-            listContentLines.add(currentLine);
+            mapValues.put("Bitrate", bitrate);
         }
+
+        return getInfoTable(mapValues, DEFAULT_VALUES_SEPARATOR);
+    }
+
+    public static String getInfoTable(String tableTitle,
+                                      Map<String, Object> mapInfo, String valuesSeparator) {
+        final StringBuilder sbInfo = new StringBuilder();
+        final List<String> listContentLines = CollectionUtil.newFastList(20);
+        final AtomicInteger biggerLength = new AtomicInteger(0);
+
+        appendTableTitle(sbInfo, tableTitle);
+        mapInfo.forEach((title, value) -> {
+            String currentLine = title + valuesSeparator + value.toString();
+            biggerLength.set(Math.max(currentLine.length(), biggerLength.get()));
+
+            listContentLines.add(currentLine);
+        });
 
         int contentLinesCount = listContentLines.size();
         for (int i = 0; i < contentLinesCount; i++) {
-            listContentLines.set(i, appendContentDetails(listContentLines.get(i), biggerLength));
+            listContentLines.set(i, appendContentDetails(listContentLines.get(i), biggerLength.get()));
         }
 
         sbInfo.append(LINE_BREAK);
-        appendMargin(sbInfo, biggerLength, true);
+        appendMargin(sbInfo, biggerLength.get(), true);
         sbInfo.append(String.join(LINE_BREAK, listContentLines));
         sbInfo.append(LINE_BREAK);
-        appendMargin(sbInfo, biggerLength, false);
+        appendMargin(sbInfo, biggerLength.get(), false);
 
         sbInfo.deleteCharAt(sbInfo.length() - 1);
         return sbInfo.toString();
+    }
+
+    public static String getInfoTable(Map<String, Object> mapInfo, String valuesSeparator) {
+        return getInfoTable(null, mapInfo, valuesSeparator);
     }
 
     public static String getLineInfo(Track track) {

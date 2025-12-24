@@ -284,8 +284,10 @@ public abstract class Track extends Thread
     @Override
     public String getTitle() {
         final String titleProper = getProperty(FieldKey.TITLE);
-        return (titleProper == null || titleProper.trim().isEmpty())
-                && dataSource != null ? dataSource.getName() : titleProper;
+
+        return titleProper != null && !titleProper.isBlank()
+                ? titleProper
+                : (dataSource != null ? dataSource.getName() : "");
     }
 
     @Override

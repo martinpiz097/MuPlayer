@@ -16,7 +16,6 @@ import java.io.IOException;
 public class AudioFileScanner {
     private final File audioFile;
 
-
     public AudioFileScanner(File audioFile) {
         this.audioFile = audioFile;
     }

@@ -52,9 +52,6 @@ public class MuPlayer extends Player implements SystemVolumeController {
     private final List<AudioFileScanner> listAudioFileScanners;
     private final List<File> listFolders;
 
-//    private final List<TrackStateListener> listInternalTrackListeners;
-//    @Getter private final List<TrackStateListener> listTrackUserListeners;
-
     private final PlayerStatusData playerStatusData;
     @Getter private final MuPlayerUtil muPlayerUtil;
     private final AudioSystemManager audioSystemManager;
@@ -72,8 +69,6 @@ public class MuPlayer extends Player implements SystemVolumeController {
         this.listTracks = CollectionUtil.newFastArrayList();
         this.listAudioFileScanners = CollectionUtil.newFastArrayList();
         this.listFolders = CollectionUtil.newMinimalFastArrayList();
-//        this.listInternalTrackListeners = CollectionUtil.newMinimalFastArrayList();
-//        this.listTrackUserListeners = CollectionUtil.newMinimalFastArrayList();
         this.playerStatusData = new PlayerStatusData();
         this.muPlayerUtil = new MuPlayerUtil(this, playerStatusData);
         this.audioSystemManager = new AudioSystemManager();
