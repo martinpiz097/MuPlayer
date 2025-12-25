@@ -39,4 +39,5 @@ public class ResourceFiles {
     public static InputStream getResStream(String path) {
         return ResourceFiles.class.getResourceAsStream(path);
     }
+
 }

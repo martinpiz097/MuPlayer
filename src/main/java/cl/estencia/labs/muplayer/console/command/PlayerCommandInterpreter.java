@@ -6,14 +6,14 @@ import cl.estencia.labs.muplayer.audio.model.Album;
 import cl.estencia.labs.muplayer.audio.model.Artist;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.audio.track.io.TrackIOUtil;
 import cl.estencia.labs.muplayer.bus.MuPlayerBusUtil;
 import cl.estencia.labs.muplayer.bus.message.Messages;
 import cl.estencia.labs.muplayer.bus.model.MuPlayerResponse;
 import cl.estencia.labs.muplayer.bus.model.SkipData;
 import cl.estencia.labs.muplayer.config.model.ConsoleCodesData;
 import cl.estencia.labs.muplayer.config.reader.ConsoleCodesReader;
-import cl.estencia.labs.muplayer.console.enums.ConsoleOrderCode;
+import cl.estencia.labs.muplayer.console.common.ConsoleMessages;
+import cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode;
 import cl.estencia.labs.muplayer.console.exception.ConsoleOutput;
 import cl.estencia.labs.muplayer.console.model.ConsoleImage;
 import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
@@ -44,7 +44,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import static cl.estencia.labs.muplayer.console.enums.OutputType.*;
+import static cl.estencia.labs.muplayer.console.common.enums.OutputType.*;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.RUNNER;
 import static cl.estencia.labs.muplayer.core.common.enums.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.core.common.enums.SeekOption.PREV;
@@ -105,13 +105,13 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
         final List<Track> listTracks = player.getTracks();
         final Track current = playerCurrentData.get().getCurrentTrack();
 
-        execution.appendOutput("------------------------------", info);
+        execution.append("------------------------------", info);
         if (rootFolder == null) {
-            execution.appendOutput("Music in folder", info);
+            execution.append("Music in folder", info);
         } else {
-            execution.appendOutput("Music in folder " + rootFolder.getName(), info);
+            execution.append("Music in folder " + rootFolder.getName(), info);
         }
-        execution.appendOutput("------------------------------", info);
+        execution.append("------------------------------", info);
 
         if (rootFolder != null) {
             Track track;
@@ -120,14 +120,14 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                 track = listTracks.get(i);
                 fileTrack = track.getDataSource();
                 if (current != null && fileTrack.getPath().equals((current.getDataSource()).getPath())) {
-                    execution.appendOutput("Track " + (i + 1) + ": "
+                    execution.append("Track " + (i + 1) + ": "
                             + fileTrack.getName(), warn);
                 } else {
-                    execution.appendOutput("Track " + (i + 1) + ": "
+                    execution.append("Track " + (i + 1) + ": "
                             + fileTrack.getName(), info);
                 }
             }
-            execution.appendOutput("------------------------------", info);
+            execution.append("------------------------------", info);
         }
     }
 
@@ -138,11 +138,11 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
         final Map<Object, Object> mapValues = new HashMap<>();
 
         if (rootFolder == null) {
-            execution.appendOutput("Music in folder", info);
+            execution.append("Music in folder", info);
         } else {
-            execution.appendOutput("Music in folder " + rootFolder.getName(), info);
+            execution.append("Music in folder " + rootFolder.getName(), info);
         }
-        execution.appendOutput("------------------------------", info);
+        execution.append("------------------------------", info);
 
         if (rootFolder != null) {
             File trackFile;
@@ -151,7 +151,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                 trackFile = listTracks.get(i).getDataSource();
                 trackFolder = trackFile.getParentFile();
                 if (prevTrackFolder == null || !trackFolder.getPath().equals(prevTrackFolder.getPath())) {
-                    execution.appendOutput((prevTrackFolder != null
+                    execution.append((prevTrackFolder != null
                             ? "----------------------------------------------------------------------" +
                             "\n\n----------------------------------------------------------------------" +
                             "\nFolder: "
@@ -159,16 +159,16 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                             + "Folder: ") + trackFolder.getName(), info);
                 }
                 if (current != null && trackFile.getPath().equals(current.getDataSource().getPath())) {
-                    execution.appendOutput("\tTrack " + (i + 1) + ": "
+                    execution.append("\tTrack " + (i + 1) + ": "
                             + trackFile.getName(), warn);
                 } else {
-                    execution.appendOutput("\tTrack " + (i + 1) + ": "
+                    execution.append("\tTrack " + (i + 1) + ": "
                             + trackFile.getName(), info);
                 }
 
                 prevTrackFolder = trackFile.getParentFile();
             }
-            execution.appendOutput("------------------------------", info);
+            execution.append("------------------------------", info);
         }
     }
 
@@ -183,13 +183,13 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
 
         File parentFolder = current == null ? null : current.getDataSource().getParentFile();
 
-        execution.appendOutput("------------------------------", info);
+        execution.append("------------------------------", info);
         if (parentFolder == null) {
-            execution.appendOutput("Music in current folder", info);
+            execution.append("Music in current folder", info);
         } else {
-            execution.appendOutput("Music in folder " + parentFolder.getName(), info);
+            execution.append("Music in folder " + parentFolder.getName(), info);
         }
-        execution.appendOutput("------------------------------", info);
+        execution.append("------------------------------", info);
 
         if (parentFolder != null) {
             File fileTrack;
@@ -199,15 +199,15 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                 fileTrack = listTracks.get(i).getDataSource();
                 if (fileTrack.getParentFile().equals(parentFolder)) {
                     if (fileTrack.getPath().equals(currentFile.getPath())) {
-                        execution.appendOutput("Track " + (i + 1) + ": "
+                        execution.append("Track " + (i + 1) + ": "
                                 + fileTrack.getName(), warn);
                     } else {
-                        execution.appendOutput("Track " + (i + 1) + ": "
+                        execution.append("Track " + (i + 1) + ": "
                                 + fileTrack.getName(), info);
                     }
                 }
             }
-            execution.appendOutput("------------------------------", info);
+            execution.append("------------------------------", info);
         }
     }
 
@@ -218,11 +218,11 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                 ? current.get().getDataSource()
                 : null;
 
-        execution.appendOutput("------------------------------", info);
+        execution.append("------------------------------", info);
 
         if (folder != null) {
-            execution.appendOutput("Music in folder " + folder.getName(), info);
-            execution.appendOutput("------------------------------", info);
+            execution.append("Music in folder " + folder.getName(), info);
+            execution.append("------------------------------", info);
 
             final AtomicInteger counter = new AtomicInteger(1);
             player.getTracks().stream().filter(track -> track.getDataSource().getParent()
@@ -230,15 +230,15 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                 File fileTrack = track.getDataSource();
                 if (fileTrack.getParentFile().equals(folder)) {
                     if (fileTrack.getPath().equals(currentFile.getPath())) {
-                        execution.appendOutput("Track " + (counter.getAndIncrement()) + ": "
+                        execution.append("Track " + (counter.getAndIncrement()) + ": "
                                 + fileTrack.getName(), warn);
                     } else {
-                        execution.appendOutput("Track " + (counter.getAndIncrement()) + ": "
+                        execution.append("Track " + (counter.getAndIncrement()) + ": "
                                 + fileTrack.getName(), info);
                     }
                 }
             });
-            execution.appendOutput("------------------------------", info);
+            execution.append("------------------------------", info);
         }
     }
 
@@ -248,13 +248,13 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                 .stream().map(File::getPath).toList();
         final Track current = playerCurrentData.get().getCurrentTrack();
 
-        execution.appendOutput("------------------------------", info);
+        execution.append("------------------------------", info);
         if (rootFolder == null) {
-            execution.appendOutput("Folders", info);
+            execution.append("Folders", info);
         } else {
-            execution.appendOutput("Folders in " + rootFolder.getName(), info);
+            execution.append("Folders in " + rootFolder.getName(), info);
         }
-        execution.appendOutput("------------------------------", info);
+        execution.append("------------------------------", info);
 
         if (current == null) {
             return;
@@ -266,15 +266,15 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
         for (int i = 0; i < player.getFoldersCount(); i++) {
             folder = new File(listFolderPaths.get(i));
             if (folder.getPath().equals(currentTrackFile.getParentFile().getPath())) {
-                execution.appendOutput("Folder " + (i + 1) + ": "
+                execution.append("Folder " + (i + 1) + ": "
                         + folder.getName(), warn);
             } else {
-                execution.appendOutput("Folder " + (i + 1) + ": "
+                execution.append("Folder " + (i + 1) + ": "
                         + folder.getName(), info);
             }
 
         }
-        execution.appendOutput("------------------------------", info);
+        execution.append("------------------------------", info);
     }
 
     protected void printStreamOut(InputStream cmdStream) throws IOException {
@@ -312,10 +312,10 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                         + consoleCodesData.getHelpInfo())
                 .collect(Collectors.joining(helpElementSeparator));
 
-        execution.appendOutput("---------", info);
-        execution.appendOutput("Help Info", info);
-        execution.appendOutput("---------", info);
-        execution.appendOutput(helpInfoData, info);
+        execution.append("---------", info);
+        execution.append("Help Info", info);
+        execution.append("---------", info);
+        execution.append(helpInfoData, info);
     }
 
     public void showSongInfo(Track track) {
@@ -340,7 +340,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
             }
 
             ConsoleOutput consoleOutput = new ConsoleOutput(cmdString);
-            consoleOutput.appendOutput(listExec.get(listExec.size() - 1), null);
+            consoleOutput.append(listExec.get(listExec.size() - 1), null);
             return consoleOutput;
         } else {
             return executeCommand(new Command(cmdString));
@@ -355,7 +355,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
         if (cmd.hasOptions()) {
             Number skipCount = cmd.getOptionAsNumber(0);
             if (skipCount == null) {
-                execution.appendOutput("Jump value incorrect", error);
+                execution.append("Jump value incorrect", error);
             } else {
                 messageBus.publish(Messages.skipTracks(skipCount.intValue(), seekOption));
             }
@@ -372,7 +372,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
         // imprimir output de este objeto no mas
 
         if (consoleOrderCode == null) {
-            consoleOutput.appendOutput("Comando desconocido, inserte el comando \"h\" o \"help\"\n" +
+            consoleOutput.append("Comando desconocido, inserte el comando \"h\" o \"help\"\n" +
                     "para desplegar el menú de ayuda.", warn);
             return consoleOutput;
         }
@@ -393,7 +393,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     messageBus.publish(Messages.start());
                 }
             }
-            case ist -> consoleOutput.appendOutput(isPlayerOn() ? "Is playing" : "Is not playing", warn);
+            case ist -> consoleOutput.append(isPlayerOn() ? "Is playing" : "Is not playing", warn);
             case pl -> {
                 if (player.isAlive()) {
                     if (cmd.hasOptions()) {
@@ -455,33 +455,33 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
             }
             case gv -> {
                 if (player.isAlive()) {
-                    consoleOutput.appendOutput("Player Volume(0-100): " + player.getVolume(), warn);
+                    consoleOutput.append("Player Volume(0-100): " + player.getVolume(), warn);
                 }
             }
             case v -> {
                 if (player.isAlive() && cmd.hasOptions()) {
                     Number volume = cmd.getOptionAsNumber(0);
                     if (volume == null) {
-                        consoleOutput.appendOutput("Volume value incorrect", error);
+                        consoleOutput.append("Volume value incorrect", error);
                     } else {
                         player.setVolume(volume.floatValue());
-                        consoleOutput.appendOutput("Volume value changed", warn);
+                        consoleOutput.append("Volume value changed", warn);
                     }
                 }
             }
             case gsv -> {
                 if (player.isAlive()) {
-                    consoleOutput.appendOutput("Player Volume(0-100): " + player.getSystemVolume(), warn);
+                    consoleOutput.append("Player Volume(0-100): " + player.getSystemVolume(), warn);
                 }
             }
             case sv -> {
                 if (player.isAlive() && cmd.hasOptions()) {
                     Number volume = cmd.getOptionAsNumber(0);
                     if (volume == null) {
-                        consoleOutput.appendOutput("Volume value incorrect", error);
+                        consoleOutput.append("Volume value incorrect", error);
                     } else {
                         player.setSystemVolume(volume.floatValue());
-                        consoleOutput.appendOutput("Volume value changed", warn);
+                        consoleOutput.append("Volume value changed", warn);
                     }
                 }
             }
@@ -493,7 +493,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                 if (isPlayerOn() && cmd.hasOptions()) {
                     Number seekSec = cmd.getOptionAsNumber(0);
                     if (seekSec == null) {
-                        consoleOutput.appendOutput("Seek value incorrect", error);
+                        consoleOutput.append("Seek value incorrect", error);
                     } else {
                         player.seek(seekSec.doubleValue());
                     }
@@ -519,7 +519,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                             skipData.setSkipCount(seekFolderCount != null
                                     ? seekFolderCount.intValue() : 1);
                         } else {
-                            consoleOutput.appendOutput("Seek option value incorrect",
+                            consoleOutput.append("Seek option value incorrect",
                                     error);
                             skipData = null;
                         }
@@ -529,7 +529,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                         } else {
                             Number seekFolderCount = cmd.getOptionAsNumber(0);
                             if (seekFolderCount == null) {
-                                consoleOutput.appendOutput("Seek count value incorrect",
+                                consoleOutput.append("Seek count value incorrect",
                                         error);
                                 skipData = null;
                             } else {
@@ -552,7 +552,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                 if (player.isAlive() && cmd.hasOptions()) {
                     Number gotoSec = cmd.getOptionAsNumber(0);
                     if (gotoSec == null) {
-                        consoleOutput.appendOutput("Go to value incorrect", error);
+                        consoleOutput.append("Go to value incorrect", error);
                     } else {
                         player.gotoSecond(gotoSec.doubleValue());
                     }
@@ -560,24 +560,23 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
             }
             case c -> {
                 if (player.isAlive()) {
-                    consoleOutput.appendOutput(player.getSongsCount(), info);
+                    consoleOutput.append(player.getSongsCount(), info);
                 }
             }
             case d -> {
                 if (player.isAlive()) {
                     String formattedDuration = playerCurrentData.get().getCurrentTrack() != null ? playerCurrentData.get().getCurrentTrack().getFormattedDuration() : "";
-                    consoleOutput.appendOutput(formattedDuration, info);
+                    consoleOutput.append(formattedDuration, info);
                 }
             }
             case cover -> {
                 if (player.isAlive()) {
                     if (playerCurrentData.get().getCurrentTrack() == null) {
-                        consoleOutput.appendOutput("Current track unavailable", error);
-                    } else if (!playerCurrentData.get().getCurrentTrack().hasCover()) {
-                        consoleOutput.appendOutput("Current song don't have cover", error);
-                    } else {
+                        consoleOutput.append("Current track unavailable", error);
+                    }
+                    else if (cmd.hasOptions()) {
                         final byte[] coverData = playerCurrentData.get().getCurrentTrack().getCoverData();
-                        if (cmd.hasOptions()) {
+                        if (coverData != null) {
                             File folderPath = new File(cmd.getOptionAt(0));
                             if (!folderPath.exists()) {
                                 folderPath = player.getRootFolder();
@@ -585,12 +584,24 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                             File fileCover = new File(folderPath, "cover-" + playerCurrentData.get().getCurrentTrack().getTitle() + ".png");
                             fileCover.createNewFile();
                             Files.write(fileCover.toPath(), coverData, WRITE);
-                            consoleOutput.appendOutput("Created cover with name " + fileCover.getName(), warn);
+                            consoleOutput.append("Created cover with name " + fileCover.getName(), warn);
                         } else {
-                            ByteArrayInputStream coverStream = new ByteArrayInputStream(coverData);
-                            ConsoleImage consoleImage = new ConsoleImage(coverStream);
-                            consoleOutput.appendOutput(consoleImage.toConsoleString(), info);
+                            consoleOutput.append("Current song don't have cover", error);
                         }
+                    } else {
+                        final byte[] coverData = playerCurrentData.get().getCurrentTrack().getCoverData();
+                        final String consoleMessage;
+
+                        if (coverData != null) {
+                            final InputStream coverStream = new ByteArrayInputStream(coverData);
+                            final ConsoleImage consoleImage = new ConsoleImage(coverStream);
+
+                            consoleMessage = consoleImage.toConsoleString();
+                        } else {
+                            consoleMessage = ConsoleMessages.NO_COVER_MESSAGE;
+                        }
+
+                        consoleOutput.append(consoleMessage, info);
                     }
                 }
             }
@@ -599,41 +610,42 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     if (playerCurrentData.get() != null) {
                         showSongInfo(playerCurrentData.get().getCurrentTrack());
                     } else {
-                        consoleOutput.appendOutput("No current track available", warn);
+                        consoleOutput.append("No current track available", warn);
                     }
                 } else {
-                    consoleOutput.appendOutput("No current track available, player not initialized", warn);
+                    consoleOutput.append("No current track available, player not initialized", warn);
                 }
             }
+
             case prog -> {
                 if (!player.isAlive() || playerCurrentData.get() == null) {
-                    consoleOutput.appendOutput("Current track unavailable", error);
+                    consoleOutput.append("Current track unavailable", error);
                 } else {
                     final String formattedProgress = playerCurrentData.get().getCurrentTrack().getFormattedProgress();
                     final String formattedDuration = playerCurrentData.get().getCurrentTrack().getFormattedDuration();
-                    consoleOutput.appendOutput(formattedProgress + "/" + formattedDuration, warn);
+                    consoleOutput.append(formattedProgress + "/" + formattedDuration, warn);
                 }
             }
             case format -> {
                 if (!player.isAlive() || playerCurrentData.get().getCurrentTrack() == null) {
-                    consoleOutput.appendOutput("Current track unavailable", error);
+                    consoleOutput.append("Current track unavailable", error);
                 } else {
                     final String className = playerCurrentData.get().getCurrentTrack().getClass().getSimpleName();
-                    consoleOutput.appendOutput(className.substring(0, className.length() - 5).toLowerCase(), warn);
+                    consoleOutput.append(className.substring(0, className.length() - 5).toLowerCase(), warn);
                 }
             }
             case title -> {
                 if (!player.isAlive() || playerCurrentData.get().getCurrentTrack() == null) {
-                    consoleOutput.appendOutput("Current track unavailable", error);
+                    consoleOutput.append("Current track unavailable", error);
                 } else {
-                    consoleOutput.appendOutput(playerCurrentData.get().getCurrentTrack().getTitle(), warn);
+                    consoleOutput.append(playerCurrentData.get().getCurrentTrack().getTitle(), warn);
                 }
             }
             case name -> {
                 if (!player.isAlive() || playerCurrentData.get().getCurrentTrack() == null) {
-                    consoleOutput.appendOutput("Current track unavailable", error);
+                    consoleOutput.append("Current track unavailable", error);
                 } else {
-                    consoleOutput.appendOutput(playerCurrentData.get().getCurrentTrack().getDataSource().getName(), warn);
+                    consoleOutput.append(playerCurrentData.get().getCurrentTrack().getDataSource().getName(), warn);
                 }
             }
             case h -> printHelp(consoleOutput);
@@ -644,17 +656,17 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
             }
             case cls -> clearConsole();
             case pwd -> {
-                consoleOutput.appendOutput("Current working directory: "
+                consoleOutput.append("Current working directory: "
                         + new File(".").getCanonicalPath(), info);
             }
             case sn -> {
                 if (isPlayerOn()) {
-                    consoleOutput.appendOutput(ConsolePainterUtil.getSongInfo(player.getNext()), warn);
+                    consoleOutput.append(ConsolePainterUtil.getSongInfo(player.getNext()), warn);
                 }
             }
             case sp -> {
                 if (isPlayerOn()) {
-                    consoleOutput.appendOutput(ConsolePainterUtil.getSongInfo(player.getPrevious()), warn);
+                    consoleOutput.append(ConsolePainterUtil.getSongInfo(player.getPrevious()), warn);
                 }
             }
             case pf -> {
@@ -671,24 +683,24 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                 if (player.isAlive() && player.hasSounds()) {
                     final List<Artist> listArtists = player.getArtists();
                     for (Artist artist : listArtists) {
-                        consoleOutput.appendOutput(artist.getName(), info);
+                        consoleOutput.append(artist.getName(), info);
                     }
-                    consoleOutput.appendOutput("------------------------------", info);
-                    consoleOutput.appendOutput("Total: " + listArtists.size(), info);
+                    consoleOutput.append("------------------------------", info);
+                    consoleOutput.append("Total: " + listArtists.size(), info);
                 } else {
-                    consoleOutput.appendOutput("The player is not active", warn);
+                    consoleOutput.append("The player is not active", warn);
                 }
             }
             case albs -> {
                 if (player.isAlive() && player.hasSounds()) {
                     List<Album> listAlbums = player.getAlbums();
                     for (Album album : listAlbums) {
-                        consoleOutput.appendOutput(album.getName(), info);
+                        consoleOutput.append(album.getName(), info);
                     }
-                    consoleOutput.appendOutput("------------------------------", info);
-                    consoleOutput.appendOutput("Total: " + listAlbums.size(), info);
+                    consoleOutput.append("------------------------------", info);
+                    consoleOutput.append("Total: " + listAlbums.size(), info);
                 } else {
-                    consoleOutput.appendOutput("The player is not active", warn);
+                    consoleOutput.append("The player is not active", warn);
                 }
             }
             case chm -> {
@@ -701,9 +713,9 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                             TaskRunner.execute(localRunner, localRunner.getClass().getSimpleName());
                             globalCacheManager.saveValue(RUNNER, localRunner);
                             ((DaemonRunner) consoleRunner).shutdown();
-                            consoleOutput.appendOutput("MuPlayer changed from DAEMON to LOCAL mode!", info);
+                            consoleOutput.append("MuPlayer changed from DAEMON to LOCAL mode!", info);
                         } else {
-                            consoleOutput.appendOutput("MuPlayer already working with LOCAL mode", warn);
+                            consoleOutput.append("MuPlayer already working with LOCAL mode", warn);
                         }
                     } else if (firstOpt.equalsIgnoreCase(RunnerMode.DAEMON.name())) {
                         if (consoleRunner instanceof LocalRunner) {
@@ -711,15 +723,15 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                             TaskRunner.execute(daemonRunner, daemonRunner.getClass().getSimpleName());
                             globalCacheManager.saveValue(RUNNER, daemonRunner);
                             ((LocalRunner) consoleRunner).shutdown();
-                            consoleOutput.appendOutput("MuPlayer changed from LOCAL to DAEMON mode!", info);
+                            consoleOutput.append("MuPlayer changed from LOCAL to DAEMON mode!", info);
                         } else {
-                            consoleOutput.appendOutput("MuPlayer already working with DAEMON mode", warn);
+                            consoleOutput.append("MuPlayer already working with DAEMON mode", warn);
                         }
                     } else {
-                        consoleOutput.appendOutput("Option selected unknown, the options must be LOCAL or DAEMON", warn);
+                        consoleOutput.append("Option selected unknown, the options must be LOCAL or DAEMON", warn);
                     }
                 } else {
-                    consoleOutput.appendOutput("No options selected, the options must be LOCAL or DAEMON", warn);
+                    consoleOutput.append("No options selected, the options must be LOCAL or DAEMON", warn);
                 }
             }
 //            case smf -> {
