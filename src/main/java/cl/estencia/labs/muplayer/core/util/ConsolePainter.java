@@ -2,7 +2,7 @@ package cl.estencia.labs.muplayer.core.util;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.io.TrackIOUtil;
-import cl.estencia.labs.muplayer.console.enums.OutputType;
+import cl.estencia.labs.muplayer.console.common.enums.OutputType;
 import cl.estencia.labs.muplayer.console.model.ConsoleTableLine;
 import lombok.extern.slf4j.Slf4j;
 import org.orangelogger.sys.ConsoleColor;
@@ -13,22 +13,12 @@ import javax.sound.sampled.SourceDataLine;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static cl.estencia.labs.muplayer.console.common.ConsoleSymbols.*;
+
 @Slf4j
 public class ConsolePainterUtil {
 
-    public static final String LINE_START = "│    ";
-    public static final String LINE_END = "    │";
-    public static final String TOP_LEFT_CORNER = "┌";
-    public static final String TOP_RIGHT_CORNER = "┐";
-    public static final String BOTTOM_LEFT_CORNER = "└";
-    public static final String BOTTOM_RIGHT_CORNER = "┘";
 
-    public static final String LINE_BREAK = "\n";
-    public static final char DASH = '─';
-    public static final char SPACE = ' ';
-    public static final String ARROW = "→";
-    public static final String LONG_ARROW = "⟶";
-    public static final String DEFAULT_VALUES_SEPARATOR = ": ";
 
     public static void appendMargin(StringBuilder stringBuilder,
                                      int biggerLength, boolean top) {
