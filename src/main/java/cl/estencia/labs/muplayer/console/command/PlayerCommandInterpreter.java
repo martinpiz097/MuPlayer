@@ -15,6 +15,7 @@ import cl.estencia.labs.muplayer.config.model.ConsoleCodesData;
 import cl.estencia.labs.muplayer.config.reader.ConsoleCodesReader;
 import cl.estencia.labs.muplayer.console.enums.ConsoleOrderCode;
 import cl.estencia.labs.muplayer.console.exception.ConsoleOutput;
+import cl.estencia.labs.muplayer.console.model.ConsoleImage;
 import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
 import cl.estencia.labs.muplayer.console.runner.DaemonRunner;
 import cl.estencia.labs.muplayer.console.runner.LocalRunner;
@@ -33,10 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -577,17 +575,22 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                         consoleOutput.appendOutput("Current track unavailable", error);
                     } else if (!playerCurrentData.get().getCurrentTrack().hasCover()) {
                         consoleOutput.appendOutput("Current song don't have cover", error);
-                    } else if (cmd.hasOptions()) {
-                        File folderPath = new File(cmd.getOptionAt(0));
-                        if (!folderPath.exists()) {
-                            folderPath = player.getRootFolder();
-                        }
-                        File fileCover = new File(folderPath, "cover-" + playerCurrentData.get().getCurrentTrack().getTitle() + ".png");
-                        fileCover.createNewFile();
-                        Files.write(fileCover.toPath(), playerCurrentData.get().getCurrentTrack().getCoverData(), WRITE);
-                        consoleOutput.appendOutput("Created cover with name " + fileCover.getName(), warn);
                     } else {
-                        consoleOutput.appendOutput("Cover path not defined", error);
+                        final byte[] coverData = playerCurrentData.get().getCurrentTrack().getCoverData();
+                        if (cmd.hasOptions()) {
+                            File folderPath = new File(cmd.getOptionAt(0));
+                            if (!folderPath.exists()) {
+                                folderPath = player.getRootFolder();
+                            }
+                            File fileCover = new File(folderPath, "cover-" + playerCurrentData.get().getCurrentTrack().getTitle() + ".png");
+                            fileCover.createNewFile();
+                            Files.write(fileCover.toPath(), coverData, WRITE);
+                            consoleOutput.appendOutput("Created cover with name " + fileCover.getName(), warn);
+                        } else {
+                            ByteArrayInputStream coverStream = new ByteArrayInputStream(coverData);
+                            ConsoleImage consoleImage = new ConsoleImage(coverStream);
+                            consoleOutput.appendOutput(consoleImage.toConsoleString(), info);
+                        }
                     }
                 }
             }
