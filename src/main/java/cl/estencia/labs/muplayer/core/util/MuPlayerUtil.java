@@ -48,6 +48,7 @@ public class MuPlayerUtil {
         if (o1 == null || o2 == null) {
             return 0;
         }
+
         final File dataSource1 = o1.getDataSource();
         final File dataSource2 = o2.getDataSource();
         return dataSource1.getPath().compareTo(dataSource2.getPath());

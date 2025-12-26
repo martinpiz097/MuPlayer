@@ -1,11 +1,11 @@
 package cl.estencia.labs.muplayer.console.runner;
 
-import cl.estencia.labs.ebot.utils.time.DateUtil;
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.console.command.PlayerCommandInterpreter;
-import cl.estencia.labs.muplayer.console.exception.ConsoleOutput;
+import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
+import cl.estencia.labs.muplayer.core.util.ConsolePainter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.orangelogger.sys.Logger;
@@ -15,10 +15,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.Scanner;
 
-import static cl.estencia.labs.muplayer.core.util.ConsolePainterUtil.ARROW;
+import static cl.estencia.labs.muplayer.console.common.ConsoleSymbols.ARROW;
 
 @Slf4j
 public abstract class ConsoleRunner implements Runnable {
@@ -56,12 +55,14 @@ public abstract class ConsoleRunner implements Runnable {
                 ? player.getCurrentTrack().get().getTitle()
                 : "none";
 
-        sbHeader.append(APP_NAME)
-                .append(" (current_track=")
-                .append(currentTrack)
-                .append(") ")
-                .append(ARROW)
-                .append(' ');
+        var playerVolume = player.getSystemVolume();
+
+        sbHeader.append(APP_NAME).append(" (");
+        sbHeader.append("volume=").append(ConsolePainter.paintVolume((int) playerVolume));
+        sbHeader.append(" ;current_track=").append(currentTrack);
+        sbHeader.append(") ");
+        sbHeader.append(ARROW);
+        sbHeader.append(' ');
 
         return sbHeader.toString();
     }

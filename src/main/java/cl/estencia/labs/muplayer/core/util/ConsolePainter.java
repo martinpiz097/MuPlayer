@@ -16,9 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static cl.estencia.labs.muplayer.console.common.ConsoleSymbols.*;
 
 @Slf4j
-public class ConsolePainterUtil {
-
-
+public class ConsolePainter {
 
     public static void appendMargin(StringBuilder stringBuilder,
                                      int biggerLength, boolean top) {
@@ -170,6 +168,28 @@ public class ConsolePainterUtil {
                 .append("SampleRate: ").append(driver.isControlSupported(FloatControl.Type.SAMPLE_RATE))
                 .append("MasterGain: ").append(driver.isControlSupported(FloatControl.Type.MASTER_GAIN))
                 .toString();
+    }
+
+    public static String paintVolume(int volume) {
+        final StringBuilder sbVolume = new StringBuilder();
+
+//        █████░░░ 60%
+
+        // por si por error tengo volumenes mayores a 100
+        final int adjustedVol = Math.min(volume, 100);
+        final int scale = 20;
+        final int scaledVol = Math.toIntExact(Math.round(((float) (scale * adjustedVol)) / 100));
+
+        for (int i = 0; i < scaledVol; i++) {
+            sbVolume.append(COMPLETE_BLOCK);
+        }
+
+        for (int i = scaledVol; i < scale; i++) {
+            sbVolume.append(EMPTY_BLOCK);
+        }
+
+        sbVolume.append(' ').append(volume).append('%');
+        return sbVolume.toString();
     }
 
 }

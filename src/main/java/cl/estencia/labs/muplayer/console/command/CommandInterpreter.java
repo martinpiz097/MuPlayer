@@ -1,6 +1,6 @@
 package cl.estencia.labs.muplayer.console.command;
 
-import cl.estencia.labs.muplayer.console.exception.ConsoleOutput;
+import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
 
 public interface CommandInterpreter {
     ConsoleOutput executeCommand(Command cmd) throws Exception;

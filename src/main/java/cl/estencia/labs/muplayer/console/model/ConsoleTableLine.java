@@ -5,9 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.orangelogger.sys.ConsoleColor;
-import org.orangelogger.sys.Logger;
 
-import static cl.estencia.labs.muplayer.core.util.ConsolePainterUtil.DEFAULT_VALUES_SEPARATOR;
+import static cl.estencia.labs.muplayer.console.common.ConsoleSymbols.DEFAULT_VALUES_SEPARATOR;
 
 @Getter
 @Setter

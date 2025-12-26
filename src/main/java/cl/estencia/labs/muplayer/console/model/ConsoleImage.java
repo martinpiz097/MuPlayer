@@ -11,7 +11,8 @@ import java.io.InputStream;
 
 public class ConsoleImage {
     private final BufferedImage originalBufferedImage;
-    private final int size;
+    private final int width;
+    private final int height;
 
     private static final byte DEFAULT_IMAGE_SIZE = 96;
 
@@ -33,12 +34,30 @@ public class ConsoleImage {
 
     public ConsoleImage(File imageFile, int size) {
         this.originalBufferedImage = loadImage(imageFile);
-        this.size = size;
+        this.width = calculateWidth(size);
+        this.height = calculateHeight(size);
     }
 
     public ConsoleImage(InputStream imageStream, int size) {
         this.originalBufferedImage = loadImage(imageStream);
-        this.size = size;
+        this.width = calculateWidth(size);
+        this.height = calculateHeight(size);
+    }
+
+    public ConsoleImage(String imagePath, int width, int height) {
+        this(new File(imagePath), width, height);
+    }
+
+    public ConsoleImage(File imageFile, int width, int height) {
+        this.originalBufferedImage = loadImage(imageFile);
+        this.width = width;
+        this.height = height;
+    }
+
+    public ConsoleImage(InputStream imageStream, int width, int height) {
+        this.originalBufferedImage = loadImage(imageStream);
+        this.width = width;
+        this.height = height;
     }
 
     private BufferedImage loadImage(File imgFile) {
@@ -71,9 +90,15 @@ public class ConsoleImage {
         return scaledBufferedImage;
     }
 
+    private int calculateWidth(int size) {
+        return size;
+    }
+
+    private int calculateHeight(int size) {
+        return Math.toIntExact(Math.round(((double) size) / 3));
+    }
+
     public String toConsoleString() {
-        final int width = size;
-        final int height = Math.toIntExact(Math.round(((double) width) / 3));
         final BufferedImage scaledBufferedImage = scaleImage(originalBufferedImage, width, height);
 
         return ConsoleImageUtil.createStringQuadrant(scaledBufferedImage, width, height);

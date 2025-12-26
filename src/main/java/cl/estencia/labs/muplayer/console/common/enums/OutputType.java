@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.console.enums;
+package cl.estencia.labs.muplayer.console.common.enums;
 
 public enum OutputType {
     info, warn, error
