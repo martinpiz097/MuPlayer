@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.console.enums;
+package cl.estencia.labs.muplayer.console.common.enums;
 
 public enum ConsoleOrderCode {
     albs,
@@ -8,6 +8,7 @@ public enum ConsoleOrderCode {
     cover,
     c,
     d,
+    find,
     format,
     g,
     gsv,

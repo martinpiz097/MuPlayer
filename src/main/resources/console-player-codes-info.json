@@ -35,6 +35,11 @@
     "helpInfo": "Obtiene la duración de la canción actual"
   },
   {
+    "code": "find",
+    "orders": ["find"],
+    "helpInfo": "Busca una canción o carpeta que contenga el texto escrito"
+  },
+  {
     "code": "format",
     "orders": ["format", "get-format", "get-track-format", "get-song-format"],
     "helpInfo": "Obtiene el formato de audio de la canción"

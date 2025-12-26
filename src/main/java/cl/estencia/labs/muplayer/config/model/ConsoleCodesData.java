@@ -1,6 +1,6 @@
 package cl.estencia.labs.muplayer.config.model;
 
-import cl.estencia.labs.muplayer.console.enums.ConsoleOrderCode;
+import cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,17 +24,21 @@ public class ConsoleCodesData {
     private String helpInfo;
 
     public boolean hasOrder(String order) {
+        if (order == null || order.isBlank()) {
+            return false;
+        }
+
+        order = order.trim();
         if (orders != null && orders.length > 0) {
             for (int i = 0; i < orders.length; i++) {
-                if (orders[i].equalsIgnoreCase(order)) {
+                if (orders[i].trim().equalsIgnoreCase(order)) {
                     return true;
                 }
             }
-            return false;
+
         }
-        else {
-            return false;
-        }
+
+        return false;
     }
 
     public String getJoinedOrders() {

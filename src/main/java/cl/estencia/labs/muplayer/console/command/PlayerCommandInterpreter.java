@@ -14,12 +14,13 @@ import cl.estencia.labs.muplayer.config.model.ConsoleCodesData;
 import cl.estencia.labs.muplayer.config.reader.ConsoleCodesReader;
 import cl.estencia.labs.muplayer.console.common.ConsoleMessages;
 import cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode;
-import cl.estencia.labs.muplayer.console.exception.ConsoleOutput;
+import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
 import cl.estencia.labs.muplayer.console.model.ConsoleImage;
 import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
 import cl.estencia.labs.muplayer.console.runner.DaemonRunner;
 import cl.estencia.labs.muplayer.console.runner.LocalRunner;
 import cl.estencia.labs.muplayer.console.runner.RunnerMode;
+import cl.estencia.labs.aucom.core.util.ProcessManager;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.core.service.LogService;
@@ -27,7 +28,7 @@ import cl.estencia.labs.muplayer.core.service.impl.LogServiceImpl;
 import cl.estencia.labs.muplayer.core.system.SysInfo;
 import cl.estencia.labs.muplayer.core.thread.TaskRunner;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
-import cl.estencia.labs.muplayer.core.util.ConsolePainterUtil;
+import cl.estencia.labs.muplayer.core.util.ConsolePainter;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -36,10 +37,7 @@ import org.orangelogger.sys.SystemUtil;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -82,15 +80,9 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
     }
 
     private void execSysCommand(String cmd) {
-        Process process;
         try {
-            process = Runtime.getRuntime().exec(cmd);
-            process.waitFor();
-            if (process.exitValue() == 0) {
-                printStreamOut(process.getInputStream());
-            } else {
-                printStreamOut(process.getErrorStream());
-            }
+            String output = ProcessManager.execute(cmd);
+            ProcessManager.writeProcessOutputTo(output, SystemUtil.getStdout());
         } catch (IOException | InterruptedException e) {
             Logger.getLogger(this, e.getMessage()).error();
         }
@@ -277,40 +269,43 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
         execution.append("------------------------------", info);
     }
 
-    protected void printStreamOut(InputStream cmdStream) throws IOException {
-        int read;
-        FileOutputStream stdout = SystemUtil.getStdout();
-        while ((read = cmdStream.read()) != -1) {
-            stdout.write(read);
-        }
-    }
-
     protected void clearConsole() throws IOException {
-        Runtime runtime = Runtime.getRuntime();
-        Process process = runtime.exec(SysInfo.IS_UNIX ? "clear" : "cls");
         try {
-            process.waitFor();
+            String clearProcOutput = ProcessManager.execute(SysInfo.IS_UNIX ? "clear" : "cls");
+            ProcessManager.writeProcessOutputTo(clearProcOutput, SystemUtil.getStdout());
         } catch (InterruptedException e) {
             log.error(e.getMessage(), e);
         }
-
-        final int exitValue = process.exitValue();
-        printStreamOut(exitValue == 0 ? process.getInputStream() : process.getErrorStream());
     }
 
-    protected void printHelp(ConsoleOutput execution) {
+    protected void printHelp(Command cmd, ConsoleOutput execution) {
         final String keyValueSeparator = ":\n\t";
         final String helpElementSeparator = "\n\n";
         final String orderSelementsSeparator = ",";
 
         var consoleCodesDataMap = consoleCodesReader.getJsonSource().getData();
-        String helpInfoData = consoleCodesDataMap.parallelStream()
-                .sorted(Comparator.comparing(ConsoleCodesData::getCode))
-                .sequential()
-                .map(consoleCodesData -> consoleCodesData.getJoinedOrders(orderSelementsSeparator)
-                        + keyValueSeparator
-                        + consoleCodesData.getHelpInfo())
-                .collect(Collectors.joining(helpElementSeparator));
+        String helpInfoData;
+        if (cmd.hasOptions()) {
+            List<String> optionsAsList = cmd.getOptionsAsList();
+
+            helpInfoData = consoleCodesDataMap.parallelStream()
+                    .filter(consoleCodesData ->
+                            optionsAsList.stream().anyMatch(consoleCodesData::hasOrder))
+                    .sorted(Comparator.comparing(ConsoleCodesData::getCode))
+                    .sequential()
+                    .map(consoleCodesData -> consoleCodesData.getJoinedOrders(orderSelementsSeparator)
+                            + keyValueSeparator
+                            + consoleCodesData.getHelpInfo())
+                    .collect(Collectors.joining(helpElementSeparator));
+        } else {
+            helpInfoData = consoleCodesDataMap.parallelStream()
+                    .sorted(Comparator.comparing(ConsoleCodesData::getCode))
+                    .sequential()
+                    .map(consoleCodesData -> consoleCodesData.getJoinedOrders(orderSelementsSeparator)
+                            + keyValueSeparator
+                            + consoleCodesData.getHelpInfo())
+                    .collect(Collectors.joining(helpElementSeparator));
+        }
 
         execution.append("---------", info);
         execution.append("Help Info", info);
@@ -322,7 +317,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
         if (track == null) {
             Logger.getLogger(this, "Current track unavailable").rawError();
         } else {
-            Logger.getLogger(this, ConsolePainterUtil.getSongInfo(track)).rawWarning();
+            Logger.getLogger(this, ConsolePainter.getSongInfo(track)).rawWarning();
         }
     }
 
@@ -648,7 +643,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     consoleOutput.append(playerCurrentData.get().getCurrentTrack().getDataSource().getName(), warn);
                 }
             }
-            case h -> printHelp(consoleOutput);
+            case h -> printHelp(cmd, consoleOutput);
             case sys -> {
                 if (cmd.hasOptions()) {
                     execSysCommand(cmd.getOptionsAsString());
@@ -661,12 +656,12 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
             }
             case sn -> {
                 if (isPlayerOn()) {
-                    consoleOutput.append(ConsolePainterUtil.getSongInfo(player.getNext()), warn);
+                    consoleOutput.append(ConsolePainter.getSongInfo(player.getNext()), warn);
                 }
             }
             case sp -> {
                 if (isPlayerOn()) {
-                    consoleOutput.append(ConsolePainterUtil.getSongInfo(player.getPrevious()), warn);
+                    consoleOutput.append(ConsolePainter.getSongInfo(player.getPrevious()), warn);
                 }
             }
             case pf -> {
@@ -733,6 +728,34 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                 } else {
                     consoleOutput.append("No options selected, the options must be LOCAL or DAEMON", warn);
                 }
+            }
+            case find -> {
+                if (!player.isAlive()) {
+                    consoleOutput.append("MuPlayer not started yet!", warn);
+                } else if (!cmd.hasOptions()) {
+                    consoleOutput.append("Search filters not found!", warn);
+                } else {
+                    final String searchFilter = cmd.getOptionsAsString();
+                    final List<String> listResults = CollectionUtil.newFastList(10);
+
+                    player.getTracks().parallelStream()
+                            .filter(track -> track.getTitle().toLowerCase()
+                                    .contains(searchFilter.toLowerCase()))
+                            .forEachOrdered(track -> listResults.add("Track: " + track.getTitle()));
+
+                    player.getListFolders().parallelStream()
+                            .filter(folder -> folder.getName().toLowerCase()
+                                    .contains(searchFilter.toLowerCase()))
+                            .forEachOrdered(folder -> listResults.add("Folder: " + folder.getName()));
+
+                    consoleOutput.append("Search results list", info);
+                    consoleOutput.append("--------------------------------------------", info);
+                    listResults.parallelStream().sorted()
+                            .forEachOrdered(result -> consoleOutput.append(result, info));
+                    consoleOutput.append("--------------------------------------------", info);
+                }
+
+
             }
 //            case smf -> {
 //                if (cmd.hasNotOptions()) {

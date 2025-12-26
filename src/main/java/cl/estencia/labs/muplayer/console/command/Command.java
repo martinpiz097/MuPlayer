@@ -1,6 +1,10 @@
 package cl.estencia.labs.muplayer.console.command;
 
+import cl.estencia.labs.muplayer.core.util.CollectionUtil;
+
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class Command {
     private final String order;
@@ -60,7 +64,11 @@ public class Command {
     }
 
     public String[] getOptions() {
-        return options;
+         return options;
+    }
+
+    public List<String> getOptionsAsList() {
+        return Arrays.asList(options);
     }
 
     public String getOptionsAsString() {
@@ -72,6 +80,18 @@ public class Command {
             return sbOptions.toString();
         }
         return null;
+    }
+
+    public List<String> getAllAsList() {
+        List<String> listCmd = CollectionUtil.newFastList(10);
+        listCmd.add(order.trim());
+
+        int optCount = getOptionsCount();
+        for (int i = 0; i < optCount; i++) {
+           listCmd.add(options[i].trim());
+        }
+
+        return listCmd;
     }
 
     @Override
