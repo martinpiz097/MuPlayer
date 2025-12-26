@@ -656,12 +656,12 @@ public class MuPlayer extends Player implements SystemVolumeController {
 
     @Override
     public float getSystemVolume() {
-        return audioSystemManager.getFormattedMasterVolume();
+        return audioSystemManager.getConsoleMasterVolume();
     }
 
     @Override
     public void setSystemVolume(float volume) {
-        audioSystemManager.setFormattedMasterVolume(volume);
+        audioSystemManager.setConsoleMasterVolume((int) volume);
     }
 
     @Override
