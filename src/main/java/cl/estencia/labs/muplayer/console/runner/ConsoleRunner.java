@@ -2,10 +2,11 @@ package cl.estencia.labs.muplayer.console.runner;
 
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.audio.player.Player;
+import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.console.PlayerCommandInterpreter;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
-import cl.estencia.labs.muplayer.core.exception.MuPlayerException;
+import cl.estencia.labs.muplayer.core.system.SysInfo;
 import cl.estencia.labs.muplayer.core.util.ConsolePainter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Scanner;
 
-import static cl.estencia.labs.muplayer.console.common.ConsoleSymbols.ARROW;
+import static cl.estencia.labs.muplayer.console.common.ConsoleSymbols.*;
 
 @Slf4j
 public abstract class ConsoleRunner implements Runnable {
@@ -49,32 +50,38 @@ public abstract class ConsoleRunner implements Runnable {
         globalCacheManager = CacheManager.getGlobalCache();
     }
 
-    protected String getCompleteHeader() {
+    protected String getFullAppName() {
+        return APP_NAME + SPACE + 'v' + SysInfo.readAppVersion();
+    }
+
+    protected String getCompleteHeader() throws Exception {
         StringBuilder sbHeader = new StringBuilder();
-
-        String currentTrack = player.getCurrentTrack().get() != null
-                ? player.getCurrentTrack().get().getTitle()
-                : "none";
-
+        Track currentTrack = player.getCurrentTrack().get();
         var playerVolume = player.getSystemVolume();
 
-        sbHeader.append(APP_NAME).append(" (");
-        sbHeader.append("volume=").append(ConsolePainter.paintVolume((int) playerVolume));
-        sbHeader.append(" ;current_track=").append(currentTrack);
-        sbHeader.append(") ");
-        sbHeader.append(ARROW);
-        sbHeader.append(' ');
+        sbHeader.append(getFullAppName()).append(SPACE).append(SINGLE_VERTICAL_LINE).append(SPACE);
+        sbHeader.append(ConsolePainter.paintMusicPlayerIcons(player.isPlaying())).append(SPACE);
+        sbHeader.append(ConsolePainter.paintVolumeIconByPercent(playerVolume))
+                .append(SPACE).append(ConsolePainter.paintVolumePercent(playerVolume))
+                .append(SPACE)
+                .append(ConsolePainter.paintVolumeBar(playerVolume));
 
+        if (currentTrack != null) {
+            sbHeader.append(SPACE).append(MUSICAL_NOTE).append(SPACE).append(currentTrack.getTitle());
+        }
+
+        sbHeader.append(SPACE).append(ARROW).append(SPACE);
         return sbHeader.toString();
     }
 
     protected void printConsoleHeader() {
         try {
+
             final FileOutputStream stdout = SystemUtil.getStdout();
             stdout.write(Logger.getLogger(this, getCompleteHeader())
                     .getColoredMsg(Logger.INFOCOLOR).getBytes());
             stdout.flush();
-        } catch (IOException e) {
+        } catch (Exception e) {
             Logger.getLogger(this, e.getClass().getSimpleName(), e.getMessage()).error();
         }
     }
@@ -90,7 +97,6 @@ public abstract class ConsoleRunner implements Runnable {
             System.exit(1);
         }
     }
-
 
     public ConsoleOutput execCommand(String strCmd) {
         try {

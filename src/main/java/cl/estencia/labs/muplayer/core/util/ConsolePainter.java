@@ -20,13 +20,13 @@ public class ConsolePainter {
 
     public static void appendMargin(StringBuilder stringBuilder,
                                      int biggerLength, boolean top) {
-        final int completeBiggerLength = biggerLength + LINE_START.length() + LINE_END.length();
+        final int completeBiggerLength = biggerLength + DOUBLE_LINE_START.length() + DOUBLE_LINE_END.length();
 
-        stringBuilder.append(top ? TOP_LEFT_CORNER : BOTTOM_LEFT_CORNER);
+        stringBuilder.append(top ? DOUBLE_TOP_LEFT_CORNER : DOUBLE_BOTTOM_LEFT_CORNER);
         for (int i = 0; i < completeBiggerLength - 2; i++) {
-            stringBuilder.append(DASH);
+            stringBuilder.append(DOUBLE_HORIZONTAL_LINE);
         }
-        stringBuilder.append(top ? TOP_RIGHT_CORNER : BOTTOM_RIGHT_CORNER);
+        stringBuilder.append(top ? DOUBLE_TOP_RIGHT_CORNER : DOUBLE_BOTTOM_RIGHT_CORNER);
 
         stringBuilder.append(LINE_BREAK);
     }
@@ -36,12 +36,12 @@ public class ConsolePainter {
         final int lengthDiff = biggerLength - strLength;
         final StringBuilder sbSpaces = new StringBuilder();
 
-        sbSpaces.append(LINE_START);
+        sbSpaces.append(DOUBLE_LINE_START);
         sbSpaces.append(str);
         for (int i = 0; i < lengthDiff; i++) {
             sbSpaces.append(SPACE);
         }
-        sbSpaces.append(LINE_END);
+        sbSpaces.append(DOUBLE_LINE_END);
 
         return sbSpaces.toString();
     }
@@ -170,13 +170,34 @@ public class ConsolePainter {
                 .toString();
     }
 
-    public static String paintVolume(int volume) {
+    public static String paintVolumeIconByPercent(Number volume) {
+        int volumeInt = volume.intValue();
+
+        if (volumeInt >= 80) {
+            return HIGH_VOLUME;
+        }
+        if (volumeInt >= 40) {
+            return MED_VOLUME;
+        }
+        else if (volumeInt > 0) {
+            return LOW_VOLUME;
+        }
+        else {
+            return MUTED;
+        }
+    }
+
+    public static String paintVolumePercent(Number volume) {
+        return volume.intValue() + "%";
+    }
+
+    public static String paintVolumeBar(Number volume) {
         final StringBuilder sbVolume = new StringBuilder();
 
 //        █████░░░ 60%
 
         // por si por error tengo volumenes mayores a 100
-        final int adjustedVol = Math.min(volume, 100);
+        final int adjustedVol = Math.min(volume.intValue(), 100);
         final int scale = 20;
         final int scaledVol = Math.toIntExact(Math.round(((float) (scale * adjustedVol)) / 100));
 
@@ -188,8 +209,17 @@ public class ConsolePainter {
             sbVolume.append(EMPTY_BLOCK);
         }
 
-        sbVolume.append(' ').append(volume).append('%');
         return sbVolume.toString();
+    }
+
+    public static String paintMusicPlayerIcons(boolean isPlaying) {
+        return new StringBuilder()
+                .append('(')
+                .append(PREV).append(SPACE)
+                .append(isPlaying ? PAUSE : PLAY)
+                .append(SPACE).append(NEXT)
+                .append(')')
+                .toString();
     }
 
 }

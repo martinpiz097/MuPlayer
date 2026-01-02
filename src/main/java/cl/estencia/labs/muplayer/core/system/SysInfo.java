@@ -16,9 +16,10 @@ public class SysInfo {
             (OS_NAME.contains("mac") || OS_NAME.contains("osx"));
 
     public static final boolean IS_UNIX = IS_LINUX || IS_MAC;
-    public static final String USERNAME = System.getProperty("user.name");
+    public static final String USER_NAME = System.getProperty("user.name");
 
-    public static String readVersion() {
+    public static String readAppVersion() {
         return MuPlayerInfoReader.getInstance().getProperty(MuPlayerInfoKeys.MU_PLAYER_VERSION);
     }
+
 }

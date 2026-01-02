@@ -39,7 +39,7 @@ public class LocalRunner extends ConsoleRunner {
     public void run() {
         validateRootFolder();
 
-        final String appVersion = SysInfo.readVersion();
+        final String appVersion = SysInfo.readAppVersion();
         final String msg = appVersion != null
                 ? "MuPlayer v"+appVersion+" started..."
                 : "MuPlayer started...";
