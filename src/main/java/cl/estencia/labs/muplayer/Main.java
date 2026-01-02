@@ -1,12 +1,14 @@
 package cl.estencia.labs.muplayer;
 
 import cl.estencia.labs.ebot.bus.MessageBus;
+import cl.estencia.labs.muplayer.audio.player.MuPlayer;
+import cl.estencia.labs.muplayer.bus.MuPlayerBusUtil;
 import cl.estencia.labs.muplayer.config.model.LogConfigKeys;
 import cl.estencia.labs.muplayer.config.model.MessagesInfoKeys;
-import cl.estencia.labs.muplayer.config.model.MuPlayerInfoKeys;
+import cl.estencia.labs.muplayer.config.model.MuPlayerConfigKeys;
 import cl.estencia.labs.muplayer.config.reader.LogConfigReader;
 import cl.estencia.labs.muplayer.config.reader.MessagesInfoReader;
-import cl.estencia.labs.muplayer.config.reader.MuPlayerInfoReader;
+import cl.estencia.labs.muplayer.config.reader.MuPlayerConfigReader;
 import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
 import cl.estencia.labs.muplayer.console.runner.DaemonRunner;
 import cl.estencia.labs.muplayer.console.runner.LocalRunner;
@@ -15,7 +17,6 @@ import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import cl.estencia.labs.muplayer.core.thread.TaskRunner;
 import lombok.extern.slf4j.Slf4j;
 
-import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
@@ -25,18 +26,13 @@ import static cl.estencia.labs.muplayer.core.cache.CacheVar.MESSAGE_BUS;
 public class Main {
 
     static void main(String[] args) {
-
         setJvmAppName();
         MessagesInfoReader messagesInfoReader = MessagesInfoReader.getInstance();
         CacheManager globalCache = CacheManager.getGlobalCache();
-
-        MessageBus messageBus = globalCache.saveValue(MESSAGE_BUS,
-                MessageBus.multiPublisherPerTopic(2, false));
+        MessageBus messageBus = MuPlayerBusUtil.getMessageBus();
 
         try {
             loadLogConfig();
-
-            messageBus.start();
 
             ConsoleRunner consoleRunner = null;
             if (args.length == 0) {
@@ -80,9 +76,9 @@ public class Main {
     }
 
     private static void setJvmAppName() {
-        MuPlayerInfoReader muPlayerInfo = MuPlayerInfoReader.getInstance();
+        MuPlayerConfigReader muPlayerInfo = MuPlayerConfigReader.getInstance();
         System.setProperty("jvm.name", "MuPlayer v" + muPlayerInfo.getProperty(
-                MuPlayerInfoKeys.MU_PLAYER_VERSION));
+                MuPlayerConfigKeys.MU_PLAYER_VERSION));
     }
 
     private static void loadLogConfig() {
