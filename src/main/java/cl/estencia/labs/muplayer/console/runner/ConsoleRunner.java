@@ -16,7 +16,6 @@ import org.orangelogger.sys.SystemUtil;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Scanner;
 
 import static cl.estencia.labs.muplayer.console.common.ConsoleSymbols.*;
@@ -60,17 +59,31 @@ public abstract class ConsoleRunner implements Runnable {
         var playerVolume = player.getSystemVolume();
 
         sbHeader.append(getFullAppName()).append(SPACE).append(SINGLE_VERTICAL_LINE).append(SPACE);
-        sbHeader.append(ConsolePainter.paintMusicPlayerIcons(player.isPlaying())).append(SPACE);
-        sbHeader.append(ConsolePainter.paintVolumeIconByPercent(playerVolume))
-                .append(SPACE).append(ConsolePainter.paintVolumePercent(playerVolume))
+
+        sbHeader.append(ConsolePainter.paintBatteryStatus())
                 .append(SPACE)
-                .append(ConsolePainter.paintVolumeBar(playerVolume));
+                .append(ConsolePainter.paintBatteryPercentage())
+                .append(SPACE).append(SINGLE_VERTICAL_LINE).append(SPACE);
+
+        sbHeader.append(ConsolePainter.paintVolumeBar(playerVolume))
+                .append(SPACE);
+
+        sbHeader.append(ConsolePainter.paintVolumeIcon(player.getPlayerStatusData()))
+                .append(SPACE)
+                .append(ConsolePainter.paintVolumePercent(playerVolume))
+                .append(SPACE);
+
+        sbHeader.append(ConsolePainter.paintMusicPlayerIcons(player.isPlaying()))
+                .append(SPACE);
 
         if (currentTrack != null) {
-            sbHeader.append(SPACE).append(MUSICAL_NOTE).append(SPACE).append(currentTrack.getTitle());
+            sbHeader.append(MUSICAL_NOTE)
+                    .append(SPACE)
+                    .append(currentTrack.getTitle())
+                    .append(SPACE);
         }
 
-        sbHeader.append(SPACE).append(ARROW).append(SPACE);
+        sbHeader.append(ARROW).append(SPACE);
         return sbHeader.toString();
     }
 

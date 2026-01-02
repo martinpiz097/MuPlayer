@@ -1,5 +1,6 @@
 package cl.estencia.labs.muplayer.core.util;
 
+import cl.estencia.labs.muplayer.audio.player.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.io.TrackIOUtil;
 import cl.estencia.labs.muplayer.console.common.enums.OutputType;
@@ -170,9 +171,12 @@ public class ConsolePainter {
                 .toString();
     }
 
-    public static String paintVolumeIconByPercent(Number volume) {
-        int volumeInt = volume.intValue();
+    public static String paintVolumeIcon(PlayerStatusData playerStatusData) {
+        if (playerStatusData.isMute()) {
+            return MUTED;
+        }
 
+        int volumeInt = (int) playerStatusData.getVolume();
         if (volumeInt >= 80) {
             return HIGH_VOLUME;
         }
@@ -220,6 +224,14 @@ public class ConsolePainter {
                 .append(SPACE).append(NEXT)
                 .append(')')
                 .toString();
+    }
+
+    public static String paintBatteryStatus() {
+        return SystemUtil.isChargerConnected() ? PLUGGED : BATTERY;
+    }
+
+    public static String paintBatteryPercentage() {
+        return SystemUtil.getBatteryPercentage() + "%";
     }
 
 }
