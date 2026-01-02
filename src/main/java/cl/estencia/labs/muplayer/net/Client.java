@@ -1,6 +1,6 @@
 package cl.estencia.labs.muplayer.net;
 
-import cl.estencia.labs.muplayer.console.command.PlayerCommandInterpreter;
+import cl.estencia.labs.muplayer.console.PlayerCommandInterpreter;
 
 public abstract class Client extends Thread implements Connectable {
     protected final PlayerCommandInterpreter playerCommandInterpreter;

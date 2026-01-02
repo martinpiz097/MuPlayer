@@ -15,6 +15,7 @@ import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import cl.estencia.labs.muplayer.core.thread.TaskRunner;
 import lombok.extern.slf4j.Slf4j;
 
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
@@ -24,6 +25,7 @@ import static cl.estencia.labs.muplayer.core.cache.CacheVar.MESSAGE_BUS;
 public class Main {
 
     static void main(String[] args) {
+
         setJvmAppName();
         MessagesInfoReader messagesInfoReader = MessagesInfoReader.getInstance();
         CacheManager globalCache = CacheManager.getGlobalCache();
