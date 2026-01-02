@@ -13,7 +13,7 @@ public class MuPlayerBusUtil {
     }
 
     private static void shutdownCurrentBus() {
-        MessageBus messageBus = getMessageBus();
+        MessageBus messageBus = GLOBAL_CACHE_MANAGER.loadValue(MESSAGE_BUS, MessageBus.class);
         if (messageBus != null && messageBus.isAlive()) {
             messageBus.shutdown();
         }
@@ -25,7 +25,12 @@ public class MuPlayerBusUtil {
     }
 
     public static MessageBus getMessageBus() {
-        return GLOBAL_CACHE_MANAGER.loadValue(MESSAGE_BUS);
+        MessageBus messageBus = GLOBAL_CACHE_MANAGER.loadValue(MESSAGE_BUS, MessageBus.class);
+        if (messageBus == null) {
+            messageBus = createMessageBus();
+        }
+
+        return messageBus;
     }
 
 }
