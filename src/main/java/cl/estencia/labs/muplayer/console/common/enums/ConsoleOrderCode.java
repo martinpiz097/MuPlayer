@@ -32,6 +32,7 @@ public enum ConsoleOrderCode {
     ps,
     pwd,
     r,
+    root,
     s,
     sh,
     skf,

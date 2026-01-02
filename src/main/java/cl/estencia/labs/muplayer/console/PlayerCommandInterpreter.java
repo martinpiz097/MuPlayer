@@ -145,6 +145,12 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     messageBus.publish(Messages.resume());
                 }
             }
+            case root -> {
+                if (player.isAlive()) {
+                    consoleOutput.append("Root folder path: "
+                            + player.getRootFolder().getCanonicalPath(), info);
+                }
+            }
             case s -> {
                 if (player.isAlive()) {
                     messageBus.publish(Messages.stop());

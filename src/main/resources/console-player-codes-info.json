@@ -155,6 +155,11 @@
     "helpInfo": "Inicia la canción actual si está pausada o detenida"
   },
   {
+    "code": "root",
+    "orders": ["root"],
+    "helpInfo": "Muestra la ruta completa de la carpeta raíz"
+  },
+  {
     "code": "s",
     "orders": ["s", "stop", "stop-track", "stop-song"],
     "helpInfo": "Detiene la canción actual"
