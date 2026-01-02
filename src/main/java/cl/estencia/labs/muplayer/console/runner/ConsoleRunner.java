@@ -2,9 +2,10 @@ package cl.estencia.labs.muplayer.console.runner;
 
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.audio.player.Player;
-import cl.estencia.labs.muplayer.console.command.PlayerCommandInterpreter;
+import cl.estencia.labs.muplayer.console.PlayerCommandInterpreter;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
+import cl.estencia.labs.muplayer.core.exception.MuPlayerException;
 import cl.estencia.labs.muplayer.core.util.ConsolePainter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -78,12 +79,26 @@ public abstract class ConsoleRunner implements Runnable {
         }
     }
 
+    protected boolean isValidRootFolder() {
+        return player.getRootFolder() != null && player.getRootFolder().exists();
+    }
+
+    protected void validateRootFolder() {
+        if (!isValidRootFolder()) {
+            Logger.getLogger(this,
+                    "Root folder not exists: " + player.getRootFolder().getPath()).rawError();
+            System.exit(1);
+        }
+    }
+
+
     public ConsoleOutput execCommand(String strCmd) {
         try {
             return interpreter.executeCommand(strCmd);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
+
         return null;
     }
 

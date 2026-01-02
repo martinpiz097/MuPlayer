@@ -37,6 +37,8 @@ public class LocalRunner extends ConsoleRunner {
 
     @Override
     public void run() {
+        validateRootFolder();
+
         final String appVersion = SysInfo.readVersion();
         final String msg = appVersion != null
                 ? "MuPlayer v"+appVersion+" started..."
@@ -52,8 +54,9 @@ public class LocalRunner extends ConsoleRunner {
             cmd = scanner.nextLine().trim();
             if (!cmd.isEmpty()) {
                 consoleOutput = execCommand(cmd);
-                if (consoleOutput.hasOutput())
+                if (consoleOutput.hasOutput()) {
                     System.out.println(consoleOutput.getOutputMsg());
+                }
             }
         }
 

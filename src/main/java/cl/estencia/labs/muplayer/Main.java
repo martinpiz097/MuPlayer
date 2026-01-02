@@ -23,7 +23,7 @@ import static cl.estencia.labs.muplayer.core.cache.CacheVar.MESSAGE_BUS;
 @Slf4j
 public class Main {
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         setJvmAppName();
         MessagesInfoReader messagesInfoReader = MessagesInfoReader.getInstance();
         CacheManager globalCache = CacheManager.getGlobalCache();

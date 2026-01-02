@@ -38,6 +38,8 @@ public class DaemonRunner extends ConsoleRunner {
 
     @Override
     public void run() {
+        validateRootFolder();
+
         Logger.getLogger(this, "MuPlayer daemon mode started.").info();
         interpreter.setOn(true);
 
