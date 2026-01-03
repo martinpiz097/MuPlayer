@@ -3,11 +3,13 @@ package cl.estencia.labs.muplayer.console.runner;
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
+import cl.estencia.labs.muplayer.config.model.MuPlayerConfigKeys;
+import cl.estencia.labs.muplayer.config.reader.MuPlayerConfigReader;
 import cl.estencia.labs.muplayer.console.PlayerCommandInterpreter;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
+import cl.estencia.labs.muplayer.core.common.enums.ConsoleHeaderMode;
 import cl.estencia.labs.muplayer.core.system.SysInfo;
-import cl.estencia.labs.muplayer.core.util.ConsolePainter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.orangelogger.sys.Logger;
@@ -19,6 +21,7 @@ import java.io.FileOutputStream;
 import java.util.Scanner;
 
 import static cl.estencia.labs.muplayer.console.common.ConsoleSymbols.*;
+import static cl.estencia.labs.muplayer.core.util.ConsolePainter.*;
 
 @Slf4j
 public abstract class ConsoleRunner implements Runnable {
@@ -27,6 +30,7 @@ public abstract class ConsoleRunner implements Runnable {
     protected final PlayerCommandInterpreter interpreter;
     protected final Scanner scanner;
     protected final CacheManager globalCacheManager;
+    protected final MuPlayerConfigReader muPlayerConfigReader;
 
     protected static final String APP_NAME = "MuPlayer";
 
@@ -45,8 +49,9 @@ public abstract class ConsoleRunner implements Runnable {
     public ConsoleRunner(Player player) {
         this.player = player;
         this.interpreter = new PlayerCommandInterpreter(player);
-        scanner = new Scanner(System.in);
-        globalCacheManager = CacheManager.getGlobalCache();
+        this.scanner = new Scanner(System.in);
+        this.globalCacheManager = CacheManager.getGlobalCache();
+        this.muPlayerConfigReader = MuPlayerConfigReader.getInstance();
     }
 
     protected String getFullAppName() {
@@ -55,35 +60,46 @@ public abstract class ConsoleRunner implements Runnable {
 
     protected String getCompleteHeader() throws Exception {
         StringBuilder sbHeader = new StringBuilder();
+        ConsoleHeaderMode consoleHeaderMode = ConsoleHeaderMode.valueOf(muPlayerConfigReader.getProperty(MuPlayerConfigKeys.CONSOLE_HEADER_MODE));
         Track currentTrack = player.getCurrentTrack().get();
         var playerVolume = player.getSystemVolume();
 
-        sbHeader.append(getFullAppName()).append(SPACE).append(SINGLE_VERTICAL_LINE).append(SPACE);
+        switch (consoleHeaderMode) {
+            case SIMPLE -> {
+                sbHeader.append(paintMusicPlayerIcons(player.isPlaying())).append(SPACE);
+                sbHeader.append(paintBatteryStatus()).append(SPACE);
+                sbHeader.append(paintVolumeStatus(player.getPlayerStatusData())).append(SPACE);
 
-        sbHeader.append(ConsolePainter.paintBatteryStatus())
-                .append(SPACE)
-                .append(ConsolePainter.paintBatteryPercentage())
-                .append(SPACE).append(SINGLE_VERTICAL_LINE).append(SPACE);
+                if (currentTrack != null) {
+                    sbHeader.append(SPACE)
+                            .append(MUSICAL_NOTE)
+                            .append(SPACE)
+                            .append(currentTrack.getTitle())
+                            .append(SPACE);
+                }
 
-        sbHeader.append(ConsolePainter.paintVolumeBar(playerVolume))
-                .append(SPACE);
+                sbHeader.append(ARROW).append(SPACE);
+            }
+            case COMPLETE -> {
+                sbHeader.append(paintMusicPlayerIcons(player.isPlaying())).append(SPACE);
 
-        sbHeader.append(ConsolePainter.paintVolumeIcon(player.getPlayerStatusData()))
-                .append(SPACE)
-                .append(ConsolePainter.paintVolumePercent(playerVolume))
-                .append(SPACE);
+                if (currentTrack != null) {
+                    sbHeader.append(MUSICAL_NOTE)
+                            .append(SPACE)
+                            .append(currentTrack.getTitle())
+                            .append(SPACE);
+                }
 
-        sbHeader.append(ConsolePainter.paintMusicPlayerIcons(player.isPlaying()))
-                .append(SPACE);
+                sbHeader.append(SINGLE_VERTICAL_LINE).append(SPACE);
+                sbHeader.append(paintVolumeBar(playerVolume, 10)).append(SPACE);
+                sbHeader.append(paintVolumeStatus(player.getPlayerStatusData())).append(SPACE);
+                sbHeader.append(paintBatteryStatus()).append(SPACE);
 
-        if (currentTrack != null) {
-            sbHeader.append(MUSICAL_NOTE)
-                    .append(SPACE)
-                    .append(currentTrack.getTitle())
-                    .append(SPACE);
+
+                sbHeader.append(LINE_BREAK_CHAR).append(ARROW).append(SPACE);
+            }
         }
 
-        sbHeader.append(ARROW).append(SPACE);
         return sbHeader.toString();
     }
 
@@ -115,7 +131,8 @@ public abstract class ConsoleRunner implements Runnable {
         try {
             return interpreter.executeCommand(strCmd);
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            e.printStackTrace();
+//            log.error(e.getMessage(), e);
         }
 
         return null;
