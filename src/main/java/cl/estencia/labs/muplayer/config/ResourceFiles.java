@@ -9,7 +9,7 @@ public class ResourceFiles {
     public static final String HELP_RES_PATH = "/help.properties";
     public static final String HELP_FILE_PATH = getFilePath(HELP_RES_PATH);
 
-    public static final String MUPLAYER_INFO_RES_PATH = "/muplayer-info.properties";
+    public static final String MUPLAYER_CONFIG_RES_PATH = "/muplayer-config.properties";
 
     public static final String MESSAGES_RES_PATH = "/messages.properties";
     public static final String MESSAGES_FILE_PATH = getFilePath(MESSAGES_RES_PATH);

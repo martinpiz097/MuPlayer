@@ -1,11 +1,13 @@
 package cl.estencia.labs.muplayer.config.model;
 
-public class MuPlayerInfoKeys {
+public class MuPlayerConfigKeys {
 
-    private MuPlayerInfoKeys() {
+    private MuPlayerConfigKeys() {
         throw new IllegalStateException("Utility class");
     }
 
     public static final String MU_PLAYER_VERSION = "muplayer.version";
     public static final String DAEMON_SERVER_PORT = "daemon.server.port";
+    public static final String CONSOLE_HEADER_MODE = "console.header.mode";
+
 }

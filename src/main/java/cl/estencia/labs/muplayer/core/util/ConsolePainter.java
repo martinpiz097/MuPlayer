@@ -4,7 +4,7 @@ import cl.estencia.labs.muplayer.audio.player.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.io.TrackIOUtil;
 import cl.estencia.labs.muplayer.console.common.enums.OutputType;
-import cl.estencia.labs.muplayer.console.model.ConsoleTableLine;
+import cl.estencia.labs.muplayer.console.model.ConsoleListLine;
 import lombok.extern.slf4j.Slf4j;
 import org.orangelogger.sys.ConsoleColor;
 import org.orangelogger.sys.Logger;
@@ -21,7 +21,7 @@ public class ConsolePainter {
 
     public static void appendMargin(StringBuilder stringBuilder,
                                      int biggerLength, boolean top) {
-        final int completeBiggerLength = biggerLength + DOUBLE_LINE_START.length() + DOUBLE_LINE_END.length();
+        final int completeBiggerLength = biggerLength * 2 + 1;
 
         stringBuilder.append(top ? DOUBLE_TOP_LEFT_CORNER : DOUBLE_BOTTOM_LEFT_CORNER);
         for (int i = 0; i < completeBiggerLength - 2; i++) {
@@ -29,7 +29,7 @@ public class ConsolePainter {
         }
         stringBuilder.append(top ? DOUBLE_TOP_RIGHT_CORNER : DOUBLE_BOTTOM_RIGHT_CORNER);
 
-        stringBuilder.append(LINE_BREAK);
+        stringBuilder.append(LINE_BREAK_CHAR);
     }
 
     public static String appendContentDetails(String str, int biggerLength) {
@@ -37,12 +37,12 @@ public class ConsolePainter {
         final int lengthDiff = biggerLength - strLength;
         final StringBuilder sbSpaces = new StringBuilder();
 
-        sbSpaces.append(DOUBLE_LINE_START);
+        sbSpaces.append(DOUBLE_VERTICAL_LINE);
         sbSpaces.append(str);
         for (int i = 0; i < lengthDiff; i++) {
             sbSpaces.append(SPACE);
         }
-        sbSpaces.append(DOUBLE_LINE_END);
+        sbSpaces.append(DOUBLE_VERTICAL_LINE);
 
         return sbSpaces.toString();
     }
@@ -72,11 +72,11 @@ public class ConsolePainter {
     }
 
     public static String createColoredStringLine(Object data, OutputType outputType) {
-        return createColoredString(data, outputType) + LINE_BREAK;
+        return createColoredString(data, outputType) + LINE_BREAK_CHAR;
     }
 
     public static String createConsoleTable(String tableTitle,
-                                            List<ConsoleTableLine> tableLines) {
+                                            List<ConsoleListLine> tableLines) {
         final StringBuilder sbInfo = new StringBuilder();
         final List<String> listContentLines = CollectionUtil.newFastList(20);
         final AtomicInteger biggerLength = new AtomicInteger(0);
@@ -84,7 +84,6 @@ public class ConsolePainter {
         appendTableTitle(sbInfo, tableTitle);
 
         tableLines.forEach(line -> {
-
             biggerLength.set(Math.max(line.getRawLineLength(), biggerLength.get()));
             listContentLines.add(line.getCompleteLine());
         });
@@ -95,22 +94,18 @@ public class ConsolePainter {
                     listContentLines.get(i), biggerLength.get()));
         }
 
-        sbInfo.append(LINE_BREAK);
+        sbInfo.append(LINE_BREAK_CHAR);
         appendMargin(sbInfo, biggerLength.get(), true);
         sbInfo.append(String.join(LINE_BREAK, listContentLines));
-        sbInfo.append(LINE_BREAK);
+        sbInfo.append(LINE_BREAK_CHAR);
         appendMargin(sbInfo, biggerLength.get(), false);
 
         sbInfo.deleteCharAt(sbInfo.length() - 1);
         return sbInfo.toString();
     }
 
-    public static String createConsoleTable(List<ConsoleTableLine> tableLines) {
-        return createConsoleTable(null, tableLines);
-    }
-
     public static String getSongInfo(Track track) {
-        final List<ConsoleTableLine> listTableLines = CollectionUtil.newFastList(10);
+        final List<ConsoleListLine> listTableLines = CollectionUtil.newFastList(10);
 
         final String title = track.getTitle();
         final String album = track.getAlbum();
@@ -122,35 +117,35 @@ public class ConsolePainter {
         final String bitrate = track.getBitrate();
 
 
-        listTableLines.add(new ConsoleTableLine("Title", title, DEFAULT_VALUES_SEPARATOR));
+        listTableLines.add(new ConsoleListLine("Title", title, DEFAULT_LIST_VALUES_SEPARATOR));
 
         if (album != null) {
-            listTableLines.add(new ConsoleTableLine("Album", album, DEFAULT_VALUES_SEPARATOR));
+            listTableLines.add(new ConsoleListLine("Album", album, DEFAULT_LIST_VALUES_SEPARATOR));
         }
 
         if (artist != null) {
-            listTableLines.add(new ConsoleTableLine("Artist", artist, DEFAULT_VALUES_SEPARATOR));
+            listTableLines.add(new ConsoleListLine("Artist", artist, DEFAULT_LIST_VALUES_SEPARATOR));
         }
 
         if (year != null) {
-            listTableLines.add(new ConsoleTableLine("Year", year, DEFAULT_VALUES_SEPARATOR));
+            listTableLines.add(new ConsoleListLine("Year", year, DEFAULT_LIST_VALUES_SEPARATOR));
         }
 
         if (duration != null) {
-            listTableLines.add(new ConsoleTableLine("Duration", duration, DEFAULT_VALUES_SEPARATOR));
+            listTableLines.add(new ConsoleListLine("Duration", duration, DEFAULT_LIST_VALUES_SEPARATOR));
         }
 
         if (genre != null) {
-            listTableLines.add(new ConsoleTableLine("Genre", genre, DEFAULT_VALUES_SEPARATOR));
+            listTableLines.add(new ConsoleListLine("Genre", genre, DEFAULT_LIST_VALUES_SEPARATOR));
         }
 
-        listTableLines.add(new ConsoleTableLine("Has Cover", hasCover, DEFAULT_VALUES_SEPARATOR));
+        listTableLines.add(new ConsoleListLine("Has Cover", hasCover, DEFAULT_LIST_VALUES_SEPARATOR));
 
         if (bitrate != null) {
-            listTableLines.add(new ConsoleTableLine("Bitrate", bitrate, DEFAULT_VALUES_SEPARATOR));
+            listTableLines.add(new ConsoleListLine("Bitrate", bitrate, DEFAULT_LIST_VALUES_SEPARATOR));
         }
 
-        return createConsoleTable(listTableLines);
+        return createConsoleTable(null, listTableLines);
     }
 
     public static String getLineInfo(Track track) {
@@ -171,7 +166,7 @@ public class ConsolePainter {
                 .toString();
     }
 
-    public static String paintVolumeIcon(PlayerStatusData playerStatusData) {
+    private static String paintVolumeIcon(PlayerStatusData playerStatusData) {
         if (playerStatusData.isMute()) {
             return MUTED;
         }
@@ -191,18 +186,24 @@ public class ConsolePainter {
         }
     }
 
-    public static String paintVolumePercent(Number volume) {
+    private static String paintVolumePercent(Number volume) {
         return volume.intValue() + "%";
     }
 
-    public static String paintVolumeBar(Number volume) {
+    public static String paintVolumeStatus(PlayerStatusData playerStatusData) {
+        String icon = paintVolumeIcon(playerStatusData);
+        String percentage = paintVolumePercent(playerStatusData.getVolume());
+
+        return icon + SPACE + percentage;
+    }
+
+    public static String paintVolumeBar(Number volume, int scale) {
         final StringBuilder sbVolume = new StringBuilder();
 
 //        █████░░░ 60%
 
         // por si por error tengo volumenes mayores a 100
         final int adjustedVol = Math.min(volume.intValue(), 100);
-        final int scale = 20;
         final int scaledVol = Math.toIntExact(Math.round(((float) (scale * adjustedVol)) / 100));
 
         for (int i = 0; i < scaledVol; i++) {
@@ -227,11 +228,10 @@ public class ConsolePainter {
     }
 
     public static String paintBatteryStatus() {
-        return SystemUtil.isChargerConnected() ? PLUGGED : BATTERY;
-    }
+        String icon = SystemUtil.isChargerConnected() ? PLUGGED : BATTERY;
+        String percentage = SystemUtil.getBatteryPercentage() + "%";
 
-    public static String paintBatteryPercentage() {
-        return SystemUtil.getBatteryPercentage() + "%";
+        return icon + SPACE + percentage;
     }
 
 }
