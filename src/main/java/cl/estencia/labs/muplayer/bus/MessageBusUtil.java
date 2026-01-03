@@ -5,7 +5,7 @@ import cl.estencia.labs.muplayer.core.cache.CacheManager;
 
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.MESSAGE_BUS;
 
-public class MuPlayerBusUtil {
+public class MessageBusUtil {
     private static final CacheManager GLOBAL_CACHE_MANAGER = CacheManager.getGlobalCache();
 
     private static MessageBus newMessageBus() {
