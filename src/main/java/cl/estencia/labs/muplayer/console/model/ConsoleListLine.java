@@ -1,29 +1,30 @@
 package cl.estencia.labs.muplayer.console.model;
 
+import cl.estencia.labs.muplayer.console.util.ConsoleUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.orangelogger.sys.ConsoleColor;
 
-import static cl.estencia.labs.muplayer.console.common.ConsoleSymbols.DEFAULT_VALUES_SEPARATOR;
+import static cl.estencia.labs.muplayer.console.common.ConsoleSymbols.DEFAULT_LIST_VALUES_SEPARATOR;
 
 @Getter
 @Setter
 @ToString
 @AllArgsConstructor
-public class ConsoleTableLine {
+public class ConsoleListLine {
     private final String title;
     private final Object value;
     private final String separator;
     private final String titleColor;
     private final String valueColor;
 
-    public ConsoleTableLine(String title, Object value) {
-        this(title, value, DEFAULT_VALUES_SEPARATOR);
+    public ConsoleListLine(String title, Object value) {
+        this(title, value, DEFAULT_LIST_VALUES_SEPARATOR);
     }
 
-    public ConsoleTableLine(String title, Object value, String separator) {
+    public ConsoleListLine(String title, Object value, String separator) {
         this(title, value, separator, null, null);
     }
 
@@ -43,15 +44,15 @@ public class ConsoleTableLine {
 
     public String getCompleteLine() {
         final String completeTitle = isValidColor(titleColor)
-                ? titleColor + title + ConsoleColor.ANSI_RESET
+                ? titleColor + title + ConsoleUtil.getResetColor()
                 : title;
 
         final String completeSeparator = isValidColor(titleColor)
-                ? titleColor + separator + ConsoleColor.ANSI_RESET
+                ? titleColor + separator + ConsoleUtil.getResetColor()
                 : separator;
 
         final String completeValue = isValidColor(valueColor)
-                ? valueColor + value + ConsoleColor.ANSI_RESET
+                ? valueColor + value + ConsoleUtil.getResetColor()
                 : value.toString();
 
         return completeTitle + completeSeparator + completeValue;

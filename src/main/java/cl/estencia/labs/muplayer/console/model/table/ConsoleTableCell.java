@@ -1,5 +1,6 @@
 package cl.estencia.labs.muplayer.console.model.table;
 
+import cl.estencia.labs.muplayer.console.util.ConsoleUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.orangelogger.sys.ConsoleColor;
@@ -15,12 +16,6 @@ public class ConsoleTableCell {
     public ConsoleTableCell(Object value) {
         this.value = value;
         this.color = null;
-    }
-
-    private boolean isValidColor(String color) {
-        return color != null
-                && !color.isBlank()
-                && !color.trim().equalsIgnoreCase("null");
     }
 
     private void appendPadding(StringBuilder stringBuilder, int padding) {
@@ -41,12 +36,8 @@ public class ConsoleTableCell {
             extraPadding = new Padding(0, 0, 0, 0);
         }
 
-        String coloredLine = isValidColor(color)
-                ? color + value + ConsoleColor.ANSI_RESET
-                : value.toString();
-
+        String coloredLine = ConsoleUtil.coloredString(value, color, false);
         StringBuilder sbLine = new StringBuilder();
-
 
         appendPadding(sbLine, cellPadding.left());
         sbLine.append(coloredLine);

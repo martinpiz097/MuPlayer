@@ -1,14 +1,17 @@
 package cl.estencia.labs.muplayer.console.model.table;
 
+import cl.estencia.labs.muplayer.console.util.ConsoleUtil;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 
 import java.util.List;
 
 import static cl.estencia.labs.muplayer.console.common.ConsoleSymbols.*;
 import static cl.estencia.labs.muplayer.console.common.ConsoleSymbols.DOUBLE_BOTTOM_LEFT_CORNER;
+import static cl.estencia.labs.muplayer.console.common.enums.OutputType.info;
 
 public class ConsoleTable {
     private final String title;
+    private final String color;
     private final List<String> columnNames;
     private final List<ConsoleTableRow> rows;
     private final Padding borderPadding;
@@ -16,19 +19,24 @@ public class ConsoleTable {
     private final boolean useInternalLines;
 
     public ConsoleTable(String title) {
-        this(title, new Padding(0, 0, 0, 0));
+        this(title, ConsoleUtil.getOutputColor(info));
     }
 
-    public ConsoleTable(String title, Padding borderPadding) {
-        this(title, borderPadding, true, true);
+    public ConsoleTable(String title, String color) {
+        this(title, color, new Padding(0, 0, 0, 0));
     }
 
-    public ConsoleTable(String title, boolean useSingleLines, boolean useInternalLines) {
-        this(title, new Padding(0, 0, 0, 0), useSingleLines, useInternalLines);
+    public ConsoleTable(String title, String color, Padding borderPadding) {
+        this(title, color, borderPadding, true, true);
     }
 
-    public ConsoleTable(String title, Padding borderPadding, boolean useSingleLines, boolean useInternalLines) {
+    public ConsoleTable(String title, String color, boolean useSingleLines, boolean useInternalLines) {
+        this(title, color, new Padding(0, 0, 0, 0), useSingleLines, useInternalLines);
+    }
+
+    public ConsoleTable(String title, String color, Padding borderPadding, boolean useSingleLines, boolean useInternalLines) {
         this.title = title;
+        this.color = color;
         this.useInternalLines = useInternalLines;
         this.columnNames = CollectionUtil.newFastArrayList();
         this.rows = CollectionUtil.newFastArrayList();
@@ -59,95 +67,73 @@ public class ConsoleTable {
         return columnsBigLenghts;
     }
 
-    private void paintTableMargin(StringBuilder sbTable, char startChar, char cellChar,
+    private void paintTableMargin(StringBuilder sbTable, String color, char startChar, char cellChar,
                                   char interColumnChar, char endChar,
                                   List<Integer> columnWidths) {
+        if (!ConsoleUtil.isValidColor(color)) {
+            color = ConsoleUtil.getOutputColor(info);
+        }
+
         int columnsCount = getColumnsCount();
         int columnWidth;
 
+        sbTable.append(color);
         sbTable.append(startChar);
         for (int i = 0; i < columnsCount; i++) {
             columnWidth = columnWidths.get(i);
-            for (int j = 0; j < columnWidth; j++) {
-                sbTable.append(cellChar);
-            }
+            sbTable.append(String.valueOf(cellChar).repeat(Math.max(0, columnWidth)));
             sbTable.append(interColumnChar);
 
         }
-
         sbTable.setCharAt(sbTable.length() - 1, endChar);
-        sbTable.append(LINE_BREAK_CHAR);
-    }
 
-    private void paintTableRow(StringBuilder sbTable, List<Integer> biggerColumnLengths,
-                               ConsoleTableRow row) {
-
-        char borderChar = useSingleLines ? SINGLE_VERTICAL_LINE : DOUBLE_VERTICAL_LINE;
-        char interColumnChar = useInternalLines
-                ? (useSingleLines ? SINGLE_VERTICAL_LINE : DOUBLE_VERTICAL_LINE)
-                : SPACE;
-
-        sbTable.append(borderChar);
-
-        int columnCount = biggerColumnLengths.size();
-        int columnLength;
-        int biggerColumnLength;
-        int lenDiff;
-
-        Padding lenPadding;
-        ConsoleTableCell column;
-        String coloredLine;
-        for (int i = 0; i < columnCount; i++) {
-            biggerColumnLength = biggerColumnLengths.get(i);
-            column = row.getCell(i);
-            columnLength = column.getLength(borderPadding);
-            lenDiff = biggerColumnLength - columnLength;
-            lenPadding = new Padding(0, lenDiff, 0, 0);
-            coloredLine = column.getColoredLineWithPadding(borderPadding, lenPadding);
-
-            sbTable.append(coloredLine);
-            sbTable.append(interColumnChar);
-        }
-        sbTable.setCharAt(sbTable.length() - 1, borderChar);
-
+        sbTable.append(ConsoleUtil.getResetColor());
         sbTable.append(LINE_BREAK_CHAR);
     }
 
     private void paintTableTitleHeader(StringBuilder sbTable, List<Integer> columnWidths) {
         char headerChar = useSingleLines ? SINGLE_HORIZONTAL_LINE : DOUBLE_HORIZONTAL_LINE;
 
-        paintTableMargin(sbTable, headerChar, headerChar, headerChar, headerChar, columnWidths);
+        paintTableMargin(sbTable, color, headerChar, headerChar, headerChar, headerChar, columnWidths);
     }
 
     private void paintTableExternalMargin(StringBuilder sbTable, List<Integer> columnWidths, boolean top) {
         if (top) {
             char startChar = useSingleLines ? SINGLE_TOP_LEFT_CORNER : DOUBLE_TOP_LEFT_CORNER;
             char cellChar = useSingleLines ? SINGLE_HORIZONTAL_LINE : DOUBLE_HORIZONTAL_LINE;
-            char interColumnChar = useSingleLines ? SINGLE_TOP_CORNER : DOUBLE_TOP_CORNER;
+            char interColumnChar = useInternalLines ?
+                    (useSingleLines ? SINGLE_TOP_CORNER : DOUBLE_TOP_CORNER)
+                    : cellChar;
             char endChar = useSingleLines ? SINGLE_TOP_RIGHT_CORNER : DOUBLE_TOP_RIGHT_CORNER;
 
-            paintTableMargin(sbTable, startChar, cellChar, interColumnChar, endChar, columnWidths);
+            paintTableMargin(sbTable, color, startChar, cellChar, interColumnChar, endChar, columnWidths);
         } else {
             char startChar = useSingleLines ? SINGLE_BOTTOM_LEFT_CORNER : DOUBLE_BOTTOM_LEFT_CORNER;
             char cellChar = useSingleLines ? SINGLE_HORIZONTAL_LINE : DOUBLE_HORIZONTAL_LINE;
-            char interColumnChar = useSingleLines ? SINGLE_BOTTOM_CORNER : DOUBLE_BOTTOM_CORNER;
+            char interColumnChar = useInternalLines
+                    ? (useSingleLines ? SINGLE_BOTTOM_CORNER : DOUBLE_BOTTOM_CORNER)
+                    : cellChar;
             char endChar = useSingleLines ? SINGLE_BOTTOM_RIGHT_CORNER : DOUBLE_BOTTOM_RIGHT_CORNER;
 
-            paintTableMargin(sbTable, startChar, cellChar, interColumnChar, endChar, columnWidths);
+            paintTableMargin(sbTable, color, startChar, cellChar, interColumnChar, endChar, columnWidths);
         }
     }
 
-    private void paintTableInternalMargin(StringBuilder sbTable, List<Integer> columnWidths) {
-        char startChar = useSingleLines ? SINGLE_LEFT_UNION : DOUBLE_RIGHT_UNION;
+    private void paintInterRowMargin(StringBuilder sbTable, List<Integer> columnWidths) {
+        char startChar = useInternalLines
+                ? (useSingleLines ? SINGLE_LEFT_UNION : DOUBLE_RIGHT_UNION)
+                : (useSingleLines ? SINGLE_VERTICAL_LINE : DOUBLE_VERTICAL_LINE);
         char cellChar = useInternalLines
                 ? (useSingleLines ? SINGLE_HORIZONTAL_LINE : DOUBLE_HORIZONTAL_LINE)
                 : SPACE;
         char interColumnChar = useInternalLines
                 ? (useSingleLines ? SINGLE_INTERNAL_CORNER : DOUBLE_INTERNAL_CORNER)
                 : SPACE;
-        char endChar = useSingleLines ? SINGLE_RIGHT_UNION : DOUBLE_RIGHT_UNION;
+        char endChar = useInternalLines
+                ? (useSingleLines ? SINGLE_RIGHT_UNION : DOUBLE_RIGHT_UNION)
+                : (useSingleLines ? SINGLE_VERTICAL_LINE : DOUBLE_VERTICAL_LINE);
 
-        paintTableMargin(sbTable, startChar, cellChar, interColumnChar, endChar, columnWidths);
+        paintTableMargin(sbTable, color, startChar, cellChar, interColumnChar, endChar, columnWidths);
     }
 
     public int getColumnsCount() {
@@ -170,6 +156,7 @@ public class ConsoleTable {
         StringBuilder sbTable = new StringBuilder();
         int rowsCount = getRowsCount();
         List<Integer> biggerColumnLenghts = getBiggerColumnLenghts();
+        ConsoleTableRow row;
 
         if (title != null && !title.isBlank()) {
             paintTableTitleHeader(sbTable, biggerColumnLenghts);
@@ -178,9 +165,11 @@ public class ConsoleTable {
 
         paintTableExternalMargin(sbTable, biggerColumnLenghts, true);
         for (int i = 0; i < rowsCount; i++) {
-            paintTableRow(sbTable, biggerColumnLenghts, rows.get(i));
+            row = rows.get(i);
+            row.draw(sbTable, borderPadding, biggerColumnLenghts,
+                    useSingleLines, useInternalLines);
             if (i < rowsCount - 1) {
-                paintTableInternalMargin(sbTable, biggerColumnLenghts);
+                paintInterRowMargin(sbTable, biggerColumnLenghts);
             }
         }
 

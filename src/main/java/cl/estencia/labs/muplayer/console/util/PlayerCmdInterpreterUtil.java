@@ -44,7 +44,7 @@ public class PlayerCmdInterpreterUtil {
     }
 
     public static void printTracks(Player player, AtomicReference<MuPlayerResponse> playerCurrentData,
-                                   ConsoleOutput execution) {
+                                   ConsoleOutput consoleOutput) {
         if (player == null) {
             return;
         }
@@ -53,13 +53,13 @@ public class PlayerCmdInterpreterUtil {
         final List<Track> listTracks = player.getTracks();
         final Track current = playerCurrentData.get().getCurrentTrack();
 
-        execution.append("------------------------------", info);
+        consoleOutput.append("------------------------------", info);
         if (rootFolder == null) {
-            execution.append("Music in folder", info);
+            consoleOutput.append("Music in folder", info);
         } else {
-            execution.append("Music in folder " + rootFolder.getName(), info);
+            consoleOutput.append("Music in folder " + rootFolder.getName(), info);
         }
-        execution.append("------------------------------", info);
+        consoleOutput.append("------------------------------", info);
 
         if (rootFolder != null) {
             Track track;
@@ -68,14 +68,14 @@ public class PlayerCmdInterpreterUtil {
                 track = listTracks.get(i);
                 fileTrack = track.getDataSource();
                 if (current != null && fileTrack.getPath().equals((current.getDataSource()).getPath())) {
-                    execution.append("Track " + (i + 1) + ": "
+                    consoleOutput.append("Track " + (i + 1) + ": "
                             + fileTrack.getName(), warn);
                 } else {
-                    execution.append("Track " + (i + 1) + ": "
+                    consoleOutput.append("Track " + (i + 1) + ": "
                             + fileTrack.getName(), info);
                 }
             }
-            execution.append("------------------------------", info);
+            consoleOutput.append("------------------------------", info);
         }
     }
 
