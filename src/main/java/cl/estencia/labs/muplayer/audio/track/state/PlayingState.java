@@ -26,7 +26,7 @@ public class PlayingState extends TrackState {
             while (track.isPlaying() && (read = decodedAudioStream.read(audioBuffer)) != EOF) {
                 speaker.playAudio(audioBuffer, read);
             }
-        } catch (IOException | IndexOutOfBoundsException | IllegalArgumentException e) {
+        } catch (Exception e) {
             log.error("Error on playing sound " + track.getTitle() + ": ", e);
         }
 
