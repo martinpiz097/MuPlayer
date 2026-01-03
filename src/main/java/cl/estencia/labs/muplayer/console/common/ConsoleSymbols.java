@@ -7,33 +7,33 @@ public class ConsoleSymbols {
     public static final char DOUBLE_VERTICAL_LINE = '║';
     public static final char DOUBLE_HORIZONTAL_LINE = '═';
 
-
-    public static final String SINGLE_LINE_START = SINGLE_VERTICAL_LINE + "    ";
-    public static final String SINGLE_LINE_END = "    " + SINGLE_VERTICAL_LINE;
-
-    public static final String DOUBLE_LINE_START = DOUBLE_VERTICAL_LINE + "    ";
-    public static final String DOUBLE_LINE_END = "    " + DOUBLE_VERTICAL_LINE;
-
-
+    public static final char SINGLE_TOP_CORNER = '┬';
     public static final char SINGLE_TOP_LEFT_CORNER = '┌';
     public static final char SINGLE_TOP_RIGHT_CORNER = '┐';
+    public static final char SINGLE_BOTTOM_CORNER = '┴';
     public static final char SINGLE_BOTTOM_LEFT_CORNER = '└';
     public static final char SINGLE_BOTTOM_RIGHT_CORNER = '┘';
     public static final char SINGLE_INTERNAL_CORNER = '┼';
+    public static final char SINGLE_LEFT_UNION = '├';
+    public static final char SINGLE_RIGHT_UNION = '┤';
 
-
+    public static final char DOUBLE_TOP_CORNER = '╦';
     public static final char DOUBLE_TOP_LEFT_CORNER = '╔';
     public static final char DOUBLE_TOP_RIGHT_CORNER = '╗';
+    public static final char DOUBLE_BOTTOM_CORNER = '╩';
     public static final char DOUBLE_BOTTOM_LEFT_CORNER = '╚';
     public static final char DOUBLE_BOTTOM_RIGHT_CORNER = '╝';
     public static final char DOUBLE_INTERNAL_CORNER = '╬';
+    public static final char DOUBLE_LEFT_UNION = '╠';
+    public static final char DOUBLE_RIGHT_UNION = '╣';
 
-    public static final String LINE_BREAK = "\n";
+    public static final char LINE_BREAK_CHAR = '\n';
+    public static final String LINE_BREAK = String.valueOf(LINE_BREAK_CHAR);
     public static final char SPACE = ' ';
 
     public static final char ARROW = '→';
     public static final char LONG_ARROW = '⟶';
-    public static final String DEFAULT_VALUES_SEPARATOR = ": ";
+    public static final String DEFAULT_LIST_VALUES_SEPARATOR = ": ";
 
     public static final char COMPLETE_BLOCK = '█';
     public static final char EMPTY_BLOCK = '░';

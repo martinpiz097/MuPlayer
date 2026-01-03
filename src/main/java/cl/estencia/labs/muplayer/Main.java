@@ -1,8 +1,7 @@
 package cl.estencia.labs.muplayer;
 
 import cl.estencia.labs.ebot.bus.MessageBus;
-import cl.estencia.labs.muplayer.audio.player.MuPlayer;
-import cl.estencia.labs.muplayer.bus.MuPlayerBusUtil;
+import cl.estencia.labs.muplayer.bus.MessageBusUtil;
 import cl.estencia.labs.muplayer.config.model.LogConfigKeys;
 import cl.estencia.labs.muplayer.config.model.MessagesInfoKeys;
 import cl.estencia.labs.muplayer.config.model.MuPlayerConfigKeys;
@@ -20,8 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
-import static cl.estencia.labs.muplayer.core.cache.CacheVar.MESSAGE_BUS;
-
 @Slf4j
 public class Main {
 
@@ -29,7 +26,7 @@ public class Main {
         setJvmAppName();
         MessagesInfoReader messagesInfoReader = MessagesInfoReader.getInstance();
         CacheManager globalCache = CacheManager.getGlobalCache();
-        MessageBus messageBus = MuPlayerBusUtil.getMessageBus();
+        MessageBus messageBus = MessageBusUtil.getMessageBus();
 
         try {
             loadLogConfig();

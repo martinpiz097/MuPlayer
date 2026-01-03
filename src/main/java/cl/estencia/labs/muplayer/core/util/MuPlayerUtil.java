@@ -7,12 +7,10 @@ import cl.estencia.labs.muplayer.audio.player.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.factory.StandardTrackFactory;
 import cl.estencia.labs.muplayer.audio.track.factory.TrackFactory;
-import cl.estencia.labs.muplayer.bus.MuPlayerBusUtil;
+import cl.estencia.labs.muplayer.bus.MessageBusUtil;
 import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.core.service.LogService;
 import cl.estencia.labs.muplayer.core.service.impl.LogServiceImpl;
-import cl.estencia.labs.muplayer.core.util.AudioFileUtil;
-import cl.estencia.labs.muplayer.core.util.FilterUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -64,7 +62,7 @@ public class MuPlayerUtil {
         this.trackFactory = new StandardTrackFactory();
 
         this.logService = new LogServiceImpl();
-        this.messageBus = MuPlayerBusUtil.getMessageBus();
+        this.messageBus = MessageBusUtil.getMessageBus();
     }
 
     private boolean existsNewIndex(PlayerStatusData playerStatusData) {

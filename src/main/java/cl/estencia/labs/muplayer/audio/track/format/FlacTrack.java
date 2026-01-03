@@ -41,7 +41,7 @@ public class FlacTrack extends Track {
            trackStatusData.setSecsSeeked(trackStatusData.getSecsSeeked()+seconds);
            final int bytesToSeek = (int) Math.round(convertSecondsToBytes(seconds));
 
-           AudioInputStream decodedStream = audioDecoder.getDecodedStream();
+           AudioInputStream decodedStream = audioDecoder.getDecodedAudioStream();
            if (decodedStream != null) {
                decodedStream.read(new byte[bytesToSeek]);
            }

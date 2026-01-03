@@ -5,7 +5,7 @@ import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.ebot.bus.exception.BusException;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.bus.MuPlayerBusUtil;
+import cl.estencia.labs.muplayer.bus.MessageBusUtil;
 import cl.estencia.labs.muplayer.bus.message.Messages;
 import cl.estencia.labs.muplayer.bus.model.MuPlayerResponse;
 import cl.estencia.labs.muplayer.config.model.ConsoleCodesData;
@@ -286,7 +286,7 @@ public class PlayerCmdInterpreterUtil {
             return;
         }
 
-        final MessageBus messageBus = MuPlayerBusUtil.getMessageBus();
+        final MessageBus messageBus = MessageBusUtil.getMessageBus();
         if (cmd.hasOptions()) {
             Number skipCount = cmd.getOptionAsNumber(0);
             if (skipCount == null) {

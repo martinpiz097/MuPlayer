@@ -11,10 +11,10 @@ public class StartedState extends TrackState {
     @Override
     public void handle() {
         speaker.open();
-
         if (trackStatusData.isMute()) {
             track.mute();
         }
+
         track.setVolume(trackStatusData.getVolume());
         track.play();
     }

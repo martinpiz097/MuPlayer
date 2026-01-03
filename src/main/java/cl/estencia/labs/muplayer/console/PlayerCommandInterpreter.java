@@ -4,7 +4,7 @@ import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.muplayer.audio.model.Album;
 import cl.estencia.labs.muplayer.audio.model.Artist;
 import cl.estencia.labs.muplayer.audio.player.Player;
-import cl.estencia.labs.muplayer.bus.MuPlayerBusUtil;
+import cl.estencia.labs.muplayer.bus.MessageBusUtil;
 import cl.estencia.labs.muplayer.bus.message.Messages;
 import cl.estencia.labs.muplayer.bus.model.MuPlayerResponse;
 import cl.estencia.labs.muplayer.bus.model.SkipData;
@@ -63,7 +63,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
         this.globalCacheManager = CacheManager.getGlobalCache();
         this.consoleCodesReader = ConsoleCodesReader.getInstance();
         this.logService = new LogServiceImpl();
-        this.messageBus = MuPlayerBusUtil.getMessageBus();
+        this.messageBus = MessageBusUtil.getMessageBus();
         this.playerCurrentData = new AtomicReference<>();
     }
 
@@ -117,7 +117,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                         playerCurrentData.set(muPlayerResponse);
                         showSongInfo(muPlayerResponse.getCurrentTrack());
                     });
-                    player.start();
+//                    player.start();
 
                     messageBus.publish(Messages.start());
                 }

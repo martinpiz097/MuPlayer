@@ -49,7 +49,7 @@ public abstract class Track extends Thread
         this.dataSource = dataSource;
         this.audioDecoder = audioDecoder;
         this.trackIOUtil = new TrackIOUtil();
-        this.speaker = new Speaker(audioDecoder.getDecodedStream());
+        this.speaker = new Speaker(audioDecoder.getDecodedAudioStream());
         this.headerData = initHeaderData();
         this.trackStatusData = new TrackStatusData();
 
@@ -192,7 +192,7 @@ public abstract class Track extends Thread
 
         if (seconds > 0) {
             final long bytesToSeek = Math.round(convertSecondsToBytes(seconds));
-            final long skip = audioDecoder.getDecodedStream().skip(bytesToSeek);
+            final long skip = audioDecoder.getDecodedAudioStream().skip(bytesToSeek);
             final double skippedSeconds = convertBytesToSeconds(skip);
 
             if (skip > 0) {
@@ -235,7 +235,7 @@ public abstract class Track extends Thread
     @Override
     public void setVolume(float volume) {
         trackStatusData.setVolume(volume);
-        if (trackIOUtil != null && trackIOUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedStream())) {
+        if (trackIOUtil != null && trackIOUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedAudioStream())) {
             speaker.setVolume(volume);
             if (trackStatusData.isVolumeZero()) {
                 audioSystemManager.setMuteValue(speaker.getDriver(), true);
@@ -246,7 +246,7 @@ public abstract class Track extends Thread
     @Override
     public void mute() {
         trackStatusData.setMute(true);
-        if (trackIOUtil != null && trackIOUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedStream())) {
+        if (trackIOUtil != null && trackIOUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedAudioStream())) {
             audioSystemManager.setMuteValue(speaker.getDriver(), trackStatusData.isMute());
         }
     }
@@ -255,13 +255,13 @@ public abstract class Track extends Thread
     public void unMute() {
         if (trackStatusData.isVolumeZero()) {
             trackStatusData.setVolume(DEFAULT_MAX_VOL);
-            if (trackIOUtil != null && trackIOUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedStream())) {
+            if (trackIOUtil != null && trackIOUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedAudioStream())) {
                 speaker.setVolume(trackStatusData.getVolume());
             }
         } else {
             trackStatusData.setMute(false);
         }
-        if (trackIOUtil != null && trackIOUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedStream())) {
+        if (trackIOUtil != null && trackIOUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedAudioStream())) {
             audioSystemManager.setMuteValue(speaker.getDriver(), false);
         }
     }
@@ -341,10 +341,7 @@ public abstract class Track extends Thread
         trackState = new StartedState(this);
         while (trackStatusData.canTrackContinue()) {
             trackState.handle();
-//            System.out.println("WHILE " + getTitle());
         }
-
-//        System.out.println("TRACK CLOSED " + getTitle());
     }
 
 }

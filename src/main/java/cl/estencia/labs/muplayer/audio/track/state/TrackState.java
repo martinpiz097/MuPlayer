@@ -5,7 +5,7 @@ import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.TrackStatusData;
 import cl.estencia.labs.muplayer.audio.track.io.TrackIOUtil;
-import cl.estencia.labs.muplayer.bus.MuPlayerBusUtil;
+import cl.estencia.labs.muplayer.bus.MessageBusUtil;
 import lombok.Getter;
 
 import javax.sound.sampled.AudioInputStream;
@@ -25,8 +25,8 @@ public abstract class TrackState {
         this.trackStatusData = track.getTrackStatusData();
         this.trackIOUtil = track.getTrackIOUtil();
         this.speaker = track.getSpeaker();
-        this.decodedAudioStream = track.getAudioDecoder().getDecodedStream();
-        this.messageBus = MuPlayerBusUtil.getMessageBus();
+        this.decodedAudioStream = track.getAudioDecoder().getDecodedAudioStream();
+        this.messageBus = MessageBusUtil.getMessageBus();
     }
 
     public abstract void handle();

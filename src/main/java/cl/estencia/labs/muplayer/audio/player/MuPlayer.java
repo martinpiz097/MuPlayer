@@ -10,7 +10,7 @@ import cl.estencia.labs.muplayer.audio.model.Artist;
 import cl.estencia.labs.muplayer.audio.model.TrackIndexed;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.state.TrackStateName;
-import cl.estencia.labs.muplayer.bus.MuPlayerBusUtil;
+import cl.estencia.labs.muplayer.bus.MessageBusUtil;
 import static cl.estencia.labs.muplayer.bus.message.MuPlayerTopic.*;
 
 import cl.estencia.labs.muplayer.bus.listener.PlayerResponseListener;
@@ -73,9 +73,10 @@ public class MuPlayer extends Player implements SystemVolumeController {
         this.muPlayerUtil = new MuPlayerUtil(this, playerStatusData);
         this.audioSystemManager = new AudioSystemManager();
         this.interruptor = Interruptor.manual(this);
-        this.messageBus = MuPlayerBusUtil.getMessageBus();
+        this.messageBus = MessageBusUtil.getMessageBus();
 
         setName("MuPlayer " + getId());
+        configureEventListeners();
     }
 
     public MuPlayer(String folderPath) throws FileNotFoundException {
@@ -133,6 +134,10 @@ public class MuPlayer extends Player implements SystemVolumeController {
     private void configureEventListeners() {
         try {
             messageBus.subscribe(MuPlayerTopic.START.name(), message -> {
+                if (!isAlive()) {
+                    start();
+                }
+
                 loadTracks(rootFolder);
                 playNext();
                 messageBus.publish(Messages.playerResponse(currentTrack, playerStatusData));
@@ -666,7 +671,6 @@ public class MuPlayer extends Player implements SystemVolumeController {
 
     @Override
     public void run() {
-        configureEventListeners();
 //        ThreadUtil.freezeThread(this);
 
         while (!isInterrupted()) {
