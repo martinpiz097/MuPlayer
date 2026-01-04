@@ -12,6 +12,9 @@ import cl.estencia.labs.muplayer.config.model.ConsoleCodesData;
 import cl.estencia.labs.muplayer.config.reader.ConsoleCodesReader;
 import cl.estencia.labs.muplayer.console.command.Command;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
+import cl.estencia.labs.muplayer.console.model.table.ConsoleTable;
+import cl.estencia.labs.muplayer.console.model.table.ConsoleTableRow;
+import cl.estencia.labs.muplayer.console.model.table.Padding;
 import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.core.system.SysInfo;
 import cl.estencia.labs.muplayer.core.util.ConsolePainter;
@@ -49,34 +52,33 @@ public class PlayerCmdInterpreterUtil {
             return;
         }
 
-        final File rootFolder = player.getRootFolder();
-        final List<Track> listTracks = player.getTracks();
         final Track current = playerCurrentData.get().getCurrentTrack();
 
-        consoleOutput.append("------------------------------", info);
-        if (rootFolder == null) {
-            consoleOutput.append("Music in folder", info);
-        } else {
-            consoleOutput.append("Music in folder " + rootFolder.getName(), info);
-        }
-        consoleOutput.append("------------------------------", info);
+        ConsoleTable consoleTable = new ConsoleTable("Tracks List",
+                ConsoleUtil.getOutputColor(info),
+                new Padding(0, 5, 0, 5),
+                false, true);
+        consoleTable.addColumn("Title");
+        consoleTable.addColumn("Album");
+        consoleTable.addColumn("Artist");
 
-        if (rootFolder != null) {
-            Track track;
-            File fileTrack;
-            for (int i = 0; i < player.getSongsCount(); i++) {
-                track = listTracks.get(i);
-                fileTrack = track.getDataSource();
-                if (current != null && fileTrack.getPath().equals((current.getDataSource()).getPath())) {
-                    consoleOutput.append("Track " + (i + 1) + ": "
-                            + fileTrack.getName(), warn);
-                } else {
-                    consoleOutput.append("Track " + (i + 1) + ": "
-                            + fileTrack.getName(), info);
-                }
-            }
-            consoleOutput.append("------------------------------", info);
-        }
+        player.getTracks().forEach(track -> {
+            String album = track.getAlbum() != null ? track.getAlbum() : "Unknown";
+            String artist = track.getArtist() != null ? track.getArtist() : "Unknown";
+
+            String color = track.equals(current)
+                    ? ConsoleUtil.getOutputColor(warn)
+                    : ConsoleUtil.getOutputColor(info);
+
+            ConsoleTableRow row = new ConsoleTableRow(color);
+            row.addCell(track.getTitle());
+            row.addCell(album);
+            row.addCell(artist);
+
+            consoleTable.addRow(row);
+        });
+
+        consoleOutput.append(consoleTable.draw());
     }
 
     public static void printDetailedTracks(Player player, AtomicReference<MuPlayerResponse> playerCurrentData,

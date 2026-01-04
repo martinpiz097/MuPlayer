@@ -27,6 +27,10 @@ public class ConsoleOutput {
         return !sbOutputMsg.isEmpty();
     }
 
+    public void append(Object output) {
+        sbOutputMsg.append(output);
+    }
+
     public void append(Object output, OutputType outputType) {
         String coloredStringLine = ConsoleUtil.coloredStringLine(output, outputType, true);
         sbOutputMsg.append(coloredStringLine);

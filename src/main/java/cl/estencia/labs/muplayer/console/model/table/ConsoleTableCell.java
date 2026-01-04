@@ -1,21 +1,55 @@
 package cl.estencia.labs.muplayer.console.model.table;
 
+import cl.estencia.labs.muplayer.console.common.ConsoleSymbols;
 import cl.estencia.labs.muplayer.console.util.ConsoleUtil;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.orangelogger.sys.ConsoleColor;
+import lombok.Setter;
 
 import static cl.estencia.labs.muplayer.console.common.ConsoleSymbols.SPACE;
+import static cl.estencia.labs.muplayer.console.common.enums.OutputType.info;
+import static cl.estencia.labs.muplayer.console.model.table.ConsoleTable.DEFAULT_CONTENT_SIZE_LIMIT;
+import static cl.estencia.labs.muplayer.console.model.table.ConsoleTable.SHORT_VALUE_SUFFIX;
 
-@AllArgsConstructor
 @Getter
+@Setter
 public class ConsoleTableCell {
-    private final Object value;
-    private final String color;
+    private final String value;
+    private String color;
+    private final int contentSizeLimit;
 
     public ConsoleTableCell(Object value) {
-        this.value = value;
-        this.color = null;
+        this(value, ConsoleUtil.getOutputColor(info), DEFAULT_CONTENT_SIZE_LIMIT);
+    }
+
+    public ConsoleTableCell(Object value, String color) {
+        this(value, color, DEFAULT_CONTENT_SIZE_LIMIT);
+    }
+
+    public ConsoleTableCell(Object value, int contentSizeLimit) {
+        this(value, ConsoleUtil.getOutputColor(info), contentSizeLimit);
+    }
+
+    public ConsoleTableCell(Object value, String color, int contentSizeLimit) {
+        this.value = normalizedValue(value, contentSizeLimit);
+        this.color = color;
+        this.contentSizeLimit = contentSizeLimit;
+    }
+
+    private String replaceInvalidChars(String str) {
+        return str.replace('｜', ConsoleSymbols.PIPE);
+    }
+
+    private String normalizedValue(Object originalValue, int contentSizeLimit) {
+        if (originalValue == null) {
+            return "";
+        }
+
+        String strValue = originalValue.toString();
+        String reducedValue = strValue.length() > (contentSizeLimit + SHORT_VALUE_SUFFIX.length())
+                ? strValue.substring(0, contentSizeLimit) + SHORT_VALUE_SUFFIX
+                : strValue;
+
+        return replaceInvalidChars(reducedValue);
     }
 
     private void appendPadding(StringBuilder stringBuilder, int padding) {
@@ -41,6 +75,7 @@ public class ConsoleTableCell {
 
         appendPadding(sbLine, cellPadding.left());
         sbLine.append(coloredLine);
+
         appendPadding(sbLine, cellPadding.right());
         appendPadding(sbLine, extraPadding.right());
 
@@ -48,11 +83,9 @@ public class ConsoleTableCell {
     }
 
     public int getLength(Padding padding) {
-        if (padding == null) {
-            return value.toString().length();
-        }
+        int valueLength = value.length();
 
-        return padding.left() + value.toString().length() + padding.right();
+        return padding != null ? padding.left() + valueLength + padding.right() : valueLength;
     }
 
 }

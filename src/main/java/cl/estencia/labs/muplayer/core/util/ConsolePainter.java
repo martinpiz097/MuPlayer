@@ -3,10 +3,12 @@ package cl.estencia.labs.muplayer.core.util;
 import cl.estencia.labs.muplayer.audio.player.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.io.TrackIOUtil;
-import cl.estencia.labs.muplayer.console.common.enums.OutputType;
 import cl.estencia.labs.muplayer.console.model.ConsoleListLine;
+import cl.estencia.labs.muplayer.console.model.table.ConsoleTable;
+import cl.estencia.labs.muplayer.console.model.table.ConsoleTableCell;
+import cl.estencia.labs.muplayer.console.model.table.Padding;
+import cl.estencia.labs.muplayer.console.util.ConsoleUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.orangelogger.sys.ConsoleColor;
 import org.orangelogger.sys.Logger;
 
 import javax.sound.sampled.FloatControl;
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static cl.estencia.labs.muplayer.console.common.ConsoleSymbols.*;
+import static cl.estencia.labs.muplayer.console.common.enums.OutputType.info;
 
 @Slf4j
 public class ConsolePainter {
@@ -55,24 +58,6 @@ public class ConsolePainter {
         }
 
         sbInfo.append("  " + tableTitle.trim());
-    }
-
-    public static String createColoredString(Object data, OutputType outputType) {
-        if (outputType == null) {
-            return data.toString();
-        }
-
-        String coloredStr = switch (outputType) {
-            case info -> Logger.INFOCOLOR + data.toString();
-            case warn -> Logger.WARNINGCOLOR + data.toString();
-            case error -> Logger.ERRORCOLOR + data.toString();
-        };
-
-        return coloredStr + ConsoleColor.RESET;
-    }
-
-    public static String createColoredStringLine(Object data, OutputType outputType) {
-        return createColoredString(data, outputType) + LINE_BREAK_CHAR;
     }
 
     public static String createConsoleTable(String tableTitle,
@@ -146,6 +131,54 @@ public class ConsolePainter {
         }
 
         return createConsoleTable(null, listTableLines);
+    }
+
+    public static String getTrackInfo(Track track) {
+        ConsoleTable consoleTable = new ConsoleTable(null,
+                ConsoleUtil.getOutputColor(info),
+                new Padding(0, 3, 0, 3),
+                false, false);
+
+        final String title = track.getTitle();
+        final String album = track.getAlbum();
+        final String artist = track.getArtist();
+        final String year = track.getYear();
+        final String duration = track.getFormattedDuration();
+        final String genre = track.getGenre();
+        final String hasCover = track.hasCover() ? "Yes" : "No";
+        final String bitrate = track.getBitrate();
+
+        int contentSize = 100;
+
+        consoleTable.addRowWithCells(new ConsoleTableCell("Title: " + title, contentSize));
+
+        if (album != null) {
+            consoleTable.addRowWithCells(new ConsoleTableCell("Album: " + album, contentSize));
+        }
+
+        if (artist != null) {
+            consoleTable.addRowWithCells(new ConsoleTableCell("Artist: " + artist, contentSize));
+        }
+
+        if (year != null) {
+            consoleTable.addRowWithCells(new ConsoleTableCell("Year: " + year, contentSize));
+        }
+
+        if (duration != null) {
+            consoleTable.addRowWithCells(new ConsoleTableCell("Duration: " + duration, contentSize));
+        }
+
+        if (genre != null) {
+            consoleTable.addRowWithCells(new ConsoleTableCell("Genre: " + genre, contentSize));
+        }
+
+        consoleTable.addRowWithCells(new ConsoleTableCell("Has Cover: " + hasCover, contentSize));
+
+        if (bitrate != null) {
+            consoleTable.addRowWithCells(new ConsoleTableCell("Bitrate: " + bitrate, contentSize));
+        }
+
+        return consoleTable.draw();
     }
 
     public static String getLineInfo(Track track) {

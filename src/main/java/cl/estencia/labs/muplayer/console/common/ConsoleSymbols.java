@@ -57,4 +57,6 @@ public class ConsoleSymbols {
 
 
     public static final char SANDGLASS = '⏳';
+
+    public static final char PIPE = '|';
 }

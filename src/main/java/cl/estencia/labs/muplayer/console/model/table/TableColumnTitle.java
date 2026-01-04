@@ -10,56 +10,15 @@ import java.util.List;
 import static cl.estencia.labs.muplayer.console.common.ConsoleSymbols.*;
 import static cl.estencia.labs.muplayer.console.common.ConsoleSymbols.LINE_BREAK_CHAR;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputType.info;
-import static cl.estencia.labs.muplayer.console.model.table.ConsoleTable.DEFAULT_CONTENT_SIZE_LIMIT;
 
 @Getter
-public class ConsoleTableRow {
+public class TableColumnTitle {
     private final List<ConsoleTableCell> cells;
     private final String color;
-    private final int contentSizeLimit;
 
-    public ConsoleTableRow() {
-        this(null);
-    }
-
-    public ConsoleTableRow(String color, ConsoleTableCell... cells) {
-        this(color, DEFAULT_CONTENT_SIZE_LIMIT);
-        loadDefaultCells(cells);
-    }
-
-    public ConsoleTableRow(String color) {
-        this(color, DEFAULT_CONTENT_SIZE_LIMIT);
-    }
-
-    public ConsoleTableRow(int contentSizeLimit) {
-        this(null, contentSizeLimit);
-    }
-
-    public ConsoleTableRow(String color, int contentSizeLimit, ConsoleTableCell... cells) {
-        this(color, contentSizeLimit);
-        loadDefaultCells(cells);
-    }
-
-    public ConsoleTableRow(String color, int contentSizeLimit) {
+    public TableColumnTitle(String color) {
         this.color = ConsoleUtil.isValidColor(color) ? color : ConsoleUtil.getOutputColor(info);
         this.cells = CollectionUtil.newFastArrayList();
-        this.contentSizeLimit  = contentSizeLimit;
-    }
-
-    private void loadDefaultCells(ConsoleTableCell... cells) {
-        if (cells == null || cells.length == 0) {
-            return;
-        }
-
-        ConsoleTableCell cell;
-        for (int i = 0; i < cells.length; i++) {
-            cell = cells[i];
-            if (!ConsoleUtil.isValidColor(cell.getColor())) {
-                cell.setColor(color);
-            }
-
-            this.cells.add(cell);
-        }
     }
 
     public void addCell(Object value) {
@@ -71,11 +30,7 @@ public class ConsoleTableRow {
     }
 
     public void addCell(Object value, String color) {
-        addCell(value, color, contentSizeLimit);
-    }
-
-    public void addCell(Object value, String color, int contentSizeLimit) {
-        cells.add(new ConsoleTableCell(value, color, contentSizeLimit));
+        cells.add(new ConsoleTableCell(value, color));
     }
 
     public ConsoleTableCell getCell(int columnIndex) {
@@ -96,12 +51,10 @@ public class ConsoleTableRow {
 
     public void draw(StringBuilder sbTable, Padding padding,
                      List<Integer> biggerColumnLengths,
-                     boolean useSingleLines, boolean useInternalLines) {
+                     boolean useSingleLines) {
 
-        char borderChar = useSingleLines ? SINGLE_VERTICAL_LINE : DOUBLE_VERTICAL_LINE;
-        char interColumnChar = useInternalLines
-                ? (useSingleLines ? SINGLE_VERTICAL_LINE : DOUBLE_VERTICAL_LINE)
-                : SPACE;
+        char borderChar = !useSingleLines ? SINGLE_VERTICAL_LINE : DOUBLE_VERTICAL_LINE;
+        char interColumnChar = !useSingleLines ? SINGLE_VERTICAL_LINE : DOUBLE_VERTICAL_LINE;
 
         sbTable.append(getColor());
         sbTable.append(borderChar);
