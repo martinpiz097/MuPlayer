@@ -62,7 +62,11 @@ public class ConsoleTableCell {
         }
     }
 
-    public String getColoredLineWithPadding(Padding cellPadding, Padding extraPadding) {
+    public String getColoredLineWithPadding(String rowColor, Padding cellPadding, Padding extraPadding) {
+        String color = ConsoleUtil.isValidColor(this.color)
+                ? this.color : (ConsoleUtil.isValidColor(rowColor)
+                ? rowColor : ConsoleUtil.getOutputColor(info));
+
         if (cellPadding == null) {
             cellPadding = new Padding(0, 0, 0, 0);
         }

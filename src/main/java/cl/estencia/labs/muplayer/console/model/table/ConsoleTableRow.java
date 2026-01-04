@@ -4,6 +4,7 @@ import cl.estencia.labs.muplayer.console.util.ConsoleUtil;
 import cl.estencia.labs.muplayer.core.exception.MuPlayerException;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -13,9 +14,10 @@ import static cl.estencia.labs.muplayer.console.common.enums.OutputType.info;
 import static cl.estencia.labs.muplayer.console.model.table.ConsoleTable.DEFAULT_CONTENT_SIZE_LIMIT;
 
 @Getter
+@Setter
 public class ConsoleTableRow {
     private final List<ConsoleTableCell> cells;
-    private final String color;
+    private String color;
     private final int contentSizeLimit;
 
     public ConsoleTableRow() {
@@ -90,20 +92,21 @@ public class ConsoleTableRow {
         return cells.get(index).getLength(padding);
     }
 
-    public String getColumnFullContent(int index, Padding cellPadding, Padding extraPadding) {
-        return cells.get(index).getColoredLineWithPadding(cellPadding, extraPadding);
-    }
-
-    public void draw(StringBuilder sbTable, Padding padding,
+    public void draw(StringBuilder sbTable, String tableColor, Padding padding,
                      List<Integer> biggerColumnLengths,
                      boolean useSingleLines, boolean useInternalLines) {
+
+        boolean isValidTableColor = ConsoleUtil.isValidColor(this.color);
+        String color = isValidTableColor
+                ? this.color : (ConsoleUtil.isValidColor(tableColor)
+                             ? tableColor : ConsoleUtil.getOutputColor(info));
 
         char borderChar = useSingleLines ? SINGLE_VERTICAL_LINE : DOUBLE_VERTICAL_LINE;
         char interColumnChar = useInternalLines
                 ? (useSingleLines ? SINGLE_VERTICAL_LINE : DOUBLE_VERTICAL_LINE)
                 : SPACE;
 
-        sbTable.append(getColor());
+        sbTable.append(color);
         sbTable.append(borderChar);
 
         int columnCount = biggerColumnLengths.size();
@@ -120,12 +123,19 @@ public class ConsoleTableRow {
             columnLength = column.getLength(padding);
             lenDiff = biggerColumnLength - columnLength;
             lenPadding = new Padding(0, lenDiff, 0, 0);
-            coloredLine = column.getColoredLineWithPadding(padding, lenPadding);
+            coloredLine = column.getColoredLineWithPadding(color, padding, lenPadding);
 
             sbTable.append(coloredLine);
             sbTable.append(interColumnChar);
         }
-        sbTable.setCharAt(sbTable.length() - 1, borderChar);
+
+        if (isValidTableColor) {
+            sbTable.deleteCharAt(sbTable.length() - 1);
+            sbTable.append(tableColor);
+            sbTable.append(borderChar);
+        } else {
+            sbTable.setCharAt(sbTable.length() - 1, borderChar);
+        }
 
         sbTable.append(ConsoleUtil.getResetColor());
         sbTable.append(LINE_BREAK_CHAR);

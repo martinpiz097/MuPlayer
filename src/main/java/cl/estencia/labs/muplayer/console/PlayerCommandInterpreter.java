@@ -396,12 +396,12 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
             }
             case sn -> {
                 if (isPlayerOn()) {
-                    consoleOutput.append(ConsolePainter.getSongInfo(player.getNext()), warn);
+                    consoleOutput.append(getTrackInfo(player.getNext()), warn);
                 }
             }
             case sp -> {
                 if (isPlayerOn()) {
-                    consoleOutput.append(ConsolePainter.getSongInfo(player.getPrevious()), warn);
+                    consoleOutput.append(getTrackInfo(player.getPrevious()));
                 }
             }
             case pf -> {

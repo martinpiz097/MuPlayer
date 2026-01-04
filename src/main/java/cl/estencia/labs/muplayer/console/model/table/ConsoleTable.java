@@ -76,7 +76,7 @@ public class ConsoleTable {
     public ConsoleTable(String title, String color, Alignment alignment, Padding borderPadding,
                         boolean useSingleLines, boolean useInternalLines, int contentSizeLimit) {
         this.title = title;
-        this.color = color;
+        this.color = ConsoleUtil.isValidColor(color) ? color : ConsoleUtil.getOutputColor(info);
         this.useInternalLines = useInternalLines;
         this.columnTitles = new TableColumnTitle(ConsoleUtil.getOutputColor(raw));
         this.rows = CollectionUtil.newFastArrayList();
@@ -84,10 +84,6 @@ public class ConsoleTable {
         this.borderPadding = borderPadding != null ? borderPadding : new Padding(0, 0, 0, 0);
         this.useSingleLines = useSingleLines;
         this.contentSizeLimit = contentSizeLimit;
-    }
-
-    private char getCellSeparator() {
-        return useSingleLines ? SINGLE_INTERNAL_CORNER : DOUBLE_INTERNAL_CORNER;
     }
 
     private int getBiggerCellLength(int columnIndex) {
@@ -263,6 +259,10 @@ public class ConsoleTable {
     }
 
     public ConsoleTableRow addRow(ConsoleTableRow row) {
+        if (!ConsoleUtil.isValidColor(row.getColor())) {
+            row.setColor(color);
+        }
+
         rows.add(row);
         return row;
     }
@@ -294,6 +294,7 @@ public class ConsoleTable {
         List<Integer> biggerColumnLenghts = getBiggerColumnLenghts(columnsCount);
         ConsoleTableRow row;
 
+        sbTable.append(LINE_BREAK_CHAR);
         if (title != null && !title.isBlank()) {
             String headerColor = ConsoleUtil.getOutputColor(raw);
 
@@ -313,15 +314,13 @@ public class ConsoleTable {
             paintTableExternalMargin(sbTable, color, biggerColumnLenghts, true, columnsCount);
             for (int i = 0; i < rowsCount; i++) {
                 row = rows.get(i);
-                row.draw(sbTable, borderPadding, biggerColumnLenghts,
+                row.draw(sbTable, color, borderPadding, biggerColumnLenghts,
                         useSingleLines, useInternalLines);
                 if (useInternalLines && i < rowsCount - 1) {
                     paintInterRowMargin(sbTable, biggerColumnLenghts, columnsCount);
                 }
             }
             paintTableExternalMargin(sbTable, color, biggerColumnLenghts, false, columnsCount);
-
-            sbTable.append(LINE_BREAK_CHAR);
         }
 
         if (columnTitles.getColumnsCount() > 0) {

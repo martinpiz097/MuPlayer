@@ -45,10 +45,6 @@ public class TableColumnTitle {
         return cells.get(index).getLength(padding);
     }
 
-    public String getColumnFullContent(int index, Padding cellPadding, Padding extraPadding) {
-        return cells.get(index).getColoredLineWithPadding(cellPadding, extraPadding);
-    }
-
     public void draw(StringBuilder sbTable, Padding padding,
                      List<Integer> biggerColumnLengths,
                      boolean useSingleLines) {
@@ -73,7 +69,7 @@ public class TableColumnTitle {
             columnLength = column.getLength(padding);
             lenDiff = biggerColumnLength - columnLength;
             lenPadding = new Padding(0, lenDiff, 0, 0);
-            coloredLine = column.getColoredLineWithPadding(padding, lenPadding);
+            coloredLine = column.getColoredLineWithPadding(color, padding, lenPadding);
 
             sbTable.append(coloredLine);
             sbTable.append(interColumnChar);

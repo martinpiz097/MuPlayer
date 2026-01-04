@@ -5,6 +5,7 @@ import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.ebot.bus.exception.BusException;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
+import cl.estencia.labs.muplayer.audio.track.io.TrackIOUtil;
 import cl.estencia.labs.muplayer.bus.MessageBusUtil;
 import cl.estencia.labs.muplayer.bus.message.Messages;
 import cl.estencia.labs.muplayer.bus.model.MuPlayerResponse;
@@ -13,6 +14,7 @@ import cl.estencia.labs.muplayer.config.reader.ConsoleCodesReader;
 import cl.estencia.labs.muplayer.console.command.Command;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
 import cl.estencia.labs.muplayer.console.model.table.ConsoleTable;
+import cl.estencia.labs.muplayer.console.model.table.ConsoleTableCell;
 import cl.estencia.labs.muplayer.console.model.table.ConsoleTableRow;
 import cl.estencia.labs.muplayer.console.model.table.Padding;
 import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
@@ -22,6 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
 
+import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.SourceDataLine;
 import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
@@ -279,7 +283,7 @@ public class PlayerCmdInterpreterUtil {
         if (track == null) {
             Logger.getLogger(PlayerCmdInterpreterUtil.class, "Current track unavailable").rawError();
         } else {
-            Logger.getLogger(PlayerCmdInterpreterUtil.class, ConsolePainter.getSongInfo(track)).rawWarning();
+            Logger.getLogger(PlayerCmdInterpreterUtil.class, getTrackInfo(track)).rawWarning();
         }
     }
 
@@ -299,6 +303,71 @@ public class PlayerCmdInterpreterUtil {
         } else {
             messageBus.publish(seekOption == NEXT ? Messages.playNext() : Messages.playPrev());
         }
+    }
+
+    public static String getTrackInfo(Track track) {
+        String elementsColor = ConsoleUtil.getOutputColor(info);
+        ConsoleTable consoleTable = new ConsoleTable(null, elementsColor,
+                new Padding(0, 3, 0, 3),
+                false, false);
+
+        final String title = track.getTitle();
+        final String album = track.getAlbum();
+        final String artist = track.getArtist();
+        final String year = track.getYear();
+        final String duration = track.getFormattedDuration();
+        final String genre = track.getGenre();
+        final String hasCover = track.hasCover() ? "Yes" : "No";
+        final String bitrate = track.getBitrate();
+
+        int contentSize = 100;
+
+        consoleTable.addRowWithCells(new ConsoleTableCell("Title: " + title, elementsColor, contentSize));
+
+        if (album != null) {
+            consoleTable.addRowWithCells(new ConsoleTableCell("Album: " + album, elementsColor, contentSize));
+        }
+
+        if (artist != null) {
+            consoleTable.addRowWithCells(new ConsoleTableCell("Artist: " + artist, elementsColor, contentSize));
+        }
+
+        if (year != null) {
+            consoleTable.addRowWithCells(new ConsoleTableCell("Year: " + year, elementsColor, contentSize));
+        }
+
+        if (duration != null) {
+            consoleTable.addRowWithCells(new ConsoleTableCell("Duration: " + duration, elementsColor, contentSize));
+        }
+
+        if (genre != null) {
+            consoleTable.addRowWithCells(new ConsoleTableCell("Genre: " + genre, elementsColor, contentSize));
+        }
+
+        consoleTable.addRowWithCells(new ConsoleTableCell("Has Cover: " + hasCover, elementsColor, contentSize));
+
+        if (bitrate != null) {
+            consoleTable.addRowWithCells(new ConsoleTableCell("Bitrate: " + bitrate, elementsColor, contentSize));
+        }
+
+        return consoleTable.draw();
+    }
+
+    public static String getLineInfo(Track track) {
+        final SourceDataLine driver = track.getSpeaker().getDriver();
+
+        return new StringBuilder().append("Soporte de controles en line")
+                .append("---------------")
+                .append("Pan: ").append(driver.isControlSupported(FloatControl.Type.PAN))
+                .append("AuxReturn: ").append(driver.isControlSupported(FloatControl.Type.AUX_RETURN))
+                .append("AuxSend: ").append(driver.isControlSupported(FloatControl.Type.AUX_SEND))
+                .append("Balance: ").append(driver.isControlSupported(FloatControl.Type.BALANCE))
+                .append("ReverbReturn: ").append(driver.isControlSupported(FloatControl.Type.REVERB_RETURN))
+                .append("ReberbSend: ").append(driver.isControlSupported(FloatControl.Type.REVERB_SEND))
+                .append("Volume: ").append(driver.isControlSupported(FloatControl.Type.VOLUME))
+                .append("SampleRate: ").append(driver.isControlSupported(FloatControl.Type.SAMPLE_RATE))
+                .append("MasterGain: ").append(driver.isControlSupported(FloatControl.Type.MASTER_GAIN))
+                .toString();
     }
 
 }
