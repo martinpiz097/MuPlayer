@@ -5,9 +5,9 @@ import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.ebot.bus.exception.BusException;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.bus.MessageBusUtil;
-import cl.estencia.labs.muplayer.bus.message.Messages;
-import cl.estencia.labs.muplayer.bus.model.MuPlayerResponse;
+import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
+import cl.estencia.labs.muplayer.core.bus.message.Messages;
+import cl.estencia.labs.muplayer.core.bus.model.MuPlayerResponse;
 import cl.estencia.labs.muplayer.config.model.ConsoleCodesData;
 import cl.estencia.labs.muplayer.config.reader.ConsoleCodesReader;
 import cl.estencia.labs.muplayer.console.command.Command;
@@ -16,7 +16,7 @@ import cl.estencia.labs.muplayer.console.model.table.ConsoleTable;
 import cl.estencia.labs.muplayer.console.model.table.ConsoleTableCell;
 import cl.estencia.labs.muplayer.console.model.table.ConsoleTableRow;
 import cl.estencia.labs.muplayer.console.model.table.Padding;
-import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
+import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.core.system.SysInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.orangelogger.sys.Logger;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 
 import static cl.estencia.labs.muplayer.console.common.enums.OutputType.*;
 import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.getOutputColor;
-import static cl.estencia.labs.muplayer.core.common.enums.SeekOption.NEXT;
+import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
 
 @Slf4j
 public class PlayerCmdInterpreterUtil {

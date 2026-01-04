@@ -4,14 +4,14 @@ import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.muplayer.audio.model.Album;
 import cl.estencia.labs.muplayer.audio.model.Artist;
 import cl.estencia.labs.muplayer.audio.player.Player;
-import cl.estencia.labs.muplayer.bus.MessageBusUtil;
-import cl.estencia.labs.muplayer.bus.message.Messages;
-import cl.estencia.labs.muplayer.bus.model.MuPlayerResponse;
-import cl.estencia.labs.muplayer.bus.model.SkipData;
+import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
+import cl.estencia.labs.muplayer.core.bus.message.Messages;
+import cl.estencia.labs.muplayer.core.bus.model.MuPlayerResponse;
+import cl.estencia.labs.muplayer.core.bus.model.SkipData;
 import cl.estencia.labs.muplayer.config.reader.ConsoleCodesReader;
 import cl.estencia.labs.muplayer.console.command.Command;
 import cl.estencia.labs.muplayer.console.command.CommandInterpreter;
-import cl.estencia.labs.muplayer.console.common.ConsoleMessages;
+import cl.estencia.labs.muplayer.console.common.constants.ConsoleMessages;
 import cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
 import cl.estencia.labs.muplayer.console.model.ConsoleImage;
@@ -20,7 +20,7 @@ import cl.estencia.labs.muplayer.console.runner.DaemonRunner;
 import cl.estencia.labs.muplayer.console.runner.LocalRunner;
 import cl.estencia.labs.muplayer.console.runner.RunnerMode;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
-import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
+import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.core.service.LogService;
 import cl.estencia.labs.muplayer.core.service.impl.LogServiceImpl;
 import cl.estencia.labs.muplayer.core.thread.TaskRunner;
@@ -37,8 +37,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputType.*;
 import static cl.estencia.labs.muplayer.console.util.PlayerCmdInterpreterUtil.*;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.RUNNER;
-import static cl.estencia.labs.muplayer.core.common.enums.SeekOption.NEXT;
-import static cl.estencia.labs.muplayer.core.common.enums.SeekOption.PREV;
+import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
+import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.PREV;
 import static java.nio.file.StandardOpenOption.WRITE;
 
 @Slf4j
@@ -198,8 +198,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     if (volume == null) {
                         consoleOutput.append("Volume value incorrect", error);
                     } else {
-                        player.setVolume(volume.floatValue());
-                        consoleOutput.append("Volume value changed", warn);
+                        messageBus.publish(Messages.setVolume(volume.floatValue()));
                     }
                 }
             }

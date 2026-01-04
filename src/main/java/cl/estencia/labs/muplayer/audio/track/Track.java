@@ -5,9 +5,10 @@ import cl.estencia.labs.aucom.core.io.AudioDecoder;
 import cl.estencia.labs.aucom.core.util.AudioSystemManager;
 import cl.estencia.labs.muplayer.audio.interfaces.ControllableMusic;
 import cl.estencia.labs.muplayer.audio.interfaces.TrackData;
+import cl.estencia.labs.muplayer.audio.model.TrackStatusData;
 import cl.estencia.labs.muplayer.audio.track.data.AudioTag;
 import cl.estencia.labs.muplayer.audio.track.data.HeaderData;
-import cl.estencia.labs.muplayer.audio.track.io.TrackIOUtil;
+import cl.estencia.labs.muplayer.audio.util.AudioDriverUtil;
 import cl.estencia.labs.muplayer.audio.track.state.*;
 import cl.estencia.labs.muplayer.core.exception.MuPlayerException;
 import lombok.EqualsAndHashCode;
@@ -29,7 +30,6 @@ public abstract class Track extends Thread
         implements Runnable, ControllableMusic, TrackData {
     @Getter protected final File dataSource;
     @Getter protected final AudioDecoder audioDecoder;
-    @Getter protected final TrackIOUtil trackIOUtil;
     @Getter protected final Speaker speaker;
     protected final HeaderData headerData;
 
@@ -48,7 +48,6 @@ public abstract class Track extends Thread
             throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this.dataSource = dataSource;
         this.audioDecoder = audioDecoder;
-        this.trackIOUtil = new TrackIOUtil();
         this.speaker = new Speaker(audioDecoder.getDecodedAudioStream());
         this.headerData = initHeaderData();
         this.trackStatusData = new TrackStatusData();
@@ -102,7 +101,7 @@ public abstract class Track extends Thread
 
     @Override
     public synchronized double getProgress() {
-        return trackIOUtil.getSecondsPosition(speaker) + trackStatusData.getSecsSeeked();
+        return AudioDriverUtil.getSecondsPosition(speaker) + trackStatusData.getSecsSeeked();
     }
 
     @Override
@@ -234,36 +233,38 @@ public abstract class Track extends Thread
     // -80 to 5.5
     @Override
     public void setVolume(float volume) {
-        trackStatusData.setVolume(volume);
-        if (trackIOUtil != null && trackIOUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedAudioStream())) {
-            speaker.setVolume(volume);
-            if (trackStatusData.isVolumeZero()) {
-                audioSystemManager.setMuteValue(speaker.getDriver(), true);
-            }
+        if (!AudioDriverUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedAudioStream())) {
+            return;
         }
+
+        trackStatusData.setVolume(volume);
+        speaker.setVolume(volume);
+        audioSystemManager.setMuteValue(speaker.getDriver(), trackStatusData.isMute());
     }
 
     @Override
     public void mute() {
-        trackStatusData.setMute(true);
-        if (trackIOUtil != null && trackIOUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedAudioStream())) {
-            audioSystemManager.setMuteValue(speaker.getDriver(), trackStatusData.isMute());
+        if (!AudioDriverUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedAudioStream())) {
+            return;
         }
+
+        trackStatusData.setMute(true);
+        audioSystemManager.setMuteValue(speaker.getDriver(), true);
     }
 
     @Override
     public void unMute() {
+        if (!AudioDriverUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedAudioStream())) {
+            return;
+        }
+
+        trackStatusData.setMute(false);
         if (trackStatusData.isVolumeZero()) {
             trackStatusData.setVolume(DEFAULT_MAX_VOL);
-            if (trackIOUtil != null && trackIOUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedAudioStream())) {
-                speaker.setVolume(trackStatusData.getVolume());
-            }
-        } else {
-            trackStatusData.setMute(false);
         }
-        if (trackIOUtil != null && trackIOUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedAudioStream())) {
-            audioSystemManager.setMuteValue(speaker.getDriver(), false);
-        }
+
+        speaker.setVolume(trackStatusData.getVolume());
+        audioSystemManager.setMuteValue(speaker.getDriver(), false);
     }
 
     @Override

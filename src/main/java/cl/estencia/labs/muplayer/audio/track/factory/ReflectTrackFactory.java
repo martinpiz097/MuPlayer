@@ -9,7 +9,7 @@ import java.io.File;
 import java.util.Objects;
 import java.util.Optional;
 
-import static cl.estencia.labs.muplayer.core.util.AudioFileUtil.getFileFormatName;
+import static cl.estencia.labs.muplayer.audio.util.AudioFileUtil.getFileFormatName;
 
 public class ReflectTrackFactory implements TrackFactory {
     private final TrackClassLoader trackClassLoader;

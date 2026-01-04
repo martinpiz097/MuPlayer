@@ -7,23 +7,22 @@ import cl.estencia.labs.ebot.utils.threads.Interruptor;
 import cl.estencia.labs.muplayer.audio.interfaces.SystemVolumeController;
 import cl.estencia.labs.muplayer.audio.model.Album;
 import cl.estencia.labs.muplayer.audio.model.Artist;
+import cl.estencia.labs.muplayer.audio.model.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.model.TrackIndexed;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.state.TrackStateName;
-import cl.estencia.labs.muplayer.bus.MessageBusUtil;
-import static cl.estencia.labs.muplayer.bus.message.MuPlayerTopic.*;
+import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
 
-import cl.estencia.labs.muplayer.bus.listener.PlayerResponseListener;
-import cl.estencia.labs.muplayer.bus.message.Messages;
-import cl.estencia.labs.muplayer.bus.message.MuPlayerTopic;
-import cl.estencia.labs.muplayer.bus.model.MuPlayerResponse;
-import cl.estencia.labs.muplayer.bus.model.SkipData;
-import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
-import cl.estencia.labs.muplayer.core.util.AudioFileUtil;
+import cl.estencia.labs.muplayer.core.bus.listener.PlayerResponseListener;
+import cl.estencia.labs.muplayer.core.bus.message.Messages;
+import cl.estencia.labs.muplayer.core.bus.model.MuPlayerResponse;
+import cl.estencia.labs.muplayer.core.bus.model.SkipData;
+import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
+import cl.estencia.labs.muplayer.audio.util.AudioFileUtil;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import cl.estencia.labs.muplayer.core.util.FilterUtil;
-import cl.estencia.labs.muplayer.core.util.MuPlayerUtil;
-import cl.estencia.labs.muplayer.file.AudioFileScanner;
+import cl.estencia.labs.muplayer.audio.util.MuPlayerUtil;
+import cl.estencia.labs.muplayer.io.file.AudioFileScanner;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,8 +39,9 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static cl.estencia.labs.muplayer.core.common.enums.SeekOption.NEXT;
-import static cl.estencia.labs.muplayer.core.common.enums.SeekOption.PREV;
+import static cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic.*;
+import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
+import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.PREV;
 
 @Slf4j
 public class MuPlayer extends Player implements SystemVolumeController {
@@ -133,7 +133,7 @@ public class MuPlayer extends Player implements SystemVolumeController {
 
     private void configureEventListeners() {
         try {
-            messageBus.subscribe(MuPlayerTopic.START.name(), message -> {
+            messageBus.subscribe(START.name(), message -> {
                 if (!isAlive()) {
                     start();
                 }
@@ -143,68 +143,76 @@ public class MuPlayer extends Player implements SystemVolumeController {
                 messageBus.publish(Messages.playerResponse(currentTrack, playerStatusData));
             });
 
-            messageBus.subscribe(MuPlayerTopic.RELOAD.name(), message -> {
+            messageBus.subscribe(RELOAD.name(), message -> {
                 reload();
                 messageBus.publish(Messages.playerResponse(currentTrack, playerStatusData));
             });
 
-            messageBus.subscribe(MuPlayerTopic.PLAY_NEXT.name(), message -> {
+            messageBus.subscribe(PLAY_NEXT.name(), message -> {
                 playNext();
                 messageBus.publish(Messages.playerResponse(currentTrack, playerStatusData));
             });
 
-            messageBus.subscribe(MuPlayerTopic.PLAY_PREVIOUS.name(), message -> {
+            messageBus.subscribe(PLAY_PREVIOUS.name(), message -> {
                 playPrevious();
                 messageBus.publish(Messages.playerResponse(currentTrack, playerStatusData));
             });
 
-            messageBus.subscribe(MuPlayerTopic.PLAY_INDEX.name(), message -> {
+            messageBus.subscribe(PLAY_INDEX.name(), message -> {
                 int index = message.getData(Integer.class);
                 play(index);
                 messageBus.publish(Messages.playerResponse(currentTrack, playerStatusData));
             });
 
-            messageBus.subscribe(MuPlayerTopic.PLAY.name(), message -> {
+            messageBus.subscribe(PLAY.name(), message -> {
                 play();
                 messageBus.publish(Messages.playerResponse(currentTrack, playerStatusData));
             });
 
-            messageBus.subscribe(MuPlayerTopic.SHUTDOWN.name(), message -> {
+            messageBus.subscribe(SHUTDOWN.name(), message -> {
                 messageBus.shutdown();
             });
 
-            messageBus.subscribe(MuPlayerTopic.PAUSE.name(), message -> {
+            messageBus.subscribe(PAUSE.name(), message -> {
                 pause();
             });
 
-            messageBus.subscribe(MuPlayerTopic.RESUME.name(), message -> {
+            messageBus.subscribe(RESUME.name(), message -> {
                 resumeTrack();
             });
 
-            messageBus.subscribe(MuPlayerTopic.STOP.name(), message -> {
+            messageBus.subscribe(STOP.name(), message -> {
                 stopTrack();
             });
 
-            messageBus.subscribe(MuPlayerTopic.SKIP_TRACKS.name(), message -> {
+            messageBus.subscribe(SKIP_TRACKS.name(), message -> {
                 SkipData skipData = message.getData(SkipData.class);
                 skipTracks(skipData.getSkipCount(), skipData.getSeekOption());
 
                 messageBus.publish(Messages.playerResponse(currentTrack, playerStatusData));
             });
 
-            messageBus.subscribe(MuPlayerTopic.SEEK_FOLDER.name(), message -> {
+            messageBus.subscribe(SEEK_FOLDER.name(), message -> {
                 SkipData skipData = message.getData(SkipData.class);
                 seekFolder(skipData.getSeekOption(), skipData.getSkipCount());
 
                 messageBus.publish(Messages.playerResponse(currentTrack, playerStatusData));
             });
 
-            messageBus.subscribe(MuPlayerTopic.MUTE.name(), message -> {
+            messageBus.subscribe(MUTE.name(), message -> {
                 mute();
             });
 
-            messageBus.subscribe(MuPlayerTopic.UNMUTE.name(), message -> {
+            messageBus.subscribe(UNMUTE.name(), message -> {
                 unMute();
+            });
+            
+            messageBus.subscribe(GET_VOLUME.name(), message -> {
+            });
+            
+            messageBus.subscribe(SET_VOLUME.name(), message -> {
+                float volume = message.getData(Float.class);
+                setVolume(volume);
             });
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -221,17 +229,6 @@ public class MuPlayer extends Player implements SystemVolumeController {
     @Override
     public PlayerStatusData getPlayerStatusData() {
         return playerStatusData;
-    }
-
-    @Override
-    public ReadableStatusData getStatusData() {
-        return new ReadableStatusData(
-                playerStatusData.getCurrentTrackIndex(),
-                playerStatusData.getNewTrackIndex(),
-                playerStatusData.getVolume(),
-                playerStatusData.isOn(),
-                playerStatusData.isMute()
-        );
     }
 
     @Override
@@ -352,11 +349,6 @@ public class MuPlayer extends Player implements SystemVolumeController {
         } catch (BusException e) {
             log.error(e.getMessage(), e);
         }
-    }
-
-    @Override
-    public PlayerInfo getInfo() {
-        return new PlayerInfo(this);
     }
 
     @Override

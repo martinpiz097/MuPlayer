@@ -7,8 +7,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-import static cl.estencia.labs.muplayer.console.common.ConsoleSymbols.*;
-import static cl.estencia.labs.muplayer.console.common.ConsoleSymbols.DOUBLE_BOTTOM_LEFT_CORNER;
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.*;
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.DOUBLE_BOTTOM_LEFT_CORNER;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputType.info;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputType.raw;
 

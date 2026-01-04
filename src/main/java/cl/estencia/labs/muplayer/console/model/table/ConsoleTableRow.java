@@ -8,8 +8,8 @@ import lombok.Setter;
 
 import java.util.List;
 
-import static cl.estencia.labs.muplayer.console.common.ConsoleSymbols.*;
-import static cl.estencia.labs.muplayer.console.common.ConsoleSymbols.LINE_BREAK_CHAR;
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.*;
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputType.info;
 import static cl.estencia.labs.muplayer.console.model.table.ConsoleTable.DEFAULT_CONTENT_SIZE_LIMIT;
 

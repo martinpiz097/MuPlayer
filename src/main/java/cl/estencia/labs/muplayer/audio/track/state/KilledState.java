@@ -1,6 +1,7 @@
 package cl.estencia.labs.muplayer.audio.track.state;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
+import cl.estencia.labs.muplayer.audio.util.AudioDriverUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -12,7 +13,7 @@ public class KilledState extends TrackState {
     @Override
     public void handle() {
         try {
-            trackIOUtil.closeStream(decodedAudioStream);
+            AudioDriverUtil.closeStream(decodedAudioStream);
             speaker.close();
             trackStatusData.setCanTrackContinue(false);
 

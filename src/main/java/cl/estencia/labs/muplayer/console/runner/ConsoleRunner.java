@@ -8,7 +8,7 @@ import cl.estencia.labs.muplayer.config.reader.MuPlayerConfigReader;
 import cl.estencia.labs.muplayer.console.PlayerCommandInterpreter;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
-import cl.estencia.labs.muplayer.core.common.enums.ConsoleHeaderMode;
+import cl.estencia.labs.muplayer.console.common.enums.ConsoleHeaderMode;
 import cl.estencia.labs.muplayer.core.system.SysInfo;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +20,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Scanner;
 
-import static cl.estencia.labs.muplayer.console.common.ConsoleSymbols.*;
-import static cl.estencia.labs.muplayer.core.util.ConsolePainter.*;
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.*;
+import static cl.estencia.labs.muplayer.console.util.ConsolePainter.*;
 
 @Slf4j
 public abstract class ConsoleRunner implements Runnable {

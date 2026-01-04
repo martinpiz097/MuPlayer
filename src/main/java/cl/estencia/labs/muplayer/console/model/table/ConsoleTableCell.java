@@ -1,11 +1,11 @@
 package cl.estencia.labs.muplayer.console.model.table;
 
-import cl.estencia.labs.muplayer.console.common.ConsoleSymbols;
+import cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols;
 import cl.estencia.labs.muplayer.console.util.ConsoleUtil;
 import lombok.Getter;
 import lombok.Setter;
 
-import static cl.estencia.labs.muplayer.console.common.ConsoleSymbols.SPACE;
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputType.info;
 import static cl.estencia.labs.muplayer.console.model.table.ConsoleTable.DEFAULT_CONTENT_SIZE_LIMIT;
 import static cl.estencia.labs.muplayer.console.model.table.ConsoleTable.SHORT_VALUE_SUFFIX;

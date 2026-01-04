@@ -4,7 +4,7 @@ import cl.estencia.labs.muplayer.console.common.enums.OutputType;
 import org.orangelogger.sys.ConsoleColor;
 import org.orangelogger.sys.Logger;
 
-import static cl.estencia.labs.muplayer.console.common.ConsoleSymbols.LINE_BREAK_CHAR;
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputType.info;
 
 public class ConsoleUtil {
