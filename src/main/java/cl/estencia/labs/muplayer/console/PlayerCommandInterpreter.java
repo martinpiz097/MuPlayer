@@ -25,7 +25,6 @@ import cl.estencia.labs.muplayer.core.service.LogService;
 import cl.estencia.labs.muplayer.core.service.impl.LogServiceImpl;
 import cl.estencia.labs.muplayer.core.thread.TaskRunner;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
-import cl.estencia.labs.muplayer.core.util.ConsolePainter;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -115,7 +114,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     player.removeAllResponseListeners();
                     player.addResponseListener(muPlayerResponse -> {
                         playerCurrentData.set(muPlayerResponse);
-                        showSongInfo(muPlayerResponse.getCurrentTrack());
+                        showTrackInfo(muPlayerResponse.getCurrentTrack(), null);
                     });
 //                    player.start();
 
@@ -343,7 +342,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
             case info -> {
                 if (player.isAlive()) {
                     if (playerCurrentData.get() != null) {
-                        showSongInfo(playerCurrentData.get().getCurrentTrack());
+                        showTrackInfo(playerCurrentData.get().getCurrentTrack(), consoleOutput);
                     } else {
                         consoleOutput.append("No current track available", warn);
                     }
@@ -409,7 +408,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     final Number fldIndex = cmd.getOptionAsNumber(0);
                     if (fldIndex != null && fldIndex.intValue() > 0) {
                         player.playFolder(fldIndex.intValue() - 1);
-                        showSongInfo(playerCurrentData.get().getCurrentTrack());
+                        showTrackInfo(playerCurrentData.get().getCurrentTrack(), consoleOutput);
                     }
                 }
             }

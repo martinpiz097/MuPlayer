@@ -87,15 +87,20 @@ public class ConsoleTable {
     }
 
     private int getBiggerCellLength(int columnIndex) {
-        ConsoleTableCell titleColumnByIndex = columnTitles.getCell(columnIndex);
-
         Integer rowsMaxCell = rows.parallelStream()
                 .map(row -> row.getCell(columnIndex)
                         .getLength(borderPadding))
                 .max(Integer::compareTo)
                 .orElse(0);
 
-        return Math.max(titleColumnByIndex.getLength(borderPadding), rowsMaxCell);
+        if (columnTitles.getColumnsCount() > columnIndex) {
+            ConsoleTableCell titleColumnByIndex = columnTitles.getColumnsCount() > columnIndex
+                    ? columnTitles.getCell(columnIndex) : null;
+
+            return Math.max(titleColumnByIndex.getLength(borderPadding), rowsMaxCell);
+        } else {
+            return rowsMaxCell;
+        }
     }
 
     private List<Integer> getBiggerColumnLenghts(int columnsCount) {

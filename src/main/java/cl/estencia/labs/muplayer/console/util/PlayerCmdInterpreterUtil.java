@@ -5,7 +5,6 @@ import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.ebot.bus.exception.BusException;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.audio.track.io.TrackIOUtil;
 import cl.estencia.labs.muplayer.bus.MessageBusUtil;
 import cl.estencia.labs.muplayer.bus.message.Messages;
 import cl.estencia.labs.muplayer.bus.model.MuPlayerResponse;
@@ -19,7 +18,6 @@ import cl.estencia.labs.muplayer.console.model.table.ConsoleTableRow;
 import cl.estencia.labs.muplayer.console.model.table.Padding;
 import cl.estencia.labs.muplayer.core.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.core.system.SysInfo;
-import cl.estencia.labs.muplayer.core.util.ConsolePainter;
 import lombok.extern.slf4j.Slf4j;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
@@ -58,10 +56,11 @@ public class PlayerCmdInterpreterUtil {
         }
 
         final Track current = playerCurrentData.get().getCurrentTrack();
+        final String tableColor = getOutputColor(info);
+        final int contentSizeLimit = 100;
 
-        int contentSizeLimit = 40;
         ConsoleTable consoleTable = new ConsoleTable("Tracks List",
-                getOutputColor(info),
+                tableColor,
                 new Padding(0, 1, 0, 1),
                 false, true, contentSizeLimit);
         consoleTable.addColumns("N°", "Title", "Album", "Artist");
@@ -130,38 +129,52 @@ public class PlayerCmdInterpreterUtil {
             return;
         }
 
+        final File rootFolder = player.getRootFolder();
         final List<Track> listTracks = player.getTracks();
-        final Track current = playerCurrentData.get().getCurrentTrack();
         final int songsCount = player.getSongsCount();
 
-        File parentFolder = current == null ? null : current.getDataSource().getParentFile();
+        final String tableColor = getOutputColor(info);
+        final int contentSizeLimit = 40;
 
-        consoleOutput.append("------------------------------", info);
-        if (parentFolder == null) {
-            consoleOutput.append("Music in current folder", info);
-        } else {
-            consoleOutput.append("Music in folder " + parentFolder.getName(), info);
+        final Track currentTrack = playerCurrentData.get().getCurrentTrack();
+        if (currentTrack == null) {
+            return;
         }
-        consoleOutput.append("------------------------------", info);
 
-        if (parentFolder != null) {
-            File fileTrack;
-            File currentFile = current.getDataSource();
+        final File currentTrackFile = currentTrack.getDataSource();
+        final File parentFolder = currentTrackFile != null ? currentTrackFile.getParentFile() : null;
 
-            for (int i = 0; i < songsCount; i++) {
-                fileTrack = listTracks.get(i).getDataSource();
-                if (fileTrack.getParentFile().equals(parentFolder)) {
-                    if (fileTrack.getPath().equals(currentFile.getPath())) {
-                        consoleOutput.append("Track " + (i + 1) + ": "
-                                + fileTrack.getName(), warn);
-                    } else {
-                        consoleOutput.append("Track " + (i + 1) + ": "
-                                + fileTrack.getName(), info);
-                    }
-                }
+        ConsoleTable consoleTable = new ConsoleTable("Music in folder " + parentFolder.getName(),
+                tableColor,
+                new Padding(0, 1, 0, 1),
+                false, true, contentSizeLimit);
+        consoleTable.addColumns("N°", "Title", "Album", "Artist");
+
+        Track track;
+        File fileTrack;
+        ConsoleTableRow row;
+        String color;
+        String album;
+        String artist;
+
+        for (int i = 0; i < songsCount; i++) {
+            track = listTracks.get(i);
+            fileTrack = track.getDataSource();
+            if (fileTrack.getParentFile().equals(parentFolder)) {
+                color = ConsoleUtil.getOutputColor(
+                        fileTrack.getPath().equals(currentTrackFile.getPath())
+                                ? warn : info);
+                album = track.getAlbum() != null ? track.getAlbum() : "Unknown";
+                artist = track.getArtist() != null ? track.getArtist() : "Unknown";
+
+                row = new ConsoleTableRow(color);
+                row.addCells(i + 1, track.getTitle(), album, artist);
+
+                consoleTable.addRow(row);
             }
-            consoleOutput.append("------------------------------", info);
         }
+
+        consoleOutput.append(consoleTable.draw());
     }
 
     public static synchronized void printFolderTracks(Player player, ConsoleOutput execution, int index) {
@@ -276,11 +289,20 @@ public class PlayerCmdInterpreterUtil {
         execution.append(helpInfoData, info);
     }
 
-    public static void showSongInfo(Track track) {
-        if (track == null) {
-            Logger.getLogger(PlayerCmdInterpreterUtil.class, "Current track unavailable").rawError();
+    public static void showTrackInfo(Track track, ConsoleOutput consoleOutput) {
+        if (consoleOutput != null) {
+            if (track != null) {
+                String trackInfo = getTrackInfo(track);
+                consoleOutput.append(trackInfo);
+            } else {
+                consoleOutput.append("Current track unavailable", error);
+            }
         } else {
-            Logger.getLogger(PlayerCmdInterpreterUtil.class, getTrackInfo(track)).rawWarning();
+            if (track != null) {
+                Logger.getLogger(PlayerCmdInterpreterUtil.class, getTrackInfo(track)).rawInfo();
+            } else {
+                Logger.getLogger(PlayerCmdInterpreterUtil.class, "Current track unavailable").rawError();
+            }
         }
     }
 
