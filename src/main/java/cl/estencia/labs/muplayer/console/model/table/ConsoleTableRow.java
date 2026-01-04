@@ -104,7 +104,8 @@ public class ConsoleTableRow {
 
     public void draw(StringBuilder sbTable, String tableColor, Padding padding,
                      List<Integer> biggerColumnLengths,
-                     boolean useSingleLines, boolean useInternalLines) {
+                     boolean useSingleLines, boolean useInternalLines,
+                     int externalPadding) {
 
         boolean isValidTableColor = ConsoleUtil.isValidColor(this.color);
         String color = isValidTableColor
@@ -116,6 +117,7 @@ public class ConsoleTableRow {
                 ? (useSingleLines ? SINGLE_VERTICAL_LINE : DOUBLE_VERTICAL_LINE)
                 : SPACE;
 
+        sbTable.append(String.valueOf(SPACE).repeat(Math.max(0, externalPadding)));
         sbTable.append(color);
         sbTable.append(borderChar);
 

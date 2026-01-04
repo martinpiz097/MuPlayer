@@ -43,11 +43,12 @@ public class TableColumnTitle {
 
     public void draw(StringBuilder sbTable, Padding padding,
                      List<Integer> biggerColumnLengths,
-                     boolean useSingleLines) {
+                     boolean useSingleLines, int externalPadding) {
 
         char borderChar = !useSingleLines ? SINGLE_VERTICAL_LINE : DOUBLE_VERTICAL_LINE;
         char interColumnChar = !useSingleLines ? SINGLE_VERTICAL_LINE : DOUBLE_VERTICAL_LINE;
 
+        sbTable.append(String.valueOf(SPACE).repeat(Math.max(0, externalPadding)));
         sbTable.append(getColor());
         sbTable.append(borderChar);
 

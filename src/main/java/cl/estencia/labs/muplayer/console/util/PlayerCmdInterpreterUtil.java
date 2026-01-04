@@ -5,6 +5,7 @@ import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.ebot.bus.exception.BusException;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
+import cl.estencia.labs.muplayer.console.model.table.*;
 import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
 import cl.estencia.labs.muplayer.core.bus.message.Messages;
 import cl.estencia.labs.muplayer.core.bus.model.MuPlayerResponse;
@@ -12,10 +13,6 @@ import cl.estencia.labs.muplayer.config.model.ConsoleCodesData;
 import cl.estencia.labs.muplayer.config.reader.ConsoleCodesReader;
 import cl.estencia.labs.muplayer.console.command.Command;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
-import cl.estencia.labs.muplayer.console.model.table.ConsoleTable;
-import cl.estencia.labs.muplayer.console.model.table.ConsoleTableCell;
-import cl.estencia.labs.muplayer.console.model.table.ConsoleTableRow;
-import cl.estencia.labs.muplayer.console.model.table.Padding;
 import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.core.system.SysInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -50,8 +47,9 @@ public class PlayerCmdInterpreterUtil {
     }
 
     public static void printTracks(Player player, AtomicReference<MuPlayerResponse> playerCurrentData,
-                                   ConsoleOutput consoleOutput) {
-        if (player == null) {
+                                   ConsoleOutput consoleOutput, Alignment alignment) {
+        if (player == null || playerCurrentData.get() == null
+                || playerCurrentData.get().getCurrentTrack() == null) {
             return;
         }
 
@@ -60,7 +58,7 @@ public class PlayerCmdInterpreterUtil {
         final int contentSizeLimit = 100;
 
         ConsoleTable consoleTable = new ConsoleTable("Tracks List",
-                tableColor,
+                tableColor, alignment,
                 new Padding(0, 1, 0, 1),
                 false, true, contentSizeLimit);
         consoleTable.addColumns("N°", "Title", "Album", "Artist");
@@ -124,7 +122,7 @@ public class PlayerCmdInterpreterUtil {
     }
 
     public static synchronized void printFolderTracks(Player player, File tracksFolder, AtomicReference<MuPlayerResponse> playerCurrentData,
-                                                      ConsoleOutput consoleOutput) {
+                                                      ConsoleOutput consoleOutput, Alignment alignment) {
         if (player == null) {
             return;
         }
@@ -147,6 +145,7 @@ public class PlayerCmdInterpreterUtil {
 
         ConsoleTable consoleTable = new ConsoleTable("Music in folder " + tracksFolder.getName(),
                 tableColor,
+                alignment,
                 new Padding(0, 1, 0, 1),
                 false, true, contentSizeLimit);
         consoleTable.addColumns("N°", "Title", "Album", "Artist");
@@ -179,7 +178,7 @@ public class PlayerCmdInterpreterUtil {
     }
 
     public static synchronized void printFolderTracks(Player player, AtomicReference<MuPlayerResponse> playerCurrentData,
-                                                      ConsoleOutput consoleOutput) {
+                                                      ConsoleOutput consoleOutput, Alignment alignment) {
         if (player == null) {
             return;
         }
@@ -192,7 +191,8 @@ public class PlayerCmdInterpreterUtil {
         final File currentTrackFile = currentTrack.getDataSource();
         final File parentFolder = currentTrackFile != null ? currentTrackFile.getParentFile() : null;
 
-        printFolderTracks(player, parentFolder, playerCurrentData, consoleOutput);
+        printFolderTracks(player, parentFolder,
+                playerCurrentData, consoleOutput, alignment);
     }
 
     public static synchronized void printFolderTracks(Player player, ConsoleOutput execution, int index) {

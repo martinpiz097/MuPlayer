@@ -4,6 +4,7 @@ import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.muplayer.audio.model.Album;
 import cl.estencia.labs.muplayer.audio.model.Artist;
 import cl.estencia.labs.muplayer.audio.player.Player;
+import cl.estencia.labs.muplayer.console.model.table.Alignment;
 import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
 import cl.estencia.labs.muplayer.core.bus.message.Messages;
 import cl.estencia.labs.muplayer.core.bus.model.MuPlayerResponse;
@@ -167,8 +168,26 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     messageBus.publish(Messages.unmute());
                 }
             }
-            case l -> printTracks(player, playerCurrentData, consoleOutput);
-            case lc -> printFolderTracks(player, playerCurrentData, consoleOutput);
+            case l -> {
+                Alignment alignment;
+                if (cmd.hasOptions() && Alignment.isValidName(cmd.getOptionAt(0))) {
+                    alignment = Alignment.fromName(cmd.getOptionAt(0));
+                } else {
+                    alignment = Alignment.CENTER;
+                }
+
+                printTracks(player, playerCurrentData, consoleOutput, alignment);
+            }
+            case lc -> {
+                Alignment alignment;
+                if (cmd.hasOptions() && Alignment.isValidName(cmd.getOptionAt(0))) {
+                    alignment = Alignment.fromName(cmd.getOptionAt(0));
+                } else {
+                    alignment = Alignment.CENTER;
+                }
+
+                printFolderTracks(player, playerCurrentData, consoleOutput, alignment);
+            }
             case lf -> {
                 if (isPlayerOn()) {
                     if (cmd.hasOptions()) {

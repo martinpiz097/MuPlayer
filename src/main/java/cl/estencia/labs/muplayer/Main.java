@@ -1,6 +1,8 @@
 package cl.estencia.labs.muplayer;
 
+import cl.estencia.labs.aucom.core.util.AudioSystemManager;
 import cl.estencia.labs.ebot.bus.MessageBus;
+import cl.estencia.labs.muplayer.console.util.SystemCommandExecutor;
 import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
 import cl.estencia.labs.muplayer.config.model.LogConfigKeys;
 import cl.estencia.labs.muplayer.config.model.MessagesInfoKeys;
@@ -16,13 +18,14 @@ import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import cl.estencia.labs.muplayer.core.thread.TaskRunner;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
 @Slf4j
 public class Main {
 
-    static void main(String[] args) {
+    static void main(String[] args) throws IOException {
         setJvmAppName();
         MessagesInfoReader messagesInfoReader = MessagesInfoReader.getInstance();
         CacheManager globalCache = CacheManager.getGlobalCache();
