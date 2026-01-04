@@ -87,11 +87,15 @@ public class ConsoleTable {
     }
 
     private int getBiggerCellLength(int columnIndex) {
-        return rows.parallelStream()
+        ConsoleTableCell titleColumnByIndex = columnTitles.getCell(columnIndex);
+
+        Integer rowsMaxCell = rows.parallelStream()
                 .map(row -> row.getCell(columnIndex)
                         .getLength(borderPadding))
                 .max(Integer::compareTo)
                 .orElse(0);
+
+        return Math.max(titleColumnByIndex.getLength(borderPadding), rowsMaxCell);
     }
 
     private List<Integer> getBiggerColumnLenghts(int columnsCount) {
@@ -195,7 +199,7 @@ public class ConsoleTable {
                                   boolean useSingleLines, boolean useInternalLines,
                                   int columnsCount) {
         char startChar = useInternalLines
-                ? (useSingleLines ? SINGLE_LEFT_UNION : DOUBLE_RIGHT_UNION)
+                ? (useSingleLines ? SINGLE_LEFT_UNION : DOUBLE_LEFT_UNION)
                 : (useSingleLines ? SINGLE_VERTICAL_LINE : DOUBLE_VERTICAL_LINE);
         char cellChar = useInternalLines
                 ? (useSingleLines ? SINGLE_HORIZONTAL_LINE : DOUBLE_HORIZONTAL_LINE)
@@ -284,6 +288,16 @@ public class ConsoleTable {
 
     public void addColumn(String name) {
         columnTitles.addCell(name);
+    }
+
+    public void addColumns(String... names) {
+        if (names == null || names.length == 0) {
+            return;
+        }
+
+        for (int i = 0; i < names.length; i++) {
+            addColumn(names[i]);
+        }
     }
 
     public String draw() {

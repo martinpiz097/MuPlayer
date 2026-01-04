@@ -72,6 +72,16 @@ public class ConsoleTableRow {
         addCell(value, color);
     }
 
+    public void addCells(Object... values) {
+        if (values == null || values.length == 0) {
+            return;
+        }
+
+        for (int i = 0; i < values.length; i++) {
+            addCell(values[i]);
+        }
+    }
+
     public void addCell(Object value, String color) {
         addCell(value, color, contentSizeLimit);
     }

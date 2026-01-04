@@ -41,10 +41,6 @@ public class TableColumnTitle {
         return cells.size();
     }
 
-    public int getColumnLength(int index, Padding padding) {
-        return cells.get(index).getLength(padding);
-    }
-
     public void draw(StringBuilder sbTable, Padding padding,
                      List<Integer> biggerColumnLengths,
                      boolean useSingleLines) {

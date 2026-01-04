@@ -37,6 +37,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static cl.estencia.labs.muplayer.console.common.enums.OutputType.*;
+import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.getOutputColor;
 import static cl.estencia.labs.muplayer.core.common.enums.SeekOption.NEXT;
 
 @Slf4j
@@ -58,26 +59,22 @@ public class PlayerCmdInterpreterUtil {
 
         final Track current = playerCurrentData.get().getCurrentTrack();
 
+        int contentSizeLimit = 40;
         ConsoleTable consoleTable = new ConsoleTable("Tracks List",
-                ConsoleUtil.getOutputColor(info),
-                new Padding(0, 5, 0, 5),
-                false, true);
-        consoleTable.addColumn("Title");
-        consoleTable.addColumn("Album");
-        consoleTable.addColumn("Artist");
+                getOutputColor(info),
+                new Padding(0, 1, 0, 1),
+                false, true, contentSizeLimit);
+        consoleTable.addColumns("N°", "Title", "Album", "Artist");
 
+        AtomicInteger indexCounter = new AtomicInteger(0);
         player.getTracks().forEach(track -> {
             String album = track.getAlbum() != null ? track.getAlbum() : "Unknown";
             String artist = track.getArtist() != null ? track.getArtist() : "Unknown";
-
-            String color = track.equals(current)
-                    ? ConsoleUtil.getOutputColor(warn)
-                    : ConsoleUtil.getOutputColor(info);
+            String color = getOutputColor(track.equals(current) ? warn : info);
 
             ConsoleTableRow row = new ConsoleTableRow(color);
-            row.addCell(track.getTitle());
-            row.addCell(album);
-            row.addCell(artist);
+            row.addCells(indexCounter.incrementAndGet(),
+                    track.getTitle(), album, artist);
 
             consoleTable.addRow(row);
         });
@@ -306,7 +303,7 @@ public class PlayerCmdInterpreterUtil {
     }
 
     public static String getTrackInfo(Track track) {
-        String elementsColor = ConsoleUtil.getOutputColor(info);
+        String elementsColor = getOutputColor(info);
         ConsoleTable consoleTable = new ConsoleTable(null, elementsColor,
                 new Padding(0, 3, 0, 3),
                 false, false);
