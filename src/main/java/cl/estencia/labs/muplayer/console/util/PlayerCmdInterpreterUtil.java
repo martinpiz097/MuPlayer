@@ -123,13 +123,15 @@ public class PlayerCmdInterpreterUtil {
         }
     }
 
-    public static synchronized void printFolderTracks(Player player, AtomicReference<MuPlayerResponse> playerCurrentData,
+    public static synchronized void printFolderTracks(Player player, File tracksFolder, AtomicReference<MuPlayerResponse> playerCurrentData,
                                                       ConsoleOutput consoleOutput) {
         if (player == null) {
             return;
         }
+        if (tracksFolder == null || !tracksFolder.exists()) {
+            return;
+        }
 
-        final File rootFolder = player.getRootFolder();
         final List<Track> listTracks = player.getTracks();
         final int songsCount = player.getSongsCount();
 
@@ -142,9 +144,8 @@ public class PlayerCmdInterpreterUtil {
         }
 
         final File currentTrackFile = currentTrack.getDataSource();
-        final File parentFolder = currentTrackFile != null ? currentTrackFile.getParentFile() : null;
 
-        ConsoleTable consoleTable = new ConsoleTable("Music in folder " + parentFolder.getName(),
+        ConsoleTable consoleTable = new ConsoleTable("Music in folder " + tracksFolder.getName(),
                 tableColor,
                 new Padding(0, 1, 0, 1),
                 false, true, contentSizeLimit);
@@ -160,7 +161,7 @@ public class PlayerCmdInterpreterUtil {
         for (int i = 0; i < songsCount; i++) {
             track = listTracks.get(i);
             fileTrack = track.getDataSource();
-            if (fileTrack.getParentFile().equals(parentFolder)) {
+            if (fileTrack.getParentFile().equals(tracksFolder)) {
                 color = ConsoleUtil.getOutputColor(
                         fileTrack.getPath().equals(currentTrackFile.getPath())
                                 ? warn : info);
@@ -175,6 +176,23 @@ public class PlayerCmdInterpreterUtil {
         }
 
         consoleOutput.append(consoleTable.draw());
+    }
+
+    public static synchronized void printFolderTracks(Player player, AtomicReference<MuPlayerResponse> playerCurrentData,
+                                                      ConsoleOutput consoleOutput) {
+        if (player == null) {
+            return;
+        }
+
+        final Track currentTrack = playerCurrentData.get().getCurrentTrack();
+        if (currentTrack == null) {
+            return;
+        }
+
+        final File currentTrackFile = currentTrack.getDataSource();
+        final File parentFolder = currentTrackFile != null ? currentTrackFile.getParentFile() : null;
+
+        printFolderTracks(player, parentFolder, playerCurrentData, consoleOutput);
     }
 
     public static synchronized void printFolderTracks(Player player, ConsoleOutput execution, int index) {

@@ -29,4 +29,9 @@ public abstract class VolumeStatusData {
         this.isMute = isVolumeZero();
     }
 
+    public synchronized void setVolumeConfig(float volume, boolean muted) {
+        setVolume(volume);
+        setMute(muted);
+    }
+
 }

@@ -2,6 +2,7 @@ package cl.estencia.labs.muplayer.audio.util;
 
 import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.muplayer.audio.model.TrackIndexed;
+import cl.estencia.labs.muplayer.audio.model.TrackStatusData;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.model.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;
@@ -199,11 +200,12 @@ public class MuPlayerUtil {
 
     public void startTrackThread(Track currentTrack) {
         if (currentTrack != null) {
+            TrackStatusData trackStatusData = currentTrack.getTrackStatusData();
+
             currentTrack.setName(generateTrackThreadName(currentTrack.getClass(), currentTrack));
-            currentTrack.setVolume(playerStatusData.getVolume());
-            if (playerStatusData.isMute()) {
-                currentTrack.mute();
-            }
+            trackStatusData.setVolume(playerStatusData.getVolume());
+            trackStatusData.setMute(playerStatusData.isMute());
+
             currentTrack.start();
         }
     }
@@ -211,7 +213,7 @@ public class MuPlayerUtil {
     public void playNewTrack(int index) {
         synchronized (player.getCurrentTrack()) {
             restartCurrentTrack();
-            playerStatusData    .setCurrentTrackIndex(index);
+            playerStatusData.setCurrentTrackIndex(index);
 
             Track newTrack = listTracks.get(index);
             player.getCurrentTrack().set(newTrack);

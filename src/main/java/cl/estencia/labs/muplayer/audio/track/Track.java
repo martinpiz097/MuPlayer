@@ -233,34 +233,34 @@ public abstract class Track extends Thread
     // -80 to 5.5
     @Override
     public void setVolume(float volume) {
+        trackStatusData.setVolume(volume);
         if (!AudioDriverUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedAudioStream())) {
             return;
         }
 
-        trackStatusData.setVolume(volume);
         speaker.setVolume(volume);
         audioSystemManager.setMuteValue(speaker.getDriver(), trackStatusData.isMute());
     }
 
     @Override
     public void mute() {
+        trackStatusData.setMute(true);
         if (!AudioDriverUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedAudioStream())) {
             return;
         }
 
-        trackStatusData.setMute(true);
         audioSystemManager.setMuteValue(speaker.getDriver(), true);
     }
 
     @Override
     public void unMute() {
-        if (!AudioDriverUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedAudioStream())) {
-            return;
-        }
-
         trackStatusData.setMute(false);
         if (trackStatusData.isVolumeZero()) {
             trackStatusData.setVolume(DEFAULT_MAX_VOL);
+        }
+
+        if (!AudioDriverUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedAudioStream())) {
+            return;
         }
 
         speaker.setVolume(trackStatusData.getVolume());
@@ -330,11 +330,11 @@ public abstract class Track extends Thread
 
     @Override
     public synchronized void start() {
-        if (getState() == State.NEW) {
-            super.start();
-        } else {
+        if (getState() != State.NEW) {
             throw new MuPlayerException("Already started track");
         }
+
+        super.start();
     }
 
     @Override

@@ -91,6 +91,7 @@ public class MuPlayer extends Player implements SystemVolumeController {
 
     private void loadTracks(File folderToLoad) {
 //        Files.find()
+
         try (Stream<Path> folderPaths = Files.walk(
                 Path.of(folderToLoad.toURI())).parallel()) {
             if (hasSounds()) {
@@ -107,15 +108,13 @@ public class MuPlayer extends Player implements SystemVolumeController {
                             loadTrackFromFile(path.toFile()))
                     .filter(Objects::nonNull)
                     .sorted(MuPlayerUtil.TRACKS_SORT_COMPARATOR)
-                    .sequential()
-                    .forEach(listTracks::add);
+                    .forEachOrdered(listTracks::add);
 
             listTracks.parallelStream()
                     .map(track -> track.getDataSource().getParentFile())
                     .distinct()
                     .sorted(MuPlayerUtil.FOLDERS_COMPARATOR)
-                    .sequential()
-                    .forEach(listFolders::add);
+                    .forEachOrdered(listFolders::add);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -170,6 +169,7 @@ public class MuPlayer extends Player implements SystemVolumeController {
             });
 
             messageBus.subscribe(SHUTDOWN.name(), message -> {
+                shutdown();
                 messageBus.shutdown();
             });
 
@@ -664,11 +664,20 @@ public class MuPlayer extends Player implements SystemVolumeController {
     @Override
     public void run() {
 //        ThreadUtil.freezeThread(this);
+        playerStatusData.setOn(true);
 
-        while (!isInterrupted()) {
+        while (playerStatusData.isOn() && !isInterrupted()) {
             interruptor.checkSignal();
         }
 
+        Track track = currentTrack.get();
+        if (track != null && track.isActive()) {
+            track.kill();
+        }
+
+        listTracks.clear();
+        listFolders.clear();
+        listAudioFileScanners.clear();
     }
 
 }
