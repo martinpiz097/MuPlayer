@@ -16,6 +16,11 @@ public interface ReportablePlayer {
     int getFoldersCount();
     int getSongsCount();
     AtomicReference<Track> getCurrentTrack();
+    File getCurrentTrackFolder();
+    int getCurrentFolderNumber();
+    int getNextFolderNumber();
+    int getPreviousFolderNumber();
+    File getFolder(int number);
     Track getNext();
     Track getPrevious();
     File getRootFolder();

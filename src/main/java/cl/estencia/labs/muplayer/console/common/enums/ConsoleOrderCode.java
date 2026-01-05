@@ -38,6 +38,8 @@ public enum ConsoleOrderCode {
     skf,
     sn,
     sp,
+    snf,
+    spf,
     st,
     sv,
     sys,

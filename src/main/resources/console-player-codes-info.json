@@ -176,13 +176,23 @@
   },
   {
     "code": "sn",
-    "orders": ["sn", "show-next-info", "show-next-song-info"],
+    "orders": ["sn", "gn", "show-next-info", "show-next-song-info"],
     "helpInfo": "Muestra información de la canción siguiente"
   },
   {
     "code": "sp",
-    "orders": ["sp", "show-prev-info", "show-prev-song-info"],
+    "orders": ["sp", "gp", "show-prev-info", "show-prev-song-info"],
     "helpInfo": "Muestra información de la canción anterior"
+  },
+  {
+    "code": "snf",
+    "orders": ["snf", "gnf"],
+    "helpInfo": "Muestra el nombre de la carpeta siguiente"
+  },
+  {
+    "code": "spf",
+    "orders": ["spf", "gpf"],
+    "helpInfo": "Muestra el nombre de la carpeta anterior"
   },
   {
     "code": "st",

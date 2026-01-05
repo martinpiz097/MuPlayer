@@ -357,6 +357,52 @@ public class MuPlayer extends Player implements SystemVolumeController {
     }
 
     @Override
+    public File getCurrentTrackFolder() {
+        Track current = currentTrack.get();
+        return current != null && current.getDataSource() != null
+                ? current.getDataSource().getParentFile() : null;
+    }
+
+    @Override
+    public int getCurrentFolderNumber() {
+        File currentTrackFolder = getCurrentTrackFolder();
+        if (currentTrackFolder == null) {
+            return -1;
+        }
+
+        return listFolders.indexOf(currentTrackFolder) + 1;
+    }
+
+    @Override
+    public int getNextFolderNumber() {
+        if (listFolders.isEmpty()) {
+            return -1;
+        }
+
+        int currentFolderNumber = getCurrentFolderNumber();
+        return currentFolderNumber == listFolders.size() ? 1 : currentFolderNumber + 1;
+    }
+
+    @Override
+    public int getPreviousFolderNumber() {
+        if (listFolders.isEmpty()) {
+            return -1;
+        }
+
+        int currentFolderNumber = getCurrentFolderNumber();
+        return currentFolderNumber == 1 ? listFolders.size() : currentFolderNumber - 1;
+    }
+
+    @Override
+    public File getFolder(int number) {
+        if (number > listFolders.size() || number < 1) {
+            return null;
+        }
+
+        return listFolders.get(number - 1);
+    }
+
+    @Override
     public synchronized Track getNext() {
         return muPlayerUtil.getTrackBySeekOption(NEXT);
     }

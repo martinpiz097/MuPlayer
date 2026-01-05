@@ -421,6 +421,28 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     consoleOutput.append(getTrackInfo(player.getPrevious()));
                 }
             }
+            case snf -> {
+                if (isPlayerOn()) {
+                    int nextFolderNumber = player.getNextFolderNumber();
+                    if (nextFolderNumber != -1) {
+                        String folderName = player.getFolder(nextFolderNumber).getName();
+                        consoleOutput.append("Next folder name: " + folderName, info);
+                    } else {
+                        consoleOutput.append("No folders!", warn);
+                    }
+                }
+            }
+            case spf -> {
+                if (isPlayerOn()) {
+                    int prevFolderNumber = player.getPreviousFolderNumber();
+                    if (prevFolderNumber != -1) {
+                        String folderName = player.getFolder(prevFolderNumber).getName();
+                        consoleOutput.append("Previous folder name: " + folderName, info);
+                    } else {
+                        consoleOutput.append("No folders!", warn);
+                    }
+                }
+            }
             case pf -> {
                 if (isPlayerOn() && cmd.hasOptions()) {
                     final Number fldIndex = cmd.getOptionAsNumber(0);
