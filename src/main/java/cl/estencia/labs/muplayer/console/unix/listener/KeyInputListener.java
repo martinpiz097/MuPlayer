@@ -5,6 +5,10 @@ import cl.estencia.labs.muplayer.console.unix.event.KeyInputEvent;
 public abstract class KeyInputListener extends NativeInputListener<KeyInputEvent> {
     protected final Character key;
 
+    public KeyInputListener() {
+        this((Character) null);
+    }
+
     protected KeyInputListener(Character key) {
         this.key = key;
     }

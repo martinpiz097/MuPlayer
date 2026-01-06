@@ -25,8 +25,11 @@ public class NativeInputReader extends Thread {
     private volatile boolean inputBlocked;
     private final int unlockKeyCode;
     private final StringBuilder sbInput;
+
+    private final List<KeyInputListener> keyInterceptors;
     private final List<KeyInputListener> keyInputListeners;
     private final List<LineInputListener> lineInputListeners;
+
     private final InputModeConfig inputModeConfig;
     private final ConsoleHistory consoleHistory;
     private final AtomicReference<String> lineRef;
@@ -44,10 +47,13 @@ public class NativeInputReader extends Thread {
         this.unlockKeyCode = unlockKeyCode;
         this.inputModeConfig = new InputModeConfig(inputMode, EXT_F5);
         this.sbInput = new StringBuilder();
+        this.keyInterceptors = CollectionUtil.newFastArrayList();
         this.keyInputListeners = CollectionUtil.newFastArrayList();
         this.lineInputListeners = CollectionUtil.newFastArrayList();
         this.consoleHistory = new ConsoleHistory();
         this.lineRef = new AtomicReference<>();
+
+        loadDefaultKeyInterceptors();
     }
 
     private void sendInputEvent(KeyInputEvent event) {
@@ -125,8 +131,6 @@ public class NativeInputReader extends Thread {
                 }
             }
             default -> {
-                consoleHistory.addCommand(String.valueOf((char) key));
-
                 switch (inputMode) {
                     case SINGLE_SHORCUTS -> sendInputEvent(new KeyInputEvent(key, sequence));
                     case COMMANDS -> sbInput.append((char) key);
@@ -193,6 +197,36 @@ public class NativeInputReader extends Thread {
         } catch (Exception ignored) {}
     }
 
+    private void loadDefaultKeyInterceptors() {
+        addKeyInterceptor(new KeyInputListener(unlockKeyCode) {
+            @Override
+            public void onInput(KeyInputEvent event) {
+                setInputBlocked(!inputBlocked);
+            }
+        });
+
+        addKeyInterceptor(new KeyInputListener(inputModeConfig.getToggleModeKey()) {
+            @Override
+            public void onInput(KeyInputEvent event) {
+                inputModeConfig.toggleInputMode();
+            }
+        });
+
+        addKeyInterceptor(new KeyInputListener(SEQ_UP) {
+            @Override
+            public void onInput(KeyInputEvent event) {
+                System.out.print(cartReturn() + consoleHistory.getPrevCommand());
+            }
+        });
+
+        addKeyInterceptor(new KeyInputListener(SEQ_DOWN) {
+            @Override
+            public void onInput(KeyInputEvent event) {
+                System.out.print(cartReturn() + consoleHistory.getNextCommand());
+            }
+        });
+    }
+
     public synchronized void setInputBlocked(boolean inputBlocked) {
         this.inputBlocked = inputBlocked;
     }
@@ -215,6 +249,25 @@ public class NativeInputReader extends Thread {
 
     public void clearAllListeners() {
         keyInputListeners.clear();;
+    }
+
+    public void addKeyInterceptor(KeyInputListener keyListener) {
+        keyInterceptors.add(keyListener);
+    }
+
+    public List<KeyInputListener> getKeyInterceptors(int key) {
+        return keyInterceptors.stream()
+                .filter(interceptor -> interceptor.isKey(key))
+                .toList();
+    }
+
+    public void removeKeyInterceptor(KeyInputListener keyListener) {
+        keyInterceptors.remove(keyListener);
+    }
+
+    public void clearAllKeyInterceptors() {
+        keyInterceptors.clear();
+        ;
     }
 
     public String getLine() {
@@ -240,49 +293,34 @@ public class NativeInputReader extends Thread {
             byte[] buffer = new byte[8];
             byte[] sequence;
             int key;
+            List<KeyInputListener> interceptors;
             while (!Thread.currentThread().isInterrupted()) {
                 int read = reader.read(buffer);
                 if (read <= 0) {
                     continue;
                 }
 
-//                    System.out.println("Read: " + read);
-//                    System.out.println("Readed: " + Arrays.toString(
-//                            Arrays.copyOf(buffer, read)));
-
                 sequence = Arrays.copyOf(buffer, read);
                 if (read > 1) {
                     key = read == 3 ? parseSequence(sequence) : parseExtendedSequence(sequence);
-                    if (key == unlockKeyCode) {
-                        inputBlocked = !inputBlocked;
-//                            System.out.println(inputBlocked ? "Blocked!" : "Unlocked!");
-                    } else if (!inputBlocked) {
-                        if (key == SEQ_UP) {
-                            System.out.print(cartReturn() + consoleHistory.getPrevCommand());
-                        } else if (key == SEQ_DOWN) {
-                            System.out.print(cartReturn() + consoleHistory.getNextCommand());
-                        } else if (key == inputModeConfig.getToggleModeKey()) {
-                            inputModeConfig.toggleInputMode();
-//                                System.out.println("Changed to input mode: " + inputModeConfig.getInputMode());
-                        } else {
-                            handleSequenceInput(key, sequence);
-                        }
-                    }
                 } else {
                     key = sequence[0];
-                    if (key == unlockKeyCode) {
-                        inputBlocked = !inputBlocked;
-//                            System.out.println(inputBlocked ? "Blocked!" : "Unlocked!");
-                    } else if (!inputBlocked) {
-                        if (key == inputModeConfig.getToggleModeKey()) {
-                            inputModeConfig.toggleInputMode();
-//                                System.out.println("Changed to input mode: " + inputModeConfig.getInputMode());
-                        } else {
-                            handleInput(key, sequence);
-                        }
-                    }
                 }
 
+                if (inputBlocked && key != unlockKeyCode) {
+                    continue;
+                }
+
+                interceptors = getKeyInterceptors(key);
+                if (!interceptors.isEmpty()) {
+                    int finalKey = key;
+                    byte[] finalSequence = sequence;
+                    interceptors.forEach(interceptor -> {
+                        interceptor.onInput(new KeyInputEvent(finalKey, finalSequence));
+                    });
+                } else {
+                    handleInput(key, sequence);
+                }
 
             }
         } catch (IOException ignored) {}

@@ -10,6 +10,7 @@ public class ConsoleHistory {
 
     public ConsoleHistory() {
         this.commands = CollectionUtil.newFastArrayList();
+        this.currentIndex = 0;
     }
 
     public void addCommand(String cmd) {

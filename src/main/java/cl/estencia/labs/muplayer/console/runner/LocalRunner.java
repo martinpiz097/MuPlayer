@@ -47,13 +47,7 @@ public class LocalRunner extends ConsoleRunner {
         }
     }
 
-    public void shutdown() {
-        interpreter.setOn(false);
-    }
-
-    @Override
-    public void run() {
-        validateRootFolder();
+    private void setupNativeReader() {
         nativeInputReader.setInputBlocked(false);
         nativeInputReader.getInputModeConfig().setInputMode(InputMode.COMMANDS);
         nativeInputReader.addInputListener(new KeyInputListener((Character) null) {
@@ -62,6 +56,16 @@ public class LocalRunner extends ConsoleRunner {
                 processCmd(event.getLine());
             }
         });
+    }
+
+    public void shutdown() {
+        interpreter.setOn(false);
+    }
+
+    @Override
+    public void run() {
+        validateRootFolder();
+        setupNativeReader();
         nativeInputReader.start();
         CacheManager.getGlobalCache().saveValue(CacheVar.NATIVE_INPUT_READER, nativeInputReader);
 
@@ -72,8 +76,6 @@ public class LocalRunner extends ConsoleRunner {
                 : "MuPlayer started...";
         Logger.getLogger(this, msg).rawInfo();
         interpreter.setOn(true);
-
-        ConsoleOutput consoleOutput;
 
         String cmd;
         while (interpreter.isOn()) {
