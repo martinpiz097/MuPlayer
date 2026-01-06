@@ -1,10 +1,14 @@
 package cl.estencia.labs.muplayer.console;
 
 import cl.estencia.labs.ebot.bus.MessageBus;
+import cl.estencia.labs.ebot.bus.model.message.Message;
+import cl.estencia.labs.ebot.bus.model.pubsub.sub.MessageListener;
 import cl.estencia.labs.muplayer.audio.model.Album;
 import cl.estencia.labs.muplayer.audio.model.Artist;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.console.model.table.Alignment;
+import cl.estencia.labs.muplayer.console.unix.NativeInputReader;
+import cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic;
 import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
 import cl.estencia.labs.muplayer.core.bus.message.Messages;
 import cl.estencia.labs.muplayer.core.bus.model.MuPlayerResponse;
@@ -22,6 +26,7 @@ import cl.estencia.labs.muplayer.console.runner.LocalRunner;
 import cl.estencia.labs.muplayer.console.runner.RunnerMode;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
+import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import cl.estencia.labs.muplayer.core.service.LogService;
 import cl.estencia.labs.muplayer.core.service.impl.LogServiceImpl;
 import cl.estencia.labs.muplayer.core.thread.TaskRunner;
@@ -48,7 +53,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
 
     @Getter
     @Setter
-    private boolean on;
+    private volatile boolean on;
 
     private final CacheManager globalCacheManager;
     private final ConsoleCodesReader consoleCodesReader;
@@ -117,6 +122,10 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                         playerCurrentData.set(muPlayerResponse);
                         showTrackInfo(muPlayerResponse.getCurrentTrack(), null);
                     });
+
+                    messageBus.subscribe(MuPlayerTopic.SHUTDOWN.name(),
+                            message -> System.exit(0));
+
 //                    player.start();
 
                     messageBus.publish(Messages.start());
@@ -238,7 +247,10 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                 }
             }
             case sh -> {
-                messageBus.publish(Messages.shutdown());
+                if (player.isAlive()) {
+                    messageBus.publish(Messages.shutdown());
+                }
+
                 on = false;
             }
             case sk -> {
