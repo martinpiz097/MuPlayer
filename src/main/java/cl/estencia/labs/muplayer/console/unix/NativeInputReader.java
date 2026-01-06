@@ -7,26 +7,29 @@ import cl.estencia.labs.muplayer.console.unix.listener.LineInputListener;
 import cl.estencia.labs.muplayer.console.unix.listener.NativeInputListener;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.*;
 import static cl.estencia.labs.muplayer.console.unix.InputMode.COMMANDS;
 import static cl.estencia.labs.muplayer.console.util.SystemCommandExecutor.getTerminalWidth;
 
-public class NativeInputReader {
-    @Getter
-    private volatile boolean inputBlocked = true;
+@Getter
+public class NativeInputReader extends Thread {
+    private volatile boolean inputBlocked;
     private final int unlockKeyCode;
     private final StringBuilder sbInput;
     private final List<KeyInputListener> keyInputListeners;
     private final List<LineInputListener> lineInputListeners;
     private final InputModeConfig inputModeConfig;
     private final ConsoleHistory consoleHistory;
+    private final AtomicReference<String> lineRef;
 
     public NativeInputReader() {
         this(ESC);
@@ -37,12 +40,14 @@ public class NativeInputReader {
     }
 
     public NativeInputReader(int unlockKeyCode, InputMode inputMode) {
+        this.inputBlocked = true;
         this.unlockKeyCode = unlockKeyCode;
         this.inputModeConfig = new InputModeConfig(inputMode, EXT_F5);
         this.sbInput = new StringBuilder();
         this.keyInputListeners = CollectionUtil.newFastArrayList();
         this.lineInputListeners = CollectionUtil.newFastArrayList();
         this.consoleHistory = new ConsoleHistory();
+        this.lineRef = new AtomicReference<>();
     }
 
     private void sendInputEvent(KeyInputEvent event) {
@@ -97,9 +102,14 @@ public class NativeInputReader {
                     case SINGLE_SHORCUTS -> sendInputEvent(new KeyInputEvent(key, sequence));
                     case COMMANDS -> {
                         String line = sbInput.toString();
+
+                        synchronized (lineRef) {
+                            this.lineRef.set(line);
+                        }
                         consoleHistory.addCommand(line);
 
-                        Thread.ofVirtual().start(() -> sendInputEvent(new LineInputEvent(line)));
+                        Thread.ofVirtual().start(() -> sendInputEvent(
+                                new LineInputEvent(line)));
                         sbInput.delete(0, sbInput.length());
                     }
                 }
@@ -115,6 +125,8 @@ public class NativeInputReader {
                 }
             }
             default -> {
+                consoleHistory.addCommand(String.valueOf((char) key));
+
                 switch (inputMode) {
                     case SINGLE_SHORCUTS -> sendInputEvent(new KeyInputEvent(key, sequence));
                     case COMMANDS -> sbInput.append((char) key);
@@ -136,9 +148,14 @@ public class NativeInputReader {
                     case SINGLE_SHORCUTS -> sendInputEvent(new KeyInputEvent(key, sequence));
                     case COMMANDS -> {
                         String line = sbInput.toString();
+
+                        synchronized (lineRef) {
+                            this.lineRef.set(line);
+                        }
                         consoleHistory.addCommand(line);
 
-                        Thread.ofVirtual().start(() -> sendInputEvent(new LineInputEvent(line)));
+                        Thread.ofVirtual().start(() -> sendInputEvent(
+                                new LineInputEvent(line)));
                         sbInput.delete(0, sbInput.length());
                     }
                 }
@@ -154,6 +171,8 @@ public class NativeInputReader {
                 }
             }
             default -> {
+                consoleHistory.addCommand(String.valueOf((char) key));
+
                 switch (inputMode) {
                     case SINGLE_SHORCUTS -> sendInputEvent(new KeyInputEvent(key, sequence));
                     case COMMANDS -> sbInput.append((char) key);
@@ -172,6 +191,10 @@ public class NativeInputReader {
         try {
             Runtime.getRuntime().exec(new String[]{"sh", "-c", "stty sane < /dev/tty"}).waitFor();
         } catch (Exception ignored) {}
+    }
+
+    public synchronized void setInputBlocked(boolean inputBlocked) {
+        this.inputBlocked = inputBlocked;
     }
 
     public <L extends NativeInputListener> void addInputListener(L inputListener) {
@@ -194,62 +217,75 @@ public class NativeInputReader {
         keyInputListeners.clear();;
     }
 
-    public void start() throws Exception {
+    public String getLine() {
+        while (lineRef.get() == null) {
+
+        }
+
+        String auxLine;
+        synchronized (lineRef) {
+            auxLine = lineRef.get();
+            lineRef.set(null);
+        }
+
+        return auxLine;
+    }
+
+    @SneakyThrows
+    public void run() {
         Runtime.getRuntime().exec(new String[]{"sh", "-c", "stty -echo -icanon < /dev/tty"}).waitFor();
         Runtime.getRuntime().addShutdownHook(new Thread(this::restoreTerminal));
 
-        new Thread(() -> {
-            try (var reader = new FileInputStream(FileDescriptor.in)) {
-                byte[] buffer = new byte[8];
-                byte[] sequence;
-                int key;
-                while (true) {
-                    int read = reader.read(buffer);
-                    if (read <= 0) {
-                        continue;
-                    }
+        try (var reader = new FileInputStream(FileDescriptor.in)) {
+            byte[] buffer = new byte[8];
+            byte[] sequence;
+            int key;
+            while (!Thread.currentThread().isInterrupted()) {
+                int read = reader.read(buffer);
+                if (read <= 0) {
+                    continue;
+                }
 
 //                    System.out.println("Read: " + read);
 //                    System.out.println("Readed: " + Arrays.toString(
 //                            Arrays.copyOf(buffer, read)));
 
-                    sequence = Arrays.copyOf(buffer, read);
-                    if (read > 1) {
-                        key = read == 3 ? parseSequence(sequence) : parseExtendedSequence(sequence);
-                        if (key == unlockKeyCode) {
-                            inputBlocked = !inputBlocked;
+                sequence = Arrays.copyOf(buffer, read);
+                if (read > 1) {
+                    key = read == 3 ? parseSequence(sequence) : parseExtendedSequence(sequence);
+                    if (key == unlockKeyCode) {
+                        inputBlocked = !inputBlocked;
 //                            System.out.println(inputBlocked ? "Blocked!" : "Unlocked!");
-                        } else if (!inputBlocked) {
-                            if (key == SEQ_UP) {
-                                System.out.print(cartReturn() + consoleHistory.getPrevCommand());
-                            } else if (key == SEQ_DOWN) {
-                                System.out.print(cartReturn() + consoleHistory.getNextCommand());
-                            } else if (key == inputModeConfig.getToggleModeKey()) {
-                                inputModeConfig.toggleInputMode();
+                    } else if (!inputBlocked) {
+                        if (key == SEQ_UP) {
+                            System.out.print(cartReturn() + consoleHistory.getPrevCommand());
+                        } else if (key == SEQ_DOWN) {
+                            System.out.print(cartReturn() + consoleHistory.getNextCommand());
+                        } else if (key == inputModeConfig.getToggleModeKey()) {
+                            inputModeConfig.toggleInputMode();
 //                                System.out.println("Changed to input mode: " + inputModeConfig.getInputMode());
-                            } else {
-                                handleSequenceInput(key, sequence);
-                            }
-                        }
-                    } else {
-                        key = sequence[0];
-                        if (key == unlockKeyCode) {
-                            inputBlocked = !inputBlocked;
-//                            System.out.println(inputBlocked ? "Blocked!" : "Unlocked!");
-                        } else if (!inputBlocked) {
-                            if (key == inputModeConfig.getToggleModeKey()) {
-                                inputModeConfig.toggleInputMode();
-//                                System.out.println("Changed to input mode: " + inputModeConfig.getInputMode());
-                            } else {
-                                handleInput(key, sequence);
-                            }
+                        } else {
+                            handleSequenceInput(key, sequence);
                         }
                     }
-
-
+                } else {
+                    key = sequence[0];
+                    if (key == unlockKeyCode) {
+                        inputBlocked = !inputBlocked;
+//                            System.out.println(inputBlocked ? "Blocked!" : "Unlocked!");
+                    } else if (!inputBlocked) {
+                        if (key == inputModeConfig.getToggleModeKey()) {
+                            inputModeConfig.toggleInputMode();
+//                                System.out.println("Changed to input mode: " + inputModeConfig.getInputMode());
+                        } else {
+                            handleInput(key, sequence);
+                        }
+                    }
                 }
-            } catch (IOException ignored) {}
-        }).start();
+
+
+            }
+        } catch (IOException ignored) {}
     }
 
 }

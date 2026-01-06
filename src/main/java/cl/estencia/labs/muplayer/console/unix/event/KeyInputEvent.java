@@ -18,7 +18,7 @@ public class KeyInputEvent extends NativeInputEvent {
 
     @Override
     public String getLine() {
-        return String.valueOf(key);
+        return String.valueOf((char) key);
     }
 
 }
