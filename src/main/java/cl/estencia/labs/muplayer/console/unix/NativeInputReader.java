@@ -5,6 +5,7 @@ import cl.estencia.labs.muplayer.console.unix.event.LineInputEvent;
 import cl.estencia.labs.muplayer.console.unix.listener.KeyInputListener;
 import cl.estencia.labs.muplayer.console.unix.listener.LineInputListener;
 import cl.estencia.labs.muplayer.console.unix.listener.NativeInputListener;
+import cl.estencia.labs.muplayer.core.thread.ThreadUtil;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -12,10 +13,14 @@ import lombok.SneakyThrows;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.LockSupport;
 
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
 import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.*;
 import static cl.estencia.labs.muplayer.console.unix.InputMode.COMMANDS;
 import static cl.estencia.labs.muplayer.console.util.SystemCommandExecutor.getTerminalWidth;
@@ -103,7 +108,7 @@ public class NativeInputReader extends Thread {
         InputMode inputMode = inputModeConfig.getInputMode();
 
         switch (key) {
-            case '\n' -> {
+            case LINE_BREAK_CHAR -> {
                 switch (inputMode) {
                     case SINGLE_SHORCUTS -> sendInputEvent(new KeyInputEvent(key, sequence));
                     case COMMANDS -> {
@@ -231,6 +236,17 @@ public class NativeInputReader extends Thread {
         this.inputBlocked = inputBlocked;
     }
 
+    public <L extends NativeInputListener> void addInputListeners(L... inputListeners) {
+        if (inputListeners == null || inputListeners.length == 0) {
+            return;
+        }
+
+        int listenersCount = inputListeners.length;
+        for (int i = 0; i < listenersCount; i++) {
+            addInputListener(inputListeners[i]);
+        }
+    }
+
     public <L extends NativeInputListener> void addInputListener(L inputListener) {
         if (inputListener instanceof KeyInputListener) {
             keyInputListeners.add((KeyInputListener) inputListener);
@@ -255,6 +271,17 @@ public class NativeInputReader extends Thread {
         keyInterceptors.add(keyListener);
     }
 
+    public void addKeyInterceptors(KeyInputListener... keyInterceptors) {
+        if (keyInterceptors == null || keyInterceptors.length == 0) {
+            return;
+        }
+
+        int interceptorsCount = keyInterceptors.length;
+        for (int i = 0; i < interceptorsCount; i++) {
+            addKeyInterceptor(keyInterceptors[i]);
+        }
+    }
+
     public List<KeyInputListener> getKeyInterceptors(int key) {
         return keyInterceptors.stream()
                 .filter(interceptor -> interceptor.isKey(key))
@@ -272,7 +299,7 @@ public class NativeInputReader extends Thread {
 
     public String getLine() {
         while (lineRef.get() == null) {
-
+            ThreadUtil.sleepInMillis(1);
         }
 
         String auxLine;
@@ -301,11 +328,9 @@ public class NativeInputReader extends Thread {
                 }
 
                 sequence = Arrays.copyOf(buffer, read);
-                if (read > 1) {
-                    key = read == 3 ? parseSequence(sequence) : parseExtendedSequence(sequence);
-                } else {
-                    key = sequence[0];
-                }
+                key = read > 1
+                        ? (read == 3 ? parseSequence(sequence) : parseExtendedSequence(sequence))
+                        : sequence[0];
 
                 if (inputBlocked && key != unlockKeyCode) {
                     continue;
