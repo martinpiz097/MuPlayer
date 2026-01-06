@@ -298,7 +298,7 @@ public class ConsoleTable {
 
     private int getExternalPaddingByAlignment(List<Integer> biggerColumnLenghts) {
         int tableWidth = getWidth(biggerColumnLenghts);
-        int terminalWidth = SystemCommandExecutor.getTerminalWidthAlt();
+        int terminalWidth = SystemCommandExecutor.getTerminalWidth();
 
         return switch (alignment) {
             case LEFT -> 0;

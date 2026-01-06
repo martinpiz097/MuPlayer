@@ -21,16 +21,16 @@ public class SystemCommandExecutor {
         }
     }
 
-    public static int getTerminalWidth() {
-        try {
-            String output = ProcessManager.execute("tput", "cols");
-            return Integer.parseInt(output.trim());
-        } catch (Exception e) {
-            return getTerminalWidthAlt();
-        }
-    }
+//    public static int getTerminalWidth() {
+//        try {
+//            String output = ProcessManager.execute("tput", "cols");
+//            return Integer.parseInt(output.trim());
+//        } catch (Exception e) {
+//            return getTerminalWidthAlt();
+//        }
+//    }
 
-    public static int getTerminalWidthAlt() {
+    public static int getTerminalWidth() {
         try {
             String output = ProcessManager.execute("sh", "-lc", "stty size < /dev/tty");
             return Integer.parseInt(output.trim().split(" ")[1].trim());

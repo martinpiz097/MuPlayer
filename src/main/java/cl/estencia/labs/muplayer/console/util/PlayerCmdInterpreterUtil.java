@@ -195,11 +195,11 @@ public class PlayerCmdInterpreterUtil {
                 playerCurrentData, consoleOutput, alignment);
     }
 
-    public static synchronized void printFolderTracks(Player player, ConsoleOutput execution, int index) {
-        final AtomicReference<Track> current = player.getCurrentTrack();
-        final File folder = player.getListFolders().get(index - 1);
-        final File currentFile = current.get() != null
-                ? current.get().getDataSource()
+    public static synchronized void printFolderTracks(Player player, ConsoleOutput execution, int number) {
+        final AtomicReference<Track> currentTrack = player.getCurrentTrack();
+        final File folder = player.getFolder(number);
+        final File currentFile = currentTrack.get() != null
+                ? currentTrack.get().getDataSource()
                 : null;
 
         execution.append("------------------------------", info);
@@ -333,7 +333,7 @@ public class PlayerCmdInterpreterUtil {
         if (cmd.hasOptions()) {
             Number skipCount = cmd.getOptionAsNumber(0);
             if (skipCount == null) {
-                execution.append("Jump value incorrect", error);
+                execution.append("Incorrect skip value ", error);
             } else {
                 messageBus.publish(Messages.skipTracks(skipCount.intValue(), seekOption));
             }

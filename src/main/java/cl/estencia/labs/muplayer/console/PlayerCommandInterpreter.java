@@ -192,8 +192,8 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                 if (isPlayerOn()) {
                     if (cmd.hasOptions()) {
                         try {
-                            Number index = cmd.getOptionAsNumber(0);
-                            printFolderTracks(player, consoleOutput, index.intValue());
+                            Number number = cmd.getOptionAsNumber(0);
+                            printFolderTracks(player, consoleOutput, number.intValue());
                         } catch (NumberFormatException e) {
                         }
                     } else {

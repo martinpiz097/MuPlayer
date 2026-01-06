@@ -121,8 +121,14 @@ public abstract class ConsoleRunner implements Runnable {
 
     protected void validateRootFolder() {
         if (!isValidRootFolder()) {
-            Logger.getLogger(this,
-                    "Root folder not exists: " + player.getRootFolder().getPath()).rawError();
+            if (player.getRootFolder() != null) {
+                Logger.getLogger(this,
+                        "Root folder not exists: " + player.getRootFolder().getPath()).rawError();
+            } else {
+                Logger.getLogger(this,
+                        "Root folder is null!").rawError();
+            }
+
             System.exit(1);
         }
     }
