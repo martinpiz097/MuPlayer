@@ -9,6 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class KeyInputEvent extends NativeInputEvent {
     private final int key;
+    private final byte[] sequenceBytes;
 
     @Override
     public char nextChar() {

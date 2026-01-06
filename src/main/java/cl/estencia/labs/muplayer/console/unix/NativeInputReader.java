@@ -11,11 +11,11 @@ import lombok.Getter;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.*;
-import static cl.estencia.labs.muplayer.console.unix.InputMode.SINGLE_CHAR;
-import static cl.estencia.labs.muplayer.console.unix.InputMode.WORDS;
+import static cl.estencia.labs.muplayer.console.unix.InputMode.COMMANDS;
 import static cl.estencia.labs.muplayer.console.util.SystemCommandExecutor.getTerminalWidth;
 
 public class NativeInputReader {
@@ -26,29 +26,23 @@ public class NativeInputReader {
     private final List<KeyInputListener> keyInputListeners;
     private final List<LineInputListener> lineInputListeners;
     private final InputModeConfig inputModeConfig;
+    private final ConsoleHistory consoleHistory;
 
     public NativeInputReader() {
         this(ESC);
     }
 
     public NativeInputReader(int unlockKeyCode) {
-        this(unlockKeyCode, WORDS);
+        this(unlockKeyCode, COMMANDS);
     }
 
     public NativeInputReader(int unlockKeyCode, InputMode inputMode) {
         this.unlockKeyCode = unlockKeyCode;
-        this.inputModeConfig = new InputModeConfig(inputMode);
+        this.inputModeConfig = new InputModeConfig(inputMode, EXT_F5);
         this.sbInput = new StringBuilder();
         this.keyInputListeners = CollectionUtil.newFastArrayList();
         this.lineInputListeners = CollectionUtil.newFastArrayList();
-    }
-
-    private void sendInputEvent(char key) {
-        sendInputEvent(new KeyInputEvent(key));
-    }
-
-    private void sendInputEvent(String line) {
-        sendInputEvent(new LineInputEvent(line));
+        this.consoleHistory = new ConsoleHistory();
     }
 
     private void sendInputEvent(KeyInputEvent event) {
@@ -82,32 +76,38 @@ public class NativeInputReader {
         }
     }
 
+    private String cartReturn() {
+        return '\r' + (" ".repeat(getTerminalWidth())) + '\r';
+    }
+
     private void printKey(int key) {
         if (key == DELETE) {
-            IO.print("\r" + (" ".repeat(getTerminalWidth())) + '\r' + sbInput.toString());
+            IO.print(cartReturn() + sbInput.toString());
         } else {
             IO.print((char) key);
         }
     }
 
-    private void handleInput(int key) {
+    private void handleInput(int key, byte[] sequence) {
         InputMode inputMode = inputModeConfig.getInputMode();
 
         switch (key) {
             case '\n' -> {
                 switch (inputMode) {
-                    case SINGLE_CHAR -> sendInputEvent(new KeyInputEvent(key));
-                    case WORDS -> {
+                    case SINGLE_SHORCUTS -> sendInputEvent(new KeyInputEvent(key, sequence));
+                    case COMMANDS -> {
                         String line = sbInput.toString();
-                        Thread.ofVirtual().start(() -> sendInputEvent(line));
+                        consoleHistory.addCommand(line);
+
+                        Thread.ofVirtual().start(() -> sendInputEvent(new LineInputEvent(line)));
                         sbInput.delete(0, sbInput.length());
                     }
                 }
             }
             case DELETE -> {
                 switch (inputMode) {
-                    case SINGLE_CHAR -> sendInputEvent(new KeyInputEvent(key));
-                    case WORDS -> {
+                    case SINGLE_SHORCUTS -> sendInputEvent(new KeyInputEvent(key, sequence));
+                    case COMMANDS -> {
                         if (!sbInput.isEmpty()) {
                             sbInput.deleteCharAt(sbInput.length() - 1);
                         }
@@ -116,13 +116,52 @@ public class NativeInputReader {
             }
             default -> {
                 switch (inputMode) {
-                    case SINGLE_CHAR -> sendInputEvent(new KeyInputEvent(key));
-                    case WORDS -> sbInput.append((char)key);
+                    case SINGLE_SHORCUTS -> sendInputEvent(new KeyInputEvent(key, sequence));
+                    case COMMANDS -> sbInput.append((char) key);
                 }
             }
         }
 
-        if (inputMode == WORDS) {
+        if (inputMode == COMMANDS) {
+            printKey(key);
+        }
+
+    }
+
+    private void handleSequenceInput(int key, byte[] sequence) {
+        InputMode inputMode = inputModeConfig.getInputMode();
+        switch (key) {
+            case '\n' -> {
+                switch (inputMode) {
+                    case SINGLE_SHORCUTS -> sendInputEvent(new KeyInputEvent(key, sequence));
+                    case COMMANDS -> {
+                        String line = sbInput.toString();
+                        consoleHistory.addCommand(line);
+
+                        Thread.ofVirtual().start(() -> sendInputEvent(new LineInputEvent(line)));
+                        sbInput.delete(0, sbInput.length());
+                    }
+                }
+            }
+            case DELETE -> {
+                switch (inputMode) {
+                    case SINGLE_SHORCUTS -> sendInputEvent(new KeyInputEvent(key, sequence));
+                    case COMMANDS -> {
+                        if (!sbInput.isEmpty()) {
+                            sbInput.deleteCharAt(sbInput.length() - 1);
+                        }
+                    }
+                }
+            }
+            default -> {
+                switch (inputMode) {
+                    case SINGLE_SHORCUTS -> sendInputEvent(new KeyInputEvent(key, sequence));
+                    case COMMANDS -> sbInput.append((char) key);
+                }
+            }
+        }
+
+        if (inputMode == COMMANDS) {
             printKey(key);
         }
 
@@ -161,19 +200,52 @@ public class NativeInputReader {
 
         new Thread(() -> {
             try (var reader = new FileInputStream(FileDescriptor.in)) {
+                byte[] buffer = new byte[8];
+                byte[] sequence;
+                int key;
                 while (true) {
-                    int key = reader.read();
+                    int read = reader.read(buffer);
+                    if (read <= 0) {
+                        continue;
+                    }
 
-                    if (key == unlockKeyCode) {
-                        inputBlocked = !inputBlocked;
-                    } else if (!inputBlocked) {
-                        if (key == inputModeConfig.getToggleModeKey()) {
-                            inputModeConfig.toggleInputMode();
-                            System.out.println("Changed to input mode: " + inputModeConfig.getInputMode());
-                        } else {
-                            handleInput(key);
+//                    System.out.println("Read: " + read);
+//                    System.out.println("Readed: " + Arrays.toString(
+//                            Arrays.copyOf(buffer, read)));
+
+                    sequence = Arrays.copyOf(buffer, read);
+                    if (read > 1) {
+                        key = read == 3 ? parseSequence(sequence) : parseExtendedSequence(sequence);
+                        if (key == unlockKeyCode) {
+                            inputBlocked = !inputBlocked;
+//                            System.out.println(inputBlocked ? "Blocked!" : "Unlocked!");
+                        } else if (!inputBlocked) {
+                            if (key == SEQ_UP) {
+                                System.out.print(cartReturn() + consoleHistory.getPrevCommand());
+                            } else if (key == SEQ_DOWN) {
+                                System.out.print(cartReturn() + consoleHistory.getNextCommand());
+                            } else if (key == inputModeConfig.getToggleModeKey()) {
+                                inputModeConfig.toggleInputMode();
+//                                System.out.println("Changed to input mode: " + inputModeConfig.getInputMode());
+                            } else {
+                                handleSequenceInput(key, sequence);
+                            }
+                        }
+                    } else {
+                        key = sequence[0];
+                        if (key == unlockKeyCode) {
+                            inputBlocked = !inputBlocked;
+//                            System.out.println(inputBlocked ? "Blocked!" : "Unlocked!");
+                        } else if (!inputBlocked) {
+                            if (key == inputModeConfig.getToggleModeKey()) {
+                                inputModeConfig.toggleInputMode();
+//                                System.out.println("Changed to input mode: " + inputModeConfig.getInputMode());
+                            } else {
+                                handleInput(key, sequence);
+                            }
                         }
                     }
+
 
                 }
             } catch (IOException ignored) {}
