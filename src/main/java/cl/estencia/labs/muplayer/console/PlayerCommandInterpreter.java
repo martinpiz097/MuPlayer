@@ -120,6 +120,9 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     player.removeAllResponseListeners();
                     player.addResponseListener(muPlayerResponse -> {
                         playerCurrentData.set(muPlayerResponse);
+
+                        // como se imprime aca solo la info de la track, podria imprimirse tambien
+                        // el header del local runner
                         showTrackInfo(muPlayerResponse.getCurrentTrack(), null);
                     });
 

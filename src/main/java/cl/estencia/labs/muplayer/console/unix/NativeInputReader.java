@@ -10,9 +10,8 @@ import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
@@ -37,7 +36,8 @@ public class NativeInputReader extends Thread {
 
     private final InputModeConfig inputModeConfig;
     private final ConsoleHistory consoleHistory;
-    private final AtomicReference<String> lineRef;
+
+//    private final AtomicReference<String> lineRef;
 
     public NativeInputReader() {
         this(ESC);
@@ -56,8 +56,7 @@ public class NativeInputReader extends Thread {
         this.keyInputListeners = CollectionUtil.newFastArrayList();
         this.lineInputListeners = CollectionUtil.newFastArrayList();
         this.consoleHistory = new ConsoleHistory();
-        this.lineRef = new AtomicReference<>();
-
+        setName("native-input-reader");
         loadDefaultKeyInterceptors();
     }
 
@@ -104,93 +103,41 @@ public class NativeInputReader extends Thread {
         }
     }
 
+    private void handleShorcut(int key, byte[] sequence) {
+        sendInputEvent(new KeyInputEvent(key, sequence));
+    }
+
+    private void handleCommand(int key, byte[] sequence) {
+        switch (key) {
+            case LINE_BREAK_CHAR -> {
+                String line = sbInput.toString();
+                consoleHistory.addCommand(line);
+                sbInput.delete(0, sbInput.length());
+
+                Thread.ofVirtual().start(() -> sendInputEvent(
+                        new LineInputEvent(line)));
+            }
+            case DELETE -> {
+                if (!sbInput.isEmpty()) {
+                    sbInput.deleteCharAt(sbInput.length() - 1);
+                    consoleHistory.updateLastCommand(sbInput.toString());
+                }
+            }
+            default -> {
+                sbInput.append((char) key);
+                consoleHistory.updateLastCommand(sbInput.toString());
+            }
+        }
+
+        printKey(key);
+    }
+
     private void handleInput(int key, byte[] sequence) {
         InputMode inputMode = inputModeConfig.getInputMode();
 
-        switch (key) {
-            case LINE_BREAK_CHAR -> {
-                switch (inputMode) {
-                    case SINGLE_SHORCUTS -> sendInputEvent(new KeyInputEvent(key, sequence));
-                    case COMMANDS -> {
-                        String line = sbInput.toString();
-
-                        synchronized (lineRef) {
-                            this.lineRef.set(line);
-                        }
-                        consoleHistory.addCommand(line);
-
-                        Thread.ofVirtual().start(() -> sendInputEvent(
-                                new LineInputEvent(line)));
-                        sbInput.delete(0, sbInput.length());
-                    }
-                }
-            }
-            case DELETE -> {
-                switch (inputMode) {
-                    case SINGLE_SHORCUTS -> sendInputEvent(new KeyInputEvent(key, sequence));
-                    case COMMANDS -> {
-                        if (!sbInput.isEmpty()) {
-                            sbInput.deleteCharAt(sbInput.length() - 1);
-                        }
-                    }
-                }
-            }
-            default -> {
-                switch (inputMode) {
-                    case SINGLE_SHORCUTS -> sendInputEvent(new KeyInputEvent(key, sequence));
-                    case COMMANDS -> sbInput.append((char) key);
-                }
-            }
-        }
-
-        if (inputMode == COMMANDS) {
-            printKey(key);
-        }
-
-    }
-
-    private void handleSequenceInput(int key, byte[] sequence) {
-        InputMode inputMode = inputModeConfig.getInputMode();
-        switch (key) {
-            case '\n' -> {
-                switch (inputMode) {
-                    case SINGLE_SHORCUTS -> sendInputEvent(new KeyInputEvent(key, sequence));
-                    case COMMANDS -> {
-                        String line = sbInput.toString();
-
-                        synchronized (lineRef) {
-                            this.lineRef.set(line);
-                        }
-                        consoleHistory.addCommand(line);
-
-                        Thread.ofVirtual().start(() -> sendInputEvent(
-                                new LineInputEvent(line)));
-                        sbInput.delete(0, sbInput.length());
-                    }
-                }
-            }
-            case DELETE -> {
-                switch (inputMode) {
-                    case SINGLE_SHORCUTS -> sendInputEvent(new KeyInputEvent(key, sequence));
-                    case COMMANDS -> {
-                        if (!sbInput.isEmpty()) {
-                            sbInput.deleteCharAt(sbInput.length() - 1);
-                        }
-                    }
-                }
-            }
-            default -> {
-                consoleHistory.addCommand(String.valueOf((char) key));
-
-                switch (inputMode) {
-                    case SINGLE_SHORCUTS -> sendInputEvent(new KeyInputEvent(key, sequence));
-                    case COMMANDS -> sbInput.append((char) key);
-                }
-            }
-        }
-
-        if (inputMode == COMMANDS) {
-            printKey(key);
+        switch (inputMode) {
+            case SINGLE_SHORCUTS -> handleShorcut(key, sequence);
+            case COMMANDS -> handleCommand(key, sequence);
         }
 
     }
@@ -263,8 +210,16 @@ public class NativeInputReader extends Thread {
         }
     }
 
-    public void clearAllListeners() {
-        keyInputListeners.clear();;
+    public void clearAllKeyInputListeners() {
+        synchronized (keyInputListeners) {
+            keyInputListeners.clear();
+        }
+    }
+
+    public void clearAllLineInputListeners() {
+        synchronized (lineInputListeners) {
+            lineInputListeners.clear();
+        }
     }
 
     public void addKeyInterceptor(KeyInputListener keyListener) {
@@ -293,22 +248,17 @@ public class NativeInputReader extends Thread {
     }
 
     public void clearAllKeyInterceptors() {
-        keyInterceptors.clear();
-        ;
+        synchronized (keyInterceptors) {
+            keyInterceptors.clear();
+        }
     }
 
-    public String getLine() {
-        while (lineRef.get() == null) {
-            ThreadUtil.sleepInMillis(1);
-        }
-
-        String auxLine;
-        synchronized (lineRef) {
-            auxLine = lineRef.get();
-            lineRef.set(null);
-        }
-
-        return auxLine;
+    public void shutdown() {
+        interrupt();
+        restoreTerminal();
+        clearAllKeyInterceptors();
+        clearAllKeyInputListeners();
+        clearAllLineInputListeners();
     }
 
     @SneakyThrows

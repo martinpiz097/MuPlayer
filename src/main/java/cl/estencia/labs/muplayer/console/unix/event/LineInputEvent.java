@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import static cl.estencia.labs.aucom.common.IOConstants.EOF;
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK;
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
 
 @Getter
 @Setter
@@ -16,6 +18,15 @@ public class LineInputEvent extends NativeInputEvent {
     public LineInputEvent(String input) {
         this.sbInput = new StringBuilder(input);
         this.charIterator = 0;
+    }
+
+    public boolean isEmptyLine() {
+        return sbInput.isEmpty() || sbInput.toString().isBlank()
+                || (isOnlyBackspace());
+    }
+
+    public boolean isOnlyBackspace() {
+        return !sbInput.isEmpty() && sbInput.toString().trim().equals(LINE_BREAK);
     }
 
     @Override

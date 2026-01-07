@@ -24,11 +24,17 @@ public class Command {
 
     public Command(String strCmd) {
         String[] cmdSplit = strCmd.split(CMD_SPLIT_DELIMITER);
-        order = cmdSplit[ORDER_INDEX];
-        if (cmdSplit.length > UNIQUE_OPTION_CMD_VALUE)
-            options = Arrays.copyOfRange(cmdSplit, FIRST_OPTION_INDEX, cmdSplit.length);
-        else
-            options = null;
+        if (cmdSplit.length > 0) {
+            order = cmdSplit[ORDER_INDEX];
+            if (cmdSplit.length > UNIQUE_OPTION_CMD_VALUE) {
+                options = Arrays.copyOfRange(cmdSplit, FIRST_OPTION_INDEX, cmdSplit.length);
+            } else {
+                options = null;
+            }
+        } else {
+            order = "";
+            options = new String[0];
+        }
     }
 
     public boolean hasNotOptions() {

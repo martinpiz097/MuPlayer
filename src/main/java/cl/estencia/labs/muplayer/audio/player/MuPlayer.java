@@ -72,7 +72,7 @@ public class MuPlayer extends Player implements SystemVolumeController {
         this.playerStatusData = new PlayerStatusData();
         this.muPlayerUtil = new MuPlayerUtil(this, playerStatusData);
         this.audioSystemManager = new AudioSystemManager();
-        this.interruptor = Interruptor.manual(this);
+        this.interruptor = Interruptor.auto(this);
         this.messageBus = MessageBusUtil.getMessageBus();
 
         setName("MuPlayer " + getId());

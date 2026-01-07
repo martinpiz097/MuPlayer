@@ -6,11 +6,11 @@ import java.util.List;
 
 public class ConsoleHistory {
     private final List<String> commands;
-    private volatile int currentIndex;
+    private volatile int currentCommandIndex;
 
     public ConsoleHistory() {
         this.commands = CollectionUtil.newFastArrayList();
-        this.currentIndex = 0;
+        this.currentCommandIndex = 0;
     }
 
     public void addCommand(String cmd) {
@@ -19,15 +19,27 @@ public class ConsoleHistory {
         }
 
         commands.add(cmd.trim());
-        currentIndex = commands.size();
+        currentCommandIndex = commands.size();
     }
 
-    private void changeIndex(boolean next) {
+    public void changeIndex(boolean next) {
         if (next) {
-            currentIndex = Math.min(currentIndex + 1, commands.size() - 1);
+            currentCommandIndex = Math.min(currentCommandIndex + 1, commands.size() - 1);
         } else {
-            currentIndex = Math.max(currentIndex - 1, 0);
+            currentCommandIndex = Math.max(currentCommandIndex - 1, 0);
         }
+    }
+
+    public void updateLastCommand(String cmd) {
+        if (commands.isEmpty()) {
+            addCommand(cmd);
+            return;
+        }
+        if (cmd == null || cmd.isBlank()) {
+            return;
+        }
+
+        commands.set(commands.size() - 1, cmd.trim());
     }
 
     public String getPrevCommand() {
@@ -36,7 +48,7 @@ public class ConsoleHistory {
         }
 
         changeIndex(false);
-        return commands.get(currentIndex);
+        return commands.get(currentCommandIndex);
     }
 
     public String getNextCommand() {
@@ -45,7 +57,7 @@ public class ConsoleHistory {
         }
 
         changeIndex(true);
-        return commands.get(currentIndex);
+        return commands.get(currentCommandIndex);
     }
 
 }
