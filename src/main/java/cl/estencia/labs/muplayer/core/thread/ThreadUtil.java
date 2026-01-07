@@ -5,6 +5,9 @@ import cl.estencia.labs.muplayer.core.system.Time;
 import org.orangelogger.sys.Logger;
 
 import java.io.File;
+import java.time.Duration;
+import java.time.temporal.TemporalUnit;
+import java.util.concurrent.locks.LockSupport;
 
 public class ThreadUtil {
 
@@ -17,6 +20,18 @@ public class ThreadUtil {
         final String trackName = dataSource != null ? dataSource.getName() : dataSource.toString();
         final int lengthLimit = Math.min(trackName.length(), 10);
         return threadClass.getSimpleName()+" (track=" + trackName.substring(0, lengthLimit) + ")";
+    }
+
+    public static void sleepInSeconds(int seconds) {
+        LockSupport.parkNanos(Duration.ofSeconds(seconds).toNanos());
+    }
+
+    public static void sleepInMillis(long millis) {
+        LockSupport.parkNanos(Duration.ofMillis(millis).toNanos());
+    }
+
+    public static void sleepInNanos(long nanos) {
+        LockSupport.parkNanos(nanos);
     }
 
 }
