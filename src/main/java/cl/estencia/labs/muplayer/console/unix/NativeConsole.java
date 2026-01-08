@@ -5,19 +5,13 @@ import cl.estencia.labs.muplayer.console.unix.event.LineInputEvent;
 import cl.estencia.labs.muplayer.console.unix.listener.KeyInputListener;
 import cl.estencia.labs.muplayer.console.unix.listener.LineInputListener;
 import cl.estencia.labs.muplayer.console.unix.listener.NativeInputListener;
-import cl.estencia.labs.muplayer.core.thread.ThreadUtil;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.LockSupport;
 
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
 import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.*;
@@ -25,7 +19,7 @@ import static cl.estencia.labs.muplayer.console.unix.InputMode.COMMANDS;
 import static cl.estencia.labs.muplayer.console.util.SystemCommandExecutor.getTerminalWidth;
 
 @Getter
-public class NativeInputReader extends Thread {
+public class NativeConsole extends Thread {
     private volatile boolean inputBlocked;
     private final int unlockKeyCode;
     private final StringBuilder sbInput;
@@ -39,15 +33,15 @@ public class NativeInputReader extends Thread {
 
 //    private final AtomicReference<String> lineRef;
 
-    public NativeInputReader() {
+    public NativeConsole() {
         this(ESC);
     }
 
-    public NativeInputReader(int unlockKeyCode) {
+    public NativeConsole(int unlockKeyCode) {
         this(unlockKeyCode, COMMANDS);
     }
 
-    public NativeInputReader(int unlockKeyCode, InputMode inputMode) {
+    public NativeConsole(int unlockKeyCode, InputMode inputMode) {
         this.inputBlocked = true;
         this.unlockKeyCode = unlockKeyCode;
         this.inputModeConfig = new InputModeConfig(inputMode, EXT_F5);

@@ -1,24 +1,21 @@
 package cl.estencia.labs.muplayer.console.runner;
 
 import cl.estencia.labs.ebot.utils.threads.Interruptor;
-import cl.estencia.labs.ebot.utils.threads.InterruptorType;
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols;
 import cl.estencia.labs.muplayer.console.common.constants.KeyCodes;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
 import cl.estencia.labs.muplayer.console.unix.InputMode;
-import cl.estencia.labs.muplayer.console.unix.NativeInputReader;
+import cl.estencia.labs.muplayer.console.unix.NativeConsole;
 import cl.estencia.labs.muplayer.console.unix.event.KeyInputEvent;
 import cl.estencia.labs.muplayer.console.unix.event.LineInputEvent;
 import cl.estencia.labs.muplayer.console.unix.listener.KeyInputListener;
 import cl.estencia.labs.muplayer.console.unix.listener.LineInputListener;
-import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import cl.estencia.labs.muplayer.core.system.SysInfo;
 import org.orangelogger.sys.Logger;
 
-import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -27,7 +24,7 @@ import static cl.estencia.labs.muplayer.core.cache.CacheVar.NATIVE_INPUT_READER;
 
 public class LocalRunner extends ConsoleRunner {
     protected final Scanner scanner;
-    protected final NativeInputReader nativeInputReader;
+    protected final NativeConsole nativeConsole;
     protected final Interruptor interruptor;
 
     public LocalRunner() throws FileNotFoundException {
@@ -45,11 +42,11 @@ public class LocalRunner extends ConsoleRunner {
     public LocalRunner(Player player) {
         super(player);
         scanner = new Scanner(System.in);
-        nativeInputReader = new NativeInputReader();
+        nativeConsole = new NativeConsole();
         interruptor = Interruptor.manual();
     }
 
-    private void processCmd(String cmd) {
+    private void processCommand(String cmd) {
         if (!cmd.isEmpty()) {
             ConsoleOutput consoleOutput = execCommand(cmd);
             if (consoleOutput != null && consoleOutput.hasOutput()) {
@@ -58,35 +55,41 @@ public class LocalRunner extends ConsoleRunner {
         }
     }
 
-    private void processCmd(char shorcut) {
-        processCmd(String.valueOf(shorcut));
+    private void processShorcut(char shorcut) {
+        processCommand(String.valueOf(shorcut));
     }
 
     private void loadKeyInterceptors() {
-        nativeInputReader.addKeyInterceptors(
+        nativeConsole.addKeyInterceptors(
                 new KeyInputListener(KeyCodes.SEQ_RIGHT) {
                     @Override
                     public void onInput(KeyInputEvent event) {
-                        processCmd("k 10");
+                        processCommand("k 10");
                     }
                 },
                 new KeyInputListener(KeyCodes.SEQ_LEFT) {
                     @Override
                     public void onInput(KeyInputEvent event) {
-                        processCmd("k -10");
+                        processCommand("k -10");
+                    }
+                },
+                new KeyInputListener(KeyCodes.EXT_DELETE) {
+                    @Override
+                    public void onInput(KeyInputEvent event) {
+                        processCommand("clear");
                     }
                 });
     }
 
     private void loadInputListeners() {
-        nativeInputReader.addInputListeners(new KeyInputListener((Character) null) {
+        nativeConsole.addInputListeners(new KeyInputListener((Character) null) {
             @Override
             public void onInput(KeyInputEvent event) {
                 if (event.getKey() == KeyCodes.SPACE) {
                     return;
                 }
                 if (event.getKey() != ConsoleSymbols.LINE_BREAK_CHAR) {
-                    processCmd((char) event.getKey());
+                    processShorcut((char) event.getKey());
                 } else {
                     System.out.print((char) event.getKey());
                 }
@@ -95,12 +98,12 @@ public class LocalRunner extends ConsoleRunner {
             }
         });
 
-        nativeInputReader.addInputListeners(new LineInputListener() {
+        nativeConsole.addInputListeners(new LineInputListener() {
             @Override
             public void onInput(LineInputEvent event) {
                 if (!event.isEmptyLine()) {
                     String line = event.getLine();
-                    processCmd(line);
+                    processCommand(line);
                 }
 
                 printConsoleHeader();
@@ -110,8 +113,8 @@ public class LocalRunner extends ConsoleRunner {
     }
 
     private void setupNativeReader() {
-        nativeInputReader.setInputBlocked(false);
-        nativeInputReader.getInputModeConfig().setInputMode(InputMode.COMMANDS);
+        nativeConsole.setInputBlocked(false);
+        nativeConsole.getInputModeConfig().setInputMode(InputMode.COMMANDS);
         loadKeyInterceptors();
         loadInputListeners();
     }
@@ -127,8 +130,8 @@ public class LocalRunner extends ConsoleRunner {
         validateRootFolder();
         setupNativeReader();
 
-        nativeInputReader.start();
-        globalCacheManager.saveValue(NATIVE_INPUT_READER, nativeInputReader);
+        nativeConsole.start();
+        globalCacheManager.saveValue(NATIVE_INPUT_READER, nativeConsole);
 
         final String appVersion = SysInfo.readAppVersion();
         final String msg = appVersion != null
@@ -144,7 +147,7 @@ public class LocalRunner extends ConsoleRunner {
 
         final ConsoleRunner runner = globalCacheManager.loadValue(CacheVar.RUNNER);
         if (runner == null || runner instanceof LocalRunner) {
-            nativeInputReader.shutdown();
+            nativeConsole.shutdown();
             System.exit(0);
         }
     }
