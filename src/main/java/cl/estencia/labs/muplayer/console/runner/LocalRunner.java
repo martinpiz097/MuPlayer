@@ -46,7 +46,7 @@ public class LocalRunner extends ConsoleRunner {
         super(player);
         scanner = new Scanner(System.in);
         nativeInputReader = new NativeInputReader();
-        interruptor = Interruptor.auto();
+        interruptor = Interruptor.manual();
     }
 
     private void processCmd(String cmd) {
