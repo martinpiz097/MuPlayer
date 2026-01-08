@@ -60,18 +60,4 @@ public class CollectionUtil {
                 .anyMatch(fp -> fp.getPath().equals(folderPath));
     }
 
-    // si incluyo paralelismo en este metodo, debo crear otro o gestionar con parametro boolean,
-    // ya que hay algunos casos en los que si necesito secuencialidad
-    public TrackIndexed getTrackIndexedFromCondition(List<Track> listTracks, Predicate<Track> filter) {
-        int index = 0;
-
-        for (Track track : listTracks) {
-            if (filter.test(track)) {
-                return new TrackIndexed(track, index);
-            }
-            index++;
-        }
-        return null;
-    }
-
 }
