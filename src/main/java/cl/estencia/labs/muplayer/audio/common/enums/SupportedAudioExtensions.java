@@ -12,4 +12,6 @@ public enum SupportedAudioExtensions {
 //    pcm,    // Pulse Code Modulation (raw)
     snd,    // Sound
     wav,    // Waveform Audio File Format
+    //m4a,
+    //aac
 }

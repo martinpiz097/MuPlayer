@@ -25,7 +25,7 @@ public interface ReportablePlayer {
     Track getPrevious();
     File getRootFolder();
     List<Track> getTracks();
-    List<File> getListSoundFiles();
+    List<File> getTrackFiles();
     List<File> getListFolders();
     List<Artist> getArtists();
     List<Album> getAlbums();

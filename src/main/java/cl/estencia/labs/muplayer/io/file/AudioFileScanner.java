@@ -21,7 +21,7 @@ public class AudioFileScanner {
     }
 
     public Track loadTrack() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
-        if (!AudioFileUtil.hasAudioFormatExtension(audioFile)) {
+        if (!AudioFileUtil.isSupportedAudioFile(audioFile)) {
             return null;
         }
 

@@ -47,6 +47,10 @@ public class CollectionUtil {
         return new TreeMap<>();
     }
 
+    public static <T> Set<T> newHashSet() {
+        return new HashSet<>();
+    }
+
     public static <T> Stream<T> streamOf(T[] array, boolean parallel) {
         return parallel ? Arrays.asList(array).parallelStream() : Arrays.asList(array).stream();
     }

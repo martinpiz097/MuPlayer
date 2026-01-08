@@ -5,7 +5,6 @@ import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.audio.common.enums.SupportedAudioExtensions;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 
 public class AudioFileUtil {
@@ -13,26 +12,32 @@ public class AudioFileUtil {
     private static final String EMPTY = "";
 
     public static String getFileFormatName(File file) {
-        return file != null && !file.isDirectory()
-                ? getFileFormatName(file.getName())
-                : null;
+        if (file == null || file.isDirectory()) {
+            return null;
+        }
+
+        return getFileFormatName(file.getName());
     }
 
     public static String getFileFormatName(String fileName) {
-        final String[] split = fileName.trim().split(FORMAT_NAME_DELIMITER);
-        return split.length > 0 ? split[split.length-1].toLowerCase().trim() : EMPTY;
+        if (!fileName.contains(FORMAT_NAME_DELIMITER)
+            || fileName.trim().endsWith(FORMAT_NAME_DELIMITER)) {
+            return null;
+        }
+
+        return fileName.split(FORMAT_NAME_DELIMITER)[1].trim().toLowerCase();
     }
 
-    public static boolean hasAudioFormatExtension(File audioFile) {
+    public static boolean isSupportedAudioFile(File audioFile) {
         return getAudioFileExtension(audioFile) != null;
     }
 
-    public static boolean hasAudioFormatExtension(Path audioPath) {
+    public static boolean isSupportedAudioFile(Path audioPath) {
         if (audioPath == null) {
             return false;
         }
 
-        return hasAudioFormatExtension(audioPath.toFile());
+        return isSupportedAudioFile(audioPath.toFile());
     }
 
     public static SupportedAudioExtensions getAudioFileExtension(File file) {
@@ -44,14 +49,6 @@ public class AudioFileUtil {
         try {
             return SupportedAudioExtensions.valueOf(fileFormatName);
         } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public static String getPath(File file) {
-        try {
-            return file != null ? file.getCanonicalPath() : null;
-        } catch (IOException e) {
             return null;
         }
     }

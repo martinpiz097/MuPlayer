@@ -16,6 +16,7 @@ import cl.estencia.labs.muplayer.core.util.FilterUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -27,6 +28,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static cl.estencia.labs.muplayer.audio.util.AudioFileUtil.isSupportedAudioFile;
 import static cl.estencia.labs.muplayer.core.thread.ThreadUtil.generateTrackThreadName;
 
 @Slf4j
@@ -38,48 +40,17 @@ public class MuPlayerUtil {
 
     private final TrackFactory trackFactory;
 
-    private final LogService logService;
-
     private final MessageBus messageBus;
 
     private static final byte NULL_INDEX_VALUE = Byte.MIN_VALUE;
 
-    public static final Comparator<File> TRACK_FILES_SORT_COMPARATOR = (o1, o2) -> {
-        if (o1 == null || o2 == null) {
-            return 0;
-        }
-
-        return o1.getPath().compareTo(o2.getPath());
-    };
-
-    public static final Comparator<Path> TRACK_PATHS_SORT_COMPARATOR = (o1, o2) -> {
-        if (o1 == null || o2 == null) {
-            return 0;
-        }
-
-        return TRACK_FILES_SORT_COMPARATOR.compare(o1.toFile(), o2.toFile());
-    };
-
-    public static final Comparator<Track> TRACKS_SORT_COMPARATOR = (o1, o2) -> {
-        if (o1 == null || o2 == null) {
-            return 0;
-        }
-
-        final File dataSource1 = o1.getDataSource();
-        final File dataSource2 = o2.getDataSource();
-        return TRACK_FILES_SORT_COMPARATOR.compare(dataSource1, dataSource2);
-    };
-
-    public static final Comparator<File> FOLDERS_COMPARATOR = Comparator.comparing(File::getPath);
-
     public MuPlayerUtil(Player player, PlayerStatusData playerStatusData) {
         this.player = player;
-        this.listTracks = player.getTrackFiles();
+        this.listTracks = player.getTracks();
         this.listFolders = player.getListFolders();
         this.playerStatusData = playerStatusData;
         this.trackFactory = new StandardTrackFactory();
 
-        this.logService = new LogServiceImpl();
         this.messageBus = MessageBusUtil.getMessageBus();
     }
 
@@ -112,47 +83,6 @@ public class MuPlayerUtil {
         }
     }
 
-    private void loadTracks(File folderToLoad) {
-//        Files.find()
-        try (Stream<Path> folderPaths = Files.walk(
-                Path.of(folderToLoad.toURI())).parallel()) {
-            if (player.hasSounds()) {
-                listTracks.clear();
-                listFolders.clear();
-            }
-
-            folderPaths
-                    .filter(path -> AudioFileUtil.isSupportedAudioFile(path.toFile()))
-                    .map(path -> loadTrackFromFile(path.toFile()))
-                    .filter(Objects::nonNull)
-                    .sorted(MuPlayerUtil.TRACKS_SORT_COMPARATOR)
-                    .sequential()
-                    .forEach(listTracks::add);
-
-            listTracks.parallelStream()
-                    .map(track -> track.getDataSource().getParentFile())
-                    .distinct()
-                    .sorted(MuPlayerUtil.FOLDERS_COMPARATOR)
-                    .sequential()
-                    .forEach(listFolders::add);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-    
-    private void checkRootFolder(Player player) throws FileNotFoundException {
-        File rootFolder = player.getRootFolder();
-        if (rootFolder != null && rootFolder.exists()
-                && FilterUtil.getDirectoriesFilter().accept(rootFolder)) {
-            loadTracks(player.getRootFolder());
-        } else if (rootFolder == null) {
-            logService.warningLog("To set music folder run this: smf ${music-folder-path}\n");
-        } else {
-            throw new FileNotFoundException(rootFolder.getPath());
-        }
-    }
-
     public boolean isCurrentTrackActive() {
         AtomicReference<Track> currentTrack = player.getCurrentTrack();
         return currentTrack.get() != null  && currentTrack.get().isActive();
@@ -178,13 +108,13 @@ public class MuPlayerUtil {
     // ya que hay algunos casos en los que si necesito secuencialidad
     public TrackIndexed getTrackIndexedFromCondition(Predicate<Track> filter) {
         int index = 0;
-
         for (Track track : listTracks) {
             if (filter.test(track)) {
                 return new TrackIndexed(track, index);
             }
             index++;
         }
+
         return null;
     }
 
@@ -246,6 +176,57 @@ public class MuPlayerUtil {
             player.getCurrentTrack().set(newTrack);
             startTrackThread(newTrack);
         }
+    }
+
+    public Comparator<File> createFoldersComparator() {
+        return Comparator.comparing(File::getPath);
+    }
+
+    public Comparator<File> createTrackFilesSortComparator() {
+        return (o1, o2) -> {
+            if (o1 == null || o2 == null) {
+                return 0;
+            }
+
+            return o1.getPath().compareTo(o2.getPath());
+        };
+    }
+
+    public Comparator<Path> createTrackPathsSortComparator() {
+        return (o1, o2) -> {
+            if (o1 == null || o2 == null) {
+                return 0;
+            }
+
+            return createTrackFilesSortComparator().compare(o1.toFile(), o2.toFile());
+        };
+    }
+
+    public Comparator<Track> createTracksSortComparator() {
+        return (o1, o2) -> {
+            if (o1 == null || o2 == null) {
+                return 0;
+            }
+
+            final File dataSource1 = o1.getDataSource();
+            final File dataSource2 = o2.getDataSource();
+            return createTrackFilesSortComparator().compare(dataSource1, dataSource2);
+        };
+    }
+
+    public FileFilter createTrackFileFilter() {
+        return pathname -> !pathname.isDirectory() && isSupportedAudioFile(pathname);
+    }
+
+    public FileFilter createFolderFilter() {
+        return pathname -> {
+            if (!pathname.isDirectory()) {
+                return false;
+            }
+
+            String[] list = pathname.list();
+            return list != null && list.length > 0;
+        };
     }
 
 }
