@@ -103,17 +103,17 @@ public class MuPlayer extends Player implements SystemVolumeController {
             }
 
             folderPaths
-                    .filter(AudioFileUtil::hasAudioFormatExtension)
+                    .filter(AudioFileUtil::isSupportedAudioFile)
                     .map(path -> muPlayerUtil.
                             loadTrackFromFile(path.toFile()))
                     .filter(Objects::nonNull)
-                    .sorted(MuPlayerUtil.TRACKS_SORT_COMPARATOR)
+                    .sorted(muPlayerUtil.createTracksSortComparator())
                     .forEachOrdered(listTracks::add);
 
             listTracks.parallelStream()
                     .map(track -> track.getDataSource().getParentFile())
                     .distinct()
-                    .sorted(MuPlayerUtil.FOLDERS_COMPARATOR)
+                    .sorted(muPlayerUtil.createFoldersComparator())
                     .forEachOrdered(listFolders::add);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -265,7 +265,7 @@ public class MuPlayer extends Player implements SystemVolumeController {
     }
 
     @Override
-    public synchronized List<File> getListSoundFiles() {
+    public synchronized List<File> getTrackFiles() {
         return listTracks.stream()
                 .map(Track::getDataSource)
                 .filter(Objects::nonNull)
