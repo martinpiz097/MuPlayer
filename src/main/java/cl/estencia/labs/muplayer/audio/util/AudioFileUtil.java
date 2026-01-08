@@ -12,20 +12,14 @@ public class AudioFileUtil {
     private static final String EMPTY = "";
 
     public static String getFileFormatName(File file) {
-        if (file == null || file.isDirectory()) {
-            return null;
-        }
-
-        return getFileFormatName(file.getName());
+        return file != null && !file.isDirectory()
+                ? getFileFormatName(file.getName())
+                : null;
     }
 
     public static String getFileFormatName(String fileName) {
-        if (!fileName.contains(FORMAT_NAME_DELIMITER)
-            || fileName.trim().endsWith(FORMAT_NAME_DELIMITER)) {
-            return null;
-        }
-
-        return fileName.split(FORMAT_NAME_DELIMITER)[1].trim().toLowerCase();
+        final String[] split = fileName.trim().split(FORMAT_NAME_DELIMITER);
+        return split.length > 1 ? split[split.length-1].toLowerCase().trim() : EMPTY;
     }
 
     public static boolean isSupportedAudioFile(File audioFile) {
