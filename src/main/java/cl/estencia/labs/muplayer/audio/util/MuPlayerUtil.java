@@ -44,6 +44,22 @@ public class MuPlayerUtil {
 
     private static final byte NULL_INDEX_VALUE = Byte.MIN_VALUE;
 
+    public static final Comparator<File> TRACK_FILES_SORT_COMPARATOR = (o1, o2) -> {
+        if (o1 == null || o2 == null) {
+            return 0;
+        }
+
+        return o1.getPath().compareTo(o2.getPath());
+    };
+
+    public static final Comparator<Path> TRACK_PATHS_SORT_COMPARATOR = (o1, o2) -> {
+        if (o1 == null || o2 == null) {
+            return 0;
+        }
+
+        return TRACK_FILES_SORT_COMPARATOR.compare(o1.toFile(), o2.toFile());
+    };
+
     public static final Comparator<Track> TRACKS_SORT_COMPARATOR = (o1, o2) -> {
         if (o1 == null || o2 == null) {
             return 0;
@@ -51,14 +67,14 @@ public class MuPlayerUtil {
 
         final File dataSource1 = o1.getDataSource();
         final File dataSource2 = o2.getDataSource();
-        return dataSource1.getPath().compareTo(dataSource2.getPath());
+        return TRACK_FILES_SORT_COMPARATOR.compare(dataSource1, dataSource2);
     };
 
     public static final Comparator<File> FOLDERS_COMPARATOR = Comparator.comparing(File::getPath);
 
     public MuPlayerUtil(Player player, PlayerStatusData playerStatusData) {
         this.player = player;
-        this.listTracks = player.getTracks();
+        this.listTracks = player.getTrackFiles();
         this.listFolders = player.getListFolders();
         this.playerStatusData = playerStatusData;
         this.trackFactory = new StandardTrackFactory();
@@ -106,7 +122,7 @@ public class MuPlayerUtil {
             }
 
             folderPaths
-                    .filter(path -> AudioFileUtil.hasAudioFormatExtension(path.toFile()))
+                    .filter(path -> AudioFileUtil.isSupportedAudioFile(path.toFile()))
                     .map(path -> loadTrackFromFile(path.toFile()))
                     .filter(Objects::nonNull)
                     .sorted(MuPlayerUtil.TRACKS_SORT_COMPARATOR)
@@ -134,6 +150,17 @@ public class MuPlayerUtil {
             logService.warningLog("To set music folder run this: smf ${music-folder-path}\n");
         } else {
             throw new FileNotFoundException(rootFolder.getPath());
+        }
+    }
+
+    public boolean isCurrentTrackActive() {
+        AtomicReference<Track> currentTrack = player.getCurrentTrack();
+        return currentTrack.get() != null  && currentTrack.get().isActive();
+    }
+
+    public void killCurrentTrackIfActive() {
+        if (isCurrentTrackActive()) {
+            player.getCurrentTrack().get().kill();
         }
     }
 
