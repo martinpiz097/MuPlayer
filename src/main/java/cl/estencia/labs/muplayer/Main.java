@@ -3,7 +3,6 @@ package cl.estencia.labs.muplayer;
 import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.muplayer.config.model.MessagesInfoKeys;
 import cl.estencia.labs.muplayer.config.reader.MessagesInfoReader;
-import cl.estencia.labs.muplayer.console.common.constants.KeyCodes;
 import cl.estencia.labs.muplayer.config.model.LogConfigKeys;
 import cl.estencia.labs.muplayer.config.model.MuPlayerConfigKeys;
 import cl.estencia.labs.muplayer.config.reader.LogConfigReader;
@@ -11,12 +10,6 @@ import cl.estencia.labs.muplayer.config.reader.MuPlayerConfigReader;
 import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
 import cl.estencia.labs.muplayer.console.runner.DaemonRunner;
 import cl.estencia.labs.muplayer.console.runner.LocalRunner;
-import cl.estencia.labs.muplayer.console.unix.InputMode;
-import cl.estencia.labs.muplayer.console.unix.NativeInputReader;
-import cl.estencia.labs.muplayer.console.unix.event.KeyInputEvent;
-import cl.estencia.labs.muplayer.console.unix.event.LineInputEvent;
-import cl.estencia.labs.muplayer.console.unix.listener.KeyInputListener;
-import cl.estencia.labs.muplayer.console.unix.listener.LineInputListener;
 import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import cl.estencia.labs.muplayer.core.cache.CacheVar;
@@ -30,11 +23,6 @@ import java.util.logging.LogManager;
 public class Main {
 
     static void main(String[] args) throws Exception {
-//        if (2 > 1) {
-//            NativeInputReader nativeInputReader = new NativeInputReader(KeyCodes.ESC);
-//            nativeInputReader.start();
-//        }
-
         setJvmAppName();
         MessagesInfoReader messagesInfoReader = MessagesInfoReader.getInstance();
         CacheManager globalCache = CacheManager.getGlobalCache();
