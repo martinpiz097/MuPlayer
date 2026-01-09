@@ -58,4 +58,8 @@ public class ConsoleUtil {
         return coloredString(data, outputType, withReset) + LINE_BREAK_CHAR;
     }
 
+    public static boolean isNumberKey(int key) {
+        return key > 47 && key < 58;
+    }
+
 }

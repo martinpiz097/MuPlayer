@@ -1,6 +1,7 @@
 package cl.estencia.labs.muplayer.console.model;
 
 import cl.estencia.labs.muplayer.console.util.ConsoleImageUtil;
+import cl.estencia.labs.muplayer.core.exception.MuPlayerException;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -8,6 +9,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+
+import static cl.estencia.labs.muplayer.console.util.ConsoleImageUtil.createStringQuadrant;
 
 public class ConsoleImage {
     private final BufferedImage originalBufferedImage;
@@ -50,20 +53,25 @@ public class ConsoleImage {
 
     public ConsoleImage(File imageFile, int width, int height) {
         this.originalBufferedImage = loadImage(imageFile);
-        this.width = width;
-        this.height = height;
+        this.width = Math.max(0, width);
+        this.height = Math.max(0, height);
     }
 
     public ConsoleImage(InputStream imageStream, int width, int height) {
         this.originalBufferedImage = loadImage(imageStream);
-        this.width = width;
-        this.height = height;
+        this.width = Math.max(0, width);
+        this.height = Math.max(0, height);
     }
 
     private BufferedImage loadImage(File imgFile) {
         try {
+            if (!imgFile.exists()) {
+                return null;
+            }
+
             return ImageIO.read(imgFile);
         } catch (IOException e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -83,25 +91,33 @@ public class ConsoleImage {
         graphics2D.dispose();
     }
 
-    private BufferedImage scaleImage(BufferedImage original, int targetWidth, int targetHeight) {
-        BufferedImage scaledBufferedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
-        drawImgAs2DGraphics(original, scaledBufferedImage, targetWidth, targetHeight);
+    private BufferedImage scaleImage(BufferedImage original) {
+        int scaledWidth = width > 0 ? width : original.getWidth();
+        int scaledHeight = height > 0 ? height : original.getHeight();
+        BufferedImage scaledBufferedImage = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_RGB);
 
+        drawImgAs2DGraphics(original, scaledBufferedImage, scaledWidth, scaledHeight);
         return scaledBufferedImage;
     }
 
     private int calculateWidth(int size) {
-        return size;
+        return size < 1 ? 0 : size;
     }
 
     private int calculateHeight(int size) {
+        if (size < 1) {
+            return 0;
+        }
+
         return Math.toIntExact(Math.round(((double) size) / 3));
     }
 
-    public String toConsoleString() {
-        final BufferedImage scaledBufferedImage = scaleImage(originalBufferedImage, width, height);
+    public String drawString() {
+        final BufferedImage scaledBufferedImage = scaleImage(originalBufferedImage);
+        int scaledWidth = scaledBufferedImage.getWidth();
+        int scaledHeight = scaledBufferedImage.getHeight();
 
-        return ConsoleImageUtil.createStringQuadrant(scaledBufferedImage, width, height);
+        return createStringQuadrant(scaledBufferedImage, scaledWidth, scaledHeight);
     }
 
 }
