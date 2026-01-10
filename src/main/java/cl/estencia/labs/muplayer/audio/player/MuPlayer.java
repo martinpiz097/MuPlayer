@@ -39,6 +39,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static cl.estencia.labs.muplayer.audio.track.state.TrackStateName.FINISHED;
 import static cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic.*;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.PREV;
@@ -158,7 +159,11 @@ public class MuPlayer extends Player implements SystemVolumeController {
             });
 
             messageBus.subscribe(PLAY_INDEX.name(), message -> {
-                int index = message.getData(Integer.class);
+                Integer index = message.getData(Integer.class);
+                if (index == null) {
+                    return;
+                }
+
                 play(index);
                 messageBus.publish(Messages.playerResponse(currentTrack, playerStatusData));
             });
@@ -185,6 +190,20 @@ public class MuPlayer extends Player implements SystemVolumeController {
                 stopTrack();
             });
 
+            messageBus.subscribe(SEEK_SECONDS.name(), message -> {
+                Integer seconds = message.getData(Integer.class);
+                if (seconds == null) {
+                    return;
+                }
+
+                Track current = currentTrack.get();
+                seek(seconds);
+
+                if (current != null && current.getStateName() == FINISHED) {
+                    messageBus.publish(Messages.playerResponse(currentTrack, playerStatusData));
+                }
+            });
+
             messageBus.subscribe(SKIP_TRACKS.name(), message -> {
                 SkipData skipData = message.getData(SkipData.class);
                 skipTracks(skipData.getSkipCount(), skipData.getSeekOption());
@@ -197,6 +216,20 @@ public class MuPlayer extends Player implements SystemVolumeController {
                 seekFolder(skipData.getSeekOption(), skipData.getSkipCount());
 
                 messageBus.publish(Messages.playerResponse(currentTrack, playerStatusData));
+            });
+
+            messageBus.subscribe(GOTO.name(), message -> {
+                Integer seconds = message.getData(Integer.class);
+                if (seconds == null) {
+                    return;
+                }
+
+                Track current = currentTrack.get();
+                gotoSecond(seconds);
+
+                if (current != null && current.getStateName() == FINISHED) {
+                    messageBus.publish(Messages.playerResponse(currentTrack, playerStatusData));
+                }
             });
 
             messageBus.subscribe(MUTE.name(), message -> {

@@ -125,8 +125,6 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     messageBus.subscribe(MuPlayerTopic.SHUTDOWN.name(),
                             message -> System.exit(0));
 
-//                    player.start();
-
                     messageBus.publish(Messages.start());
                 }
             }
@@ -254,11 +252,11 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
             }
             case sk -> {
                 if (isPlayerOn() && cmd.hasOptions()) {
-                    Number seekSec = cmd.getOptionAsNumber(0);
-                    if (seekSec == null) {
+                    Number seconds = cmd.getOptionAsNumber(0);
+                    if (seconds == null) {
                         consoleOutput.append("Seek value incorrect", error);
                     } else {
-                        player.seek(seekSec.doubleValue());
+                        messageBus.publish(Messages.seekSeconds(seconds.intValue()));
                     }
                 }
             }
@@ -308,16 +306,16 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
             }
             case u -> {
                 if (player.isAlive()) {
-                    player.reload();
+                    messageBus.publish(Messages.reload());
                 }
             }
             case g -> {
                 if (player.isAlive() && cmd.hasOptions()) {
-                    Number gotoSec = cmd.getOptionAsNumber(0);
-                    if (gotoSec == null) {
+                    Number seconds = cmd.getOptionAsNumber(0);
+                    if (seconds == null) {
                         consoleOutput.append("Go to value incorrect", error);
                     } else {
-                        player.gotoSecond(gotoSec.doubleValue());
+                        messageBus.publish(Messages.gotoSeconds(seconds.intValue()));
                     }
                 }
             }
@@ -359,7 +357,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                             final InputStream coverStream = new ByteArrayInputStream(coverData);
                             final ConsoleImage consoleImage = new ConsoleImage(coverStream);
 
-                            consoleMessage = consoleImage.toConsoleString();
+                            consoleMessage = consoleImage.drawString();
                         } else {
                             consoleMessage = ConsoleMessages.NO_COVER_MESSAGE;
                         }
@@ -413,6 +411,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
             }
             case h -> printHelp(cmd, consoleOutput);
             case sys -> {
+                // TODO corregir
                 if (cmd.hasOptions()) {
                     execSysCommand(cmd.getOptionsAsString());
                 }

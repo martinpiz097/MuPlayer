@@ -42,8 +42,6 @@ public class MuPlayerUtil {
 
     private final MessageBus messageBus;
 
-    private static final byte NULL_INDEX_VALUE = Byte.MIN_VALUE;
-
     public MuPlayerUtil(Player player, PlayerStatusData playerStatusData) {
         this.player = player;
         this.listTracks = player.getTracks();
@@ -52,24 +50,6 @@ public class MuPlayerUtil {
         this.trackFactory = new StandardTrackFactory();
 
         this.messageBus = MessageBusUtil.getMessageBus();
-    }
-
-    private boolean existsNewIndex(PlayerStatusData playerStatusData) {
-        return playerStatusData.getNewTrackIndex() != NULL_INDEX_VALUE;
-    }
-
-    private int getIndexToPlay(SeekOption seekOption, PlayerStatusData playerStatusData) {
-        return existsNewIndex(playerStatusData)
-                ? playerStatusData.getNewTrackIndex()
-                : AudioFileUtil.getIndexFromOption(seekOption, playerStatusData,
-                player.getSongsCount());
-    }
-
-    private void moveNewIndexCursorIfNotExists(SeekOption seekOption, PlayerStatusData playerStatusData) {
-        if (!existsNewIndex(playerStatusData)) {
-            final int index = getIndexToPlay(seekOption, playerStatusData);
-            playerStatusData.setNewTrackIndex(index);
-        }
     }
 
     public Track loadTrackFromFile(File audioFile) {

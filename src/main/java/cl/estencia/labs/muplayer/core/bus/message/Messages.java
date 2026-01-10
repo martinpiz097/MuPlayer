@@ -71,7 +71,11 @@ public class Messages {
     public static Message stop() {
         return createMsg(STOP);
     }
-    
+
+    public static Message seekSeconds(int seconds) {
+        return createMsg(SEEK_SECONDS, seconds);
+    }
+
     public static Message skipTracks(SkipData skipData) {
         return createMsg(SKIP_TRACKS, skipData);
     }
@@ -86,6 +90,10 @@ public class Messages {
 
     public static Message seekFolder(int skipCount, SeekOption seekOption) {
         return seekFolder(new SkipData(skipCount, seekOption));
+    }
+
+    public static Message gotoSeconds(int seconds) {
+        return createMsg(GOTO, seconds);
     }
 
     public static Message mute() {
