@@ -9,11 +9,11 @@ public abstract class KeyInputListener extends NativeInputListener<KeyInputEvent
         this((Character) null);
     }
 
-    protected KeyInputListener(Character key) {
+    public KeyInputListener(Character key) {
         this.key = key;
     }
 
-    protected KeyInputListener(Integer key) {
+    public KeyInputListener(Integer key) {
         this.key = key != null ? (char) key.intValue() : null;
     }
 
