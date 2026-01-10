@@ -32,10 +32,23 @@ public class SystemCommandExecutor {
 
     public static int getTerminalWidth() {
         try {
+            int realTerminalWidth = getRealTerminalWidth();
+            if (realTerminalWidth < 0) {
+                throw new Exception("No terminal width!");
+            }
+
+            return realTerminalWidth;
+        } catch (Exception e) {
+            return 100;
+        }
+    }
+
+    public static int getRealTerminalWidth() {
+        try {
             String output = ProcessManager.execute("sh", "-lc", "stty size < /dev/tty");
             return Integer.parseInt(output.trim().split(" ")[1].trim());
         } catch (Exception e) {
-            return 100;
+            return -1;
         }
     }
 
