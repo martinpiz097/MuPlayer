@@ -85,7 +85,7 @@ public class MuPlayer extends Player implements SystemVolumeController {
     }
 
     private void loadTracks(File folderToLoad) {
-        try (Stream<Path> folderPaths = Files.walk(
+        try (Stream<Path> paths = Files.walk(
                 Path.of(folderToLoad.toURI())).parallel()) {
             if (hasSounds()) {
                 muPlayerUtil.killActiveTracks();
@@ -95,8 +95,7 @@ public class MuPlayer extends Player implements SystemVolumeController {
                 listAudioFileScanners.clear();
             }
 
-            folderPaths
-                    .filter(AudioFileUtil::isSupportedAudioFile)
+            paths
                     .map(path -> muPlayerUtil.
                             loadTrackFromFile(path.toFile()))
                     .filter(Objects::nonNull)
