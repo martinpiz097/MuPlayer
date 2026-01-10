@@ -52,6 +52,10 @@ public class Messages {
         return createMsg(PLAY_INDEX, index);
     }
 
+    public static Message playFolder(int folderIndex) {
+        return createMsg(PLAY_FOLDER, folderIndex);
+    }
+
     public static Message play() {
         return createMsg(PLAY);
     }

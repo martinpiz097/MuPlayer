@@ -457,8 +457,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                 if (isPlayerOn() && cmd.hasOptions()) {
                     final Number fldIndex = cmd.getOptionAsNumber(0);
                     if (fldIndex != null && fldIndex.intValue() > 0) {
-                        player.playFolder(fldIndex.intValue() - 1);
-                        showTrackInfo(playerCurrentData.get().getCurrentTrack(), consoleOutput);
+                        messageBus.publish(Messages.playFolder(fldIndex.intValue() - 1));
                     }
                 }
             }

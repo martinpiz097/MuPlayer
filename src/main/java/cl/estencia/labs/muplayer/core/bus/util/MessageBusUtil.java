@@ -40,4 +40,8 @@ public class MessageBusUtil {
         return messageBus;
     }
 
+    public static void removeMessageBus() {
+        GLOBAL_CACHE_MANAGER.removeValue(MESSAGE_BUS);
+    }
+
 }

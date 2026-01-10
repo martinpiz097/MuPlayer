@@ -28,6 +28,7 @@ public class CacheManager {
         synchronized (mapCache) {
             mapCache.put(cacheVarName, value);
         }
+
         return value;
     }
 
@@ -45,6 +46,16 @@ public class CacheManager {
 
     public <V> V loadValue(String cacheVarName, Class<V> valueClass) {
         return valueClass.cast(mapCache.get(cacheVarName));
+    }
+
+    public void removeValue(CacheVar cacheVar) {
+        removeValue(cacheVar.name());
+    }
+
+    public void removeValue(String cacheVarName) {
+        synchronized (mapCache) {
+            mapCache.remove(cacheVarName);
+        }
     }
 
 }

@@ -16,8 +16,6 @@ public class KilledState extends TrackState {
             AudioDriverUtil.closeStream(decodedAudioStream);
             speaker.close();
             trackStatusData.setCanTrackContinue(false);
-
-//            track.interrupt();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

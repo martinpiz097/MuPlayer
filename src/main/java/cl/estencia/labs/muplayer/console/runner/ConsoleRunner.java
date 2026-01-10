@@ -6,9 +6,9 @@ import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.config.model.MuPlayerConfigKeys;
 import cl.estencia.labs.muplayer.config.reader.MuPlayerConfigReader;
 import cl.estencia.labs.muplayer.console.PlayerCommandInterpreter;
+import cl.estencia.labs.muplayer.console.common.enums.ConsoleHeaderMode;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
-import cl.estencia.labs.muplayer.console.common.enums.ConsoleHeaderMode;
 import cl.estencia.labs.muplayer.core.system.SysInfo;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -137,8 +137,7 @@ public abstract class ConsoleRunner implements Runnable {
         try {
             return interpreter.executeCommand(strCmd);
         } catch (Exception e) {
-            e.printStackTrace();
-//            log.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
 
         return null;
