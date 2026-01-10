@@ -3,8 +3,10 @@ package cl.estencia.labs.muplayer.console.runner;
 import cl.estencia.labs.ebot.utils.threads.Interruptor;
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.audio.player.Player;
+import cl.estencia.labs.muplayer.config.ResourceFiles;
 import cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols;
 import cl.estencia.labs.muplayer.console.common.constants.KeyCodes;
+import cl.estencia.labs.muplayer.console.model.ConsoleImage;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
 import cl.estencia.labs.muplayer.console.unix.InputMode;
 import cl.estencia.labs.muplayer.console.unix.NativeConsole;
@@ -12,14 +14,21 @@ import cl.estencia.labs.muplayer.console.unix.event.KeyInputEvent;
 import cl.estencia.labs.muplayer.console.unix.event.LineInputEvent;
 import cl.estencia.labs.muplayer.console.unix.listener.KeyInputListener;
 import cl.estencia.labs.muplayer.console.unix.listener.LineInputListener;
+import cl.estencia.labs.muplayer.console.util.ConsoleTextPainter;
+import cl.estencia.labs.muplayer.console.util.SystemCommandExecutor;
 import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import cl.estencia.labs.muplayer.core.system.SysInfo;
 import org.orangelogger.sys.Logger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Scanner;
 
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE;
+import static cl.estencia.labs.muplayer.console.util.ConsoleTextPainter.GradientStyle.LIGHTEN;
+import static cl.estencia.labs.muplayer.console.util.ConsoleTextPainter.paintMuPlayerStyle;
+import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.isNumberKey;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.NATIVE_INPUT_READER;
 
 public class LocalRunner extends ConsoleRunner {
@@ -60,6 +69,11 @@ public class LocalRunner extends ConsoleRunner {
     }
 
     private void loadKeyInterceptors() {
+        if (!nativeConsole.getKeyInterceptors().isEmpty()) {
+            nativeConsole.clearAllKeyInterceptors();
+        }
+
+        nativeConsole.loadDefaultKeyInterceptors();
         nativeConsole.addKeyInterceptors(
                 new KeyInputListener(KeyCodes.SEQ_RIGHT) {
                     @Override
@@ -81,22 +95,42 @@ public class LocalRunner extends ConsoleRunner {
                 });
     }
 
-    private void loadInputListeners() {
-        nativeConsole.addInputListeners(new KeyInputListener((Character) null) {
+    private void loadKeyListeners() {
+        if (!nativeConsole.getKeyInputListeners().isEmpty()) {
+            nativeConsole.clearAllKeyInputListeners();
+        }
+
+        nativeConsole.addInputListeners(new KeyInputListener() {
             @Override
             public void onInput(KeyInputEvent event) {
-                if (event.getKey() == KeyCodes.SPACE) {
+                int key = event.getKey();
+                if (key == KeyCodes.SPACE) {
                     return;
-                }
-                if (event.getKey() != ConsoleSymbols.LINE_BREAK_CHAR) {
-                    processShorcut((char) event.getKey());
+                } else if (isNumberKey(key)) {
+                    int number = Integer.parseInt(String.valueOf((char) key));
+                    if (number == 0) {
+                        number = 10;
+                    }
+
+                    processCommand("pf " + number);
+                } else if (key == KeyCodes.b || key == KeyCodes.B) {
+                    printBannerLogo();
+                } else if (key != ConsoleSymbols.LINE_BREAK_CHAR) {
+                    processShorcut((char) key);
                 } else {
-                    System.out.print((char) event.getKey());
+                    System.out.print((char) key);
                 }
 
                 printConsoleHeader();
             }
         });
+
+    }
+
+    private void loadLineListeners() {
+        if (!nativeConsole.getLineInputListeners().isEmpty()) {
+            nativeConsole.clearAllLineInputListeners();
+        }
 
         nativeConsole.addInputListeners(new LineInputListener() {
             @Override
@@ -112,11 +146,34 @@ public class LocalRunner extends ConsoleRunner {
 
     }
 
-    private void setupNativeReader() {
+    private void setupNativeConsole() {
         nativeConsole.setInputBlocked(false);
         nativeConsole.getInputModeConfig().setInputMode(InputMode.COMMANDS);
         loadKeyInterceptors();
-        loadInputListeners();
+        loadKeyListeners();
+        loadLineListeners();
+
+        nativeConsole.start();
+    }
+
+    private void printBannerLogo() {
+        int terminalWidth = SystemCommandExecutor.getRealTerminalWidth();
+
+        InputStream bannerStream = ResourceFiles.getResStream("/img/banner.png");
+        ConsoleImage image = new ConsoleImage(
+                bannerStream, 80, 15, terminalWidth);
+        String consoleString = image.drawString();
+        Logger.getLogger(this, consoleString).rawMessage();
+    }
+
+    private void printAppVersion() {
+        final String appVersion = SysInfo.readAppVersion();
+        if (appVersion == null || appVersion.isBlank()) {
+            return;
+        }
+
+        final String msg = "Version " + appVersion + " started!\n\n";
+        Logger.getLogger(this, paintMuPlayerStyle(msg, LIGHTEN)).rawMessage();
     }
 
     public void shutdown() {
@@ -128,16 +185,12 @@ public class LocalRunner extends ConsoleRunner {
         interruptor.setOwner(Thread.currentThread());
 
         validateRootFolder();
-        setupNativeReader();
+        setupNativeConsole();
 
-        nativeConsole.start();
         globalCacheManager.saveValue(NATIVE_INPUT_READER, nativeConsole);
 
-        final String appVersion = SysInfo.readAppVersion();
-        final String msg = appVersion != null
-                ? "MuPlayer v"+appVersion+" started..."
-                : "MuPlayer started...";
-        Logger.getLogger(this, msg).rawInfo();
+        printBannerLogo();
+        printAppVersion();
         interpreter.setOn(true);
 
         printConsoleHeader();

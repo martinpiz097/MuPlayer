@@ -3,6 +3,7 @@ package cl.estencia.labs.muplayer.console.unix;
 import cl.estencia.labs.muplayer.console.unix.event.KeyInputEvent;
 import cl.estencia.labs.muplayer.console.unix.event.LineInputEvent;
 import cl.estencia.labs.muplayer.console.unix.listener.KeyInputListener;
+import cl.estencia.labs.muplayer.console.unix.listener.KeyInterceptor;
 import cl.estencia.labs.muplayer.console.unix.listener.LineInputListener;
 import cl.estencia.labs.muplayer.console.unix.listener.NativeInputListener;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
@@ -24,14 +25,12 @@ public class NativeConsole extends Thread {
     private final int unlockKeyCode;
     private final StringBuilder sbInput;
 
-    private final List<KeyInputListener> keyInterceptors;
+    private final List<KeyInterceptor> keyInterceptors;
     private final List<KeyInputListener> keyInputListeners;
     private final List<LineInputListener> lineInputListeners;
 
     private final InputModeConfig inputModeConfig;
     private final ConsoleHistory consoleHistory;
-
-//    private final AtomicReference<String> lineRef;
 
     public NativeConsole() {
         this(ESC);
@@ -97,6 +96,12 @@ public class NativeConsole extends Thread {
         }
     }
 
+    private void sendKeyToInterceptors(int key, byte[] sequence,
+                                       List<KeyInterceptor> interceptors) {
+        interceptors.forEach(interceptor ->
+                interceptor.onInput(new KeyInputEvent(key, sequence)));
+    }
+
     private void handleShorcut(int key, byte[] sequence) {
         sendInputEvent(new KeyInputEvent(key, sequence));
     }
@@ -110,20 +115,23 @@ public class NativeConsole extends Thread {
 
                 Thread.ofVirtual().start(() -> sendInputEvent(
                         new LineInputEvent(line)));
+
+                printKey(key);
             }
             case DELETE -> {
                 if (!sbInput.isEmpty()) {
                     sbInput.deleteCharAt(sbInput.length() - 1);
                     consoleHistory.updateLastCommand(sbInput.toString());
+                    printKey(key);
                 }
             }
             default -> {
                 sbInput.append((char) key);
                 consoleHistory.updateLastCommand(sbInput.toString());
+                printKey(key);
             }
         }
 
-        printKey(key);
     }
 
     private void handleInput(int key, byte[] sequence) {
@@ -143,31 +151,31 @@ public class NativeConsole extends Thread {
         } catch (Exception ignored) {}
     }
 
-    private void loadDefaultKeyInterceptors() {
-        addKeyInterceptor(new KeyInputListener(unlockKeyCode) {
+    public void loadDefaultKeyInterceptors() {
+        addKeyInterceptor(new KeyInterceptor(unlockKeyCode) {
             @Override
-            public void onInput(KeyInputEvent event) {
+            public void intercept(KeyInputEvent event) {
                 setInputBlocked(!inputBlocked);
             }
         });
 
-        addKeyInterceptor(new KeyInputListener(inputModeConfig.getToggleModeKey()) {
+        addKeyInterceptor(new KeyInterceptor(inputModeConfig.getToggleModeKey()) {
             @Override
-            public void onInput(KeyInputEvent event) {
+            public void intercept(KeyInputEvent event) {
                 inputModeConfig.toggleInputMode();
             }
         });
 
-        addKeyInterceptor(new KeyInputListener(SEQ_UP) {
+        addKeyInterceptor(new KeyInterceptor(SEQ_UP) {
             @Override
-            public void onInput(KeyInputEvent event) {
+            public void intercept(KeyInputEvent event) {
                 System.out.print(cartReturn() + consoleHistory.getPrevCommand());
             }
         });
 
-        addKeyInterceptor(new KeyInputListener(SEQ_DOWN) {
+        addKeyInterceptor(new KeyInterceptor(SEQ_DOWN) {
             @Override
-            public void onInput(KeyInputEvent event) {
+            public void intercept(KeyInputEvent event) {
                 System.out.print(cartReturn() + consoleHistory.getNextCommand());
             }
         });
@@ -216,11 +224,11 @@ public class NativeConsole extends Thread {
         }
     }
 
-    public void addKeyInterceptor(KeyInputListener keyListener) {
+    public void addKeyInterceptor(KeyInterceptor keyListener) {
         keyInterceptors.add(keyListener);
     }
 
-    public void addKeyInterceptors(KeyInputListener... keyInterceptors) {
+    public void addKeyInterceptors(KeyInterceptor... keyInterceptors) {
         if (keyInterceptors == null || keyInterceptors.length == 0) {
             return;
         }
@@ -231,7 +239,7 @@ public class NativeConsole extends Thread {
         }
     }
 
-    public List<KeyInputListener> getKeyInterceptors(int key) {
+    public List<KeyInterceptor> getKeyInterceptors(int key) {
         return keyInterceptors.stream()
                 .filter(interceptor -> interceptor.isKey(key))
                 .toList();
@@ -264,7 +272,7 @@ public class NativeConsole extends Thread {
             byte[] buffer = new byte[8];
             byte[] sequence;
             int key;
-            List<KeyInputListener> interceptors;
+            List<KeyInterceptor> interceptors;
             while (!Thread.currentThread().isInterrupted()) {
                 int read = reader.read(buffer);
                 if (read <= 0) {
@@ -282,11 +290,7 @@ public class NativeConsole extends Thread {
 
                 interceptors = getKeyInterceptors(key);
                 if (!interceptors.isEmpty()) {
-                    int finalKey = key;
-                    byte[] finalSequence = sequence;
-                    interceptors.forEach(interceptor -> {
-                        interceptor.onInput(new KeyInputEvent(finalKey, finalSequence));
-                    });
+                    sendKeyToInterceptors(key, sequence, interceptors);
                 } else {
                     handleInput(key, sequence);
                 }
