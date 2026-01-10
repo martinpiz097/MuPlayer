@@ -154,28 +154,28 @@ public class NativeConsole extends Thread {
     public void loadDefaultKeyInterceptors() {
         addKeyInterceptor(new KeyInterceptor(unlockKeyCode) {
             @Override
-            public void intercept(KeyInputEvent event) {
+            protected void intercept(KeyInputEvent event) {
                 setInputBlocked(!inputBlocked);
             }
         });
 
         addKeyInterceptor(new KeyInterceptor(inputModeConfig.getToggleModeKey()) {
             @Override
-            public void intercept(KeyInputEvent event) {
+            protected void intercept(KeyInputEvent event) {
                 inputModeConfig.toggleInputMode();
             }
         });
 
         addKeyInterceptor(new KeyInterceptor(SEQ_UP) {
             @Override
-            public void intercept(KeyInputEvent event) {
+            protected void intercept(KeyInputEvent event) {
                 System.out.print(cartReturn() + consoleHistory.getPrevCommand());
             }
         });
 
         addKeyInterceptor(new KeyInterceptor(SEQ_DOWN) {
             @Override
-            public void intercept(KeyInputEvent event) {
+            protected void intercept(KeyInputEvent event) {
                 System.out.print(cartReturn() + consoleHistory.getNextCommand());
             }
         });

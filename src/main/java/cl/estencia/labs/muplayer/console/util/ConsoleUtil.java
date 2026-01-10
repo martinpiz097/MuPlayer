@@ -8,6 +8,7 @@ import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.
 import static cl.estencia.labs.muplayer.console.common.enums.OutputType.info;
 
 public class ConsoleUtil {
+
     public static boolean isValidColor(String color) {
         return color != null
                 && !color.isBlank()
@@ -61,5 +62,7 @@ public class ConsoleUtil {
     public static boolean isNumberKey(int key) {
         return key > 47 && key < 58;
     }
+
+
 
 }

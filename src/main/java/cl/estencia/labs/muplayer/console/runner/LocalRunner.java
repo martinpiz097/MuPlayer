@@ -13,6 +13,7 @@ import cl.estencia.labs.muplayer.console.unix.NativeConsole;
 import cl.estencia.labs.muplayer.console.unix.event.KeyInputEvent;
 import cl.estencia.labs.muplayer.console.unix.event.LineInputEvent;
 import cl.estencia.labs.muplayer.console.unix.listener.KeyInputListener;
+import cl.estencia.labs.muplayer.console.unix.listener.KeyInterceptor;
 import cl.estencia.labs.muplayer.console.unix.listener.LineInputListener;
 import cl.estencia.labs.muplayer.console.util.ConsoleTextPainter;
 import cl.estencia.labs.muplayer.console.util.SystemCommandExecutor;
@@ -75,21 +76,21 @@ public class LocalRunner extends ConsoleRunner {
 
         nativeConsole.loadDefaultKeyInterceptors();
         nativeConsole.addKeyInterceptors(
-                new KeyInputListener(KeyCodes.SEQ_RIGHT) {
+                new KeyInterceptor(KeyCodes.SEQ_RIGHT) {
                     @Override
-                    public void onInput(KeyInputEvent event) {
+                    protected void intercept(KeyInputEvent event) {
                         processCommand("k 10");
                     }
                 },
-                new KeyInputListener(KeyCodes.SEQ_LEFT) {
+                new KeyInterceptor(KeyCodes.SEQ_LEFT) {
                     @Override
-                    public void onInput(KeyInputEvent event) {
+                    protected void intercept(KeyInputEvent event) {
                         processCommand("k -10");
                     }
                 },
-                new KeyInputListener(KeyCodes.EXT_DELETE) {
+                new KeyInterceptor(KeyCodes.EXT_DELETE) {
                     @Override
-                    public void onInput(KeyInputEvent event) {
+                    protected void intercept(KeyInputEvent event) {
                         processCommand("clear");
                     }
                 });
