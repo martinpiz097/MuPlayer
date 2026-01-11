@@ -41,11 +41,11 @@ public class ConsoleSymbols {
     public static final String MUSICAL_NOTE = "\uD83C\uDFB5";
     public static final String HEADPHONES = "\uD83C\uDFA7";
     public static final String SPEAKER = "\uD83D\uDCE2";
-    public static final char PLAY = '▶';
-    public static final char PAUSE = '⏸';
-    public static final char STOP = '⏹';
-    public static final char PREV = '⏮';
-    public static final char NEXT = '⏭';
+    public static final String PLAY = "\u25B6";
+    public static final String PAUSE = "\u23F8";
+    public static final String STOP = "\u23F9";
+    public static final String PREV = "\u23EE";
+    public static final String NEXT = "\u23ED";
     public static final String MUTED = "\uD83D\uDD07";
     public static final String LOW_VOLUME = "\uD83D\uDD08";
     public static final String MED_VOLUME = "\uD83D\uDD09";
@@ -59,4 +59,5 @@ public class ConsoleSymbols {
     public static final char SANDGLASS = '⏳';
 
     public static final char PIPE = '|';
+    public static final String CMD_DIVISOR = " && ";
 }

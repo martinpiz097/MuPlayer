@@ -1,8 +1,5 @@
 package cl.estencia.labs.muplayer.console.model;
 
-import cl.estencia.labs.muplayer.console.util.ConsoleImageUtil;
-import cl.estencia.labs.muplayer.core.exception.MuPlayerException;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -10,57 +7,74 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static cl.estencia.labs.muplayer.console.util.ConsoleImageUtil.createStringQuadrant;
+import static cl.estencia.labs.muplayer.console.util.ConsoleImageUtil.*;
 
 public class ConsoleImage {
     private final BufferedImage originalBufferedImage;
     private final int width;
     private final int height;
+    private final int terminalWidth;
 
     private static final byte DEFAULT_IMAGE_SIZE = 96;
 
     public ConsoleImage(String imagePath) {
-        this(imagePath, DEFAULT_IMAGE_SIZE);
+        this(imagePath, DEFAULT_IMAGE_SIZE, -1);
     }
 
     public ConsoleImage(File imageFile) {
-        this(imageFile, DEFAULT_IMAGE_SIZE);
+        this(imageFile, DEFAULT_IMAGE_SIZE, -1);
     }
 
     public ConsoleImage(InputStream imageStream) {
-        this(imageStream, DEFAULT_IMAGE_SIZE);
+        this(imageStream, DEFAULT_IMAGE_SIZE, -1);
     }
 
-    public ConsoleImage(String imagePath, int size) {
-        this(new File(imagePath), size);
+    public ConsoleImage(String imagePath, int terminalWidth) {
+        this(imagePath, DEFAULT_IMAGE_SIZE, terminalWidth);
     }
 
-    public ConsoleImage(File imageFile, int size) {
+    public ConsoleImage(File imageFile, int terminalWidth) {
+        this(imageFile, DEFAULT_IMAGE_SIZE, terminalWidth);
+    }
+
+    public ConsoleImage(InputStream imageStream, int terminalWidth) {
+        this(imageStream, DEFAULT_IMAGE_SIZE, terminalWidth);
+    }
+
+    public ConsoleImage(String imagePath, int size, int terminalWidth) {
+        this(new File(imagePath), size, terminalWidth);
+    }
+
+    public ConsoleImage(File imageFile, int size, int terminalWidth) {
         this.originalBufferedImage = loadImage(imageFile);
         this.width = calculateWidth(size);
         this.height = calculateHeight(size);
+        this.terminalWidth = terminalWidth;
     }
 
-    public ConsoleImage(InputStream imageStream, int size) {
+    public ConsoleImage(InputStream imageStream, int size, int terminalWidth) {
         this.originalBufferedImage = loadImage(imageStream);
         this.width = calculateWidth(size);
         this.height = calculateHeight(size);
+        this.terminalWidth = terminalWidth;
     }
 
-    public ConsoleImage(String imagePath, int width, int height) {
-        this(new File(imagePath), width, height);
+    public ConsoleImage(String imagePath, int width, int height, int terminalWidth) {
+        this(new File(imagePath), width, height, terminalWidth);
     }
 
-    public ConsoleImage(File imageFile, int width, int height) {
+    public ConsoleImage(File imageFile, int width, int height, int terminalWidth) {
         this.originalBufferedImage = loadImage(imageFile);
         this.width = Math.max(0, width);
         this.height = Math.max(0, height);
+        this.terminalWidth = terminalWidth;
     }
 
-    public ConsoleImage(InputStream imageStream, int width, int height) {
+    public ConsoleImage(InputStream imageStream, int width, int height, int terminalWidth) {
         this.originalBufferedImage = loadImage(imageStream);
         this.width = Math.max(0, width);
         this.height = Math.max(0, height);
+        this.terminalWidth = terminalWidth;
     }
 
     private BufferedImage loadImage(File imgFile) {
@@ -114,10 +128,12 @@ public class ConsoleImage {
 
     public String drawString() {
         final BufferedImage scaledBufferedImage = scaleImage(originalBufferedImage);
-        int scaledWidth = scaledBufferedImage.getWidth();
-        int scaledHeight = scaledBufferedImage.getHeight();
 
-        return createStringQuadrant(scaledBufferedImage, scaledWidth, scaledHeight);
+//        System.out.println("Terminal Width: " + terminalWidth);
+//        System.out.println("Width: " + scaledBufferedImage.getWidth());
+
+        return toConsoleHalfBlocks2
+                (scaledBufferedImage);
     }
 
 }

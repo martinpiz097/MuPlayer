@@ -149,7 +149,7 @@ public abstract class ConsoleRunner implements Runnable {
 
     public ConsoleOutput execCommand(String strCmd) {
         try {
-            return interpreter.executeCommand(strCmd);
+            return interpreter.execute(strCmd);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

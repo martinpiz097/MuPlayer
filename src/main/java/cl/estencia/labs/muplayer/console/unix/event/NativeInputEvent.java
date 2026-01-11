@@ -8,6 +8,5 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public abstract class NativeInputEvent {
-    public abstract char nextChar();
-    public abstract String getLine();
+    public abstract String getInput();
 }

@@ -23,7 +23,6 @@ import cl.estencia.labs.muplayer.console.runner.LocalRunner;
 import cl.estencia.labs.muplayer.console.runner.RunnerMode;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
-import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import cl.estencia.labs.muplayer.core.service.LogService;
 import cl.estencia.labs.muplayer.core.service.impl.LogServiceImpl;
 import cl.estencia.labs.muplayer.core.thread.TaskRunner;
@@ -59,8 +58,6 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
     private volatile MessageBus messageBus;
     private final AtomicReference<MuPlayerResponse> playerCurrentData;
 
-    private static final String CMD_DIVISOR = " && ";
-
     public PlayerCommandInterpreter(Player player) {
         this.player = player;
         this.globalCacheManager = CacheManager.getGlobalCache();
@@ -75,29 +72,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
     }
 
     @Override
-    public ConsoleOutput executeCommand(String cmdString) throws Exception {
-        if (cmdString.contains(CMD_DIVISOR)) {
-            final String[] cmdSplit = cmdString.split(CMD_DIVISOR);
-            final List<String> listExec = CollectionUtil.newLinkedList();
-            ConsoleOutput exec;
-
-            for (int i = 0; i < cmdSplit.length; i++) {
-                exec = executeCommand(new Command(cmdSplit[i].trim()));
-                if (exec != null) {
-                    listExec.add(exec.getOutputMsg());
-                }
-            }
-
-            ConsoleOutput consoleOutput = new ConsoleOutput(cmdString);
-            consoleOutput.append(listExec.get(listExec.size() - 1), null);
-            return consoleOutput;
-        } else {
-            return executeCommand(new Command(cmdString));
-        }
-    }
-
-    @Override
-    public ConsoleOutput executeCommand(Command cmd) throws Exception {
+    public ConsoleOutput execute(Command cmd) throws Exception {
         final String cmdOrder = cmd.getOrder();
         final ConsoleOrderCode consoleOrderCode = consoleCodesReader.getConsoleOrderCodeByCmdOrder(cmdOrder);
         final ConsoleOutput consoleOutput = new ConsoleOutput(cmd);

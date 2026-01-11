@@ -1,13 +1,11 @@
 package cl.estencia.labs.muplayer.console.runner;
 
-import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.ebot.utils.threads.Interruptor;
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.audio.player.Player;
-import cl.estencia.labs.muplayer.audio.util.MuPlayerUtil;
 import cl.estencia.labs.muplayer.config.ResourceFiles;
-import cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols;
 import cl.estencia.labs.muplayer.console.common.constants.KeyCodes;
+import cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode;
 import cl.estencia.labs.muplayer.console.model.ConsoleImage;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
 import cl.estencia.labs.muplayer.console.unix.InputMode;
@@ -18,8 +16,6 @@ import cl.estencia.labs.muplayer.console.unix.listener.KeyInputListener;
 import cl.estencia.labs.muplayer.console.unix.listener.KeyInterceptor;
 import cl.estencia.labs.muplayer.console.unix.listener.LineInputListener;
 import cl.estencia.labs.muplayer.console.util.SystemCommandExecutor;
-import cl.estencia.labs.muplayer.core.bus.message.Messages;
-import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
 import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import cl.estencia.labs.muplayer.core.system.SysInfo;
 import lombok.SneakyThrows;
@@ -30,6 +26,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Scanner;
 
+import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.*;
 import static cl.estencia.labs.muplayer.console.util.ConsolePainter.GradientStyle.LIGHTEN;
 import static cl.estencia.labs.muplayer.console.util.ConsolePainter.paintMuPlayerStyle;
 import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.isNumberKey;
@@ -68,8 +65,12 @@ public class LocalRunner extends ConsoleRunner {
         }
     }
 
-    private void processShorcut(char shorcut) {
-        processCommand(String.valueOf(shorcut));
+    private void processCommand(ConsoleOrderCode cmdOrderCode) {
+        if (cmdOrderCode == null) {
+            return;
+        }
+
+        processCommand(cmdOrderCode.name());
     }
 
     private void loadKeyInterceptors() {
@@ -83,44 +84,44 @@ public class LocalRunner extends ConsoleRunner {
                 new KeyInterceptor(KeyCodes.SEQ_RIGHT) {
                     @Override
                     protected void intercept(KeyInputEvent event) {
-                        processCommand("k 10");
+                        processCommand(ConsoleOrderCode.sk + " 10");
                     }
                 },
                 new KeyInterceptor(KeyCodes.SEQ_LEFT) {
                     @Override
                     protected void intercept(KeyInputEvent event) {
-                        processCommand("k -10");
+                        processCommand(ConsoleOrderCode.sk + " -10");
                     }
                 },
                 new KeyInterceptor(KeyCodes.EXT_DELETE) {
                     @Override
                     protected void intercept(KeyInputEvent event) {
-                        processCommand("clear");
+                        processCommand(ConsoleOrderCode.cls);
                         printConsoleHeader();
                     }
                 },
                 new KeyInterceptor(KeyCodes.EXT_PAGE_UP) {
                     @Override
                     protected void intercept(KeyInputEvent event) {
-                        processCommand("skf prev");
+                        processCommand(ConsoleOrderCode.skf.name() + " prev");
                     }
                 },
                 new KeyInterceptor(KeyCodes.EXT_PAGE_DOWN) {
                     @Override
                     protected void intercept(KeyInputEvent event) {
-                        processCommand("skf next");
+                        processCommand(ConsoleOrderCode.skf.name() + " next");
                     }
                 },
                 new KeyInterceptor(KeyCodes.SEQ_HOME) {
                     @Override
                     protected void intercept(KeyInputEvent event) {
-                        processCommand("p");
+                        processCommand(ConsoleOrderCode.p);
                     }
                 },
                 new KeyInterceptor(KeyCodes.SEQ_END) {
                     @Override
                     protected void intercept(KeyInputEvent event) {
-                        processCommand("n");
+                        processCommand(ConsoleOrderCode.n);
                     }
                 }
                 );
@@ -132,54 +133,80 @@ public class LocalRunner extends ConsoleRunner {
             nativeConsole.clearAllKeyInputListeners();
         }
 
+        nativeConsole.addInputListener(new KeyInputListener(KeyCodes.LINE_FEED) {
+            @Override
+            public void onInput(KeyInputEvent event) {
+                if (player.isAlive()) {
+                    return;
+                }
+
+                processCommand(ConsoleOrderCode.st);
+            }
+        });
+
+        nativeConsole.addInputListener(new KeyInputListener(b, B) {
+            @Override
+            public void onInput(KeyInputEvent event) {
+                printBannerLogo();
+                printConsoleHeader();
+            }
+        });
+
+        nativeConsole.addInputListener(new KeyInputListener(L) {
+            @Override
+            public void onInput(KeyInputEvent event) {
+                processCommand(ConsoleOrderCode.lf);
+                printConsoleHeader();
+            }
+        });
+
+        nativeConsole.addInputListener(new KeyInputListener(C) {
+            @Override
+            public void onInput(KeyInputEvent event) {
+                processCommand(ConsoleOrderCode.lc);
+                printConsoleHeader();
+            }
+        });
+
+        nativeConsole.addInputListener(new KeyInputListener(e, E, q, Q) {
+            @Override
+            public void onInput(KeyInputEvent event) {
+                if (player.isAlive() && interpreter.isOn()) {
+                    processCommand(ConsoleOrderCode.sh);
+                } else {
+                    globalCacheManager.clear();
+                    System.exit(0);
+                }
+            }
+        });
+
+        nativeConsole.addInputListener(new KeyInputListener(TAB) {
+            @SneakyThrows
+            @Override
+            public void onInput(KeyInputEvent event) {
+                if (player.isPlaying()) {
+                    processCommand(ConsoleOrderCode.ps.name());
+                } else if (player.isPaused() || player.isStopped()) {
+                    processCommand(ConsoleOrderCode.r.name());
+                }
+            }
+        });
+
         nativeConsole.addInputListeners(new KeyInputListener() {
             @SneakyThrows
             @Override
             public void onInput(KeyInputEvent event) {
-                int key = event.getKey();
-                if (key == KeyCodes.SPACE) {
-                    return;
-                }
-
-                if (key == KeyCodes.LINE_FEED) {
-                    if (player.isAlive()) {
-                        return;
-                    }
-
-                    processCommand("st");
+                char key = event.getKeyChar();
+                if (key != KeyCodes.SPACE) {
+                    processCommand(String.valueOf(key));
+                    printConsoleHeader();
                 } else if (isNumberKey(key)) {
-                    int number = Integer.parseInt(String.valueOf((char) key));
+                    int number = Integer.parseInt(String.valueOf(key));
                     if (number == 0) {
                         number = 10;
                     }
 
-                    processCommand("pf " + number);
-                } else if (key == KeyCodes.b || key == KeyCodes.B) {
-                    printBannerLogo();
-                    printConsoleHeader();
-                } else if (key == KeyCodes.L) {
-                    processCommand("lf");
-                    printConsoleHeader();
-                } else if (key == KeyCodes.C) {
-                    processCommand("lc");
-                    printConsoleHeader();
-                } else if (key == KeyCodes.e || key == KeyCodes.E
-                        || key == KeyCodes.q || key == KeyCodes.Q) {
-                    if (player.isAlive() && interpreter.isOn()) {
-                        processCommand("sh");
-                    } else {
-                        globalCacheManager.clear();
-                        System.exit(0);
-                    }
-                } else if (key == KeyCodes.TAB) {
-                    if (player.isPlaying()) {
-                        processCommand("ps");
-                    } else if (player.isPaused() || player.isStopped()) {
-                        processCommand("r");
-                    }
-                } else {
-                    processShorcut((char) key);
-                    printConsoleHeader();
+                    processCommand(ConsoleOrderCode.pf.name() + " " + number);
                 }
             }
         });
@@ -195,7 +222,7 @@ public class LocalRunner extends ConsoleRunner {
             @Override
             public void onInput(LineInputEvent event) {
                 if (!event.isEmptyLine()) {
-                    String line = event.getLine();
+                    String line = event.getInput();
                     processCommand(line);
                 }
 
@@ -219,10 +246,10 @@ public class LocalRunner extends ConsoleRunner {
 
     private void printBannerLogo() {
         int terminalWidth = SystemCommandExecutor.getRealTerminalWidth();
-
         InputStream bannerStream = ResourceFiles.getResStream("/img/banner.png");
         ConsoleImage image = new ConsoleImage(
                 bannerStream, 80, 15, terminalWidth);
+
         String consoleString = image.drawString();
         Logger.getLogger(this, consoleString).rawMessage();
     }

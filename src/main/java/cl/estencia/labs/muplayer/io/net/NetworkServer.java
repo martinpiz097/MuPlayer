@@ -15,11 +15,11 @@ import java.util.List;
 
 @Getter
 @Setter
-public class DaemonServer {
+public class NetworkServer {
     private final ServerSocket serverSocket;
     private final List<Client> listClients;
 
-    public DaemonServer() throws IOException {
+    public NetworkServer() throws IOException {
         this.serverSocket = new ServerSocket(getServerSetupPort());
         this.serverSocket.setSoTimeout(getSetSoTimeout());
         this.listClients = CollectionUtil.newLinkedList();

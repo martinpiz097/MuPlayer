@@ -66,7 +66,7 @@ public class TCPClient extends Client {
                     command = command.trim();
                     Logger.getLogger(this, getLoggerHeader()+"Command received: "+command).info();
 
-                    consoleOutput = playerCommandInterpreter.executeCommand(command.toLowerCase());
+                    consoleOutput = playerCommandInterpreter.execute(command.toLowerCase());
                     Logger.getLogger(this, getLoggerHeader()+"Command executed. ").info();
 
                     if (consoleOutput != null && consoleOutput.hasOutput()) {

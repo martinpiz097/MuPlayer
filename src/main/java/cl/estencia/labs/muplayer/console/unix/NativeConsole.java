@@ -15,9 +15,7 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 
-import static cl.estencia.labs.muplayer.console.common.constants.ConsoleEscapeSequences.padding;
-import static cl.estencia.labs.muplayer.console.common.constants.ConsoleEscapeSequences.partialCartReturn;
-import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleEscapeSequences.cartReturn;
 import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.*;
 import static cl.estencia.labs.muplayer.console.unix.InputMode.COMMANDS;
 
@@ -36,12 +34,16 @@ public class NativeConsole extends Console {
         this(ESC);
     }
 
-    public NativeConsole(int unlockKeyCode) {
-        this(unlockKeyCode, COMMANDS);
+    public NativeConsole(int toggleModeKey) {
+        this(toggleModeKey, ESC, COMMANDS);
     }
 
-    public NativeConsole(int unlockKeyCode, InputMode inputMode) {
-        this.inputConfig = new InputConfig(inputMode, false, EXT_F5, ESC);
+    public NativeConsole(int toggleModeKey, int unlockKeyCode) {
+        this(toggleModeKey, unlockKeyCode, COMMANDS);
+    }
+
+    public NativeConsole(int toggleModeKey, int unlockKeyCode, InputMode inputMode) {
+        this.inputConfig = new InputConfig(inputMode, false, toggleModeKey, unlockKeyCode);
         this.sbInput = new StringBuilder();
         this.keyInterceptors = CollectionUtil.newFastArrayList();
         this.keyInputListeners = CollectionUtil.newFastArrayList();
@@ -51,12 +53,32 @@ public class NativeConsole extends Console {
         loadDefaultKeyInterceptors();
     }
 
+    // es para restaurar terminal cuando el programa termina (por sea caso)
+    private void restoreTerminal() {
+        ProcessManager.executeLegacy("sh", "-c", "stty sane < /dev/tty");
+    }
+
+    private void printKey(int key) {
+        IO.print((char) key);
+    }
+
     private void sendInputEvent(KeyInputEvent event) {
         if (keyInputListeners.isEmpty()) {
             return;
         }
 
-        keyInputListeners.parallelStream()
+        List<KeyInputListener> filteredKeyListeners = keyInputListeners.parallelStream()
+                .filter(keyInputListener ->
+                        keyInputListener.hasKey(event.getKeyChar()))
+                .toList();
+
+        if (filteredKeyListeners.isEmpty()) {
+            filteredKeyListeners = keyInputListeners.parallelStream()
+                    .filter(KeyInputListener::isGeneric)
+                    .toList();
+        }
+
+        filteredKeyListeners
                 .forEach(inputListener -> inputListener.onInput(event));
     }
 
@@ -69,61 +91,36 @@ public class NativeConsole extends Console {
                 .forEach(inputListener -> inputListener.onInput(event));
     }
 
-    private String cartReturn(int columns) {
-        String partialCartReturn = partialCartReturn(columns);
-        String padding = padding(columns);
-
-        return partialCartReturn + padding + partialCartReturn;
-    }
-
-    private void printKey(int key) {
-        IO.print((char) key);
-    }
-
     private void sendKeyToInterceptors(int key, byte[] sequence,
                                        List<KeyInterceptor> interceptors) {
         interceptors.forEach(interceptor ->
                 interceptor.onInput(new KeyInputEvent(key, sequence)));
     }
 
-    private void handleShorcut(int key, byte[] sequence) {
-        sendInputEvent(new KeyInputEvent(key, sequence));
-    }
-
     private void handleCommand(int key, byte[] sequence) {
-        switch (key) {
-            case LINE_BREAK_CHAR -> {
-                String line = sbInput.toString();
-                consoleHistory.addCommand(line);
-                sbInput.delete(0, sbInput.length());
+        if (key == LINE_FEED) {
+            String line = sbInput.toString();
+            consoleHistory.addCommand(line);
+            sbInput.delete(0, sbInput.length());
 
-                Thread.ofVirtual().start(() -> sendInputEvent(
-                        new LineInputEvent(line)));
-
-                printKey(key);
-            }
-            default -> {
-                sbInput.append((char) key);
-                consoleHistory.updateCurrentCommand(sbInput.toString());
-                printKey(key);
-            }
+            Thread.ofVirtual().start(() -> sendInputEvent(
+                    new LineInputEvent(line)));
+        } else {
+            sbInput.append((char) key);
+            consoleHistory.updateCurrentCommand(sbInput.toString());
         }
 
+        printKey(key);
     }
 
     private void handleInput(int key, byte[] sequence) {
         InputMode inputMode = inputConfig.getInputMode();
 
         switch (inputMode) {
-            case SINGLE_SHORCUTS -> handleShorcut(key, sequence);
+            case SINGLE_SHORCUTS -> sendInputEvent(new KeyInputEvent(key, sequence));
             case COMMANDS -> handleCommand(key, sequence);
         }
 
-    }
-
-    // es para restaurar terminal cuando el programa termina (por sea caso)
-    private void restoreTerminal() {
-        ProcessManager.executeLegacy("sh", "-c", "stty sane < /dev/tty");
     }
 
     public void loadDefaultKeyInterceptors() {
@@ -251,7 +248,7 @@ public class NativeConsole extends Console {
         }
     }
 
-    public List<KeyInterceptor> getKeyInterceptors(int key) {
+    public List<KeyInterceptor> getInterceptorsForKey(int key) {
         return keyInterceptors.stream()
                 .filter(interceptor -> interceptor.isKey(key))
                 .toList();
@@ -304,7 +301,7 @@ public class NativeConsole extends Console {
                     continue;
                 }
 
-                interceptors = getKeyInterceptors(key);
+                interceptors = getInterceptorsForKey(key);
                 if (!interceptors.isEmpty()) {
                     sendKeyToInterceptors(key, sequence, interceptors);
                 } else {

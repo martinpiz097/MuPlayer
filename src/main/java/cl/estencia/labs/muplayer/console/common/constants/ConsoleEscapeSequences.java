@@ -11,12 +11,21 @@ public class ConsoleEscapeSequences {
     public static final String SETUP_BG_RGB_TRUE_COLOR = toChar(ESC) + "[48;2;";
     public static final String FULL_RESET = toChar(ESC) + "[0m";
 
-    public static String partialCartReturn(int columns) {
+    public static String cartReturn(int columns, boolean withPadding) {
         if (columns < 1) {
             return "";
         }
 
-        return String.valueOf(toChar(BACKSPACE)).repeat(columns);
+        String cartReturn = String.valueOf(toChar(BACKSPACE)).repeat(columns);
+        if (withPadding) {
+            cartReturn = cartReturn + padding(columns) + cartReturn;
+        }
+
+        return cartReturn;
+    }
+
+    public static String cartReturn(int columns) {
+        return cartReturn(columns, true);
     }
 
     public static String padding(int count) {

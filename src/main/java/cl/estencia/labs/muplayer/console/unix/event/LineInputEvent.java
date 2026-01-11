@@ -13,11 +13,9 @@ import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.
 @AllArgsConstructor
 public class LineInputEvent extends NativeInputEvent {
     private final StringBuilder sbInput;
-    private int charIterator;
 
     public LineInputEvent(String input) {
         this.sbInput = new StringBuilder(input);
-        this.charIterator = 0;
     }
 
     public boolean isEmptyLine() {
@@ -30,16 +28,7 @@ public class LineInputEvent extends NativeInputEvent {
     }
 
     @Override
-    public char nextChar() {
-        if (charIterator == sbInput.length()) {
-            return (char) EOF;
-        }
-
-        return sbInput.charAt(charIterator ++);
-    }
-
-    @Override
-    public String getLine() {
+    public String getInput() {
         return sbInput.toString();
     }
 

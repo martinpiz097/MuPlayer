@@ -11,13 +11,12 @@ public class KeyInputEvent extends NativeInputEvent {
     private final int key;
     private final byte[] sequenceBytes;
 
-    @Override
-    public char nextChar() {
+    public char getKeyChar() {
         return (char) key;
     }
 
     @Override
-    public String getLine() {
+    public String getInput() {
         return String.valueOf((char) key);
     }
 

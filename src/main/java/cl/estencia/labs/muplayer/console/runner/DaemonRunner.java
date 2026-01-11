@@ -3,7 +3,7 @@ package cl.estencia.labs.muplayer.console.runner;
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.core.cache.CacheVar;
-import cl.estencia.labs.muplayer.io.net.DaemonServer;
+import cl.estencia.labs.muplayer.io.net.NetworkServer;
 import cl.estencia.labs.muplayer.io.net.TCPClient;
 import org.orangelogger.sys.Logger;
 
@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class DaemonRunner extends ConsoleRunner {
-    private final DaemonServer daemonServer;
+    private final NetworkServer networkServer;
 
     public DaemonRunner() throws IOException {
         this((File) null);
@@ -28,12 +28,12 @@ public class DaemonRunner extends ConsoleRunner {
 
     public DaemonRunner(Player player) throws IOException {
         super(player);
-        this.daemonServer = new DaemonServer();
+        this.networkServer = new NetworkServer();
     }
 
     public void shutdown() throws IOException {
         interpreter.setOn(false);
-        daemonServer.shutdownServer();
+        networkServer.shutdownServer();
     }
 
     @Override
@@ -46,11 +46,11 @@ public class DaemonRunner extends ConsoleRunner {
         Socket reqSocket = null;
 
         Logger.getLogger(this, "Waiting clients...").info();
-        while (interpreter.isOn() && daemonServer.isAlive()) {
+        while (interpreter.isOn() && networkServer.isAlive()) {
             try {
-                reqSocket = daemonServer.getRequestSocket();
+                reqSocket = networkServer.getRequestSocket();
                 if (reqSocket != null) {
-                    daemonServer.addClient(new TCPClient(super.interpreter, reqSocket));
+                    networkServer.addClient(new TCPClient(super.interpreter, reqSocket));
                     Logger.getLogger(this, "Client connected from IP "+reqSocket.getRemoteSocketAddress()
                             .toString()).info();
                     Logger.getLogger(this, "Waiting clients...").info();
@@ -63,7 +63,7 @@ public class DaemonRunner extends ConsoleRunner {
 
         Logger.getLogger(this, "Daemon server closed!");
         try {
-            daemonServer.shutdownServer();
+            networkServer.shutdownServer();
             final ConsoleRunner runner = globalCacheManager.loadValue(CacheVar.RUNNER);
             if (runner == null || runner instanceof DaemonRunner)
                 System.exit(0);
