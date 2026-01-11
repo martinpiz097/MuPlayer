@@ -50,7 +50,6 @@ public class MuPlayer extends Player implements SystemVolumeController {
     private final AtomicReference<Track> currentTrack;
 
     private final List<Track> listTracks;
-    private final List<AudioFileScanner> listAudioFileScanners;
     private final List<File> listFolders;
 
     private final PlayerStatusData playerStatusData;
@@ -68,7 +67,6 @@ public class MuPlayer extends Player implements SystemVolumeController {
         this.rootFolder = rootFolder;
         this.currentTrack = new AtomicReference<>();
         this.listTracks = CollectionUtil.newFastArrayList();
-        this.listAudioFileScanners = CollectionUtil.newFastArrayList();
         this.listFolders = CollectionUtil.newMinimalFastArrayList();
         this.playerStatusData = new PlayerStatusData();
         this.muPlayerUtil = new MuPlayerUtil(this, playerStatusData);
@@ -92,7 +90,6 @@ public class MuPlayer extends Player implements SystemVolumeController {
 
                 listTracks.clear();
                 listFolders.clear();
-                listAudioFileScanners.clear();
             }
 
             paths
@@ -702,10 +699,8 @@ public class MuPlayer extends Player implements SystemVolumeController {
         }
 
         muPlayerUtil.killCurrentTrackIfActive();
-
         listTracks.clear();
         listFolders.clear();
-        listAudioFileScanners.clear();
     }
 
 }

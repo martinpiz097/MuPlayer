@@ -1,0 +1,3 @@
+- Tamaño del banner
+- Carpeta root por defecto
+- Teclas para los key interceptors por defecto y opcion de habilitar o deshabilitar algunos

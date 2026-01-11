@@ -360,4 +360,24 @@ public final class KeyCodes {
         };
     }
 
+    public static char toChar(int key) {
+        return (char) key;
+    }
+
+    public static char[] toAsciiChars(int number) {
+        return String.valueOf(number).toCharArray();
+    }
+
+    public static byte[] toAsciiCodes(int number) {
+        char[] charArray = toAsciiChars(number);
+        int length = charArray.length;
+        byte[] charBytes = new byte[length];
+
+        for (int i = 0; i < length; i++) {
+            charBytes[i] = (byte) charArray[i];
+        }
+
+        return charBytes;
+    }
+
 }

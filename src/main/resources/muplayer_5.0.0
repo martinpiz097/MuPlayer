@@ -1,0 +1,5 @@
+dbus
+jline y picocli
+    opcion por configuracion para usar consola nativa o jline
+notifications
+    opcion por configuracion para activar o desactivar

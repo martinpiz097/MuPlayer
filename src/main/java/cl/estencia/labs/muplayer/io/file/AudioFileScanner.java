@@ -21,10 +21,7 @@ public class AudioFileScanner {
     }
 
     public Track loadTrack() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
-        if (!AudioFileUtil.isSupportedAudioFile(audioFile)) {
-            return null;
-        }
-
+        // aca ya se evalua si el formato esta soportado, solo que de una manera mas directa
         final SupportedAudioExtensions extension = AudioFileUtil.getAudioFileExtension(audioFile);
         if (extension == null) {
             return null;

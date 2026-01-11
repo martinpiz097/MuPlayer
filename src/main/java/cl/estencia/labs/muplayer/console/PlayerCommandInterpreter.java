@@ -23,6 +23,7 @@ import cl.estencia.labs.muplayer.console.runner.LocalRunner;
 import cl.estencia.labs.muplayer.console.runner.RunnerMode;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
+import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import cl.estencia.labs.muplayer.core.service.LogService;
 import cl.estencia.labs.muplayer.core.service.impl.LogServiceImpl;
 import cl.estencia.labs.muplayer.core.thread.TaskRunner;
@@ -38,6 +39,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static cl.estencia.labs.muplayer.console.common.enums.OutputType.*;
 import static cl.estencia.labs.muplayer.console.util.PlayerCmdInterpreterUtil.*;
+import static cl.estencia.labs.muplayer.core.cache.CacheVar.PLAYER_CURRENT_DATA;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.RUNNER;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.PREV;
@@ -115,15 +117,25 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                 } else {
                     player.removeAllResponseListeners();
                     player.addResponseListener(muPlayerResponse -> {
-                        playerCurrentData.set(muPlayerResponse);
+                        synchronized (playerCurrentData) {
+                            playerCurrentData.set(muPlayerResponse);
+                            globalCacheManager.saveValue(
+                                    PLAYER_CURRENT_DATA, playerCurrentData.get());
+                        }
 
-                        // como se imprime aca solo la info de la track, podria imprimirse tambien
-                        // el header del local runner
-                        showTrackInfo(muPlayerResponse.getCurrentTrack(), null);
+                        showTrackInfo(muPlayerResponse.getCurrentTrack(), true);
+                        ConsoleRunner consoleRunner = globalCacheManager.loadValue(RUNNER, ConsoleRunner.class);
+                        if (consoleRunner instanceof LocalRunner localRunner) {
+                            localRunner.printConsoleHeader();
+                        }
                     });
 
                     messageBus.subscribe(MuPlayerTopic.SHUTDOWN.name(),
-                            message -> System.exit(0));
+                            message -> {
+                        globalCacheManager.clear();
+
+                        System.exit(0);
+                    });
 
                     messageBus.publish(Messages.start());
                 }
@@ -166,12 +178,16 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
             case p -> changeOrSkipTrack(player, cmd, consoleOutput, PREV);
             case m -> {
                 if (player.isAlive()) {
-                    messageBus.publish(Messages.mute());
-                }
-            }
-            case um -> {
-                if (player.isAlive()) {
-                    messageBus.publish(Messages.unmute());
+                    MuPlayerResponse playerResponse = playerCurrentData.get();
+                    if (playerResponse == null || playerResponse.getPlayerStatusData() == null) {
+                        return consoleOutput;
+                    }
+
+                    if (playerResponse.getPlayerStatusData().isMute()) {
+                        messageBus.publish(Messages.unmute());
+                    } else {
+                        messageBus.publish(Messages.mute());
+                    }
                 }
             }
             case l -> {
@@ -369,7 +385,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
             case info -> {
                 if (player.isAlive()) {
                     if (playerCurrentData.get() != null) {
-                        showTrackInfo(playerCurrentData.get().getCurrentTrack(), consoleOutput);
+                        showTrackInfo(playerCurrentData.get().getCurrentTrack(), consoleOutput, true);
                     } else {
                         consoleOutput.append("No current track available", warn);
                     }
@@ -411,7 +427,6 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
             }
             case h -> printHelp(cmd, consoleOutput);
             case sys -> {
-                // TODO corregir
                 if (cmd.hasOptions()) {
                     execSysCommand(cmd.getOptionsAsString());
                 }

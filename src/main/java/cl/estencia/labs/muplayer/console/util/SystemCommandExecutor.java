@@ -1,6 +1,7 @@
 package cl.estencia.labs.muplayer.console.util;
 
 import cl.estencia.labs.aucom.core.util.ProcessManager;
+import cl.estencia.labs.muplayer.core.util.IOUtil;
 
 public class SystemCommandExecutor {
     public static boolean isChargerConnected() {
@@ -50,6 +51,27 @@ public class SystemCommandExecutor {
         } catch (Exception e) {
             return -1;
         }
+    }
+
+    public static boolean isHeadphoneOutputActive() {
+        try {
+            String output = ProcessManager.executeLegacy("pactl list sinks");
+            if (output == null || output.isBlank()) {
+                return false;
+            }
+
+            String reducedOutput = IOUtil.extractLinesWithFilter(output, "Active Port",
+                    false).trim().toLowerCase();
+
+            return reducedOutput.contains("headphone")
+                    || reducedOutput.contains("headset");
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    static void main() {
+        System.out.println(isHeadphoneOutputActive());
     }
 
 }

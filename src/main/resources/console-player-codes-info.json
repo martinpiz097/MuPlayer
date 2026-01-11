@@ -106,8 +106,8 @@
   },
   {
     "code": "m",
-    "orders": ["m", "mute"],
-    "helpInfo": "Silencia el reproductor"
+    "orders": ["m", "tm", "toggle-mute"],
+    "helpInfo": "Silencia o quita el silencio del reproductor dependiendo del estado actual"
   },
   {
     "code": "name",
@@ -136,7 +136,7 @@
   },
   {
     "code": "prog",
-    "orders": ["prog", "get-progress", "get-current-progress", "get-track-progress", "get-song-progress"],
+    "orders": ["prog", "progress", "get-progress", "get-current-progress", "get-track-progress", "get-song-progress"],
     "helpInfo": "Obtiene los segundos actuales reproducidos de la canción actual"
   },
   {
@@ -166,7 +166,7 @@
   },
   {
     "code": "sh",
-    "orders": ["sh", "shutdown", "exit", "quit", "e", "q"],
+    "orders": ["sh", "shutdown", "exit", "quit"],
     "helpInfo": "Apaga el reproductor"
   },
   {
@@ -218,11 +218,6 @@
     "code": "u",
     "orders": ["u", "update"],
     "helpInfo": "Vuelve a cargar las canciones nuevamente"
-  },
-  {
-    "code": "um",
-    "orders": ["um", "unmute", "unmute-player"],
-    "helpInfo": "Quita el silencio al reproductor"
   },
   {
     "code": "v",

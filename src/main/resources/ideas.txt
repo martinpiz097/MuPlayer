@@ -1,0 +1,10 @@
+- Relleno con caracteres x las tablas cuando tienen padding
+- Centrar tablas
+- Central total de las tablas
+- Revisar setup del historial de comandos
+- Arreglar alignment de ConsoleImage
+- Revisar y actualizar DaemonRunner usando la native console y el messageBus
+- Icono para indicar cuando se bloquea la entrada de teclado y cuando esta activado el modo shorcut
+o el modo por defecto
+- Arreglar secuencia de numeros de uno de los list
+- Aregar guia de shorcuts al inicio

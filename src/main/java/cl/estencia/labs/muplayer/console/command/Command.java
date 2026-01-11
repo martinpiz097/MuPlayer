@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE;
+
 public class Command {
     private final String order;
     private final String[] options;
@@ -80,8 +82,10 @@ public class Command {
     public String getOptionsAsString() {
         if (hasOptions()) {
             StringBuilder sbOptions = new StringBuilder();
-            for (int i = 0; i < options.length; i++)
-                sbOptions.append(options[i]).append(' ');
+            for (int i = 0; i < options.length; i++) {
+                sbOptions.append(options[i]).append(SPACE);
+            }
+
             sbOptions.deleteCharAt(sbOptions.length()-1);
             return sbOptions.toString();
         }

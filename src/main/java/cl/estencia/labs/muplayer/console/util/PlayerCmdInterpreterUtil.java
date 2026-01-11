@@ -14,7 +14,6 @@ import cl.estencia.labs.muplayer.config.reader.ConsoleCodesReader;
 import cl.estencia.labs.muplayer.console.command.Command;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
 import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
-import cl.estencia.labs.muplayer.core.system.SysInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
@@ -31,15 +30,20 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import static cl.estencia.labs.muplayer.console.command.SystemCommands.CLEAR_CONSOLE_UNIX;
+import static cl.estencia.labs.muplayer.console.command.SystemCommands.CLEAR_CONSOLE_WINDOWS;
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputType.*;
 import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.getOutputColor;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
+import static cl.estencia.labs.muplayer.core.system.SysInfo.IS_UNIX;
 
 @Slf4j
 public class PlayerCmdInterpreterUtil {
     public static void execSysCommand(String cmd) {
         try {
-            String output = ProcessManager.execute(cmd);
+            String output = ProcessManager.executeLegacy(
+                    cmd.split(String.valueOf(SPACE)));
             ProcessManager.writeProcessOutputTo(output, SystemUtil.getStdout());
         } catch (IOException | InterruptedException e) {
             Logger.getLogger(PlayerCmdInterpreterUtil.class, e.getMessage()).error();
@@ -262,11 +266,12 @@ public class PlayerCmdInterpreterUtil {
         execution.append("------------------------------", info);
     }
 
-    public static void clearConsole() throws IOException {
+    public static void clearConsole() {
         try {
-            String clearProcOutput = ProcessManager.execute(SysInfo.IS_UNIX ? "clear" : "cls");
+            String clearProcOutput = ProcessManager.execute(IS_UNIX
+                    ? CLEAR_CONSOLE_UNIX : CLEAR_CONSOLE_WINDOWS);
             ProcessManager.writeProcessOutputTo(clearProcOutput, SystemUtil.getStdout());
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
     }
@@ -307,7 +312,11 @@ public class PlayerCmdInterpreterUtil {
         execution.append(helpInfoData, info);
     }
 
-    public static void showTrackInfo(Track track, ConsoleOutput consoleOutput) {
+    public static void showTrackInfo(Track track, ConsoleOutput consoleOutput, boolean clearConsole) {
+        if (clearConsole) {
+            clearConsole();
+        }
+
         if (consoleOutput != null) {
             if (track != null) {
                 String trackInfo = getTrackInfo(track);
@@ -322,6 +331,10 @@ public class PlayerCmdInterpreterUtil {
                 Logger.getLogger(PlayerCmdInterpreterUtil.class, "Current track unavailable").rawError();
             }
         }
+    }
+
+    public static void showTrackInfo(Track track, boolean clearConsole) {
+        showTrackInfo(track, null, clearConsole);
     }
 
     public static void changeOrSkipTrack(Player player, Command cmd, ConsoleOutput execution, SeekOption seekOption) throws BusException {

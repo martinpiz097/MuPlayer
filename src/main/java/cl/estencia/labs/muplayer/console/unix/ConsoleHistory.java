@@ -19,7 +19,7 @@ public class ConsoleHistory {
         }
 
         commands.add(cmd.trim());
-        currentCommandIndex = commands.size();
+        currentCommandIndex = commands.size() - 1;
     }
 
     public void changeIndex(boolean next) {
@@ -30,7 +30,7 @@ public class ConsoleHistory {
         }
     }
 
-    public void updateLastCommand(String cmd) {
+    public void updateCommand(int index, String cmd) {
         if (commands.isEmpty()) {
             addCommand(cmd);
             return;
@@ -39,12 +39,21 @@ public class ConsoleHistory {
             return;
         }
 
-        commands.set(commands.size() - 1, cmd.trim());
+        commands.set(index, cmd.trim());
+    }
+
+    public void updateLastCommand(String cmd) {
+        updateCommand(commands.size() - 1, cmd);
+    }
+
+    public void updateCurrentCommand(String cmd) {
+        int normalizedCommandIndex = Math.min(Math.max(0, currentCommandIndex), commands.size() - 1);
+        updateCommand(normalizedCommandIndex, cmd);
     }
 
     public String getPrevCommand() {
         if (commands.isEmpty()) {
-            return "";
+            return null;
         }
 
         changeIndex(false);
@@ -53,7 +62,7 @@ public class ConsoleHistory {
 
     public String getNextCommand() {
         if (commands.isEmpty()) {
-            return "";
+            return null;
         }
 
         changeIndex(true);

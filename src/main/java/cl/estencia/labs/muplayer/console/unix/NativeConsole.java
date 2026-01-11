@@ -1,5 +1,6 @@
 package cl.estencia.labs.muplayer.console.unix;
 
+import cl.estencia.labs.aucom.core.util.ProcessManager;
 import cl.estencia.labs.muplayer.console.unix.event.KeyInputEvent;
 import cl.estencia.labs.muplayer.console.unix.event.LineInputEvent;
 import cl.estencia.labs.muplayer.console.unix.listener.KeyInputListener;
@@ -14,22 +15,21 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleEscapeSequences.padding;
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleEscapeSequences.partialCartReturn;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
 import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.*;
 import static cl.estencia.labs.muplayer.console.unix.InputMode.COMMANDS;
-import static cl.estencia.labs.muplayer.console.util.SystemCommandExecutor.getTerminalWidth;
 
 @Getter
-public class NativeConsole extends Thread {
-    private volatile boolean inputBlocked;
-    private final int unlockKeyCode;
+public class NativeConsole extends Console {
     private final StringBuilder sbInput;
 
     private final List<KeyInterceptor> keyInterceptors;
     private final List<KeyInputListener> keyInputListeners;
     private final List<LineInputListener> lineInputListeners;
 
-    private final InputModeConfig inputModeConfig;
+    private final InputConfig inputConfig;
     private final ConsoleHistory consoleHistory;
 
     public NativeConsole() {
@@ -41,9 +41,7 @@ public class NativeConsole extends Thread {
     }
 
     public NativeConsole(int unlockKeyCode, InputMode inputMode) {
-        this.inputBlocked = true;
-        this.unlockKeyCode = unlockKeyCode;
-        this.inputModeConfig = new InputModeConfig(inputMode, EXT_F5);
+        this.inputConfig = new InputConfig(inputMode, false, EXT_F5, ESC);
         this.sbInput = new StringBuilder();
         this.keyInterceptors = CollectionUtil.newFastArrayList();
         this.keyInputListeners = CollectionUtil.newFastArrayList();
@@ -71,29 +69,15 @@ public class NativeConsole extends Thread {
                 .forEach(inputListener -> inputListener.onInput(event));
     }
 
-    // un relleno por cada linea del input
-    private int calculateFilled() {
-        String input = sbInput.toString();
-        int terminalWidth = getTerminalWidth();
+    private String cartReturn(int columns) {
+        String partialCartReturn = partialCartReturn(columns);
+        String padding = padding(columns);
 
-        if (input.contains("\n")) {
-            String[] split = input.split("\n");
-            return split.length * terminalWidth;
-        } else {
-            return terminalWidth;
-        }
-    }
-
-    private String cartReturn() {
-        return '\r' + (" ".repeat(getTerminalWidth())) + '\r';
+        return partialCartReturn + padding + partialCartReturn;
     }
 
     private void printKey(int key) {
-        if (key == DELETE) {
-            IO.print(cartReturn() + sbInput.toString());
-        } else {
-            IO.print((char) key);
-        }
+        IO.print((char) key);
     }
 
     private void sendKeyToInterceptors(int key, byte[] sequence,
@@ -118,16 +102,9 @@ public class NativeConsole extends Thread {
 
                 printKey(key);
             }
-            case DELETE -> {
-                if (!sbInput.isEmpty()) {
-                    sbInput.deleteCharAt(sbInput.length() - 1);
-                    consoleHistory.updateLastCommand(sbInput.toString());
-                    printKey(key);
-                }
-            }
             default -> {
                 sbInput.append((char) key);
-                consoleHistory.updateLastCommand(sbInput.toString());
+                consoleHistory.updateCurrentCommand(sbInput.toString());
                 printKey(key);
             }
         }
@@ -135,7 +112,7 @@ public class NativeConsole extends Thread {
     }
 
     private void handleInput(int key, byte[] sequence) {
-        InputMode inputMode = inputModeConfig.getInputMode();
+        InputMode inputMode = inputConfig.getInputMode();
 
         switch (inputMode) {
             case SINGLE_SHORCUTS -> handleShorcut(key, sequence);
@@ -146,43 +123,78 @@ public class NativeConsole extends Thread {
 
     // es para restaurar terminal cuando el programa termina (por sea caso)
     private void restoreTerminal() {
-        try {
-            Runtime.getRuntime().exec(new String[]{"sh", "-c", "stty sane < /dev/tty"}).waitFor();
-        } catch (Exception ignored) {}
+        ProcessManager.executeLegacy("sh", "-c", "stty sane < /dev/tty");
     }
 
     public void loadDefaultKeyInterceptors() {
-        addKeyInterceptor(new KeyInterceptor(unlockKeyCode) {
+        addKeyInterceptor(new KeyInterceptor(inputConfig.getUnlockKey()) {
             @Override
             protected void intercept(KeyInputEvent event) {
-                setInputBlocked(!inputBlocked);
+                inputConfig.toggleInputBlocked();
             }
         });
 
-        addKeyInterceptor(new KeyInterceptor(inputModeConfig.getToggleModeKey()) {
+        addKeyInterceptor(new KeyInterceptor(inputConfig.getToggleModeKey()) {
             @Override
             protected void intercept(KeyInputEvent event) {
-                inputModeConfig.toggleInputMode();
+                inputConfig.toggleInputMode();
             }
         });
 
         addKeyInterceptor(new KeyInterceptor(SEQ_UP) {
             @Override
             protected void intercept(KeyInputEvent event) {
-                System.out.print(cartReturn() + consoleHistory.getPrevCommand());
+                String prevCommand = consoleHistory.getPrevCommand();
+                if (prevCommand == null) {
+                    return;
+                }
+
+                int cartReturnColumns = Math.max(prevCommand.length(), sbInput.length());
+                System.out.print(cartReturn(cartReturnColumns) + prevCommand);
+
+                sbInput.delete(0, sbInput.length());
+                sbInput.append(prevCommand);
             }
         });
 
         addKeyInterceptor(new KeyInterceptor(SEQ_DOWN) {
             @Override
             protected void intercept(KeyInputEvent event) {
-                System.out.print(cartReturn() + consoleHistory.getNextCommand());
+                String nextCommand = consoleHistory.getNextCommand();
+                if (nextCommand == null) {
+                    return;
+                }
+
+                int cartReturnColumns = Math.max(nextCommand.length(), sbInput.length());
+                System.out.print(cartReturn(cartReturnColumns) + nextCommand);
+
+                sbInput.delete(0, sbInput.length());
+                sbInput.append(nextCommand);
+            }
+        });
+
+        addKeyInterceptor(new KeyInterceptor(DELETE) {
+            @Override
+            protected void intercept(KeyInputEvent event) {
+                if (sbInput.isEmpty()) {
+                    return;
+                }
+
+                int cartReturnCount = sbInput.length();
+                sbInput.deleteCharAt(sbInput.length() - 1);
+                consoleHistory.updateCurrentCommand(sbInput.toString());
+
+                IO.print(cartReturn(cartReturnCount) + sbInput);
             }
         });
     }
 
-    public synchronized void setInputBlocked(boolean inputBlocked) {
-        this.inputBlocked = inputBlocked;
+    public InputMode getInputMode() {
+        return inputConfig.getInputMode();
+    }
+
+    public void setInputMode(InputMode inputMode) {
+        inputConfig.setInputMode(inputMode);
     }
 
     public <L extends NativeInputListener> void addInputListeners(L... inputListeners) {
@@ -255,17 +267,21 @@ public class NativeConsole extends Thread {
         }
     }
 
-    public void shutdown() {
-        interrupt();
-        restoreTerminal();
+    public void clearAllInterceptorsAndListeners() {
         clearAllKeyInterceptors();
         clearAllKeyInputListeners();
         clearAllLineInputListeners();
     }
 
+    public void shutdown() {
+        interrupt();
+        restoreTerminal();
+        clearAllInterceptorsAndListeners();
+    }
+
     @SneakyThrows
     public void run() {
-        Runtime.getRuntime().exec(new String[]{"sh", "-c", "stty -echo -icanon < /dev/tty"}).waitFor();
+        ProcessManager.executeLegacy("sh", "-c", "stty -echo -icanon < /dev/tty");
         Runtime.getRuntime().addShutdownHook(new Thread(this::restoreTerminal));
 
         try (var reader = new FileInputStream(FileDescriptor.in)) {
@@ -284,7 +300,7 @@ public class NativeConsole extends Thread {
                         ? (read == 3 ? parseSequence(sequence) : parseExtendedSequence(sequence))
                         : sequence[0];
 
-                if (inputBlocked && key != unlockKeyCode) {
+                if (inputConfig.isInputBlocked() && key != inputConfig.getUnlockKey()) {
                     continue;
                 }
 

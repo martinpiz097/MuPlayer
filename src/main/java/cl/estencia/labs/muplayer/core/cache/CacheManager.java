@@ -58,4 +58,10 @@ public class CacheManager {
         }
     }
 
+    public void clear() {
+        synchronized (mapCache) {
+            mapCache.clear();
+        }
+    }
+
 }

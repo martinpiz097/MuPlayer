@@ -4,6 +4,7 @@ public enum CacheVar {
     SOURCE_DATA,
     RUNNER,
     MESSAGE_BUS,
-    NATIVE_INPUT_READER,
+    NATIVE_CONSOLE,
+    PLAYER_CURRENT_DATA,
     //PLAYER
 }

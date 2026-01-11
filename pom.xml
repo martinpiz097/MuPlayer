@@ -19,6 +19,7 @@
         <lombok.version>1.18.42</lombok.version>
         <java.version>25</java.version>
         <mainClass>cl.estencia.labs.muplayer.Main</mainClass>
+<!--        <mainClass>cl.estencia.labs.muplayer.testing.ConsoleReaderTesting</mainClass>-->
     </properties>
 
     <developers>

@@ -1,8 +1,10 @@
 package cl.estencia.labs.muplayer.console.runner;
 
+import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.ebot.utils.threads.Interruptor;
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.audio.player.Player;
+import cl.estencia.labs.muplayer.audio.util.MuPlayerUtil;
 import cl.estencia.labs.muplayer.config.ResourceFiles;
 import cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols;
 import cl.estencia.labs.muplayer.console.common.constants.KeyCodes;
@@ -15,10 +17,12 @@ import cl.estencia.labs.muplayer.console.unix.event.LineInputEvent;
 import cl.estencia.labs.muplayer.console.unix.listener.KeyInputListener;
 import cl.estencia.labs.muplayer.console.unix.listener.KeyInterceptor;
 import cl.estencia.labs.muplayer.console.unix.listener.LineInputListener;
-import cl.estencia.labs.muplayer.console.util.ConsoleTextPainter;
 import cl.estencia.labs.muplayer.console.util.SystemCommandExecutor;
+import cl.estencia.labs.muplayer.core.bus.message.Messages;
+import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
 import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import cl.estencia.labs.muplayer.core.system.SysInfo;
+import lombok.SneakyThrows;
 import org.orangelogger.sys.Logger;
 
 import java.io.File;
@@ -26,11 +30,10 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Scanner;
 
-import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE;
-import static cl.estencia.labs.muplayer.console.util.ConsoleTextPainter.GradientStyle.LIGHTEN;
-import static cl.estencia.labs.muplayer.console.util.ConsoleTextPainter.paintMuPlayerStyle;
+import static cl.estencia.labs.muplayer.console.util.ConsolePainter.GradientStyle.LIGHTEN;
+import static cl.estencia.labs.muplayer.console.util.ConsolePainter.paintMuPlayerStyle;
 import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.isNumberKey;
-import static cl.estencia.labs.muplayer.core.cache.CacheVar.NATIVE_INPUT_READER;
+import static cl.estencia.labs.muplayer.core.cache.CacheVar.NATIVE_CONSOLE;
 
 public class LocalRunner extends ConsoleRunner {
     protected final Scanner scanner;
@@ -75,6 +78,7 @@ public class LocalRunner extends ConsoleRunner {
         }
 
         nativeConsole.loadDefaultKeyInterceptors();
+        // agregar interceptor para cerrar comprobando si esta activo player
         nativeConsole.addKeyInterceptors(
                 new KeyInterceptor(KeyCodes.SEQ_RIGHT) {
                     @Override
@@ -92,8 +96,35 @@ public class LocalRunner extends ConsoleRunner {
                     @Override
                     protected void intercept(KeyInputEvent event) {
                         processCommand("clear");
+                        printConsoleHeader();
                     }
-                });
+                },
+                new KeyInterceptor(KeyCodes.EXT_PAGE_UP) {
+                    @Override
+                    protected void intercept(KeyInputEvent event) {
+                        processCommand("skf prev");
+                    }
+                },
+                new KeyInterceptor(KeyCodes.EXT_PAGE_DOWN) {
+                    @Override
+                    protected void intercept(KeyInputEvent event) {
+                        processCommand("skf next");
+                    }
+                },
+                new KeyInterceptor(KeyCodes.SEQ_HOME) {
+                    @Override
+                    protected void intercept(KeyInputEvent event) {
+                        processCommand("p");
+                    }
+                },
+                new KeyInterceptor(KeyCodes.SEQ_END) {
+                    @Override
+                    protected void intercept(KeyInputEvent event) {
+                        processCommand("n");
+                    }
+                }
+                );
+
     }
 
     private void loadKeyListeners() {
@@ -102,11 +133,20 @@ public class LocalRunner extends ConsoleRunner {
         }
 
         nativeConsole.addInputListeners(new KeyInputListener() {
+            @SneakyThrows
             @Override
             public void onInput(KeyInputEvent event) {
                 int key = event.getKey();
                 if (key == KeyCodes.SPACE) {
                     return;
+                }
+
+                if (key == KeyCodes.LINE_FEED) {
+                    if (player.isAlive()) {
+                        return;
+                    }
+
+                    processCommand("st");
                 } else if (isNumberKey(key)) {
                     int number = Integer.parseInt(String.valueOf((char) key));
                     if (number == 0) {
@@ -116,13 +156,31 @@ public class LocalRunner extends ConsoleRunner {
                     processCommand("pf " + number);
                 } else if (key == KeyCodes.b || key == KeyCodes.B) {
                     printBannerLogo();
-                } else if (key != ConsoleSymbols.LINE_BREAK_CHAR) {
-                    processShorcut((char) key);
+                    printConsoleHeader();
+                } else if (key == KeyCodes.L) {
+                    processCommand("lf");
+                    printConsoleHeader();
+                } else if (key == KeyCodes.C) {
+                    processCommand("lc");
+                    printConsoleHeader();
+                } else if (key == KeyCodes.e || key == KeyCodes.E
+                        || key == KeyCodes.q || key == KeyCodes.Q) {
+                    if (player.isAlive() && interpreter.isOn()) {
+                        processCommand("sh");
+                    } else {
+                        globalCacheManager.clear();
+                        System.exit(0);
+                    }
+                } else if (key == KeyCodes.TAB) {
+                    if (player.isPlaying()) {
+                        processCommand("ps");
+                    } else if (player.isPaused() || player.isStopped()) {
+                        processCommand("r");
+                    }
                 } else {
-                    System.out.print((char) key);
+                    processShorcut((char) key);
+                    printConsoleHeader();
                 }
-
-                printConsoleHeader();
             }
         });
 
@@ -141,6 +199,8 @@ public class LocalRunner extends ConsoleRunner {
                     processCommand(line);
                 }
 
+                // en este modo es probable que el header se vea dos veces cuando se haga next
+                // o prev, se veria antes y despues de la info de la cancion
                 printConsoleHeader();
             }
         });
@@ -148,8 +208,8 @@ public class LocalRunner extends ConsoleRunner {
     }
 
     private void setupNativeConsole() {
-        nativeConsole.setInputBlocked(false);
-        nativeConsole.getInputModeConfig().setInputMode(InputMode.COMMANDS);
+        nativeConsole.getInputConfig().setInputBlocked(false);
+        nativeConsole.getInputConfig().setInputMode(InputMode.SINGLE_SHORCUTS);
         loadKeyInterceptors();
         loadKeyListeners();
         loadLineListeners();
@@ -188,7 +248,7 @@ public class LocalRunner extends ConsoleRunner {
         validateRootFolder();
         setupNativeConsole();
 
-        globalCacheManager.saveValue(NATIVE_INPUT_READER, nativeConsole);
+        globalCacheManager.saveValue(NATIVE_CONSOLE, nativeConsole);
 
         printBannerLogo();
         printAppVersion();

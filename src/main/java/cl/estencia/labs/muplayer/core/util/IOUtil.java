@@ -1,11 +1,15 @@
 package cl.estencia.labs.muplayer.core.util;
 
+import cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols;
+
 import java.io.*;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class IOUtil {
 
@@ -76,4 +80,27 @@ public class IOUtil {
     public static InputStream getResourceAsArrayStream(String path) throws IOException {
         return new ByteArrayInputStream(getResourceBytes(path));
     }
+
+    public static String extractLinesWithFilter(String str, String filter, boolean caseSensitive) {
+        try {
+            if (str == null) {
+                return "";
+            }
+
+            BufferedReader reader = new BufferedReader(new StringReader(str));
+            Predicate<? super String> filterFunction = caseSensitive
+                    ? line -> line.contains(filter)
+                    : line -> line.toLowerCase().contains(filter.toLowerCase());
+
+            String filteredContent = reader.lines()
+                    .filter(filterFunction)
+                    .collect(Collectors.joining(ConsoleSymbols.LINE_BREAK));
+
+            reader.close();
+            return filteredContent;
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
 }

@@ -1,7 +1,9 @@
 package cl.estencia.labs.muplayer.console.unix.listener;
 
 import cl.estencia.labs.muplayer.console.unix.event.KeyInputEvent;
+import lombok.Getter;
 
+@Getter
 public abstract class KeyInterceptor extends NativeInputListener<KeyInputEvent>{
     protected final char key;
 

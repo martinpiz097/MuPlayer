@@ -1,5 +1,6 @@
 package cl.estencia.labs.muplayer.console.runner;
 
+import cl.estencia.labs.muplayer.audio.model.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
@@ -8,6 +9,7 @@ import cl.estencia.labs.muplayer.config.reader.MuPlayerConfigReader;
 import cl.estencia.labs.muplayer.console.PlayerCommandInterpreter;
 import cl.estencia.labs.muplayer.console.common.enums.ConsoleHeaderMode;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
+import cl.estencia.labs.muplayer.core.bus.model.MuPlayerResponse;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import cl.estencia.labs.muplayer.core.system.SysInfo;
 import lombok.Getter;
@@ -17,11 +19,12 @@ import org.orangelogger.sys.SystemUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.Scanner;
 
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.*;
 import static cl.estencia.labs.muplayer.console.util.ConsolePainter.*;
+import static cl.estencia.labs.muplayer.core.cache.CacheVar.PLAYER_CURRENT_DATA;
 
 @Slf4j
 public abstract class ConsoleRunner implements Runnable {
@@ -58,17 +61,27 @@ public abstract class ConsoleRunner implements Runnable {
         return APP_NAME + SPACE + 'v' + SysInfo.readAppVersion();
     }
 
-    protected String getCompleteHeader() throws Exception {
+    protected String createConsoleHeader() throws Exception {
         StringBuilder sbHeader = new StringBuilder();
         ConsoleHeaderMode consoleHeaderMode = ConsoleHeaderMode.valueOf(muPlayerConfigReader.getProperty(MuPlayerConfigKeys.CONSOLE_HEADER_MODE));
-        Track currentTrack = player.getCurrentTrack().get();
-        var playerVolume = player.getSystemVolume();
+        var playerCurrentData = globalCacheManager.loadValue(
+                PLAYER_CURRENT_DATA, MuPlayerResponse.class);
+
+        Track currentTrack = playerCurrentData != null
+                ? playerCurrentData.getCurrentTrack()
+                : player.getCurrentTrack().get();
+        PlayerStatusData playerStatusData = playerCurrentData != null
+                ? playerCurrentData.getPlayerStatusData()
+                : player.getPlayerStatusData();
+
+        var systemVolume = player.getSystemVolume();
 
         switch (consoleHeaderMode) {
             case SIMPLE -> {
-                sbHeader.append(paintMusicPlayerIcons(player.isPlaying())).append(SPACE);
-                sbHeader.append(paintBatteryStatus()).append(SPACE);
-                sbHeader.append(paintVolumeStatus(player.getPlayerStatusData())).append(SPACE);
+                sbHeader.append(paintMusicPlayerIcons(player.isPlaying())).append(SPACE).append(SPACE);
+                sbHeader.append(paintBatteryStatus()).append(SPACE).append(SPACE);
+                sbHeader.append(paintVolumeStatus(systemVolume, playerStatusData.isMute()))
+                        .append(SPACE);
 
                 if (currentTrack != null) {
                     sbHeader.append(SPACE)
@@ -91,28 +104,16 @@ public abstract class ConsoleRunner implements Runnable {
                 }
 
                 sbHeader.append(SINGLE_VERTICAL_LINE).append(SPACE);
-                sbHeader.append(paintVolumeBar(playerVolume, 10)).append(SPACE);
-                sbHeader.append(paintVolumeStatus(player.getPlayerStatusData())).append(SPACE);
+                sbHeader.append(paintVolumeBar(systemVolume, 10)).append(SPACE);
+                sbHeader.append(paintVolumeStatus(systemVolume, playerStatusData.isMute()))
+                        .append(SPACE).append(SPACE);
                 sbHeader.append(paintBatteryStatus()).append(SPACE);
-
 
                 sbHeader.append(LINE_BREAK_CHAR).append(ARROW).append(SPACE);
             }
         }
 
         return sbHeader.toString();
-    }
-
-    protected void printConsoleHeader() {
-        try {
-
-            final FileOutputStream stdout = SystemUtil.getStdout();
-            stdout.write(Logger.getLogger(this, getCompleteHeader())
-                    .getColoredMsg(Logger.INFOCOLOR).getBytes());
-            stdout.flush();
-        } catch (Exception e) {
-            Logger.getLogger(this, e.getClass().getSimpleName(), e.getMessage()).error();
-        }
     }
 
     protected boolean isValidRootFolder() {
@@ -130,6 +131,19 @@ public abstract class ConsoleRunner implements Runnable {
             }
 
             System.exit(1);
+        }
+    }
+
+    public void printConsoleHeader() {
+        try {
+            final OutputStream stdout = SystemUtil.getStdout();
+            final String header = createConsoleHeader();
+
+            stdout.write(Logger.getLogger(this, header)
+                    .getColoredMsg(Logger.INFOCOLOR).getBytes());
+            stdout.flush();
+        } catch (Exception e) {
+            Logger.getLogger(this, e.getClass().getSimpleName(), e.getMessage()).error();
         }
     }
 
