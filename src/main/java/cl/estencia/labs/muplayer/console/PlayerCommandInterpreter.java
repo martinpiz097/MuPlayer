@@ -5,6 +5,7 @@ import cl.estencia.labs.muplayer.audio.model.Album;
 import cl.estencia.labs.muplayer.audio.model.Artist;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols;
+import cl.estencia.labs.muplayer.console.common.enums.HeaderMode;
 import cl.estencia.labs.muplayer.console.model.table.Alignment;
 import cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic;
 import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
@@ -38,6 +39,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SANDGLASS;
+import static cl.estencia.labs.muplayer.console.common.enums.HeaderMode.DEFAULT;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputType.*;
 import static cl.estencia.labs.muplayer.console.util.PlayerCmdInterpreterUtil.*;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.PLAYER_CURRENT_DATA;
@@ -103,7 +105,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                         showTrackInfo(muPlayerResponse.getCurrentTrack(), true);
                         ConsoleRunner consoleRunner = globalCacheManager.loadValue(RUNNER, ConsoleRunner.class);
                         if (consoleRunner instanceof LocalRunner localRunner) {
-                            localRunner.printConsoleHeader();
+                            localRunner.printConsoleHeader(DEFAULT);
                         }
                     });
 

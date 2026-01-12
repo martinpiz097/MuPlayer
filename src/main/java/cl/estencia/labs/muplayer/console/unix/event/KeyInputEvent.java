@@ -3,6 +3,9 @@ package cl.estencia.labs.muplayer.console.unix.event;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+
+import java.util.Arrays;
 
 @Getter
 @Setter
@@ -20,4 +23,12 @@ public class KeyInputEvent extends NativeInputEvent {
         return String.valueOf((char) key);
     }
 
+    @Override
+    public String toString() {
+        return "KeyInputEvent{" +
+                "key=" + key +
+                ", keyChar=" + getKeyChar() +
+                ", sequenceBytes=" + Arrays.toString(sequenceBytes) +
+                '}';
+    }
 }

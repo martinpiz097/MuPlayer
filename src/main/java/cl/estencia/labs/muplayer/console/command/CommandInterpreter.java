@@ -11,6 +11,8 @@ import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.
 
 public interface CommandInterpreter {
     default ConsoleOutput execute(String commandString) throws Exception {
+        IO.println("Command to execute: " + commandString);
+
         if (commandString == null || commandString.isBlank()) {
             return execute(new Command(""));
         }

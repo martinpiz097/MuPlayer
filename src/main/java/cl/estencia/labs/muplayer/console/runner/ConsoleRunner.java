@@ -7,12 +7,17 @@ import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.config.model.MuPlayerConfigKeys;
 import cl.estencia.labs.muplayer.config.reader.MuPlayerConfigReader;
 import cl.estencia.labs.muplayer.console.PlayerCommandInterpreter;
+import cl.estencia.labs.muplayer.console.command.Command;
+import cl.estencia.labs.muplayer.console.command.CommandInterpreter;
 import cl.estencia.labs.muplayer.console.common.enums.ConsoleHeaderMode;
+import cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode;
+import cl.estencia.labs.muplayer.console.common.enums.HeaderMode;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
 import cl.estencia.labs.muplayer.core.bus.model.MuPlayerResponse;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import cl.estencia.labs.muplayer.core.system.SysInfo;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
@@ -23,6 +28,8 @@ import java.io.OutputStream;
 import java.util.Scanner;
 
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.*;
+import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode.cls;
+import static cl.estencia.labs.muplayer.console.common.enums.HeaderMode.CLEAN;
 import static cl.estencia.labs.muplayer.console.util.ConsolePainter.*;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.PLAYER_CURRENT_DATA;
 
@@ -58,7 +65,7 @@ public abstract class ConsoleRunner implements Runnable {
     }
 
     protected String getFullAppName() {
-        return APP_NAME + SPACE + 'v' + SysInfo.readAppVersion();
+        return APP_NAME + SPACE_CHAR + 'v' + SysInfo.readAppVersion();
     }
 
     protected String createConsoleHeader() throws Exception {
@@ -78,38 +85,38 @@ public abstract class ConsoleRunner implements Runnable {
 
         switch (consoleHeaderMode) {
             case SIMPLE -> {
-                sbHeader.append(paintMusicPlayerIcons(player.isPlaying())).append(SPACE).append(SPACE);
-                sbHeader.append(paintBatteryStatus()).append(SPACE).append(SPACE);
+                sbHeader.append(paintMusicPlayerIcons(player.isPlaying())).append(SPACE_CHAR).append(SPACE_CHAR);
+                sbHeader.append(paintBatteryStatus()).append(SPACE_CHAR).append(SPACE_CHAR);
                 sbHeader.append(paintVolumeStatus(systemVolume, playerStatusData.isMute()))
-                        .append(SPACE);
+                        .append(SPACE_CHAR);
 
                 if (currentTrack != null) {
-                    sbHeader.append(SPACE)
+                    sbHeader.append(SPACE_CHAR)
                             .append(MUSICAL_NOTE)
-                            .append(SPACE)
+                            .append(SPACE_CHAR)
                             .append(currentTrack.getTitle())
-                            .append(SPACE);
+                            .append(SPACE_CHAR);
                 }
 
-                sbHeader.append(ARROW).append(SPACE);
+                sbHeader.append(ARROW).append(SPACE_CHAR);
             }
             case COMPLETE -> {
-                sbHeader.append(paintMusicPlayerIcons(player.isPlaying())).append(SPACE);
+                sbHeader.append(paintMusicPlayerIcons(player.isPlaying())).append(SPACE_CHAR);
 
                 if (currentTrack != null) {
                     sbHeader.append(MUSICAL_NOTE)
-                            .append(SPACE)
+                            .append(SPACE_CHAR)
                             .append(currentTrack.getTitle())
-                            .append(SPACE);
+                            .append(SPACE_CHAR);
                 }
 
-                sbHeader.append(SINGLE_VERTICAL_LINE).append(SPACE);
-                sbHeader.append(paintVolumeBar(systemVolume, 10)).append(SPACE);
+                sbHeader.append(SINGLE_VERTICAL_LINE).append(SPACE_CHAR);
+                sbHeader.append(paintVolumeBar(systemVolume, 10)).append(SPACE_CHAR);
                 sbHeader.append(paintVolumeStatus(systemVolume, playerStatusData.isMute()))
-                        .append(SPACE).append(SPACE);
-                sbHeader.append(paintBatteryStatus()).append(SPACE);
+                        .append(SPACE_CHAR).append(SPACE_CHAR);
+                sbHeader.append(paintBatteryStatus()).append(SPACE_CHAR);
 
-                sbHeader.append(LINE_BREAK_CHAR).append(ARROW).append(SPACE);
+                sbHeader.append(LINE_BREAK_CHAR).append(ARROW).append(SPACE_CHAR);
             }
         }
 
@@ -134,27 +141,45 @@ public abstract class ConsoleRunner implements Runnable {
         }
     }
 
-    public void printConsoleHeader() {
+    public void printConsoleHeader(HeaderMode headerMode) {
         try {
-            final OutputStream stdout = SystemUtil.getStdout();
-            final String header = createConsoleHeader();
+            if (headerMode == CLEAN) {
+                sendCommand(cls);
+            }
 
-            stdout.write(Logger.getLogger(this, header)
-                    .getColoredMsg(Logger.INFOCOLOR).getBytes());
-            stdout.flush();
+            final String header = createConsoleHeader();
+            final String coloredMessage = Logger.getLogger(this, header)
+                    .getColoredMsg(Logger.INFOCOLOR);
+
+            IO.print(coloredMessage);
         } catch (Exception e) {
             Logger.getLogger(this, e.getClass().getSimpleName(), e.getMessage()).error();
         }
     }
 
-    public ConsoleOutput execCommand(String strCmd) {
+    public void sendCommand(String commandString) {
+        sendCommand(new Command(commandString));
+    }
+
+    public void sendCommand(ConsoleOrderCode cmdOrderCode) {
+        if (cmdOrderCode == null) {
+            sendCommand(new Command(""));
+            return;
+        }
+
+        sendCommand(new Command(cmdOrderCode.name()));
+    }
+
+    public void sendCommand(Command cmd) {
         try {
-            return interpreter.execute(strCmd);
+            ConsoleOutput consoleOutput = interpreter.execute(cmd);
+            if (consoleOutput != null && consoleOutput.hasOutput()) {
+                IO.println(consoleOutput);
+            }
+
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-
-        return null;
     }
 
 }

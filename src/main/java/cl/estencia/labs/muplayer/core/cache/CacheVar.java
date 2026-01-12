@@ -6,5 +6,6 @@ public enum CacheVar {
     MESSAGE_BUS,
     NATIVE_CONSOLE,
     PLAYER_CURRENT_DATA,
+    TRACK_PROGRESS_LISTENER
     //PLAYER
 }

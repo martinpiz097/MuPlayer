@@ -79,7 +79,7 @@ public class NativeConsole extends Console {
         }
 
         filteredKeyListeners
-                .forEach(inputListener -> inputListener.onInput(event));
+                .forEach(inputListener -> inputListener.onInputEvent(event));
     }
 
     private void sendInputEvent(LineInputEvent event) {
@@ -88,13 +88,13 @@ public class NativeConsole extends Console {
         }
 
         lineInputListeners.parallelStream()
-                .forEach(inputListener -> inputListener.onInput(event));
+                .forEach(inputListener -> inputListener.onInputEvent(event));
     }
 
     private void sendKeyToInterceptors(int key, byte[] sequence,
                                        List<KeyInterceptor> interceptors) {
         interceptors.forEach(interceptor ->
-                interceptor.onInput(new KeyInputEvent(key, sequence)));
+                interceptor.onInputEvent(new KeyInputEvent(key, sequence)));
     }
 
     private void handleCommand(int key, byte[] sequence) {

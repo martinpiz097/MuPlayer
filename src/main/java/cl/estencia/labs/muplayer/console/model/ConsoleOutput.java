@@ -46,4 +46,10 @@ public class ConsoleOutput {
     public void setOutputAsOutputMsg() {
         setOutputObject(null);
     }
+
+    @Override
+    public String toString() {
+        return getOutputMsg();
+    }
+
 }

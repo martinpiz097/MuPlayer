@@ -24,17 +24,22 @@ public class Command {
     }
 
     public Command(String strCmd) {
-        String[] cmdSplit = strCmd.split(CMD_SPLIT_DELIMITER);
-        if (cmdSplit.length > 0) {
-            order = cmdSplit[ORDER_INDEX];
-            if (cmdSplit.length > UNIQUE_OPTION_CMD_VALUE) {
-                options = Arrays.copyOfRange(cmdSplit, FIRST_OPTION_INDEX, cmdSplit.length);
-            } else {
-                options = null;
-            }
-        } else {
+        if (strCmd == null || strCmd.isBlank()) {
             order = "";
             options = new String[0];
+        } else {
+            String[] cmdSplit = strCmd.split(CMD_SPLIT_DELIMITER);
+            if (cmdSplit.length > 0) {
+                order = cmdSplit[ORDER_INDEX];
+                if (cmdSplit.length > UNIQUE_OPTION_CMD_VALUE) {
+                    options = Arrays.copyOfRange(cmdSplit, FIRST_OPTION_INDEX, cmdSplit.length);
+                } else {
+                    options = null;
+                }
+            } else {
+                order = "";
+                options = new String[0];
+            }
         }
     }
 
@@ -105,11 +110,13 @@ public class Command {
 
     @Override
     public String toString() {
-        StringBuilder sbCmd = new StringBuilder();
-        sbCmd.append(order);
-        if (hasOptions())
-            for (int i = 0; i < options.length; i++)
+        StringBuilder sbCmd = new StringBuilder(order);
+        if (hasOptions()) {
+            for (int i = 0; i < options.length; i++) {
                 sbCmd.append(CMD_SPLIT_DELIMITER_CHAR).append(options[i]);
+            }
+        }
+
         return sbCmd.toString();
     }
 }

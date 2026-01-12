@@ -31,7 +31,7 @@ public abstract class KeyInterceptor extends NativeInputListener<KeyInputEvent>{
     }
 
     @Override
-    public void onInput(KeyInputEvent event) {
+    public void onInputEvent(KeyInputEvent event) {
         if (!isKey(event.getKey())) {
             return;
         }

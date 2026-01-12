@@ -42,6 +42,6 @@ public abstract class KeyInputListener extends NativeInputListener<KeyInputEvent
         return false;
     }
 
-    public abstract void onInput(KeyInputEvent event);
+    public abstract void onInputEvent(KeyInputEvent event);
 
 }
