@@ -3,10 +3,7 @@ package cl.estencia.labs.muplayer.console.unix;
 import cl.estencia.labs.aucom.core.util.ProcessManager;
 import cl.estencia.labs.muplayer.console.unix.event.KeyInputEvent;
 import cl.estencia.labs.muplayer.console.unix.event.LineInputEvent;
-import cl.estencia.labs.muplayer.console.unix.listener.KeyInputListener;
-import cl.estencia.labs.muplayer.console.unix.listener.KeyInterceptor;
-import cl.estencia.labs.muplayer.console.unix.listener.LineInputListener;
-import cl.estencia.labs.muplayer.console.unix.listener.NativeInputListener;
+import cl.estencia.labs.muplayer.console.unix.listener.*;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -49,7 +46,7 @@ public class NativeConsole extends Console {
         this.keyInputListeners = CollectionUtil.newFastArrayList();
         this.lineInputListeners = CollectionUtil.newFastArrayList();
         this.consoleHistory = new ConsoleHistory();
-        setName("native-input-reader");
+        setName("native-console");
         loadDefaultKeyInterceptors();
     }
 
@@ -126,21 +123,21 @@ public class NativeConsole extends Console {
     public void loadDefaultKeyInterceptors() {
         addKeyInterceptor(new KeyInterceptor(inputConfig.getUnlockKey()) {
             @Override
-            protected void intercept(KeyInputEvent event) {
+            public void intercept(KeyInputEvent event) {
                 inputConfig.toggleInputBlocked();
             }
         });
 
         addKeyInterceptor(new KeyInterceptor(inputConfig.getToggleModeKey()) {
             @Override
-            protected void intercept(KeyInputEvent event) {
+            public void intercept(KeyInputEvent event) {
                 inputConfig.toggleInputMode();
             }
         });
 
         addKeyInterceptor(new KeyInterceptor(SEQ_UP) {
             @Override
-            protected void intercept(KeyInputEvent event) {
+            public void intercept(KeyInputEvent event) {
                 String prevCommand = consoleHistory.getPrevCommand();
                 if (prevCommand == null) {
                     return;
@@ -156,7 +153,7 @@ public class NativeConsole extends Console {
 
         addKeyInterceptor(new KeyInterceptor(SEQ_DOWN) {
             @Override
-            protected void intercept(KeyInputEvent event) {
+            public void intercept(KeyInputEvent event) {
                 String nextCommand = consoleHistory.getNextCommand();
                 if (nextCommand == null) {
                     return;
@@ -172,7 +169,7 @@ public class NativeConsole extends Console {
 
         addKeyInterceptor(new KeyInterceptor(DELETE) {
             @Override
-            protected void intercept(KeyInputEvent event) {
+            public void intercept(KeyInputEvent event) {
                 if (sbInput.isEmpty()) {
                     return;
                 }
@@ -206,18 +203,18 @@ public class NativeConsole extends Console {
     }
 
     public <L extends NativeInputListener> void addInputListener(L inputListener) {
-        if (inputListener instanceof KeyInputListener) {
-            keyInputListeners.add((KeyInputListener) inputListener);
-        } else if (inputListener instanceof LineInputListener) {
-            lineInputListeners.add((LineInputListener) inputListener);
+        if (inputListener instanceof KeyInputListener keyInputListener) {
+            keyInputListeners.add(keyInputListener);
+        } else if (inputListener instanceof LineInputListener lineInputListener) {
+            lineInputListeners.add(lineInputListener);
         }
     }
 
     public <L extends NativeInputListener> void removeInputListener(L inputListener) {
-        if (inputListener instanceof KeyInputListener) {
-            keyInputListeners.remove((KeyInputListener) inputListener);
-        } else if (inputListener instanceof LineInputListener) {
-            lineInputListeners.remove((LineInputListener) inputListener);
+        if (inputListener instanceof KeyInputListener keyInputListener) {
+            keyInputListeners.remove(keyInputListener);
+        } else if (inputListener instanceof LineInputListener lineInputListener) {
+            lineInputListeners.remove(lineInputListener);
         }
     }
 
@@ -233,8 +230,8 @@ public class NativeConsole extends Console {
         }
     }
 
-    public void addKeyInterceptor(KeyInterceptor keyListener) {
-        keyInterceptors.add(keyListener);
+    public void addKeyInterceptor(KeyInterceptor keyInterceptor) {
+        keyInterceptors.add(keyInterceptor);
     }
 
     public void addKeyInterceptors(KeyInterceptor... keyInterceptors) {
@@ -254,8 +251,8 @@ public class NativeConsole extends Console {
                 .toList();
     }
 
-    public void removeKeyInterceptor(KeyInputListener keyListener) {
-        keyInterceptors.remove(keyListener);
+    public void removeKeyInterceptor(KeyInterceptor keyInterceptor) {
+        keyInterceptors.remove(keyInterceptor);
     }
 
     public void clearAllKeyInterceptors() {

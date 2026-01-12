@@ -11,7 +11,7 @@ import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.
 @Getter
 @Setter
 @AllArgsConstructor
-public class LineInputEvent extends NativeInputEvent {
+public class LineInputEvent implements NativeInputEvent {
     private final StringBuilder sbInput;
 
     public LineInputEvent(String input) {

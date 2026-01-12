@@ -18,6 +18,8 @@ public class ConsolePainter {
     private static final int[] DARKEN_GREEN_GRADIENTE = new int[] {0xB8FF4A, 0x8CD932,
             0x7CC828, 0x5FAD1B, 0x4E9A12, 0x3D8C0A, 0x2D6B08, 0x1A4D00};
 
+    private static final int DEFAULT_VOLUME_BAR_SCALE = 20;
+
     private static int[] getGradientByStyle(GradientStyle gradientStyle) {
         return gradientStyle == LIGHTEN
                 ? LIGHTEN_GREEN_GRADIENTE
@@ -61,7 +63,7 @@ public class ConsolePainter {
         return icon + percentage;
     }
 
-    public static String paintVolumeBar(Number volume, int scale) {
+    public static String paintVolumeBar(Number volume, int scale, boolean separateBars) {
         final StringBuilder sbVolume = new StringBuilder();
 
 //        █████░░░ 60%
@@ -70,15 +72,35 @@ public class ConsolePainter {
         final int adjustedVol = Math.min(volume.intValue(), 100);
         final int scaledVol = Math.toIntExact(Math.round(((float) (scale * adjustedVol)) / 100));
 
-        for (int i = 0; i < scaledVol; i++) {
-            sbVolume.append(COMPLETE_BLOCK);
+        if (separateBars) {
+            for (int i = 0; i < scaledVol; i++) {
+                sbVolume.append(COMPLETE_BLOCK).append(SPACE_CHAR);
+            }
+
+            for (int i = scaledVol; i < scale; i++) {
+                sbVolume.append(EMPTY_BLOCK).append(SPACE_CHAR);
+            }
+
+            sbVolume.deleteCharAt(sbVolume.length() - 1);
+        } else {
+            for (int i = 0; i < scaledVol; i++) {
+                sbVolume.append(COMPLETE_BLOCK);
+            }
+
+            for (int i = scaledVol; i < scale; i++) {
+                sbVolume.append(EMPTY_BLOCK);
+            }
         }
 
-        for (int i = scaledVol; i < scale; i++) {
-            sbVolume.append(EMPTY_BLOCK);
-        }
+        return sbVolume.substring(0, sbVolume.length() - 1);
+    }
 
-        return sbVolume.toString();
+    public static String paintVolumeBar(Number volume, int scale) {
+        return paintVolumeBar(volume, scale, false);
+    }
+
+    public static String paintVolumeBar(Number volume) {
+        return paintVolumeBar(volume, DEFAULT_VOLUME_BAR_SCALE);
     }
 
     public static String paintMusicPlayerIcons(boolean isPlaying) {

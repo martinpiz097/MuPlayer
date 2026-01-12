@@ -4,7 +4,8 @@ import cl.estencia.labs.muplayer.console.unix.event.KeyInputEvent;
 import lombok.Getter;
 
 @Getter
-public abstract class KeyInterceptor extends NativeInputListener<KeyInputEvent>{
+public abstract class KeyInterceptor implements NativeInputListener<KeyInputEvent>,
+                                                Interceptor<KeyInputEvent> {
     protected final char key;
 
     public KeyInterceptor(Character key) {
@@ -22,8 +23,6 @@ public abstract class KeyInterceptor extends NativeInputListener<KeyInputEvent>{
 
         this.key = (char) key.intValue();
     }
-
-    protected abstract void intercept(KeyInputEvent event);
 
     // modo generico
     public boolean isKey(int key) {

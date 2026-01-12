@@ -4,6 +4,7 @@ import cl.estencia.labs.ebot.utils.threads.Interruptor;
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.config.ResourceFiles;
+import cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols;
 import cl.estencia.labs.muplayer.console.common.constants.KeyCodes;
 import cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode;
 import cl.estencia.labs.muplayer.console.model.ConsoleImage;
@@ -26,6 +27,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Scanner;
 
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE_CHAR;
 import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.*;
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode.cls;
 import static cl.estencia.labs.muplayer.console.common.enums.HeaderMode.DEFAULT;
@@ -63,48 +65,47 @@ public class LocalRunner extends ConsoleRunner {
         }
 
         nativeConsole.loadDefaultKeyInterceptors();
-        // agregar interceptor para cerrar comprobando si esta activo player
         nativeConsole.addKeyInterceptors(
                 new KeyInterceptor(KeyCodes.SEQ_RIGHT) {
                     @Override
-                    protected void intercept(KeyInputEvent event) {
+                    public void intercept(KeyInputEvent event) {
                         sendCommand(ConsoleOrderCode.sk + " 10");
                     }
                 },
                 new KeyInterceptor(KeyCodes.SEQ_LEFT) {
                     @Override
-                    protected void intercept(KeyInputEvent event) {
+                    public void intercept(KeyInputEvent event) {
                         sendCommand(ConsoleOrderCode.sk + " -10");
                     }
                 },
                 new KeyInterceptor(KeyCodes.EXT_DELETE) {
                     @Override
-                    protected void intercept(KeyInputEvent event) {
+                    public void intercept(KeyInputEvent event) {
                         sendCommand(cls);
                         printConsoleHeader(DEFAULT);
                     }
                 },
                 new KeyInterceptor(KeyCodes.EXT_PAGE_UP) {
                     @Override
-                    protected void intercept(KeyInputEvent event) {
+                    public void intercept(KeyInputEvent event) {
                         sendCommand(ConsoleOrderCode.skf.name() + " prev");
                     }
                 },
                 new KeyInterceptor(KeyCodes.EXT_PAGE_DOWN) {
                     @Override
-                    protected void intercept(KeyInputEvent event) {
+                    public void intercept(KeyInputEvent event) {
                         sendCommand(ConsoleOrderCode.skf.name() + " next");
                     }
                 },
                 new KeyInterceptor(KeyCodes.SEQ_HOME) {
                     @Override
-                    protected void intercept(KeyInputEvent event) {
+                    public void intercept(KeyInputEvent event) {
                         sendCommand(ConsoleOrderCode.p);
                     }
                 },
                 new KeyInterceptor(KeyCodes.SEQ_END) {
                     @Override
-                    protected void intercept(KeyInputEvent event) {
+                    public void intercept(KeyInputEvent event) {
                         sendCommand(ConsoleOrderCode.n);
                     }
                 }
@@ -205,7 +206,9 @@ public class LocalRunner extends ConsoleRunner {
                         number = 10;
                     }
 
-                    sendCommand(ConsoleOrderCode.pf.name() + " " + number);
+                    sendCommand(ConsoleOrderCode.pf.name() + SPACE_CHAR + number);
+                } else {
+                    sendCommand(String.valueOf(key));
                 }
             }
         });

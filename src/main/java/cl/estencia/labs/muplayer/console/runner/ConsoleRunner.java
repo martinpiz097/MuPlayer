@@ -111,7 +111,7 @@ public abstract class ConsoleRunner implements Runnable {
                 }
 
                 sbHeader.append(SINGLE_VERTICAL_LINE).append(SPACE_CHAR);
-                sbHeader.append(paintVolumeBar(systemVolume, 10)).append(SPACE_CHAR);
+                sbHeader.append(paintVolumeBar(systemVolume)).append(SPACE_CHAR);
                 sbHeader.append(paintVolumeStatus(systemVolume, playerStatusData.isMute()))
                         .append(SPACE_CHAR).append(SPACE_CHAR);
                 sbHeader.append(paintBatteryStatus()).append(SPACE_CHAR);

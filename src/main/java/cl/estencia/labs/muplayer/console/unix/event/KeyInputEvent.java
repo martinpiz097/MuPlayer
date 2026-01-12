@@ -10,7 +10,7 @@ import java.util.Arrays;
 @Getter
 @Setter
 @AllArgsConstructor
-public class KeyInputEvent extends NativeInputEvent {
+public class KeyInputEvent implements NativeInputEvent {
     private final int key;
     private final byte[] sequenceBytes;
 

@@ -2,7 +2,7 @@ package cl.estencia.labs.muplayer.console.unix.listener;
 
 import cl.estencia.labs.muplayer.console.unix.event.KeyInputEvent;
 
-public abstract class KeyInputListener extends NativeInputListener<KeyInputEvent> {
+public abstract class KeyInputListener implements NativeInputListener<KeyInputEvent> {
     protected final char[] charCodes;
 
     public KeyInputListener(char... charCodes) {

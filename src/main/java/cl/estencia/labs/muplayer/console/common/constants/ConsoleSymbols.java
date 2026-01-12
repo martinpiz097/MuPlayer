@@ -35,7 +35,7 @@ public class ConsoleSymbols {
     public static final char LONG_ARROW = '⟶';
     public static final String DEFAULT_LIST_VALUES_SEPARATOR = ": ";
 
-    public static final char COMPLETE_BLOCK = '█';
+    public static final char COMPLETE_BLOCK = '▓';
     public static final char EMPTY_BLOCK = '░';
 
     public static final String MUSICAL_NOTE = "\uD83C\uDFB5";
