@@ -137,7 +137,7 @@ public class ConsoleTable {
 
         int columnWidth;
 
-        sbMargin.append(String.valueOf(SPACE).repeat(Math.max(0, externalPadding)));
+        sbMargin.append(String.valueOf(SPACE_CHAR).repeat(Math.max(0, externalPadding)));
         sbMargin.append(color);
         sbMargin.append(startChar);
         for (int i = 0; i < columnsCount; i++) {
@@ -162,10 +162,10 @@ public class ConsoleTable {
                 : (useSingleLines ? SINGLE_VERTICAL_LINE : DOUBLE_VERTICAL_LINE);
         char cellChar = useInternalLines
                 ? (useSingleLines ? SINGLE_HORIZONTAL_LINE : DOUBLE_HORIZONTAL_LINE)
-                : SPACE;
+                : SPACE_CHAR;
         char interColumnChar = useInternalLines
                 ? (useSingleLines ? SINGLE_INTERNAL_CORNER : DOUBLE_INTERNAL_CORNER)
-                : SPACE;
+                : SPACE_CHAR;
         char endChar = useInternalLines
                 ? (useSingleLines ? SINGLE_RIGHT_UNION : DOUBLE_RIGHT_UNION)
                 : (useSingleLines ? SINGLE_VERTICAL_LINE : DOUBLE_VERTICAL_LINE);
@@ -191,9 +191,9 @@ public class ConsoleTable {
         int tableWidth = getWidth(columnWidths);
         int paddingLeft = (tableWidth - title.length()) / 2;
 
-        sbTable.append(String.valueOf(SPACE).repeat(Math.max(0, externalPadding)));
+        sbTable.append(String.valueOf(SPACE_CHAR).repeat(Math.max(0, externalPadding)));
         sbTable.append(color);
-        sbTable.append(String.valueOf(SPACE).repeat(Math.max(0, paddingLeft)));
+        sbTable.append(String.valueOf(SPACE_CHAR).repeat(Math.max(0, paddingLeft)));
         sbTable.append(title);
         sbTable.append(ConsoleUtil.getResetColor());
         sbTable.append(LINE_BREAK_CHAR);
@@ -243,10 +243,10 @@ public class ConsoleTable {
                 : (useSingleLines ? SINGLE_VERTICAL_LINE : DOUBLE_VERTICAL_LINE);
         char cellChar = useInternalLines
                 ? (useSingleLines ? SINGLE_HORIZONTAL_LINE : DOUBLE_HORIZONTAL_LINE)
-                : SPACE;
+                : SPACE_CHAR;
         char interColumnChar = useInternalLines
                 ? (useSingleLines ? SINGLE_INTERNAL_CORNER : DOUBLE_INTERNAL_CORNER)
-                : SPACE;
+                : SPACE_CHAR;
         char endChar = useInternalLines
                 ? (useSingleLines ? SINGLE_RIGHT_UNION : DOUBLE_RIGHT_UNION)
                 : (useSingleLines ? SINGLE_VERTICAL_LINE : DOUBLE_VERTICAL_LINE);

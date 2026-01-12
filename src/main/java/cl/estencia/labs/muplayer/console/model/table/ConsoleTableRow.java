@@ -115,9 +115,9 @@ public class ConsoleTableRow {
         char borderChar = useSingleLines ? SINGLE_VERTICAL_LINE : DOUBLE_VERTICAL_LINE;
         char interColumnChar = useInternalLines
                 ? (useSingleLines ? SINGLE_VERTICAL_LINE : DOUBLE_VERTICAL_LINE)
-                : SPACE;
+                : SPACE_CHAR;
 
-        sbTable.append(String.valueOf(SPACE).repeat(Math.max(0, externalPadding)));
+        sbTable.append(String.valueOf(SPACE_CHAR).repeat(Math.max(0, externalPadding)));
         sbTable.append(color);
         sbTable.append(borderChar);
 

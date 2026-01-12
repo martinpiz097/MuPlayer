@@ -5,7 +5,7 @@ import cl.estencia.labs.muplayer.console.util.ConsoleUtil;
 import lombok.Getter;
 import lombok.Setter;
 
-import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE;
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE_CHAR;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputType.info;
 import static cl.estencia.labs.muplayer.console.model.table.ConsoleTable.DEFAULT_CONTENT_SIZE_LIMIT;
 import static cl.estencia.labs.muplayer.console.model.table.ConsoleTable.SHORT_VALUE_SUFFIX;
@@ -58,7 +58,7 @@ public class ConsoleTableCell {
         }
 
         for (int i = 0; i < padding; i++) {
-            stringBuilder.append(SPACE);
+            stringBuilder.append(SPACE_CHAR);
         }
     }
 

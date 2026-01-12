@@ -4,6 +4,7 @@ import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.muplayer.audio.model.Album;
 import cl.estencia.labs.muplayer.audio.model.Artist;
 import cl.estencia.labs.muplayer.audio.player.Player;
+import cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols;
 import cl.estencia.labs.muplayer.console.model.table.Alignment;
 import cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic;
 import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
@@ -36,6 +37,7 @@ import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SANDGLASS;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputType.*;
 import static cl.estencia.labs.muplayer.console.util.PlayerCmdInterpreterUtil.*;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.PLAYER_CURRENT_DATA;
@@ -113,6 +115,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     });
 
                     messageBus.publish(Messages.start());
+                    consoleOutput.append("Loading tracks " + SANDGLASS);
                 }
             }
             case ist -> consoleOutput.append(isPlayerOn() ? "Is playing" : "Is not playing", warn);

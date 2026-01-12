@@ -3,10 +3,9 @@ package cl.estencia.labs.muplayer.console.command;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE;
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE_CHAR;
 
 public class Command {
     private final String order;
@@ -83,7 +82,7 @@ public class Command {
         if (hasOptions()) {
             StringBuilder sbOptions = new StringBuilder();
             for (int i = 0; i < options.length; i++) {
-                sbOptions.append(options[i]).append(SPACE);
+                sbOptions.append(options[i]).append(SPACE_CHAR);
             }
 
             sbOptions.deleteCharAt(sbOptions.length()-1);

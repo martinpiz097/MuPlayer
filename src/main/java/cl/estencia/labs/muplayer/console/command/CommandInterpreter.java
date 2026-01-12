@@ -1,6 +1,8 @@
 package cl.estencia.labs.muplayer.console.command;
 
+import cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
+import cl.estencia.labs.muplayer.core.exception.MuPlayerException;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 
 import java.util.List;
@@ -9,6 +11,10 @@ import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.
 
 public interface CommandInterpreter {
     default ConsoleOutput execute(String commandString) throws Exception {
+        if (commandString == null || commandString.isBlank()) {
+            return execute(new Command(""));
+        }
+
         if (commandString.contains(CMD_DIVISOR)) {
             final String[] cmdSplit = commandString.split(CMD_DIVISOR);
             final List<String> listExec = CollectionUtil.newLinkedList();
@@ -28,6 +34,15 @@ public interface CommandInterpreter {
             return execute(new Command(commandString));
         }
     }
+
+    default ConsoleOutput execute(ConsoleOrderCode cmdOrderCode) throws Exception {
+        if (cmdOrderCode == null) {
+            throw new MuPlayerException("cmdOrderCode is null!");
+        }
+
+        return execute(cmdOrderCode.name());
+    }
+
 
     ConsoleOutput execute(Command cmd) throws Exception;
 }

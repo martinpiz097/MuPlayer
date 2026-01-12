@@ -48,7 +48,7 @@ public class TableColumnTitle {
         char borderChar = !useSingleLines ? SINGLE_VERTICAL_LINE : DOUBLE_VERTICAL_LINE;
         char interColumnChar = !useSingleLines ? SINGLE_VERTICAL_LINE : DOUBLE_VERTICAL_LINE;
 
-        sbTable.append(String.valueOf(SPACE).repeat(Math.max(0, externalPadding)));
+        sbTable.append(String.valueOf(SPACE_CHAR).repeat(Math.max(0, externalPadding)));
         sbTable.append(getColor());
         sbTable.append(borderChar);
 

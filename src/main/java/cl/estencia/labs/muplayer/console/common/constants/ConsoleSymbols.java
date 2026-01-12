@@ -29,7 +29,7 @@ public class ConsoleSymbols {
 
     public static final char LINE_BREAK_CHAR = '\n';
     public static final String LINE_BREAK = String.valueOf(LINE_BREAK_CHAR);
-    public static final char SPACE = ' ';
+    public static final char SPACE_CHAR = ' ';
 
     public static final char ARROW = '→';
     public static final char LONG_ARROW = '⟶';
@@ -51,10 +51,8 @@ public class ConsoleSymbols {
     public static final String MED_VOLUME = "\uD83D\uDD09";
     public static final String HIGH_VOLUME = "\uD83D\uDD0A";
 
-
     public static final String BATTERY = "\uD83D\uDD0B";
     public static final String PLUGGED = "\uD83D\uDD0C";
-
 
     public static final char SANDGLASS = '⏳';
 

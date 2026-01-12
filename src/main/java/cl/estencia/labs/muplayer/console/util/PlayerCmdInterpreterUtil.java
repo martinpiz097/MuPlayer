@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 import static cl.estencia.labs.muplayer.console.command.SystemCommands.CLEAR_CONSOLE_UNIX;
 import static cl.estencia.labs.muplayer.console.command.SystemCommands.CLEAR_CONSOLE_WINDOWS;
-import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE;
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE_CHAR;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputType.*;
 import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.getOutputColor;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
@@ -43,7 +43,7 @@ public class PlayerCmdInterpreterUtil {
     public static void execSysCommand(String cmd) {
         try {
             String output = ProcessManager.executeLegacy(
-                    cmd.split(String.valueOf(SPACE)));
+                    cmd.split(String.valueOf(SPACE_CHAR)));
             ProcessManager.writeProcessOutputTo(output, SystemUtil.getStdout());
         } catch (IOException | InterruptedException e) {
             Logger.getLogger(PlayerCmdInterpreterUtil.class, e.getMessage()).error();

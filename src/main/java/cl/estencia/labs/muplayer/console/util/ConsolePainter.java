@@ -84,9 +84,9 @@ public class ConsolePainter {
     public static String paintMusicPlayerIcons(boolean isPlaying) {
         return new StringBuilder()
                 .append('(')
-                .append(PREV).append(SPACE)
+                .append(PREV).append(SPACE_CHAR)
                 .append(isPlaying ? PAUSE : PLAY)
-                .append(SPACE).append(NEXT)
+                .append(SPACE_CHAR).append(NEXT)
                 .append(')')
                 .toString();
     }

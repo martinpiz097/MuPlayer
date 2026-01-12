@@ -15,9 +15,9 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 
-import static cl.estencia.labs.muplayer.console.common.constants.ConsoleEscapeSequences.cartReturn;
 import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.*;
 import static cl.estencia.labs.muplayer.console.unix.InputMode.COMMANDS;
+import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.cartReturn;
 
 @Getter
 public class NativeConsole extends Console {

@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleChars.SEMICOLON;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleEscapeSequences.*;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
-import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE;
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE_CHAR;
 import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.ESC;
 import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.toChar;
 
@@ -21,7 +21,7 @@ public class ConsoleImageUtil {
                 : Math.max(0, (terminalWidth - width) / 2);
 
         StringBuilder sb = new StringBuilder();
-        String paddingLeftStr = String.valueOf(SPACE).repeat(Math.max(0, terminalWidth));
+        String paddingLeftStr = String.valueOf(SPACE_CHAR).repeat(Math.max(0, terminalWidth));
 
         int[] colors;
         int[] bright;

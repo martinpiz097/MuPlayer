@@ -5,6 +5,7 @@ import org.orangelogger.sys.ConsoleColor;
 import org.orangelogger.sys.Logger;
 
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
+import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.*;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputType.info;
 
 public class ConsoleUtil {
@@ -59,10 +60,37 @@ public class ConsoleUtil {
         return coloredString(data, outputType, withReset) + LINE_BREAK_CHAR;
     }
 
-    public static boolean isNumberKey(int key) {
-        return key > 47 && key < 58;
+    public static String padding(int count, String paddingStr) {
+        if (count < 1) {
+            return "";
+        }
+
+        return paddingStr.repeat(count);
     }
 
+    public static String cartReturn(int columns, boolean withPadding) {
+        if (columns < 1) {
+            return "";
+        }
 
+        String cartReturn = String.valueOf(toChar(BACKSPACE)).repeat(columns);
+        if (withPadding) {
+            cartReturn = cartReturn + padding(columns) + cartReturn;
+        }
+
+        return cartReturn;
+    }
+
+    public static String cartReturn(int columns) {
+        return cartReturn(columns, true);
+    }
+
+    public static String padding(int count, char paddingChar) {
+        return padding(count, String.valueOf(paddingChar));
+    }
+
+    public static String padding(int count) {
+        return padding(count, toChar(SPACE));
+    }
 
 }
