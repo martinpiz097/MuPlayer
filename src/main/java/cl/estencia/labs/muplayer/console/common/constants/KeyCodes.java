@@ -67,6 +67,10 @@ public final class KeyCodes {
     public static final int DIGIT_7 = 55;
     public static final int DIGIT_8 = 56;
     public static final int DIGIT_9 = 57;
+    public static final int[] DIGITS = new int[]{
+            DIGIT_0, DIGIT_1, DIGIT_2, DIGIT_3, DIGIT_4,
+            DIGIT_5, DIGIT_6, DIGIT_7, DIGIT_8, DIGIT_9
+    };
 
     public static final int COLON = 58;           // :
     public static final int SEMICOLON = 59;       // ;

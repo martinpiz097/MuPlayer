@@ -1,0 +1,8 @@
+- Centrar tablas
+- Centrar total de las tablas
+- Icono para indicar cuando se bloquea la entrada de teclado y cuando esta activado el modo shorcut
+o el modo por defecto
+- Agregar guia de shorcuts al inicio
+- Agregar mas info al header como duracion de la cancion
+- Un json con los tipos de comandos como key y como multivalor los keycodes habilitados,
+    a usar para interceptors y key listeners, similar al json de los console-player-codes

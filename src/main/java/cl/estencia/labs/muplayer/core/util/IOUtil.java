@@ -103,4 +103,32 @@ public class IOUtil {
         }
     }
 
+    public static char[] createCharArrayFromInts(int... intArray) {
+        if (intArray == null || intArray.length == 0) {
+            return new char[]{};
+        }
+
+        int length = intArray.length;
+        char[] charArray = new char[length];
+        for (int i = 0; i < length; i++) {
+            charArray[i] = (char) intArray[i];
+        }
+
+        return charArray;
+    }
+
+    public static int[] createIntArrayFromChars(char... charArray) {
+        if (charArray == null || charArray.length == 0) {
+            return new int[]{};
+        }
+
+        int length = charArray.length;
+        int[] intArray = new int[length];
+        for (int i = 0; i < length; i++) {
+            intArray[i] = charArray[i];
+        }
+
+        return intArray;
+    }
+
 }

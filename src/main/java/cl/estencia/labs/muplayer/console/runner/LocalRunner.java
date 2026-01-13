@@ -31,6 +31,7 @@ import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.
 import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.*;
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode.cls;
 import static cl.estencia.labs.muplayer.console.common.enums.HeaderMode.DEFAULT;
+import static cl.estencia.labs.muplayer.console.unix.InputMode.SINGLE_SHORCUTS;
 import static cl.estencia.labs.muplayer.console.util.ConsolePainter.GradientStyle.LIGHTEN;
 import static cl.estencia.labs.muplayer.console.util.ConsolePainter.paintMuPlayerStyle;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.NATIVE_CONSOLE;
@@ -55,7 +56,7 @@ public class LocalRunner extends ConsoleRunner {
     public LocalRunner(Player player) {
         super(player);
         scanner = new Scanner(System.in);
-        nativeConsole = new NativeConsole();
+        nativeConsole = new NativeConsole(EXT_F5, ESC, SINGLE_SHORCUTS);
         interruptor = Interruptor.manual();
     }
 
@@ -85,6 +86,13 @@ public class LocalRunner extends ConsoleRunner {
                         printConsoleHeader(DEFAULT);
                     }
                 },
+                new KeyInterceptor(CTRL_L) {
+                    @Override
+                    public void intercept(KeyInputEvent event) {
+                        sendCommand(cls);
+                        printConsoleHeader(DEFAULT);
+                    }
+                },
                 new KeyInterceptor(KeyCodes.EXT_PAGE_UP) {
                     @Override
                     public void intercept(KeyInputEvent event) {
@@ -104,6 +112,18 @@ public class LocalRunner extends ConsoleRunner {
                     }
                 },
                 new KeyInterceptor(KeyCodes.SEQ_END) {
+                    @Override
+                    public void intercept(KeyInputEvent event) {
+                        sendCommand(ConsoleOrderCode.n);
+                    }
+                },
+                new KeyInterceptor(MINUS) {
+                    @Override
+                    public void intercept(KeyInputEvent event) {
+                        sendCommand(ConsoleOrderCode.p);
+                    }
+                },
+                new KeyInterceptor(EQUALS) {
                     @Override
                     public void intercept(KeyInputEvent event) {
                         sendCommand(ConsoleOrderCode.n);
@@ -192,24 +212,32 @@ public class LocalRunner extends ConsoleRunner {
             }
         });
 
+        nativeConsole.addInputListener(new KeyInputListener(DIGITS) {
+            @SneakyThrows
+            @Override
+            public void onInputEvent(KeyInputEvent event) {
+                if (!player.isAlive()) {
+                    return;
+                }
+
+                int key = event.getKey();
+                int number = key == DIGIT_0 ? 10 : KeyCodes.toDigit(key);
+
+                sendCommand(ConsoleOrderCode.pf.name() + SPACE_CHAR + number);
+            }
+        });
+
         nativeConsole.addInputListeners(new KeyInputListener() {
             @SneakyThrows
             @Override
             public void onInputEvent(KeyInputEvent event) {
                 char key = event.getKeyChar();
-                if (key != KeyCodes.SPACE) {
-                    sendCommand(String.valueOf(key));
-                    printConsoleHeader(DEFAULT);
-                } else if (isDigit(key)) {
-                    int number = Integer.parseInt(String.valueOf(key));
-                    if (number == 0) {
-                        number = 10;
-                    }
-
-                    sendCommand(ConsoleOrderCode.pf.name() + SPACE_CHAR + number);
-                } else {
-                    sendCommand(String.valueOf(key));
+                if (key == SPACE) {
+                    return;
                 }
+
+                sendCommand(String.valueOf(key));
+                printConsoleHeader(DEFAULT);
             }
         });
 
@@ -236,7 +264,7 @@ public class LocalRunner extends ConsoleRunner {
 
     private void setupNativeConsole() {
         nativeConsole.getInputConfig().setInputBlocked(false);
-        nativeConsole.getInputConfig().setInputMode(InputMode.SINGLE_SHORCUTS);
+        nativeConsole.getInputConfig().setInputMode(SINGLE_SHORCUTS);
         loadKeyInterceptors();
         loadKeyListeners();
         loadLineListeners();

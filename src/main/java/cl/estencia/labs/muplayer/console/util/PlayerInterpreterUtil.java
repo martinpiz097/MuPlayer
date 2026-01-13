@@ -39,14 +39,14 @@ import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.core.system.SysInfo.IS_UNIX;
 
 @Slf4j
-public class PlayerCmdInterpreterUtil {
+public class PlayerInterpreterUtil {
     public static void execSysCommand(String cmd) {
         try {
             String output = ProcessManager.executeLegacy(
                     cmd.split(String.valueOf(SPACE_CHAR)));
             ProcessManager.writeProcessOutputTo(output, SystemUtil.getStdout());
         } catch (IOException | InterruptedException e) {
-            Logger.getLogger(PlayerCmdInterpreterUtil.class, e.getMessage()).error();
+            Logger.getLogger(PlayerInterpreterUtil.class, e.getMessage()).error();
         }
     }
 
@@ -326,9 +326,9 @@ public class PlayerCmdInterpreterUtil {
             }
         } else {
             if (track != null) {
-                Logger.getLogger(PlayerCmdInterpreterUtil.class, getTrackInfo(track)).rawInfo();
+                Logger.getLogger(PlayerInterpreterUtil.class, getTrackInfo(track)).rawInfo();
             } else {
-                Logger.getLogger(PlayerCmdInterpreterUtil.class, "Current track unavailable").rawError();
+                Logger.getLogger(PlayerInterpreterUtil.class, "Current track unavailable").rawError();
             }
         }
     }
@@ -357,7 +357,7 @@ public class PlayerCmdInterpreterUtil {
 
     public static String getTrackInfo(Track track) {
         String elementsColor = getOutputColor(info);
-        ConsoleTable consoleTable = new ConsoleTable(null, elementsColor,
+        ConsoleTable consoleTable = new ConsoleTable(null, elementsColor, Alignment.CENTER,
                 new Padding(0, 3, 0, 3),
                 false, false);
 
