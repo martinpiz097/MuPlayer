@@ -67,18 +67,6 @@ public class LocalRunner extends ConsoleRunner {
 
         nativeConsole.loadDefaultKeyInterceptors();
         nativeConsole.addKeyInterceptors(
-                new KeyInterceptor(KeyCodes.SEQ_RIGHT) {
-                    @Override
-                    public void intercept(KeyInputEvent event) {
-                        sendCommand(ConsoleOrderCode.sk + " 10");
-                    }
-                },
-                new KeyInterceptor(KeyCodes.SEQ_LEFT) {
-                    @Override
-                    public void intercept(KeyInputEvent event) {
-                        sendCommand(ConsoleOrderCode.sk + " -10");
-                    }
-                },
                 new KeyInterceptor(KeyCodes.EXT_DELETE) {
                     @Override
                     public void intercept(KeyInputEvent event) {
@@ -117,19 +105,13 @@ public class LocalRunner extends ConsoleRunner {
                         sendCommand(ConsoleOrderCode.n);
                     }
                 },
-                new KeyInterceptor(MINUS) {
+                new KeyInterceptor(QUESTION) {
                     @Override
                     public void intercept(KeyInputEvent event) {
-                        sendCommand(ConsoleOrderCode.p);
-                    }
-                },
-                new KeyInterceptor(EQUALS) {
-                    @Override
-                    public void intercept(KeyInputEvent event) {
-                        sendCommand(ConsoleOrderCode.n);
+                        sendCommand(ConsoleOrderCode.h);
                     }
                 }
-                );
+        );
 
     }
 
@@ -137,6 +119,50 @@ public class LocalRunner extends ConsoleRunner {
         if (!nativeConsole.getKeyInputListeners().isEmpty()) {
             nativeConsole.clearAllKeyInputListeners();
         }
+
+        nativeConsole.addInputListener(new KeyInputListener(MINUS) {
+            @Override
+            public void onInputEvent(KeyInputEvent event) {
+                if (!player.isAlive()) {
+                    return;
+                }
+
+                sendCommand(ConsoleOrderCode.p);
+            }
+        });
+
+        nativeConsole.addInputListener(new KeyInputListener(EQUALS) {
+            @Override
+            public void onInputEvent(KeyInputEvent event) {
+                if (!player.isAlive()) {
+                    return;
+                }
+
+                sendCommand(ConsoleOrderCode.n);
+            }
+        });
+
+        nativeConsole.addInputListener(new KeyInputListener(SEQ_LEFT) {
+            @Override
+            public void onInputEvent(KeyInputEvent event) {
+                if (!player.isAlive()) {
+                    return;
+                }
+
+                sendCommand(ConsoleOrderCode.sk, "-10");
+            }
+        });
+
+        nativeConsole.addInputListener(new KeyInputListener(SEQ_RIGHT) {
+            @Override
+            public void onInputEvent(KeyInputEvent event) {
+                if (!player.isAlive()) {
+                    return;
+                }
+
+                sendCommand(ConsoleOrderCode.sk, "10");
+            }
+        });
 
         nativeConsole.addInputListener(new KeyInputListener(KeyCodes.LINE_FEED) {
             @Override
@@ -223,7 +249,7 @@ public class LocalRunner extends ConsoleRunner {
                 int key = event.getKey();
                 int number = key == DIGIT_0 ? 10 : KeyCodes.toDigit(key);
 
-                sendCommand(ConsoleOrderCode.pf.name() + SPACE_CHAR + number);
+                sendCommand(ConsoleOrderCode.pf, String.valueOf(number));
             }
         });
 
@@ -236,7 +262,7 @@ public class LocalRunner extends ConsoleRunner {
                     return;
                 }
 
-                sendCommand(String.valueOf(key));
+                sendCommand(key);
                 printConsoleHeader(DEFAULT);
             }
         });
@@ -248,16 +274,13 @@ public class LocalRunner extends ConsoleRunner {
             nativeConsole.clearAllLineInputListeners();
         }
 
-        nativeConsole.addInputListeners(new LineInputListener() {
-            @Override
-            public void onInputEvent(LineInputEvent event) {
-                if (!event.isEmptyLine()) {
-                    String line = event.getInput();
-                    sendCommand(line);
-                }
-
-                printConsoleHeader(DEFAULT);
+        nativeConsole.addInputListeners((LineInputListener) event -> {
+            if (!event.isEmptyLine()) {
+                String line = event.getInput();
+                sendCommand(line);
             }
+
+            printConsoleHeader(DEFAULT);
         });
 
     }

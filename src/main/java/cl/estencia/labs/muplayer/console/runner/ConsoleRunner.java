@@ -157,17 +157,25 @@ public abstract class ConsoleRunner implements Runnable {
         }
     }
 
+    public void sendCommand(char key) {
+        sendCommand(String.valueOf(key));
+    }
+
     public void sendCommand(String commandString) {
         sendCommand(new Command(commandString));
     }
 
-    public void sendCommand(ConsoleOrderCode cmdOrderCode) {
-        if (cmdOrderCode == null) {
+    public void sendCommand(ConsoleOrderCode orderCode, String... options) {
+        if (orderCode == null) {
             sendCommand(new Command(""));
             return;
         }
 
-        sendCommand(new Command(cmdOrderCode.name()));
+        sendCommand(new Command(orderCode.name(), options));
+    }
+
+    public void sendCommand(ConsoleOrderCode cmdOrderCode) {
+        sendCommand(cmdOrderCode, new String[0]);
     }
 
     public void sendCommand(Command cmd) {
