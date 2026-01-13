@@ -1,0 +1,8 @@
+- Revisar y actualizar DaemonRunner usando la native console y el messageBus
+- Revisar setup del historial de comandos
+- Arreglar alignment de ConsoleImage
+- Revisar y actualizar DaemonRunner usando la native console y el messageBus
+- Arreglar secuencia de numeros de uno de los list
+- Arreglar seek hacia atras y goto
+- Esconder logs
+- Revisar carga de archivos de configuracion desde carpeta del muplayer

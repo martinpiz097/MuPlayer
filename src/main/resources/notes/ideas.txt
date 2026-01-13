@@ -6,3 +6,5 @@ o el modo por defecto
 - Agregar mas info al header como duracion de la cancion
 - Un json con los tipos de comandos como key y como multivalor los keycodes habilitados,
     a usar para interceptors y key listeners, similar al json de los console-player-codes
+- Inicio con pf en reemplazo de start
+- Refactorizar console table
