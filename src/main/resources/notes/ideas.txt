@@ -6,5 +6,21 @@ o el modo por defecto
 - Agregar mas info al header como duracion de la cancion
 - Un json con los tipos de comandos como key y como multivalor los keycodes habilitados,
     a usar para interceptors y key listeners, similar al json de los console-player-codes
-- Inicio con pf en reemplazo de start
+- Inicio con pf o pl con index directo en reemplazo de start
 - Refactorizar console table
+- Refactorizar orange logger
+- Parametro para iniciar automaticamente el reproductir al ejecutar el jar
+- Agregar nombre del formato y carpeta actual al header
+- Agregar nombre del formato en info de cancion
+- Opcion de ejecutar muplayer reproduciendo solo un archivo en especifico o una lista de canciones sueltas
+- Integrar el control remoto (cliente TCP) dentro del muplayer para abrirlo en modo control remoto
+    con los mismos comandos y grafica
+- mostrar progreso de cancion al bloquear teclas con ESC
+- pantallas de carga con
+                        #
+                            #
+                                #
+- Cuando inicie poder indicarle mediante comandos que pendrive cargar y asi leer musica desde ahi
+automontando el dispositivo si es que no lo esta
+
+- Usar los comandos de historial solo en el modo comando, en el modo shorcut usarlos para volumen
