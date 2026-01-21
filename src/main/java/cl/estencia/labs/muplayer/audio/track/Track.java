@@ -6,7 +6,7 @@ import cl.estencia.labs.aucom.core.util.AudioSystemManager;
 import cl.estencia.labs.muplayer.audio.interfaces.ControllableMusic;
 import cl.estencia.labs.muplayer.audio.interfaces.TrackData;
 import cl.estencia.labs.muplayer.audio.model.TrackStatusData;
-import cl.estencia.labs.muplayer.audio.track.data.AudioTag;
+import cl.estencia.labs.muplayer.audio.track.data.TrackInfo;
 import cl.estencia.labs.muplayer.audio.track.data.HeaderData;
 import cl.estencia.labs.muplayer.audio.util.AudioDriverUtil;
 import cl.estencia.labs.muplayer.audio.track.state.*;
@@ -23,6 +23,7 @@ import java.io.IOException;
 
 import static cl.estencia.labs.aucom.common.AudioConstants.DEFAULT_MAX_VOL;
 import static cl.estencia.labs.aucom.common.AudioConstants.DEFAULT_MIN_VOL;
+import static cl.estencia.labs.muplayer.console.util.TrackInfoUtil.loadTrackInfo;
 
 @EqualsAndHashCode(callSuper = true)
 @Slf4j
@@ -34,7 +35,7 @@ public abstract class Track extends Thread
     protected final HeaderData headerData;
 
     @Getter protected final TrackStatusData trackStatusData;
-    protected final AudioTag tagInfo;
+    protected final TrackInfo trackInfo;
 
     protected volatile TrackState trackState;
 
@@ -51,8 +52,7 @@ public abstract class Track extends Thread
         this.speaker = new Speaker(audioDecoder.getDecodedAudioStream());
         this.headerData = initHeaderData();
         this.trackStatusData = new TrackStatusData();
-
-        this.tagInfo = loadTagInfo(dataSource);
+        this.trackInfo = loadTrackInfo(dataSource);
         this.trackState = new UnknownState(this);
         this.audioSystemManager = new AudioSystemManager();
     }
@@ -63,15 +63,6 @@ public abstract class Track extends Thread
 
     protected HeaderData initHeaderData() {
         return new HeaderData(0L, 0d);
-    }
-
-    public AudioTag loadTagInfo(File dataSource) {
-        try {
-            final AudioTag audioTag = new AudioTag(dataSource);
-            return audioTag.isValidFile() ? audioTag : null;
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     public void resetStream() throws IOException, LineUnavailableException, UnsupportedAudioFileException {
@@ -91,7 +82,7 @@ public abstract class Track extends Thread
 
     @Override
     public long getDuration() {
-        return tagInfo != null ? Math.round(tagInfo.getDuration()) : 0;
+        return Math.round(trackInfo.getDuration());
     }
 
     @Override
@@ -284,17 +275,17 @@ public abstract class Track extends Thread
 
     @Override
     public boolean hasCover() {
-        return tagInfo != null && tagInfo.getCover() != null;
+        return trackInfo.hasCover();
     }
 
     @Override
     public String getProperty(String key) {
-        return tagInfo == null ? null : tagInfo.getTag(key);
+        return trackInfo.getTag(key);
     }
 
     @Override
     public String getProperty(FieldKey key) {
-        return tagInfo != null ? tagInfo.getTag(key) : null;
+        return trackInfo.getTag(key);
     }
 
     @Override
@@ -323,7 +314,7 @@ public abstract class Track extends Thread
 
     @Override
     public byte[] getCoverData() {
-        return tagInfo != null ? tagInfo.getCoverData() : null;
+        return trackInfo.getCoverData();
     }
 
     @Override
@@ -332,10 +323,8 @@ public abstract class Track extends Thread
     }
 
     @Override
-    public String getBitrate() {
-        return tagInfo != null
-                ? tagInfo.getAudioFile().getAudioHeader().getBitRate()
-                : "Unknown";
+    public long getBitrate() {
+        return trackInfo.getBitRate();
     }
 
     @Override

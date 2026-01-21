@@ -1,11 +1,10 @@
 package cl.estencia.labs.muplayer.console.util;
 
 import cl.estencia.labs.muplayer.audio.player.Player;
+import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.console.common.enums.HeaderMode;
 import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
-import cl.estencia.labs.muplayer.console.runner.LocalRunner;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
-import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import lombok.extern.slf4j.Slf4j;
 import org.orangelogger.sys.Logger;
 
@@ -14,12 +13,14 @@ import static cl.estencia.labs.muplayer.console.common.constants.ConsoleChars.SE
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleEscapeSequences.FULL_RESET;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleEscapeSequences.SETUP_FG_RGB_TRUE_COLOR;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.*;
+import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.SLASH;
+import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.toChar;
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode.cls;
-import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode.pl;
 import static cl.estencia.labs.muplayer.console.common.enums.HeaderMode.CLEAN;
 import static cl.estencia.labs.muplayer.console.util.ConsolePainter.GradientStyle.LIGHTEN;
 import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.createConsoleHeader;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.RUNNER;
+import static cl.estencia.labs.muplayer.core.util.StringUtils.reduceString;
 
 @Slf4j
 public class ConsolePainter {
@@ -154,6 +155,33 @@ public class ConsolePainter {
         }
 
         return sbText.append(FULL_RESET).toString();
+    }
+
+    public static String paintCurrentFolderInfo(Track currentTrack) {
+        if (currentTrack == null) {
+            return "";
+        }
+
+        String parentFolderName = currentTrack.getDataSource().getParentFile().getName();
+        return new StringBuilder()
+                .append(SPACE_CHAR)
+                .append(FOLDER)
+                .append(SPACE_CHAR)
+                .append(reduceString(parentFolderName, 20))
+                .toString();
+    }
+
+    public static String paintCurrentTrackName(Track currentTrack) {
+        if (currentTrack == null) {
+            return "";
+        }
+
+        return new StringBuilder()
+                .append(SPACE_CHAR)
+                .append(MUSICAL_NOTE)
+                .append(SPACE_CHAR)
+                .append(currentTrack.getTitle())
+                .toString();
     }
 
     public static void printConsoleHeader(Player player, HeaderMode headerMode, ConsoleRunner consoleRunner) {

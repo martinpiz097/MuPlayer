@@ -13,7 +13,7 @@ public interface TrackData {
     byte[] getCoverData();
 
     String getEncoder();
-    String getBitrate();
+    long getBitrate();
     String getFormat();
     String getGenre();
 }

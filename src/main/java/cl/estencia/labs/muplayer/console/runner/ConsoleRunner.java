@@ -1,37 +1,23 @@
 package cl.estencia.labs.muplayer.console.runner;
 
-import cl.estencia.labs.muplayer.audio.model.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.audio.player.Player;
-import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.config.model.MuPlayerConfigKeys;
 import cl.estencia.labs.muplayer.config.reader.MuPlayerConfigReader;
 import cl.estencia.labs.muplayer.console.PlayerCommandInterpreter;
 import cl.estencia.labs.muplayer.console.command.Command;
-import cl.estencia.labs.muplayer.console.command.CommandInterpreter;
-import cl.estencia.labs.muplayer.console.common.enums.ConsoleHeaderMode;
 import cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode;
-import cl.estencia.labs.muplayer.console.common.enums.HeaderMode;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
-import cl.estencia.labs.muplayer.core.bus.model.MuPlayerResponse;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import cl.estencia.labs.muplayer.core.system.SysInfo;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.orangelogger.sys.Logger;
-import org.orangelogger.sys.SystemUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.OutputStream;
 import java.util.Scanner;
 
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.*;
-import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode.cls;
-import static cl.estencia.labs.muplayer.console.common.enums.HeaderMode.CLEAN;
-import static cl.estencia.labs.muplayer.console.util.ConsolePainter.*;
-import static cl.estencia.labs.muplayer.core.cache.CacheVar.PLAYER_CURRENT_DATA;
 
 @Slf4j
 public abstract class ConsoleRunner implements Runnable {

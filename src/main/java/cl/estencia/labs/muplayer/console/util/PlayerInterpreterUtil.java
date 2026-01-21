@@ -380,7 +380,7 @@ public class PlayerInterpreterUtil {
         final String duration = track.getFormattedDuration();
         final String genre = track.getGenre();
         final String hasCover = track.hasCover() ? "Yes" : "No";
-        final String bitrate = track.getBitrate();
+        final String bitrate = track.getBitrate() > -1 ? String.valueOf(track.getBitrate()) : "Unknown";
 
         int contentSize = 100;
 
@@ -409,9 +409,7 @@ public class PlayerInterpreterUtil {
 
         consoleTable.addRowWithCells(new ConsoleTableCell("Has Cover: " + hasCover, elementsColor, contentSize));
 
-        if (bitrate != null) {
-            consoleTable.addRowWithCells(new ConsoleTableCell("Bitrate: " + bitrate, elementsColor, contentSize));
-        }
+        consoleTable.addRowWithCells(new ConsoleTableCell("Bitrate: " + bitrate, elementsColor, contentSize));
 
         return consoleTable.draw();
     }

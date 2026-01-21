@@ -25,7 +25,6 @@ public class ConsoleTable {
     private final int contentSizeLimit;
 
     public static final byte DEFAULT_CONTENT_SIZE_LIMIT = 30;
-    public static final String SHORT_VALUE_SUFFIX = "...";
 
     public ConsoleTable(String title) {
         this(title, ConsoleUtil.getOutputColor(info));

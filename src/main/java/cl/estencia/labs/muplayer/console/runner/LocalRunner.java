@@ -323,7 +323,6 @@ public class LocalRunner extends ConsoleRunner {
         setupNativeConsole();
 
         globalCacheManager.saveValue(RUNNER, this);
-        globalCacheManager.saveValue(PLAYER, player);
         globalCacheManager.saveValue(NATIVE_CONSOLE, nativeConsole);
 
         printBannerLogo();

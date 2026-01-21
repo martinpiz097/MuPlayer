@@ -54,6 +54,8 @@ public class ConsoleSymbols {
     public static final String BATTERY = "\uD83D\uDD0B";
     public static final String PLUGGED = "\uD83D\uDD0C";
 
+    public static final String FOLDER = "\uD83D\uDCC1";
+
     public static final char SANDGLASS = '⏳';
 
     public static final char PIPE = '|';

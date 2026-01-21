@@ -19,6 +19,8 @@ import cl.estencia.labs.muplayer.core.bus.model.MuPlayerResponse;
 import cl.estencia.labs.muplayer.core.bus.model.SkipData;
 import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.audio.util.AudioFileUtil;
+import cl.estencia.labs.muplayer.core.cache.CacheManager;
+import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import cl.estencia.labs.muplayer.core.util.FilterUtil;
 import cl.estencia.labs.muplayer.audio.util.MuPlayerUtil;
@@ -710,7 +712,9 @@ public class MuPlayer extends Player implements SystemVolumeController {
 
     @Override
     public void run() {
+        CacheManager.getGlobalCache().saveValue(CacheVar.PLAYER, this);
         playerStatusData.setOn(true);
+
         loadTracks(rootFolder);
         playNext();
 

@@ -14,7 +14,6 @@ import org.orangelogger.sys.Logger;
 
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.*;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.ARROW;
-import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.MUSICAL_NOTE;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SINGLE_VERTICAL_LINE;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE_CHAR;
 import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.*;
@@ -133,23 +132,18 @@ public class ConsoleUtil {
                         .append(SPACE_CHAR);
 
                 if (currentTrack != null) {
-                    sbHeader.append(SPACE_CHAR)
-                            .append(MUSICAL_NOTE)
-                            .append(SPACE_CHAR)
-                            .append(currentTrack.getTitle())
-                            .append(SPACE_CHAR);
+                    sbHeader.append(paintCurrentFolderInfo(currentTrack)).append(SPACE_CHAR);
+                    sbHeader.append(paintCurrentTrackName(currentTrack)).append(SPACE_CHAR);
                 }
-
                 sbHeader.append(ARROW).append(SPACE_CHAR);
             }
             case COMPLETE -> {
                 sbHeader.append(paintMusicPlayerIcons(player.isPlaying())).append(SPACE_CHAR);
 
                 if (currentTrack != null) {
-                    sbHeader.append(MUSICAL_NOTE)
-                            .append(SPACE_CHAR)
-                            .append(currentTrack.getTitle())
-                            .append(SPACE_CHAR);
+                    sbHeader.append(paintCurrentFolderInfo(currentTrack)).append(SPACE_CHAR);
+                    sbHeader.append(SINGLE_VERTICAL_LINE);
+                    sbHeader.append(paintCurrentTrackName(currentTrack)).append(SPACE_CHAR);
                 }
 
                 sbHeader.append(SINGLE_VERTICAL_LINE).append(SPACE_CHAR);

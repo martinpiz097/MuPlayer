@@ -8,7 +8,7 @@ import lombok.Setter;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE_CHAR;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputType.info;
 import static cl.estencia.labs.muplayer.console.model.table.ConsoleTable.DEFAULT_CONTENT_SIZE_LIMIT;
-import static cl.estencia.labs.muplayer.console.model.table.ConsoleTable.SHORT_VALUE_SUFFIX;
+import static cl.estencia.labs.muplayer.core.util.StringUtils.reduceString;
 
 @Getter
 @Setter
@@ -45,9 +45,7 @@ public class ConsoleTableCell {
         }
 
         String strValue = originalValue.toString();
-        String reducedValue = strValue.length() > (contentSizeLimit + SHORT_VALUE_SUFFIX.length())
-                ? strValue.substring(0, contentSizeLimit) + SHORT_VALUE_SUFFIX
-                : strValue;
+        String reducedValue = reduceString(strValue, contentSizeLimit);
 
         return replaceInvalidChars(reducedValue);
     }
