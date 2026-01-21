@@ -127,8 +127,16 @@ public abstract class Track extends Thread
         return getStateName() == TrackStateName.KILLED;
     }
 
+    public boolean isReverberating() {
+        return getStateName() == TrackStateName.REVERBERATED;
+    }
+
     public boolean isActive() {
         return isAlive() && (!isFinished() && !isKilled());
+    }
+
+    public boolean isSuspended() {
+        return isAlive() && (isPaused() || isStopped());
     }
 
     @Override
@@ -153,6 +161,7 @@ public abstract class Track extends Thread
     @Override
     public void resumeTrack() {
         if (isAlive() && (isPaused() || isStopped())) {
+            // al colocar play antes de notify, se evita salida del while en PlayingState
             play();
             synchronized (this) {
                 notify();
@@ -205,7 +214,7 @@ public abstract class Track extends Thread
             // o saltar bytes hasta completar esos segundos
         } else {
             try {
-                gotoSecond(getProgress() + seconds);
+                gotoSecond(Math.max(0d, getProgress() + seconds));
             } catch (LineUnavailableException | UnsupportedAudioFileException e) {
                 log.error(e.getMessage(), e);
             }
@@ -216,12 +225,14 @@ public abstract class Track extends Thread
     @Override
     public void gotoSecond(double second) throws
             IOException, LineUnavailableException, UnsupportedAudioFileException {
+        second = Math.max(0d, second);
         final double progress = getProgress();
         if (second >= progress) {
             final int duration = (int) getDuration();
             if (second > duration) {
                 second = duration;
             }
+
             final int gotoValue = (int) Math.round(second - getProgress());
             seek(gotoValue);
         } else {

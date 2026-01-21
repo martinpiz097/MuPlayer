@@ -9,36 +9,22 @@ import cl.estencia.labs.muplayer.audio.model.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.factory.StandardTrackFactory;
 import cl.estencia.labs.muplayer.audio.track.factory.TrackFactory;
-import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
-import cl.estencia.labs.muplayer.console.runner.LocalRunner;
-import cl.estencia.labs.muplayer.console.unix.NativeConsole;
 import cl.estencia.labs.muplayer.core.bus.message.Messages;
 import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
 import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
-import cl.estencia.labs.muplayer.core.service.LogService;
-import cl.estencia.labs.muplayer.core.service.impl.LogServiceImpl;
 import cl.estencia.labs.muplayer.core.util.FilterUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
-import static cl.estencia.labs.muplayer.audio.track.state.TrackStateName.FINISHED;
 import static cl.estencia.labs.muplayer.audio.util.AudioFileUtil.isSupportedAudioFile;
-import static cl.estencia.labs.muplayer.console.common.enums.HeaderMode.DEFAULT;
-import static cl.estencia.labs.muplayer.core.cache.CacheVar.NATIVE_CONSOLE;
-import static cl.estencia.labs.muplayer.core.cache.CacheVar.RUNNER;
 import static cl.estencia.labs.muplayer.core.thread.ThreadUtil.generateTrackThreadName;
 
 @Slf4j
@@ -145,15 +131,18 @@ public class MuPlayerUtil {
         return listTracks.get(indexFromOption);
     }
 
-    public void restartCurrentTrack() {
+    public void reloadCurrentTrack() {
         AtomicReference<Track> currentTrack = player.getCurrentTrack();
-        if (currentTrack.get() != null) {
-            File dataSource = currentTrack.get().getDataSource();
-            Track trackFromFile = loadTrackFromFile(dataSource);
-            listTracks.set(playerStatusData.getCurrentTrackIndex(), trackFromFile);
-
-            killCurrentTrackIfActive();
+        Track current = currentTrack.get();
+        if (current == null) {
+            return;
         }
+
+        File dataSource = current.getDataSource();
+        current = loadTrackFromFile(dataSource);
+        listTracks.set(playerStatusData.getCurrentTrackIndex(), current);
+
+        killCurrentTrackIfActive();
     }
 
     public void startTrackThread(Track currentTrack) {
@@ -170,7 +159,7 @@ public class MuPlayerUtil {
 
     public void playNewTrack(int index) {
         synchronized (player.getCurrentTrack()) {
-            restartCurrentTrack();
+            reloadCurrentTrack();
             playerStatusData.setCurrentTrackIndex(index);
 
             Track newTrack = listTracks.get(index);

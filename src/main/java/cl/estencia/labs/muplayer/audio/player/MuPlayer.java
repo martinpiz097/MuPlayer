@@ -606,25 +606,29 @@ public class MuPlayer extends Player implements SystemVolumeController {
     // SeekedState o monitorear mejor el Playing?
     @Override
     public synchronized void seek(double seconds) {
-        if (currentTrack.get() != null) {
-            try {
-                Track current = currentTrack.get();
-                current.seek(seconds);
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-            }
+        Track current = currentTrack.get();
+        if (current == null) {
+            return;
+        }
+
+        try {
+            current.seek(seconds);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
     }
 
     @Override
     public synchronized void gotoSecond(double second) {
-        if (currentTrack.get() != null) {
-            try {
-                Track current = currentTrack.get();
-                current.gotoSecond(second);
-            } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
-                log.error(e.getMessage(), e);
-            }
+        Track current = currentTrack.get();
+        if (current == null) {
+            return;
+        }
+
+        try {
+            current.gotoSecond(second);
+        } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
+            log.error(e.getMessage(), e);
         }
     }
 
@@ -638,17 +642,23 @@ public class MuPlayer extends Player implements SystemVolumeController {
     @Override
     public synchronized void setVolume(float volume) {
         playerStatusData.setVolume(volume);
-        if (currentTrack.get() != null) {
-            currentTrack.get().setVolume(volume);
+        Track current = currentTrack.get();
+        if (current == null) {
+            return;
         }
+
+        current.setVolume(volume);
     }
 
     @Override
     public synchronized void mute() {
         playerStatusData.setMute(true);
-        if (currentTrack.get() != null) {
-            currentTrack.get().mute();
+        Track current = currentTrack.get();
+        if (current == null) {
+            return;
         }
+
+        current.mute();
     }
 
     @Override
@@ -658,9 +668,13 @@ public class MuPlayer extends Player implements SystemVolumeController {
         } else {
             playerStatusData.setMute(false);
         }
-        if (currentTrack.get() != null) {
-            currentTrack.get().unMute();
+
+        Track current = currentTrack.get();
+        if (current == null) {
+            return;
         }
+
+        current.unMute();
     }
 
     @Override
