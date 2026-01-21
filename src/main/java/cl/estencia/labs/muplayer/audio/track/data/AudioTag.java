@@ -2,6 +2,7 @@ package cl.estencia.labs.muplayer.audio.track.data;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
@@ -17,72 +18,59 @@ import org.jaudiotagger.tag.images.Artwork;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 
 @Getter
 @Setter
+@Slf4j
 public class AudioTag {
-    private final File fileSource;
     private final AudioFile audioFile;
-    private final Tag tagReader;
-    private final AudioHeader header;
 
-    public AudioTag(Object sound)
-            throws TagException, ReadOnlyFileException,
-            CannotReadException, InvalidAudioFrameException, IOException {
-        if (sound instanceof File) {
-            this.fileSource = (File) sound;
-            this.audioFile = AudioFileIO.read(fileSource);
-            tagReader = audioFile.getTag();
-            header = audioFile.getAudioHeader();
-        }
-        else {
-            this.fileSource = null;
-            this.audioFile = null;
-            tagReader = null;
-            header = null;
-        }
+    public AudioTag(File trackFile) {
+        this.audioFile = loadTags(trackFile);
     }
 
-    public AudioTag(String soundPath) throws
-            ReadOnlyFileException, IOException, TagException,
-            InvalidAudioFrameException, CannotReadException {
-        this(new File(soundPath));
+    private AudioFile loadTags(File trackFile) {
+        try {
+            return trackFile != null ? AudioFileIO.read(trackFile) : null;
+        } catch (CannotReadException | InvalidAudioFrameException | ReadOnlyFileException | TagException | IOException e) {
+            log.error(e.getMessage(), e);
+            return null;
+        }
     }
 
     public boolean isValidFile() {
-        return tagReader != null;
-    }
-
-    public boolean hasCover() {
-        return isValidFile() && getCover() != null;
+        return audioFile != null;
     }
 
     public Iterator<TagField> getTags() {
-        return tagReader.getFields();
+        return isValidFile() ? audioFile.getTag().getFields() : null;
     }
 
     public String getTag(FieldKey tag) {
-        if (tagReader == null)
+        if (!isValidFile()) {
             return null;
-        final String tagValue = tagReader.getFirst(tag);
-        return tagValue == null || tagValue.isEmpty() ?
-                null : tagValue.trim();
+        }
+
+        final String tagValue = audioFile.getTag().getFirst(tag);
+        return tagValue != null && !tagValue.isBlank() ? tagValue.trim() : null;
     }
 
     public String getTag(String tagName) {
         return getTag(FieldKey.valueOf(tagName.toUpperCase()));
     }
 
-    public int getDuration() {
-        return header.getTrackLength();
+    public double getDuration() {
+        return isValidFile() ? audioFile.getAudioHeader().getPreciseTrackLength() : 0;
     }
 
     public Artwork getCover() {
-        return tagReader != null ? tagReader.getFirstArtwork() : null;
+        return isValidFile() ? audioFile.getTag().getFirstArtwork() : null;
     }
 
     public byte[] getCoverData() {
-        return hasCover() ? getCover().getBinaryData() : null;
+        Artwork cover = getCover();
+        return cover != null ? cover.getBinaryData() : null;
     }
 
 }
