@@ -68,92 +68,14 @@ public abstract class ConsoleRunner implements Runnable {
         return APP_NAME + SPACE_CHAR + 'v' + SysInfo.readAppVersion();
     }
 
-    protected String createConsoleHeader() throws Exception {
-        StringBuilder sbHeader = new StringBuilder();
-        ConsoleHeaderMode consoleHeaderMode = ConsoleHeaderMode.valueOf(muPlayerConfigReader.getProperty(MuPlayerConfigKeys.CONSOLE_HEADER_MODE));
-        var playerCurrentData = globalCacheManager.loadValue(
-                PLAYER_CURRENT_DATA, MuPlayerResponse.class);
-
-        Track currentTrack = playerCurrentData != null
-                ? playerCurrentData.getCurrentTrack()
-                : player.getCurrentTrack().get();
-        PlayerStatusData playerStatusData = playerCurrentData != null
-                ? playerCurrentData.getPlayerStatusData()
-                : player.getPlayerStatusData();
-
-        var systemVolume = player.getSystemVolume();
-
-        switch (consoleHeaderMode) {
-            case SIMPLE -> {
-                sbHeader.append(paintMusicPlayerIcons(player.isPlaying())).append(SPACE_CHAR).append(SPACE_CHAR);
-                sbHeader.append(paintBatteryStatus()).append(SPACE_CHAR).append(SPACE_CHAR);
-                sbHeader.append(paintVolumeStatus(systemVolume, playerStatusData.isMute()))
-                        .append(SPACE_CHAR);
-
-                if (currentTrack != null) {
-                    sbHeader.append(SPACE_CHAR)
-                            .append(MUSICAL_NOTE)
-                            .append(SPACE_CHAR)
-                            .append(currentTrack.getTitle())
-                            .append(SPACE_CHAR);
-                }
-
-                sbHeader.append(ARROW).append(SPACE_CHAR);
-            }
-            case COMPLETE -> {
-                sbHeader.append(paintMusicPlayerIcons(player.isPlaying())).append(SPACE_CHAR);
-
-                if (currentTrack != null) {
-                    sbHeader.append(MUSICAL_NOTE)
-                            .append(SPACE_CHAR)
-                            .append(currentTrack.getTitle())
-                            .append(SPACE_CHAR);
-                }
-
-                sbHeader.append(SINGLE_VERTICAL_LINE).append(SPACE_CHAR);
-                sbHeader.append(paintVolumeBar(systemVolume)).append(SPACE_CHAR);
-                sbHeader.append(paintVolumeStatus(systemVolume, playerStatusData.isMute()))
-                        .append(SPACE_CHAR).append(SPACE_CHAR);
-                sbHeader.append(paintBatteryStatus()).append(SPACE_CHAR);
-
-                sbHeader.append(LINE_BREAK_CHAR).append(ARROW).append(SPACE_CHAR);
-            }
-        }
-
-        return sbHeader.toString();
-    }
-
-    protected boolean isValidRootFolder() {
-        return player.getRootFolder() != null && player.getRootFolder().exists();
-    }
-
     protected void validateRootFolder() {
-        if (!isValidRootFolder()) {
-            if (player.getRootFolder() != null) {
-                Logger.getLogger(this,
-                        "Root folder not exists: " + player.getRootFolder().getPath()).rawError();
-            } else {
-                Logger.getLogger(this,
-                        "Root folder is null!").rawError();
-            }
+        if (!player.isValidRootFolder()) {
+            final String msg = player.getRootFolder() != null
+                    ? "Root folder not exists: " + player.getRootFolder().getPath()
+                    : "Root folder is null!";
 
+            Logger.getLogger(this, msg).rawError();
             System.exit(1);
-        }
-    }
-
-    public void printConsoleHeader(HeaderMode headerMode) {
-        try {
-            if (headerMode == CLEAN) {
-                sendCommand(cls);
-            }
-
-            final String header = createConsoleHeader();
-            final String coloredMessage = Logger.getLogger(this, header)
-                    .getColoredMsg(Logger.INFOCOLOR);
-
-            IO.print(coloredMessage);
-        } catch (Exception e) {
-            Logger.getLogger(this, e.getClass().getSimpleName(), e.getMessage()).error();
         }
     }
 

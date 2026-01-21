@@ -1,14 +1,30 @@
 package cl.estencia.labs.muplayer.console.util;
 
+import cl.estencia.labs.muplayer.audio.model.PlayerStatusData;
+import cl.estencia.labs.muplayer.audio.player.Player;
+import cl.estencia.labs.muplayer.audio.track.Track;
+import cl.estencia.labs.muplayer.config.model.MuPlayerConfigKeys;
+import cl.estencia.labs.muplayer.config.reader.MuPlayerConfigReader;
+import cl.estencia.labs.muplayer.console.common.enums.ConsoleHeaderMode;
 import cl.estencia.labs.muplayer.console.common.enums.OutputType;
+import cl.estencia.labs.muplayer.core.bus.model.MuPlayerResponse;
+import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import org.orangelogger.sys.ConsoleColor;
 import org.orangelogger.sys.Logger;
 
-import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.*;
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.ARROW;
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.MUSICAL_NOTE;
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SINGLE_VERTICAL_LINE;
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE_CHAR;
 import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.*;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputType.info;
+import static cl.estencia.labs.muplayer.console.util.ConsolePainter.*;
+import static cl.estencia.labs.muplayer.core.cache.CacheVar.PLAYER_CURRENT_DATA;
 
 public class ConsoleUtil {
+    private static final CacheManager CACHE_MANAGER = CacheManager.getGlobalCache();
+    private static final MuPlayerConfigReader MU_PLAYER_CONFIG_READER = MuPlayerConfigReader.getInstance();
 
     public static boolean isValidColor(String color) {
         return color != null
@@ -93,4 +109,60 @@ public class ConsoleUtil {
         return padding(count, toChar(SPACE));
     }
 
+    // TODO hacerlo con una clase con dos subclases y un console header util
+    public static String createConsoleHeader(Player player) throws Exception {
+        StringBuilder sbHeader = new StringBuilder();
+        ConsoleHeaderMode consoleHeaderMode = ConsoleHeaderMode.valueOf(MU_PLAYER_CONFIG_READER.getProperty(MuPlayerConfigKeys.CONSOLE_HEADER_MODE));
+        var playerCurrentData = CACHE_MANAGER.loadValue(
+                PLAYER_CURRENT_DATA, MuPlayerResponse.class);
+
+        Track currentTrack = playerCurrentData != null
+                ? playerCurrentData.getCurrentTrack()
+                : player.getCurrentTrack().get();
+        PlayerStatusData playerStatusData = playerCurrentData != null
+                ? playerCurrentData.getPlayerStatusData()
+                : player.getPlayerStatusData();
+
+        var systemVolume = player.getSystemVolume();
+
+        switch (consoleHeaderMode) {
+            case SIMPLE -> {
+                sbHeader.append(paintMusicPlayerIcons(player.isPlaying())).append(SPACE_CHAR).append(SPACE_CHAR);
+                sbHeader.append(paintBatteryStatus()).append(SPACE_CHAR).append(SPACE_CHAR);
+                sbHeader.append(paintVolumeStatus(systemVolume, playerStatusData.isMute()))
+                        .append(SPACE_CHAR);
+
+                if (currentTrack != null) {
+                    sbHeader.append(SPACE_CHAR)
+                            .append(MUSICAL_NOTE)
+                            .append(SPACE_CHAR)
+                            .append(currentTrack.getTitle())
+                            .append(SPACE_CHAR);
+                }
+
+                sbHeader.append(ARROW).append(SPACE_CHAR);
+            }
+            case COMPLETE -> {
+                sbHeader.append(paintMusicPlayerIcons(player.isPlaying())).append(SPACE_CHAR);
+
+                if (currentTrack != null) {
+                    sbHeader.append(MUSICAL_NOTE)
+                            .append(SPACE_CHAR)
+                            .append(currentTrack.getTitle())
+                            .append(SPACE_CHAR);
+                }
+
+                sbHeader.append(SINGLE_VERTICAL_LINE).append(SPACE_CHAR);
+                sbHeader.append(paintVolumeBar(systemVolume)).append(SPACE_CHAR);
+                sbHeader.append(paintVolumeStatus(systemVolume, playerStatusData.isMute()))
+                        .append(SPACE_CHAR).append(SPACE_CHAR);
+                sbHeader.append(paintBatteryStatus()).append(SPACE_CHAR);
+
+                sbHeader.append(LINE_BREAK_CHAR).append(ARROW).append(SPACE_CHAR);
+            }
+        }
+
+        return sbHeader.toString();
+    }
+    
 }

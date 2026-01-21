@@ -27,7 +27,7 @@ public abstract class JsonSource<T, O> {
         this.source = source;
         this.dataType = dataType;
         this.objectMapper = createObjectMapper();
-        this.cacheManager = CacheManager.newLocalCacheManager();
+        this.cacheManager = CacheManager.getGlobalCache();
         this.enableCache = enableCache;
     }
 

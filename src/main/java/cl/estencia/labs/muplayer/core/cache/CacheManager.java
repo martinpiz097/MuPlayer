@@ -12,9 +12,9 @@ public class CacheManager {
         return globalCacheManager;
     }
 
-    public static CacheManager newLocalCacheManager() {
-        return new CacheManager();
-    }
+//    public static CacheManager newLocalCacheManager() {
+//        return new CacheManager();
+//    }
 
     private CacheManager() {
         this.mapCache = new ConcurrentHashMap<>();

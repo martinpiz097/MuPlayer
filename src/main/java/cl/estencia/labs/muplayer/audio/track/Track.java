@@ -185,6 +185,10 @@ public abstract class Track extends Thread
     @Override
     public synchronized void seek(double seconds)
             throws IOException {
+        if (seconds == 0) {
+            return;
+        }
+
         if (getProgress() + seconds > getDuration()) {
             finish();
         }
@@ -199,7 +203,7 @@ public abstract class Track extends Thread
             }
             // se deben sumar los segundos que realmente se saltaron
             // o saltar bytes hasta completar esos segundos
-        } else if (seconds < 0) {
+        } else {
             try {
                 gotoSecond(getProgress() + seconds);
             } catch (LineUnavailableException | UnsupportedAudioFileException e) {

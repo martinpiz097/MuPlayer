@@ -21,6 +21,7 @@ public class NativeConsole extends Console {
     private final StringBuilder sbInput;
 
     private final List<KeyInterceptor> keyInterceptors;
+    private final List<KeyCombinationListener> keyCombinationListeners;
     private final List<KeyInputListener> keyInputListeners;
     private final List<LineInputListener> lineInputListeners;
 
@@ -43,6 +44,7 @@ public class NativeConsole extends Console {
         this.inputConfig = new InputConfig(inputMode, false, toggleModeKey, unlockKeyCode);
         this.sbInput = new StringBuilder();
         this.keyInterceptors = CollectionUtil.newFastArrayList();
+        this.keyCombinationListeners = CollectionUtil.newFastArrayList();
         this.keyInputListeners = CollectionUtil.newFastArrayList();
         this.lineInputListeners = CollectionUtil.newFastArrayList();
         this.consoleHistory = new ConsoleHistory();
@@ -53,6 +55,18 @@ public class NativeConsole extends Console {
     // es para restaurar terminal cuando el programa termina (por sea caso)
     private void restoreTerminal() {
         ProcessManager.executeLegacy("sh", "-c", "stty sane < /dev/tty");
+    }
+
+    private void printHistoryCommand(String command) {
+        if (command == null) {
+            return;
+        }
+
+        int cartReturnColumns = sbInput.length();
+        sbInput.delete(0, sbInput.length());
+        sbInput.append(command);
+
+//        IO.print(cartReturn(cartReturnColumns) + command);
     }
 
     private void printKey(int key) {
@@ -120,6 +134,14 @@ public class NativeConsole extends Console {
 
     }
 
+    public boolean hasLine() {
+        return !sbInput.isEmpty();
+    }
+
+    public String getLine() {
+        return sbInput.toString();
+    }
+
     public void loadDefaultKeyInterceptors() {
         addKeyInterceptor(new KeyInterceptor(inputConfig.getUnlockKey()) {
             @Override
@@ -139,15 +161,7 @@ public class NativeConsole extends Console {
             @Override
             public void intercept(KeyInputEvent event) {
                 String prevCommand = consoleHistory.getPrevCommand();
-                if (prevCommand == null) {
-                    return;
-                }
-
-                int cartReturnColumns = Math.max(prevCommand.length(), sbInput.length());
-                System.out.print(cartReturn(cartReturnColumns) + prevCommand);
-
-                sbInput.delete(0, sbInput.length());
-                sbInput.append(prevCommand);
+                printHistoryCommand(prevCommand);
             }
         });
 
@@ -155,15 +169,7 @@ public class NativeConsole extends Console {
             @Override
             public void intercept(KeyInputEvent event) {
                 String nextCommand = consoleHistory.getNextCommand();
-                if (nextCommand == null) {
-                    return;
-                }
-
-                int cartReturnColumns = Math.max(nextCommand.length(), sbInput.length());
-                System.out.print(cartReturn(cartReturnColumns) + nextCommand);
-
-                sbInput.delete(0, sbInput.length());
-                sbInput.append(nextCommand);
+                printHistoryCommand(nextCommand);
             }
         });
 
@@ -258,6 +264,37 @@ public class NativeConsole extends Console {
     public void clearAllKeyInterceptors() {
         synchronized (keyInterceptors) {
             keyInterceptors.clear();
+        }
+    }
+
+    public void addKeyCombListener(KeyCombinationListener keyCombinationListener) {
+        keyCombinationListeners.add(keyCombinationListener);
+    }
+
+    public void addKeyCombListeners(KeyCombinationListener... keyCombinationListeners) {
+        if (keyCombinationListeners == null || keyCombinationListeners.length == 0) {
+            return;
+        }
+
+        int interceptorsCount = keyCombinationListeners.length;
+        for (int i = 0; i < interceptorsCount; i++) {
+            addKeyCombListener(keyCombinationListeners[i]);
+        }
+    }
+
+    public List<KeyCombinationListener> getCombListenerForKeys(int[] keys) {
+        return keyCombinationListeners.stream()
+                .filter(combListener -> combListener.isKeysCombination(keys))
+                .toList();
+    }
+
+    public void removeKeyInterceptor(KeyCombinationListener combListener) {
+        keyCombinationListeners.remove(combListener);
+    }
+
+    public void clearAllCombListeners() {
+        synchronized (keyCombinationListeners) {
+            keyCombinationListeners.clear();
         }
     }
 

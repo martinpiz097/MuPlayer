@@ -24,7 +24,6 @@ public abstract class KeyInterceptor implements NativeInputListener<KeyInputEven
         this.key = (char) key.intValue();
     }
 
-    // modo generico
     public boolean isKey(int key) {
         return this.key == key;
     }

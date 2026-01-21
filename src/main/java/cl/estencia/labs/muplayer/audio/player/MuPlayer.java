@@ -39,6 +39,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static cl.estencia.labs.aucom.core.util.AudioDecodingUtil.DEFAULT_VOLUME;
 import static cl.estencia.labs.muplayer.audio.track.state.TrackStateName.FINISHED;
 import static cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic.*;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
@@ -393,6 +394,11 @@ public class MuPlayer extends Player implements SystemVolumeController {
     }
 
     @Override
+    public boolean isValidRootFolder() {
+        return rootFolder != null && rootFolder.exists();
+    }
+
+    @Override
     public synchronized boolean isOn() {
         return playerStatusData.isOn();
     }
@@ -588,13 +594,13 @@ public class MuPlayer extends Player implements SystemVolumeController {
             return;
         }
 
-        playerStatusData.setCurrentTrackIndex(0);
+        playerStatusData.setCurrentTrackIndex(-1);
         playerStatusData.setMute(false);
         playerStatusData.setOn(true);
-        playerStatusData.setVolume(100.0f);
+        playerStatusData.setVolume(DEFAULT_VOLUME);
 
         loadTracks(rootFolder);
-        play(playerStatusData.getCurrentTrackIndex());
+        playNext();
     }
 
     // SeekedState o monitorear mejor el Playing?

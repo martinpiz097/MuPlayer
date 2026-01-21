@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 
+import static cl.estencia.labs.muplayer.core.cache.CacheVar.PLAYER;
+
 public class DaemonRunner extends ConsoleRunner {
     private final NetworkServer networkServer;
 
@@ -39,6 +41,7 @@ public class DaemonRunner extends ConsoleRunner {
     @Override
     public void run() {
         validateRootFolder();
+        globalCacheManager.saveValue(PLAYER, player);
 
         Logger.getLogger(this, "MuPlayer daemon mode started.").info();
         interpreter.setOn(true);

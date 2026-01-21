@@ -1,17 +1,28 @@
 package cl.estencia.labs.muplayer.console.util;
 
+import cl.estencia.labs.muplayer.audio.player.Player;
+import cl.estencia.labs.muplayer.console.common.enums.HeaderMode;
+import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
+import cl.estencia.labs.muplayer.console.runner.LocalRunner;
+import cl.estencia.labs.muplayer.core.cache.CacheManager;
+import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import lombok.extern.slf4j.Slf4j;
+import org.orangelogger.sys.Logger;
 
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleChars.M;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleChars.SEMICOLON;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleEscapeSequences.FULL_RESET;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleEscapeSequences.SETUP_FG_RGB_TRUE_COLOR;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.*;
+import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode.cls;
+import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode.pl;
+import static cl.estencia.labs.muplayer.console.common.enums.HeaderMode.CLEAN;
 import static cl.estencia.labs.muplayer.console.util.ConsolePainter.GradientStyle.LIGHTEN;
+import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.createConsoleHeader;
+import static cl.estencia.labs.muplayer.core.cache.CacheVar.RUNNER;
 
 @Slf4j
 public class ConsolePainter {
-
     private static final int[] LIGHTEN_GREEN_GRADIENTE = new int[]{0x1A4D00, 0x2D6B08,
             0x3D8C0A, 0x4E9A12, 0x5FAD1B, 0x7CC828, 0x8CD932, 0xB8FF4A};
 
@@ -145,5 +156,27 @@ public class ConsolePainter {
         return sbText.append(FULL_RESET).toString();
     }
 
+    public static void printConsoleHeader(Player player, HeaderMode headerMode, ConsoleRunner consoleRunner) {
+        try {
+            if (consoleRunner != null && headerMode == CLEAN) {
+                consoleRunner.sendCommand(cls);
+            }
+
+            final String header = createConsoleHeader(player);
+            final String coloredMessage = Logger.getLogger(ConsolePainter.class, header)
+                    .getColoredMsg(Logger.INFOCOLOR);
+
+            IO.print(coloredMessage);
+        } catch (Exception e) {
+            Logger.getLogger(ConsolePainter.class, e.getClass().getSimpleName(), e.getMessage()).error();
+        }
+    }
+
+    public static void printConsoleHeader(Player player, HeaderMode headerMode) {
+        ConsoleRunner consoleRunner = CacheManager.getGlobalCache().loadValue(RUNNER,
+                ConsoleRunner.class);
+
+        printConsoleHeader(player, headerMode, consoleRunner);
+    }
 
 }

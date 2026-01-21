@@ -126,6 +126,12 @@ public class ConsoleTable {
         return biggerLenghtsSum + biggerColumnLengths.size() + 1;
     }
 
+    private String createExternalPadding(int externalPadding) {
+        char paddingChar = SPACE_CHAR;
+//        char paddingChar = '█';
+        return String.valueOf(paddingChar).repeat(Math.max(0, externalPadding));
+    }
+
     private String createTableMargin(String color, char startChar, char cellChar,
                                   char interColumnChar, char endChar,
                                   List<Integer> columnWidths, int columnsCount, int externalPadding) {
@@ -137,7 +143,7 @@ public class ConsoleTable {
 
         int columnWidth;
 
-        sbMargin.append(String.valueOf(SPACE_CHAR).repeat(Math.max(0, externalPadding)));
+        sbMargin.append(createExternalPadding(externalPadding));
         sbMargin.append(color);
         sbMargin.append(startChar);
         for (int i = 0; i < columnsCount; i++) {
@@ -191,7 +197,7 @@ public class ConsoleTable {
         int tableWidth = getWidth(columnWidths);
         int paddingLeft = (tableWidth - title.length()) / 2;
 
-        sbTable.append(String.valueOf(SPACE_CHAR).repeat(Math.max(0, externalPadding)));
+        sbTable.append(createExternalPadding(externalPadding));
         sbTable.append(color);
         sbTable.append(String.valueOf(SPACE_CHAR).repeat(Math.max(0, paddingLeft)));
         sbTable.append(title);
@@ -233,27 +239,6 @@ public class ConsoleTable {
                                           boolean top, int columnsCount, int externalPadding) {
         paintTableExternalMargin(sbTable, color, columnWidths, top,
                 useSingleLines, useInternalLines, columnsCount, externalPadding);
-    }
-
-    private void paintInterMargin(StringBuilder sbTable, String color, List<Integer> columnWidths,
-                                  boolean useSingleLines, boolean useInternalLines,
-                                  int columnsCount, int externalPadding) {
-        char startChar = useInternalLines
-                ? (useSingleLines ? SINGLE_LEFT_UNION : DOUBLE_LEFT_UNION)
-                : (useSingleLines ? SINGLE_VERTICAL_LINE : DOUBLE_VERTICAL_LINE);
-        char cellChar = useInternalLines
-                ? (useSingleLines ? SINGLE_HORIZONTAL_LINE : DOUBLE_HORIZONTAL_LINE)
-                : SPACE_CHAR;
-        char interColumnChar = useInternalLines
-                ? (useSingleLines ? SINGLE_INTERNAL_CORNER : DOUBLE_INTERNAL_CORNER)
-                : SPACE_CHAR;
-        char endChar = useInternalLines
-                ? (useSingleLines ? SINGLE_RIGHT_UNION : DOUBLE_RIGHT_UNION)
-                : (useSingleLines ? SINGLE_VERTICAL_LINE : DOUBLE_VERTICAL_LINE);
-
-        String tableMargin = createTableMargin(color, startChar, cellChar,
-                interColumnChar, endChar, columnWidths, columnsCount, externalPadding);
-        sbTable.append(tableMargin);
     }
 
     private void paintPreTitlesMargin(StringBuilder sbTable, String color,

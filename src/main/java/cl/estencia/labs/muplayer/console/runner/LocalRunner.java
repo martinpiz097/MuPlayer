@@ -4,15 +4,11 @@ import cl.estencia.labs.ebot.utils.threads.Interruptor;
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.config.ResourceFiles;
-import cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols;
 import cl.estencia.labs.muplayer.console.common.constants.KeyCodes;
 import cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode;
 import cl.estencia.labs.muplayer.console.model.ConsoleImage;
-import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
-import cl.estencia.labs.muplayer.console.unix.InputMode;
 import cl.estencia.labs.muplayer.console.unix.NativeConsole;
 import cl.estencia.labs.muplayer.console.unix.event.KeyInputEvent;
-import cl.estencia.labs.muplayer.console.unix.event.LineInputEvent;
 import cl.estencia.labs.muplayer.console.unix.listener.KeyInputListener;
 import cl.estencia.labs.muplayer.console.unix.listener.KeyInterceptor;
 import cl.estencia.labs.muplayer.console.unix.listener.LineInputListener;
@@ -27,14 +23,15 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Scanner;
 
-import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE_CHAR;
 import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.*;
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode.cls;
 import static cl.estencia.labs.muplayer.console.common.enums.HeaderMode.DEFAULT;
 import static cl.estencia.labs.muplayer.console.unix.InputMode.SINGLE_SHORCUTS;
 import static cl.estencia.labs.muplayer.console.util.ConsolePainter.GradientStyle.LIGHTEN;
 import static cl.estencia.labs.muplayer.console.util.ConsolePainter.paintMuPlayerStyle;
-import static cl.estencia.labs.muplayer.core.cache.CacheVar.NATIVE_CONSOLE;
+import static cl.estencia.labs.muplayer.console.util.ConsolePainter.printConsoleHeader;
+import static cl.estencia.labs.muplayer.console.util.PlayerInterpreterUtil.printConsoleInfo;
+import static cl.estencia.labs.muplayer.core.cache.CacheVar.*;
 
 public class LocalRunner extends ConsoleRunner {
     protected final Scanner scanner;
@@ -71,14 +68,14 @@ public class LocalRunner extends ConsoleRunner {
                     @Override
                     public void intercept(KeyInputEvent event) {
                         sendCommand(cls);
-                        printConsoleHeader(DEFAULT);
+                        printConsoleInfo(player);
                     }
                 },
                 new KeyInterceptor(CTRL_L) {
                     @Override
                     public void intercept(KeyInputEvent event) {
                         sendCommand(cls);
-                        printConsoleHeader(DEFAULT);
+                        printConsoleInfo(player);
                     }
                 },
                 new KeyInterceptor(KeyCodes.EXT_PAGE_UP) {
@@ -179,7 +176,7 @@ public class LocalRunner extends ConsoleRunner {
             @Override
             public void onInputEvent(KeyInputEvent event) {
                 printBannerLogo();
-                printConsoleHeader(DEFAULT);
+                printConsoleInfo(player);
             }
         });
 
@@ -187,7 +184,7 @@ public class LocalRunner extends ConsoleRunner {
             @Override
             public void onInputEvent(KeyInputEvent event) {
                 sendCommand(ConsoleOrderCode.lf);
-                printConsoleHeader(DEFAULT);
+                printConsoleInfo(player);
             }
         });
 
@@ -195,7 +192,7 @@ public class LocalRunner extends ConsoleRunner {
             @Override
             public void onInputEvent(KeyInputEvent event) {
                 sendCommand(ConsoleOrderCode.lc);
-                printConsoleHeader(DEFAULT);
+                printConsoleInfo(player);
             }
         });
 
@@ -203,7 +200,7 @@ public class LocalRunner extends ConsoleRunner {
             @Override
             public void onInputEvent(KeyInputEvent event) {
                 sendCommand(ConsoleOrderCode.lf);
-                printConsoleHeader(DEFAULT);
+                printConsoleInfo(player);
             }
         });
 
@@ -234,7 +231,7 @@ public class LocalRunner extends ConsoleRunner {
                 }
 
                 sendCommand(cls);
-                printConsoleHeader(DEFAULT);
+                printConsoleInfo(player);
             }
         });
 
@@ -263,7 +260,7 @@ public class LocalRunner extends ConsoleRunner {
                 }
 
                 sendCommand(key);
-                printConsoleHeader(DEFAULT);
+                printConsoleInfo(player);
             }
         });
 
@@ -280,7 +277,7 @@ public class LocalRunner extends ConsoleRunner {
                 sendCommand(line);
             }
 
-            printConsoleHeader(DEFAULT);
+            printConsoleInfo(player);
         });
 
     }
@@ -322,17 +319,18 @@ public class LocalRunner extends ConsoleRunner {
     @Override
     public void run() {
         interruptor.setOwner(Thread.currentThread());
-
         validateRootFolder();
         setupNativeConsole();
 
+        globalCacheManager.saveValue(RUNNER, this);
+        globalCacheManager.saveValue(PLAYER, player);
         globalCacheManager.saveValue(NATIVE_CONSOLE, nativeConsole);
 
         printBannerLogo();
         printAppVersion();
         interpreter.setOn(true);
 
-        printConsoleHeader(DEFAULT);
+        printConsoleHeader(player, DEFAULT);
         while (interpreter.isOn()) {
             interruptor.checkSignal();
         }

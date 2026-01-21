@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public abstract class Player extends Thread implements ControllableMusic, SystemVolumeController {
     public abstract boolean isOn();
     public abstract boolean hasSounds();
+    public abstract boolean isValidRootFolder();
 
     public abstract void addMusic(Collection<File> soundCollection);
     public abstract void addMusic(File musicFolder);

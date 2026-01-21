@@ -37,13 +37,11 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SANDGLASS;
-import static cl.estencia.labs.muplayer.console.common.enums.HeaderMode.DEFAULT;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputType.*;
 import static cl.estencia.labs.muplayer.console.util.PlayerInterpreterUtil.*;
-import static cl.estencia.labs.muplayer.core.cache.CacheVar.PLAYER_CURRENT_DATA;
-import static cl.estencia.labs.muplayer.core.cache.CacheVar.RUNNER;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.PREV;
+import static cl.estencia.labs.muplayer.core.cache.CacheVar.*;
 import static java.nio.file.StandardOpenOption.WRITE;
 
 @Slf4j
@@ -57,7 +55,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
     private final CacheManager globalCacheManager;
     private final ConsoleCodesReader consoleCodesReader;
     private final LogService logService;
-    private volatile MessageBus messageBus;
+    private final MessageBus messageBus;
     private final AtomicReference<MuPlayerResponse> playerCurrentData;
 
     public PlayerCommandInterpreter(Player player) {
@@ -88,7 +86,6 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
 
         switch (consoleOrderCode) {
             case st -> {
-//                    synchronized (player != null ? player : null)
                 if (player.isAlive()) {
                     messageBus.publish(Messages.reload());
                 } else {
@@ -101,10 +98,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                         }
 
                         showTrackInfo(muPlayerResponse.getCurrentTrack(), true);
-                        ConsoleRunner consoleRunner = globalCacheManager.loadValue(RUNNER, ConsoleRunner.class);
-                        if (consoleRunner instanceof LocalRunner localRunner) {
-                            localRunner.printConsoleHeader(DEFAULT);
-                        }
+                        printConsoleInfo(player);
                     });
 
                     messageBus.subscribe(MuPlayerTopic.SHUTDOWN.name(),

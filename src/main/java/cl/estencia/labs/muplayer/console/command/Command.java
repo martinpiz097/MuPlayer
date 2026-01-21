@@ -11,16 +11,16 @@ public class Command {
     private final String order;
     private final String[] options;
 
-    private static final String CMD_SPLIT_DELIMITER = " ";
-    private static final char CMD_SPLIT_DELIMITER_CHAR = ' ';
+    private static final String CMD_SPLIT_DELIMITER = String.valueOf(SPACE_CHAR);
+    private static final char CMD_SPLIT_DELIMITER_CHAR = SPACE_CHAR;
     private static final byte ORDER_INDEX = 0;
     private static final byte FIRST_OPTION_INDEX = 1;
-    private static final byte UNIQUE_OPTION_CMD_VALUE = 1;
+    private static final byte NO_OPTIONS_SPLIT_VALUE = 1;
     private static final byte NO_OPTIONS_VALUE = 0;
 
     public Command(String order, String... options) {
         this.order = order;
-        this.options = options;
+        this.options = options != null ? options : new String[0];
     }
 
     public Command(String strCmd) {
@@ -31,10 +31,10 @@ public class Command {
             String[] cmdSplit = strCmd.split(CMD_SPLIT_DELIMITER);
             if (cmdSplit.length > 0) {
                 order = cmdSplit[ORDER_INDEX];
-                if (cmdSplit.length > UNIQUE_OPTION_CMD_VALUE) {
+                if (cmdSplit.length > NO_OPTIONS_SPLIT_VALUE) {
                     options = Arrays.copyOfRange(cmdSplit, FIRST_OPTION_INDEX, cmdSplit.length);
                 } else {
-                    options = null;
+                    options = new String[0];
                 }
             } else {
                 order = "";
@@ -48,7 +48,7 @@ public class Command {
     }
 
     public boolean hasOptions() {
-        return options != null;
+        return options.length > 0;
     }
 
     public int getOptionsCount() {
@@ -84,20 +84,22 @@ public class Command {
     }
 
     public String getOptionsAsString() {
-        if (hasOptions()) {
-            StringBuilder sbOptions = new StringBuilder();
-            for (int i = 0; i < options.length; i++) {
-                sbOptions.append(options[i]).append(SPACE_CHAR);
-            }
-
-            sbOptions.deleteCharAt(sbOptions.length()-1);
-            return sbOptions.toString();
+        if (!hasOptions()) {
+            return null;
         }
-        return null;
+
+        StringBuilder sbOptions = new StringBuilder();
+        int optionsCount = getOptionsCount();
+        for (int i = 0; i < optionsCount; i++) {
+            sbOptions.append(options[i]).append(SPACE_CHAR);
+        }
+
+        sbOptions.deleteCharAt(sbOptions.length() - 1);
+        return sbOptions.toString();
     }
 
     public List<String> getAllAsList() {
-        List<String> listCmd = CollectionUtil.newFastList(10);
+        List<String> listCmd = CollectionUtil.newFastArrayList();
         listCmd.add(order.trim());
 
         int optCount = getOptionsCount();
@@ -110,11 +112,14 @@ public class Command {
 
     @Override
     public String toString() {
+        if (!hasOptions()) {
+            return order;
+        }
+
         StringBuilder sbCmd = new StringBuilder(order);
-        if (hasOptions()) {
-            for (int i = 0; i < options.length; i++) {
-                sbCmd.append(CMD_SPLIT_DELIMITER_CHAR).append(options[i]);
-            }
+        int optionsCount = getOptionsCount();
+        for (int i = 0; i < optionsCount; i++) {
+            sbCmd.append(CMD_SPLIT_DELIMITER_CHAR).append(options[i]);
         }
 
         return sbCmd.toString();

@@ -6,6 +6,9 @@ import cl.estencia.labs.ebot.bus.exception.BusException;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.console.model.table.*;
+import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
+import cl.estencia.labs.muplayer.console.runner.LocalRunner;
+import cl.estencia.labs.muplayer.console.unix.NativeConsole;
 import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
 import cl.estencia.labs.muplayer.core.bus.message.Messages;
 import cl.estencia.labs.muplayer.core.bus.model.MuPlayerResponse;
@@ -14,6 +17,7 @@ import cl.estencia.labs.muplayer.config.reader.ConsoleCodesReader;
 import cl.estencia.labs.muplayer.console.command.Command;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
 import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
+import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import lombok.extern.slf4j.Slf4j;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
@@ -33,13 +37,21 @@ import java.util.stream.Collectors;
 import static cl.estencia.labs.muplayer.console.command.SystemCommands.CLEAR_CONSOLE_UNIX;
 import static cl.estencia.labs.muplayer.console.command.SystemCommands.CLEAR_CONSOLE_WINDOWS;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE_CHAR;
+import static cl.estencia.labs.muplayer.console.common.enums.HeaderMode.CLEAN;
+import static cl.estencia.labs.muplayer.console.common.enums.HeaderMode.DEFAULT;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputType.*;
+import static cl.estencia.labs.muplayer.console.util.ConsolePainter.printConsoleHeader;
 import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.getOutputColor;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
+import static cl.estencia.labs.muplayer.core.cache.CacheVar.NATIVE_CONSOLE;
+import static cl.estencia.labs.muplayer.core.cache.CacheVar.RUNNER;
 import static cl.estencia.labs.muplayer.core.system.SysInfo.IS_UNIX;
 
 @Slf4j
 public class PlayerInterpreterUtil {
+
+    private static final CacheManager GLOBAL_CACHE = CacheManager.getGlobalCache();
+
     public static void execSysCommand(String cmd) {
         try {
             String output = ProcessManager.executeLegacy(
@@ -383,7 +395,8 @@ public class PlayerInterpreterUtil {
         }
 
         if (year != null) {
-            consoleTable.addRowWithCells(new ConsoleTableCell("Year: " + year, elementsColor, contentSize));
+            consoleTable.addRowWithCells(new ConsoleTableCell(year.contains("-")
+                    ? "Date: " : "Year: " + year, elementsColor, contentSize));
         }
 
         if (duration != null) {
@@ -418,6 +431,22 @@ public class PlayerInterpreterUtil {
                 .append("SampleRate: ").append(driver.isControlSupported(FloatControl.Type.SAMPLE_RATE))
                 .append("MasterGain: ").append(driver.isControlSupported(FloatControl.Type.MASTER_GAIN))
                 .toString();
+    }
+
+    public static void printConsoleLine() {
+        ConsoleRunner consoleRunner = GLOBAL_CACHE.loadValue(RUNNER, ConsoleRunner.class);
+        NativeConsole nativeConsole = GLOBAL_CACHE.loadValue(NATIVE_CONSOLE, NativeConsole.class);
+
+        if (consoleRunner instanceof LocalRunner) {
+            if (nativeConsole != null) {
+                IO.print(nativeConsole.getLine());
+            }
+        }
+    }
+
+    public static void printConsoleInfo(Player player) {
+        printConsoleHeader(player, DEFAULT);
+        printConsoleLine();
     }
 
 }
