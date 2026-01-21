@@ -91,7 +91,7 @@ public abstract class Track extends Thread
 
     @Override
     public long getDuration() {
-        return tagInfo != null ? tagInfo.getDuration() : 0;
+        return tagInfo != null ? Math.round(tagInfo.getDuration()) : 0;
     }
 
     @Override
@@ -333,8 +333,8 @@ public abstract class Track extends Thread
 
     @Override
     public String getBitrate() {
-        return tagInfo != null && tagInfo.getHeader() != null
-                ? tagInfo.getHeader().getBitRate()
+        return tagInfo != null
+                ? tagInfo.getAudioFile().getAudioHeader().getBitRate()
                 : "Unknown";
     }
 
