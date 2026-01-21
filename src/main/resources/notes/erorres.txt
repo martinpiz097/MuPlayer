@@ -7,7 +7,6 @@
 - Revisar carga de archivos de configuracion desde carpeta del muplayer
 - Love cant wait en formato opus no reproduce
 - En modo command, la flecha izquierda provoca un nuevo espacio
-- En algunas canciones no se muestra la duracion correctamente, una de ellas son las de abba, album the visitors
 - Revisar el metodo para agregar musica y utilizarlo mediante un comando add para sumar mas carpetas
 - Arreglar calculo de progreso actual (jaudiotagger tiene en la clase AudioFile,
         especificamente el header, info que me podria servir)

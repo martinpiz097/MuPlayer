@@ -5,12 +5,10 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
-import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
-import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
 import org.jaudiotagger.tag.TagField;
 import org.jaudiotagger.tag.images.Artwork;
@@ -18,7 +16,6 @@ import org.jaudiotagger.tag.images.Artwork;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 
 @Getter
 @Setter
@@ -43,12 +40,20 @@ public class AudioTag {
         return audioFile != null;
     }
 
+    public boolean isValidTags() {
+        return isValidFile() && audioFile.getTag() != null;
+    }
+
+    public boolean isValidHeader() {
+        return isValidFile() && audioFile.getAudioHeader() != null;
+    }
+
     public Iterator<TagField> getTags() {
-        return isValidFile() ? audioFile.getTag().getFields() : null;
+        return isValidTags() ? audioFile.getTag().getFields() : null;
     }
 
     public String getTag(FieldKey tag) {
-        if (!isValidFile()) {
+        if (!isValidTags()) {
             return null;
         }
 
@@ -61,11 +66,11 @@ public class AudioTag {
     }
 
     public double getDuration() {
-        return isValidFile() ? audioFile.getAudioHeader().getPreciseTrackLength() : 0;
+        return isValidHeader() ? audioFile.getAudioHeader().getPreciseTrackLength() : 0;
     }
 
     public Artwork getCover() {
-        return isValidFile() ? audioFile.getTag().getFirstArtwork() : null;
+        return isValidTags() ? audioFile.getTag().getFirstArtwork() : null;
     }
 
     public byte[] getCoverData() {
