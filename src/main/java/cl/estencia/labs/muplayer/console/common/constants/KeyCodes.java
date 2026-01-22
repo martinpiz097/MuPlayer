@@ -177,6 +177,74 @@ public final class KeyCodes {
     public static final int EXT_F11 = 1025;
     public static final int EXT_F12 = 1026;
 
+    // ALT + Lowercase letters
+    public static final int[] ALT_a = new int[]{ESC, a};
+    public static final int[] ALT_b = new int[]{ESC, b};
+    public static final int[] ALT_c = new int[]{ESC, c};
+    public static final int[] ALT_d = new int[]{ESC, d};
+    public static final int[] ALT_e = new int[]{ESC, e};
+    public static final int[] ALT_f = new int[]{ESC, f};
+    public static final int[] ALT_g = new int[]{ESC, g};
+    public static final int[] ALT_h = new int[]{ESC, h};
+    public static final int[] ALT_i = new int[]{ESC, i};
+    public static final int[] ALT_j = new int[]{ESC, j};
+    public static final int[] ALT_k = new int[]{ESC, k};
+    public static final int[] ALT_l = new int[]{ESC, l};
+    public static final int[] ALT_m = new int[]{ESC, m};
+    public static final int[] ALT_n = new int[]{ESC, n};
+    public static final int[] ALT_o = new int[]{ESC, o};
+    public static final int[] ALT_p = new int[]{ESC, p};
+    public static final int[] ALT_q = new int[]{ESC, q};
+    public static final int[] ALT_r = new int[]{ESC, r};
+    public static final int[] ALT_s = new int[]{ESC, s};
+    public static final int[] ALT_t = new int[]{ESC, t};
+    public static final int[] ALT_u = new int[]{ESC, u};
+    public static final int[] ALT_v = new int[]{ESC, v};
+    public static final int[] ALT_w = new int[]{ESC, w};
+    public static final int[] ALT_x = new int[]{ESC, x};
+    public static final int[] ALT_y = new int[]{ESC, y};
+    public static final int[] ALT_z = new int[]{ESC, z};
+
+    // ALT + Uppercase letters
+    public static final int[] ALT_A = new int[]{ESC, A};
+    public static final int[] ALT_B = new int[]{ESC, B};
+    public static final int[] ALT_C = new int[]{ESC, C};
+    public static final int[] ALT_D = new int[]{ESC, D};
+    public static final int[] ALT_E = new int[]{ESC, E};
+    public static final int[] ALT_F = new int[]{ESC, F};
+    public static final int[] ALT_G = new int[]{ESC, G};
+    public static final int[] ALT_H = new int[]{ESC, H};
+    public static final int[] ALT_I = new int[]{ESC, I};
+    public static final int[] ALT_J = new int[]{ESC, J};
+    public static final int[] ALT_K = new int[]{ESC, K};
+    public static final int[] ALT_L = new int[]{ESC, L};
+    public static final int[] ALT_M = new int[]{ESC, M};
+    public static final int[] ALT_N = new int[]{ESC, N};
+    public static final int[] ALT_O = new int[]{ESC, O};
+    public static final int[] ALT_P = new int[]{ESC, P};
+    public static final int[] ALT_Q = new int[]{ESC, Q};
+    public static final int[] ALT_R = new int[]{ESC, R};
+    public static final int[] ALT_S = new int[]{ESC, S};
+    public static final int[] ALT_T = new int[]{ESC, T};
+    public static final int[] ALT_U = new int[]{ESC, U};
+    public static final int[] ALT_V = new int[]{ESC, V};
+    public static final int[] ALT_W = new int[]{ESC, W};
+    public static final int[] ALT_X = new int[]{ESC, X};
+    public static final int[] ALT_Y = new int[]{ESC, Y};
+    public static final int[] ALT_Z = new int[]{ESC, Z};
+
+    // ALT + Digits
+    public static final int[] ALT_0 = new int[]{ESC, DIGIT_0};
+    public static final int[] ALT_1 = new int[]{ESC, DIGIT_1};
+    public static final int[] ALT_2 = new int[]{ESC, DIGIT_2};
+    public static final int[] ALT_3 = new int[]{ESC, DIGIT_3};
+    public static final int[] ALT_4 = new int[]{ESC, DIGIT_4};
+    public static final int[] ALT_5 = new int[]{ESC, DIGIT_5};
+    public static final int[] ALT_6 = new int[]{ESC, DIGIT_6};
+    public static final int[] ALT_7 = new int[]{ESC, DIGIT_7};
+    public static final int[] ALT_8 = new int[]{ESC, DIGIT_8};
+    public static final int[] ALT_9 = new int[]{ESC, DIGIT_9};
+
     // Utility methods
     public static boolean isDigit(int key) {
         return key >= DIGIT_0 && key <= DIGIT_9;
@@ -231,13 +299,32 @@ public final class KeyCodes {
     }
 
     /**
+     * Parses a 2-byte ANSI escape sequence and returns the corresponding key code.
+     * Expected format: ESC [ <code> or ESC O <code>
+     *
+     * @param sequence byte array of exactly 3 elements
+     * @return the parsed key code, or -1 if invalid sequence
+     */
+    public static int parseAltSequence(byte[] sequence) {
+        if (sequence == null || sequence.length < 2) {
+            return -1;
+        }
+
+        if (sequence[0] != ESC) {
+            return -1;
+        }
+
+        return sequence[1];
+    }
+
+    /**
      * Parses a 3-byte ANSI escape sequence and returns the corresponding key code.
      * Expected format: ESC [ <code> or ESC O <code>
      *
      * @param sequence byte array of exactly 3 elements
      * @return the parsed key code, or -1 if invalid sequence
      */
-    public static int parseSequence(byte[] sequence) {
+    public static int parseThreeKeysSequence(byte[] sequence) {
         if (sequence == null || sequence.length != 3) {
             return -1;
         }
@@ -318,6 +405,17 @@ public final class KeyCodes {
             case 23 -> EXT_F11;
             case 24 -> EXT_F12;
             default -> -1;
+        };
+    }
+
+    public static int parseSequence(byte[] sequence) {
+        final int keysCount = sequence.length;
+        return switch (keysCount) {
+            case 1 -> sequence[0];
+            case 2 -> parseAltSequence(sequence);
+            case 3 -> parseThreeKeysSequence(sequence);
+            // para 4 o mas
+            default -> parseExtendedSequence(sequence);
         };
     }
 

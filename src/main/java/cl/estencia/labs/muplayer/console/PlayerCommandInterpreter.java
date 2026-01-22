@@ -36,6 +36,7 @@ import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SANDGLASS;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputType.*;
 import static cl.estencia.labs.muplayer.console.util.PlayerInterpreterUtil.*;
@@ -323,6 +324,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                             consoleMessage = ConsoleMessages.NO_COVER_MESSAGE;
                         }
 
+                        consoleOutput.append(LINE_BREAK_CHAR);
                         consoleOutput.append(consoleMessage, info);
                     }
                 }

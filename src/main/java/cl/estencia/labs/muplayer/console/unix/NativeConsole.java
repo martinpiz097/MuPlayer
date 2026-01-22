@@ -2,6 +2,7 @@ package cl.estencia.labs.muplayer.console.unix;
 
 import cl.estencia.labs.aucom.core.util.ProcessManager;
 import cl.estencia.labs.muplayer.console.common.enums.InterceptorMode;
+import cl.estencia.labs.muplayer.console.unix.event.AltKeyCombinationEvent;
 import cl.estencia.labs.muplayer.console.unix.event.KeyInputEvent;
 import cl.estencia.labs.muplayer.console.unix.event.LineInputEvent;
 import cl.estencia.labs.muplayer.console.unix.listener.*;
@@ -23,7 +24,7 @@ public class NativeConsole extends Console {
 
     private final List<KeyInterceptor> defaultKeyInterceptors;
     private final List<KeyInterceptor> keyInterceptors;
-    private final List<KeyCombinationListener> keyCombinationListeners;
+    private final List<AltKeyCombinationListener> altKeyCombinationListeners;
     private final List<KeyInputListener> keyInputListeners;
     private final List<LineInputListener> lineInputListeners;
 
@@ -47,7 +48,7 @@ public class NativeConsole extends Console {
         this.sbInput = new StringBuilder();
         this.defaultKeyInterceptors = loadDefaultKeyInterceptors();
         this.keyInterceptors = CollectionUtil.newFastArrayList();
-        this.keyCombinationListeners = CollectionUtil.newFastArrayList();
+        this.altKeyCombinationListeners = CollectionUtil.newFastArrayList();
         this.keyInputListeners = CollectionUtil.newFastArrayList();
         this.lineInputListeners = CollectionUtil.newFastArrayList();
         this.consoleHistory = new ConsoleHistory();
@@ -95,6 +96,17 @@ public class NativeConsole extends Console {
                 .forEach(inputListener -> inputListener.onInputEvent(event));
     }
 
+    private void sendInputEvent(AltKeyCombinationEvent event) {
+        if (altKeyCombinationListeners.isEmpty()) {
+            return;
+        }
+
+        altKeyCombinationListeners.parallelStream()
+                .filter(keyCombListener ->
+                        keyCombListener.isKeysCombination(event.getKeys()))
+                .forEach(inputListener -> inputListener.onInputEvent(event));
+    }
+
     private void sendInputEvent(LineInputEvent event) {
         if (lineInputListeners.isEmpty()) {
             return;
@@ -108,6 +120,16 @@ public class NativeConsole extends Console {
                                        List<KeyInterceptor> interceptors) {
         interceptors.forEach(interceptor ->
                 interceptor.onInputEvent(new KeyInputEvent(key, sequence)));
+    }
+
+    // los combination listener solo se usaran con los ALT (de momento)
+    private void handleShorcut(int key, byte[] sequence) {
+        final boolean isAltCombination = sequence.length == 2;
+        if (isAltCombination) {
+            sendInputEvent(new AltKeyCombinationEvent(sequence));
+        } else {
+            sendInputEvent(new KeyInputEvent(key, sequence));
+        }
     }
 
     private void handleCommand(int key, byte[] sequence) {
@@ -130,7 +152,7 @@ public class NativeConsole extends Console {
         InputMode inputMode = inputConfig.getInputMode();
 
         switch (inputMode) {
-            case SINGLE_SHORCUTS -> sendInputEvent(new KeyInputEvent(key, sequence));
+            case SINGLE_SHORCUTS -> handleShorcut(key, sequence);
             case COMMANDS -> handleCommand(key, sequence);
         }
 
@@ -283,34 +305,34 @@ public class NativeConsole extends Console {
         }
     }
 
-    public void addKeyCombListener(KeyCombinationListener keyCombinationListener) {
-        keyCombinationListeners.add(keyCombinationListener);
+    public void addKeyCombListener(AltKeyCombinationListener altKeyCombinationListener) {
+        altKeyCombinationListeners.add(altKeyCombinationListener);
     }
 
-    public void addKeyCombListeners(KeyCombinationListener... keyCombinationListeners) {
-        if (keyCombinationListeners == null || keyCombinationListeners.length == 0) {
+    public void addKeyCombListeners(AltKeyCombinationListener... altKeyCombinationListeners) {
+        if (altKeyCombinationListeners == null || altKeyCombinationListeners.length == 0) {
             return;
         }
 
-        int interceptorsCount = keyCombinationListeners.length;
+        int interceptorsCount = altKeyCombinationListeners.length;
         for (int i = 0; i < interceptorsCount; i++) {
-            addKeyCombListener(keyCombinationListeners[i]);
+            addKeyCombListener(altKeyCombinationListeners[i]);
         }
     }
 
-    public List<KeyCombinationListener> getCombListenerForKeys(int[] keys) {
-        return keyCombinationListeners.stream()
+    public List<AltKeyCombinationListener> getCombListenerForKeys(int[] keys) {
+        return altKeyCombinationListeners.stream()
                 .filter(combListener -> combListener.isKeysCombination(keys))
                 .toList();
     }
 
-    public void removeKeyInterceptor(KeyCombinationListener combListener) {
-        keyCombinationListeners.remove(combListener);
+    public void removeKeyInterceptor(AltKeyCombinationListener combListener) {
+        altKeyCombinationListeners.remove(combListener);
     }
 
     public void clearAllCombListeners() {
-        synchronized (keyCombinationListeners) {
-            keyCombinationListeners.clear();
+        synchronized (altKeyCombinationListeners) {
+            altKeyCombinationListeners.clear();
         }
     }
 
@@ -345,10 +367,7 @@ public class NativeConsole extends Console {
                 }
 
                 sequence = Arrays.copyOf(buffer, read);
-                key = read > 1
-                        ? (read == 3 ? parseSequence(sequence) : parseExtendedSequence(sequence))
-                        : sequence[0];
-
+                key = parseSequence(sequence);
                 if (inputConfig.isInputBlocked() && key != inputConfig.getUnlockKey()) {
                     continue;
                 }

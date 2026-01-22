@@ -8,7 +8,9 @@ import cl.estencia.labs.muplayer.console.common.constants.KeyCodes;
 import cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode;
 import cl.estencia.labs.muplayer.console.model.ConsoleImage;
 import cl.estencia.labs.muplayer.console.unix.NativeConsole;
+import cl.estencia.labs.muplayer.console.unix.event.AltKeyCombinationEvent;
 import cl.estencia.labs.muplayer.console.unix.event.KeyInputEvent;
+import cl.estencia.labs.muplayer.console.unix.listener.AltKeyCombinationListener;
 import cl.estencia.labs.muplayer.console.unix.listener.KeyInputListener;
 import cl.estencia.labs.muplayer.console.unix.listener.KeyInterceptor;
 import cl.estencia.labs.muplayer.console.unix.listener.LineInputListener;
@@ -271,7 +273,7 @@ public class LocalRunner extends ConsoleRunner {
             }
         });
 
-        nativeConsole.addInputListeners(new KeyInputListener() {
+        nativeConsole.addInputListener(new KeyInputListener() {
             @SneakyThrows
             @Override
             public void onInputEvent(KeyInputEvent event) {
@@ -286,13 +288,23 @@ public class LocalRunner extends ConsoleRunner {
         });
 
     }
+    
+    private void loadKeyCombinations() {
+        nativeConsole.addKeyCombListener(new AltKeyCombinationListener(ALT_c) {
+            @Override
+            protected void onCombination(AltKeyCombinationEvent event) {
+                sendCommand(ConsoleOrderCode.cover);
+                printConsoleInfo(player);
+            }
+        });
+    }
 
     private void loadLineListeners() {
         if (!nativeConsole.getLineInputListeners().isEmpty()) {
             nativeConsole.clearAllLineInputListeners();
         }
 
-        nativeConsole.addInputListeners((LineInputListener) event -> {
+        nativeConsole.addInputListener((LineInputListener) event -> {
             if (!event.isEmptyLine()) {
                 String line = event.getInput();
                 sendCommand(line);
@@ -308,6 +320,7 @@ public class LocalRunner extends ConsoleRunner {
         nativeConsole.getInputConfig().setInputMode(SINGLE_SHORCUTS);
         loadKeyInterceptors();
         loadKeyListeners();
+        loadKeyCombinations();
         loadLineListeners();
 
         nativeConsole.start();

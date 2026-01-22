@@ -131,4 +131,32 @@ public class IOUtil {
         return intArray;
     }
 
+    public static byte[] createByteArrayFromInts(int... intArray) {
+        if (intArray == null || intArray.length == 0) {
+            return new byte[]{};
+        }
+
+        int length = intArray.length;
+        byte[] byteArray = new byte[length];
+        for (int i = 0; i < length; i++) {
+            byteArray[i] = (byte) intArray[i];
+        }
+
+        return byteArray;
+    }
+
+    public static int[] createIntArrayFromBytes(byte... byteArray) {
+        if (byteArray == null || byteArray.length == 0) {
+            return new int[]{};
+        }
+
+        int length = byteArray.length;
+        int[] intArray = new int[length];
+        for (int i = 0; i < length; i++) {
+            intArray[i] = byteArray[i];
+        }
+
+        return intArray;
+    }
+
 }

@@ -1,26 +1,28 @@
 package cl.estencia.labs.muplayer.console.unix.listener;
 
-import cl.estencia.labs.muplayer.console.unix.event.KeyCombinationEvent;
+import cl.estencia.labs.muplayer.console.unix.event.AltKeyCombinationEvent;
+import cl.estencia.labs.muplayer.core.exception.MuPlayerException;
+
+import java.util.Arrays;
 
 import static cl.estencia.labs.muplayer.core.util.IOUtil.createCharArrayFromInts;
 
-public abstract class KeyCombinationListener implements NativeInputListener<KeyCombinationEvent> {
+public abstract class AltKeyCombinationListener implements NativeInputListener<AltKeyCombinationEvent> {
     protected final char[] keys;
 
-    public KeyCombinationListener(char... keys) {
+    public AltKeyCombinationListener(int... keys) {
+        this(createCharArrayFromInts(keys));
+    }
+
+    public AltKeyCombinationListener(char... keys) {
         if (keys == null || keys.length == 0) {
             throw new NullPointerException("Key combination parameter is null!");
+        }
+        if (keys.length != 2) {
+            throw new MuPlayerException("Not valid ALT combination: " + Arrays.toString(keys));
         }
 
         this.keys = keys;
-    }
-
-    public KeyCombinationListener(int... keys) {
-        if (keys == null || keys.length == 0) {
-            throw new NullPointerException("Key combination parameter is null!");
-        }
-
-        this.keys = createCharArrayFromInts(keys);
     }
 
     public boolean isKeysCombination(int... keys) {
@@ -41,10 +43,10 @@ public abstract class KeyCombinationListener implements NativeInputListener<KeyC
         return true;
     }
 
-    protected abstract void onCombination(KeyCombinationEvent event);
+    protected abstract void onCombination(AltKeyCombinationEvent event);
 
     @Override
-    public void onInputEvent(KeyCombinationEvent event) {
+    public void onInputEvent(AltKeyCombinationEvent event) {
         if (!isKeysCombination(event.getKeys())) {
             return;
         }
