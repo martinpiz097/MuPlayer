@@ -161,6 +161,28 @@ public class LocalRunner extends ConsoleRunner {
             }
         });
 
+        nativeConsole.addInputListener(new KeyInputListener(SEQ_UP) {
+            @Override
+            public void onInputEvent(KeyInputEvent event) {
+                if (!player.isAlive()) {
+                    return;
+                }
+
+                sendCommand(ConsoleOrderCode.sv, "+5");
+            }
+        });
+
+        nativeConsole.addInputListener(new KeyInputListener(SEQ_DOWN) {
+            @Override
+            public void onInputEvent(KeyInputEvent event) {
+                if (!player.isAlive()) {
+                    return;
+                }
+
+                sendCommand(ConsoleOrderCode.sv, "-5");
+            }
+        });
+
         nativeConsole.addInputListener(new KeyInputListener(KeyCodes.LINE_FEED) {
             @Override
             public void onInputEvent(KeyInputEvent event) {

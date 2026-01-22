@@ -1,6 +1,7 @@
 package cl.estencia.labs.muplayer.console.unix;
 
 import cl.estencia.labs.aucom.core.util.ProcessManager;
+import cl.estencia.labs.muplayer.console.common.enums.InterceptorMode;
 import cl.estencia.labs.muplayer.console.unix.event.KeyInputEvent;
 import cl.estencia.labs.muplayer.console.unix.event.LineInputEvent;
 import cl.estencia.labs.muplayer.console.unix.listener.*;
@@ -14,6 +15,7 @@ import java.util.List;
 
 import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.*;
 import static cl.estencia.labs.muplayer.console.unix.InputMode.COMMANDS;
+import static cl.estencia.labs.muplayer.console.unix.InputMode.SINGLE_SHORCUTS;
 import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.cartReturn;
 
 @Getter
@@ -49,7 +51,6 @@ public class NativeConsole extends Console {
         this.lineInputListeners = CollectionUtil.newFastArrayList();
         this.consoleHistory = new ConsoleHistory();
         setName("native-console");
-        loadDefaultKeyInterceptors();
     }
 
     // es para restaurar terminal cuando el programa termina (por sea caso)
@@ -157,7 +158,7 @@ public class NativeConsole extends Console {
             }
         });
 
-        addKeyInterceptor(new KeyInterceptor(SEQ_UP) {
+        addKeyInterceptor(new KeyInterceptor(SEQ_UP, InterceptorMode.SIMPLE) {
             @Override
             public void intercept(KeyInputEvent event) {
                 String prevCommand = consoleHistory.getPrevCommand();
@@ -165,7 +166,7 @@ public class NativeConsole extends Console {
             }
         });
 
-        addKeyInterceptor(new KeyInterceptor(SEQ_DOWN) {
+        addKeyInterceptor(new KeyInterceptor(SEQ_DOWN, InterceptorMode.SIMPLE) {
             @Override
             public void intercept(KeyInputEvent event) {
                 String nextCommand = consoleHistory.getNextCommand();
@@ -252,8 +253,10 @@ public class NativeConsole extends Console {
     }
 
     public List<KeyInterceptor> getInterceptorsForKey(int key) {
+        final boolean isCommandMode = getInputMode() == COMMANDS;
         return keyInterceptors.stream()
-                .filter(interceptor -> interceptor.isKey(key))
+                .filter(interceptor -> interceptor.isKey(key)
+                    && (isCommandMode || interceptor.isGlobal()))
                 .toList();
     }
 
@@ -312,6 +315,8 @@ public class NativeConsole extends Console {
 
     @SneakyThrows
     public void run() {
+        loadDefaultKeyInterceptors();
+
         ProcessManager.executeLegacy("sh", "-c", "stty -echo -icanon < /dev/tty");
         Runtime.getRuntime().addShutdownHook(new Thread(this::restoreTerminal));
 

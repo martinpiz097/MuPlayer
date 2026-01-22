@@ -200,37 +200,10 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     printDetailedTracks(player, playerCurrentData, consoleOutput);
                 }
             }
-            case gv -> {
-                if (player.isAlive()) {
-                    consoleOutput.append("Player Volume(0-100): " + player.getVolume(), warn);
-                }
-            }
-            case v -> {
-                if (player.isAlive() && cmd.hasOptions()) {
-                    Number volume = cmd.getOptionAsNumber(0);
-                    if (volume == null) {
-                        consoleOutput.append("Volume value incorrect", error);
-                    } else {
-                        messageBus.publish(Messages.setVolume(volume.floatValue()));
-                    }
-                }
-            }
-            case gsv -> {
-                if (player.isAlive()) {
-                    consoleOutput.append("Player Volume(0-100): " + player.getSystemVolume(), warn);
-                }
-            }
-            case sv -> {
-                if (player.isAlive() && cmd.hasOptions()) {
-                    Number volume = cmd.getOptionAsNumber(0);
-                    if (volume == null) {
-                        consoleOutput.append("Volume value incorrect", error);
-                    } else {
-                        player.setSystemVolume(volume.floatValue());
-                        consoleOutput.append("Volume value changed", warn);
-                    }
-                }
-            }
+            case gv -> printPlayerVolume(player, consoleOutput, false);
+            case v -> changePlayerVolume(player, cmd, false);
+            case gsv -> printPlayerVolume(player, consoleOutput, true);
+            case sv -> changePlayerVolume(player, cmd, true);
             case sh -> {
                 if (player.isAlive()) {
                     messageBus.publish(Messages.shutdown());

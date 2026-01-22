@@ -3,21 +3,22 @@ package cl.estencia.labs.muplayer.console.util;
 import cl.estencia.labs.aucom.core.util.ProcessManager;
 import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.ebot.bus.exception.BusException;
+import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.console.model.table.*;
-import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
-import cl.estencia.labs.muplayer.console.runner.LocalRunner;
-import cl.estencia.labs.muplayer.console.unix.NativeConsole;
-import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
-import cl.estencia.labs.muplayer.core.bus.message.Messages;
-import cl.estencia.labs.muplayer.core.bus.model.MuPlayerResponse;
 import cl.estencia.labs.muplayer.config.model.ConsoleCodesData;
 import cl.estencia.labs.muplayer.config.reader.ConsoleCodesReader;
 import cl.estencia.labs.muplayer.console.command.Command;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
-import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
+import cl.estencia.labs.muplayer.console.model.table.*;
+import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
+import cl.estencia.labs.muplayer.console.runner.LocalRunner;
+import cl.estencia.labs.muplayer.console.unix.NativeConsole;
+import cl.estencia.labs.muplayer.core.bus.message.Messages;
+import cl.estencia.labs.muplayer.core.bus.model.MuPlayerResponse;
+import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
+import cl.estencia.labs.muplayer.core.util.NumberUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.orangelogger.sys.Logger;
 import org.orangelogger.sys.SystemUtil;
@@ -34,15 +35,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.console.command.SystemCommands.CLEAR_CONSOLE_UNIX;
 import static cl.estencia.labs.muplayer.console.command.SystemCommands.CLEAR_CONSOLE_WINDOWS;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE_CHAR;
-import static cl.estencia.labs.muplayer.console.common.enums.HeaderMode.CLEAN;
 import static cl.estencia.labs.muplayer.console.common.enums.HeaderMode.DEFAULT;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputType.*;
 import static cl.estencia.labs.muplayer.console.util.ConsolePainter.printConsoleHeader;
 import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.getOutputColor;
-import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.NATIVE_CONSOLE;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.RUNNER;
 import static cl.estencia.labs.muplayer.core.system.SysInfo.IS_UNIX;
@@ -445,6 +445,48 @@ public class PlayerInterpreterUtil {
     public static void printConsoleInfo(Player player) {
         printConsoleHeader(player, DEFAULT);
         printConsoleLine();
+    }
+
+    public static void printPlayerVolume(Player player, ConsoleOutput consoleOutput, boolean isSystemVolume) {
+        if (!player.isAlive()) {
+            return;
+        }
+
+        String volumeMsg = isSystemVolume
+                ? "System Volume(0-100): " + player.getSystemVolume()
+                : "Player Volume(0-100): " + player.getVolume();
+
+        consoleOutput.append(volumeMsg, warn);
+    }
+
+    public static void changePlayerVolume(Player player, Command cmd, boolean isSystemVolume) {
+        float volume;
+        if (player.isAlive() && cmd.hasOptions()) {
+            String firstOption = cmd.getOptionAt(0);
+            Number volumeChange = NumberUtil.parseVolumeChange(firstOption);
+            if (volumeChange != null) {
+                volume = Math.max(
+                        Math.min(player.getSystemVolume() + volumeChange.floatValue(), 100),
+                        0);
+            } else {
+                Number volumeParam = NumberUtil.parseStringNumber(firstOption);
+                if (volumeParam == null) {
+                    return;
+                }
+
+                volume = volumeParam.floatValue();
+            }
+
+            if (volume == -1) {
+                return;
+            }
+
+            if (isSystemVolume) {
+                player.setSystemVolume(volume);
+            } else {
+                player.setVolume(volume);
+            }
+        }
     }
 
 }

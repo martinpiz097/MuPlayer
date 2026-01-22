@@ -1,5 +1,7 @@
 package cl.estencia.labs.muplayer.console.common.constants;
 
+import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.toChar;
+
 public class ConsoleSymbols {
     public static final char SINGLE_VERTICAL_LINE = '│';
     public static final char SINGLE_HORIZONTAL_LINE = '─';
@@ -60,4 +62,9 @@ public class ConsoleSymbols {
 
     public static final char PIPE = '|';
     public static final String CMD_DIVISOR = " && ";
+
+    public static final String PLUS = String.valueOf(toChar(KeyCodes.PLUS));
+    public static final String MINUS = String.valueOf(toChar(KeyCodes.MINUS));
+
+    public static final String EMPTY = "";
 }
