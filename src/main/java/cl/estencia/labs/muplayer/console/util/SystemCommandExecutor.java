@@ -70,8 +70,4 @@ public class SystemCommandExecutor {
         }
     }
 
-    static void main() {
-        System.out.println(isHeadphoneOutputActive());
-    }
-
 }

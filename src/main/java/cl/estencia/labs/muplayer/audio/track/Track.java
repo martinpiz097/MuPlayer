@@ -23,7 +23,7 @@ import java.io.IOException;
 
 import static cl.estencia.labs.aucom.common.AudioConstants.DEFAULT_MAX_VOL;
 import static cl.estencia.labs.aucom.common.AudioConstants.DEFAULT_MIN_VOL;
-import static cl.estencia.labs.muplayer.console.util.TrackInfoUtil.loadTrackInfo;
+import static cl.estencia.labs.muplayer.audio.util.TrackInfoUtil.loadTrackInfo;
 
 @EqualsAndHashCode(callSuper = true)
 @Slf4j
@@ -35,7 +35,7 @@ public abstract class Track extends Thread
     protected final HeaderData headerData;
 
     @Getter protected final TrackStatusData trackStatusData;
-    protected final TrackInfo trackInfo;
+    @Getter protected final TrackInfo trackInfo;
 
     protected volatile TrackState trackState;
 

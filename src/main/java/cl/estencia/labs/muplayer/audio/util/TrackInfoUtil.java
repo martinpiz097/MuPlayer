@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.console.util;
+package cl.estencia.labs.muplayer.audio.util;
 
 import cl.estencia.labs.muplayer.audio.track.data.TrackInfo;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
@@ -27,10 +27,14 @@ public class TrackInfoUtil {
         FieldKey fieldKey;
         String tagValue;
         for (int i = 0; i < fieldKeysCount; i++) {
-            fieldKey = fieldKeys[i];
-            tagValue = tag.getFirst(fieldKey);
-            if (tagValue != null) {
-                mapTags.put(fieldKey, tagValue);
+            try {
+                fieldKey = fieldKeys[i];
+                tagValue = tag.getFirst(fieldKey);
+                if (tagValue != null && !tagValue.isBlank()) {
+                    mapTags.put(fieldKey, tagValue);
+                }
+            } catch (Exception ignored) {
+                // saltamos al siguiente tag que se puede obtener
             }
         }
 
