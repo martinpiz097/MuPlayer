@@ -15,13 +15,13 @@ import java.util.List;
 
 import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.*;
 import static cl.estencia.labs.muplayer.console.unix.InputMode.COMMANDS;
-import static cl.estencia.labs.muplayer.console.unix.InputMode.SINGLE_SHORCUTS;
 import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.cartReturn;
 
 @Getter
 public class NativeConsole extends Console {
     private final StringBuilder sbInput;
 
+    private final List<KeyInterceptor> defaultKeyInterceptors;
     private final List<KeyInterceptor> keyInterceptors;
     private final List<KeyCombinationListener> keyCombinationListeners;
     private final List<KeyInputListener> keyInputListeners;
@@ -45,6 +45,7 @@ public class NativeConsole extends Console {
     public NativeConsole(int toggleModeKey, int unlockKeyCode, InputMode inputMode) {
         this.inputConfig = new InputConfig(inputMode, false, toggleModeKey, unlockKeyCode);
         this.sbInput = new StringBuilder();
+        this.defaultKeyInterceptors = loadDefaultKeyInterceptors();
         this.keyInterceptors = CollectionUtil.newFastArrayList();
         this.keyCombinationListeners = CollectionUtil.newFastArrayList();
         this.keyInputListeners = CollectionUtil.newFastArrayList();
@@ -139,26 +140,24 @@ public class NativeConsole extends Console {
         return !sbInput.isEmpty();
     }
 
-    public String getLine() {
-        return sbInput.toString();
-    }
+    public List<KeyInterceptor> loadDefaultKeyInterceptors() {
+        List<KeyInterceptor> defaultInterceptors = CollectionUtil.newFastArrayList();
 
-    public void loadDefaultKeyInterceptors() {
-        addKeyInterceptor(new KeyInterceptor(inputConfig.getUnlockKey()) {
+        defaultInterceptors.add(new KeyInterceptor(inputConfig.getUnlockKey()) {
             @Override
             public void intercept(KeyInputEvent event) {
                 inputConfig.toggleInputBlocked();
             }
         });
 
-        addKeyInterceptor(new KeyInterceptor(inputConfig.getToggleModeKey()) {
+        defaultInterceptors.add(new KeyInterceptor(inputConfig.getToggleModeKey()) {
             @Override
             public void intercept(KeyInputEvent event) {
                 inputConfig.toggleInputMode();
             }
         });
 
-        addKeyInterceptor(new KeyInterceptor(SEQ_UP, InterceptorMode.SIMPLE) {
+        defaultInterceptors.add(new KeyInterceptor(SEQ_UP, InterceptorMode.SIMPLE) {
             @Override
             public void intercept(KeyInputEvent event) {
                 String prevCommand = consoleHistory.getPrevCommand();
@@ -166,7 +165,7 @@ public class NativeConsole extends Console {
             }
         });
 
-        addKeyInterceptor(new KeyInterceptor(SEQ_DOWN, InterceptorMode.SIMPLE) {
+        defaultInterceptors.add(new KeyInterceptor(SEQ_DOWN, InterceptorMode.SIMPLE) {
             @Override
             public void intercept(KeyInputEvent event) {
                 String nextCommand = consoleHistory.getNextCommand();
@@ -174,7 +173,7 @@ public class NativeConsole extends Console {
             }
         });
 
-        addKeyInterceptor(new KeyInterceptor(DELETE) {
+        defaultInterceptors.add(new KeyInterceptor(DELETE) {
             @Override
             public void intercept(KeyInputEvent event) {
                 if (sbInput.isEmpty()) {
@@ -188,6 +187,20 @@ public class NativeConsole extends Console {
                 IO.print(cartReturn(cartReturnCount) + sbInput);
             }
         });
+
+        return defaultInterceptors;
+    }
+
+    public String getLine() {
+        return sbInput.toString();
+    }
+
+    public void addDefaultKeyInterceptors() {
+        keyInterceptors.addAll(defaultKeyInterceptors);
+    }
+
+    public void removeAllDefaultKeyInterceptors() {
+        keyInterceptors.removeAll(defaultKeyInterceptors);
     }
 
     public InputMode getInputMode() {
@@ -315,7 +328,7 @@ public class NativeConsole extends Console {
 
     @SneakyThrows
     public void run() {
-        loadDefaultKeyInterceptors();
+        addDefaultKeyInterceptors();
 
         ProcessManager.executeLegacy("sh", "-c", "stty -echo -icanon < /dev/tty");
         Runtime.getRuntime().addShutdownHook(new Thread(this::restoreTerminal));

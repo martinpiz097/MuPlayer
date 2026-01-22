@@ -62,7 +62,6 @@ public class LocalRunner extends ConsoleRunner {
             nativeConsole.clearAllKeyInterceptors();
         }
 
-        nativeConsole.loadDefaultKeyInterceptors();
         nativeConsole.addKeyInterceptors(
                 new KeyInterceptor(KeyCodes.EXT_DELETE) {
                     @Override
