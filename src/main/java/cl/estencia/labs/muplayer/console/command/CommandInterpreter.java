@@ -3,6 +3,7 @@ package cl.estencia.labs.muplayer.console.command;
 import cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
 import cl.estencia.labs.muplayer.core.exception.MuPlayerException;
+import cl.estencia.labs.muplayer.core.exception.MuPlayerRuntimeException;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 
 import java.util.List;
@@ -39,7 +40,7 @@ public interface CommandInterpreter {
 
     default ConsoleOutput execute(ConsoleOrderCode cmdOrderCode) throws Exception {
         if (cmdOrderCode == null) {
-            throw new MuPlayerException("cmdOrderCode is null!");
+            throw new MuPlayerRuntimeException("cmdOrderCode is null!");
         }
 
         return execute(cmdOrderCode.name());

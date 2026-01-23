@@ -158,10 +158,6 @@ public class NativeConsole extends Console {
 
     }
 
-    public boolean hasLine() {
-        return !sbInput.isEmpty();
-    }
-
     public List<KeyInterceptor> loadDefaultKeyInterceptors() {
         List<KeyInterceptor> defaultInterceptors = CollectionUtil.newFastArrayList();
 
@@ -198,7 +194,7 @@ public class NativeConsole extends Console {
         defaultInterceptors.add(new KeyInterceptor(DELETE) {
             @Override
             public void intercept(KeyInputEvent event) {
-                if (sbInput.isEmpty()) {
+                if (hasLine()) {
                     return;
                 }
 
@@ -211,6 +207,10 @@ public class NativeConsole extends Console {
         });
 
         return defaultInterceptors;
+    }
+
+    public boolean hasLine() {
+        return !sbInput.isEmpty();
     }
 
     public String getLine() {

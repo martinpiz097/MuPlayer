@@ -9,6 +9,7 @@ import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.config.model.ConsoleCodesData;
 import cl.estencia.labs.muplayer.config.reader.ConsoleCodesReader;
 import cl.estencia.labs.muplayer.console.command.Command;
+import cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
 import cl.estencia.labs.muplayer.console.model.table.*;
 import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
@@ -36,16 +37,16 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
-import static cl.estencia.labs.muplayer.console.command.SystemCommands.CLEAR_CONSOLE_UNIX;
-import static cl.estencia.labs.muplayer.console.command.SystemCommands.CLEAR_CONSOLE_WINDOWS;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE_CHAR;
-import static cl.estencia.labs.muplayer.console.common.enums.HeaderMode.DEFAULT;
+import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.CLEAN;
+import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.DEFAULT;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputType.*;
 import static cl.estencia.labs.muplayer.console.util.ConsolePainter.printConsoleHeader;
 import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.getOutputColor;
+import static cl.estencia.labs.muplayer.console.util.SystemCommandExecutor.clearConsole;
+import static cl.estencia.labs.muplayer.console.util.SystemCommandExecutor.getClearConsoleOutput;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.NATIVE_CONSOLE;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.RUNNER;
-import static cl.estencia.labs.muplayer.core.system.SysInfo.IS_UNIX;
 
 @Slf4j
 public class PlayerInterpreterUtil {
@@ -278,16 +279,6 @@ public class PlayerInterpreterUtil {
         execution.append("------------------------------", info);
     }
 
-    public static void clearConsole() {
-        try {
-            String clearProcOutput = ProcessManager.execute(IS_UNIX
-                    ? CLEAR_CONSOLE_UNIX : CLEAR_CONSOLE_WINDOWS);
-            ProcessManager.writeProcessOutputTo(clearProcOutput, SystemUtil.getStdout());
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-    }
-
     public static void printHelp(Command cmd, ConsoleOutput execution) {
         final String keyValueSeparator = ":\n\t";
         final String helpElementSeparator = "\n\n";
@@ -324,31 +315,6 @@ public class PlayerInterpreterUtil {
         execution.append(helpInfoData, info);
     }
 
-    public static void showTrackInfo(Track track, ConsoleOutput consoleOutput, boolean clearConsole) {
-        if (clearConsole) {
-            clearConsole();
-        }
-
-        if (consoleOutput != null) {
-            if (track != null) {
-                String trackInfo = getTrackInfo(track);
-                consoleOutput.append(trackInfo);
-            } else {
-                consoleOutput.append("Current track unavailable", error);
-            }
-        } else {
-            if (track != null) {
-                Logger.getLogger(PlayerInterpreterUtil.class, getTrackInfo(track)).rawInfo();
-            } else {
-                Logger.getLogger(PlayerInterpreterUtil.class, "Current track unavailable").rawError();
-            }
-        }
-    }
-
-    public static void showTrackInfo(Track track, boolean clearConsole) {
-        showTrackInfo(track, null, clearConsole);
-    }
-
     public static void changeOrSkipTrack(Player player, Command cmd, ConsoleOutput execution, SeekOption seekOption) throws BusException {
         if (!player.isAlive()) {
             return;
@@ -368,6 +334,10 @@ public class PlayerInterpreterUtil {
     }
 
     public static String getTrackInfo(Track track) {
+        if (track == null) {
+            return "";
+        }
+
         String elementsColor = getOutputColor(info);
         ConsoleTable consoleTable = new ConsoleTable(null, elementsColor, Alignment.CENTER,
                 new Padding(0, 3, 0, 3),
@@ -414,6 +384,16 @@ public class PlayerInterpreterUtil {
         return consoleTable.draw();
     }
 
+    public static String getTrackInfo(Track track, ConsoleOutputMode outputMode) {
+        StringBuilder sbInfo = new StringBuilder();
+        if (outputMode == CLEAN) {
+            sbInfo.append(getClearConsoleOutput());
+        }
+
+        sbInfo.append(getTrackInfo(track));
+        return sbInfo.toString();
+    }
+
     public static String getLineInfo(Track track) {
         final SourceDataLine driver = track.getSpeaker().getDriver();
 
@@ -431,18 +411,25 @@ public class PlayerInterpreterUtil {
                 .toString();
     }
 
+    public static void printTrackInfo(Track track, ConsoleOutputMode outputMode) {
+        String trackInfo = getTrackInfo(track, outputMode);
+        IO.println(trackInfo);
+    }
+
     public static void printConsoleLine() {
         ConsoleRunner consoleRunner = GLOBAL_CACHE.loadValue(RUNNER, ConsoleRunner.class);
         NativeConsole nativeConsole = GLOBAL_CACHE.loadValue(NATIVE_CONSOLE, NativeConsole.class);
 
-        if (consoleRunner instanceof LocalRunner) {
-            if (nativeConsole != null) {
-                IO.print(nativeConsole.getLine());
-            }
+        if (consoleRunner instanceof LocalRunner && (nativeConsole != null && nativeConsole.hasLine())) {
+            IO.print(nativeConsole.getLine());
         }
     }
 
-    public static void printConsoleInfo(Player player) {
+    public static void printConsoleInfo(Player player, ConsoleOutputMode outputMode, boolean withCurrentTrack) {
+        if (withCurrentTrack) {
+            printTrackInfo(player.getCurrentTrack().get(), outputMode);
+        }
+
         printConsoleHeader(player, DEFAULT);
         printConsoleLine();
     }

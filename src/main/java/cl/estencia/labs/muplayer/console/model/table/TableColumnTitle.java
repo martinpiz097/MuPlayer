@@ -2,6 +2,7 @@ package cl.estencia.labs.muplayer.console.model.table;
 
 import cl.estencia.labs.muplayer.console.util.ConsoleUtil;
 import cl.estencia.labs.muplayer.core.exception.MuPlayerException;
+import cl.estencia.labs.muplayer.core.exception.MuPlayerRuntimeException;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import lombok.Getter;
 
@@ -23,7 +24,7 @@ public class TableColumnTitle {
 
     public void addCell(Object value) {
         if (value instanceof ConsoleTableCell) {
-            throw new MuPlayerException("value object cannot be an instance of ConsoleTableCell");
+            throw new MuPlayerRuntimeException("value object cannot be an instance of ConsoleTableCell");
         }
 
         addCell(value, color);

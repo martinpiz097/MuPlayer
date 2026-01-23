@@ -1,5 +1,5 @@
 package cl.estencia.labs.muplayer.console.common.enums;
 
-public enum HeaderMode {
+public enum ConsoleOutputMode {
     DEFAULT, CLEAN
 }

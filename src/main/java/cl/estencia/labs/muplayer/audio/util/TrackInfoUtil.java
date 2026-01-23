@@ -83,7 +83,7 @@ public class TrackInfoUtil {
 
             return new TrackInfo(tags, coverData, duration, bitRate);
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+//            log.error(e.getMessage(), e);
             return new TrackInfo();
         }
     }

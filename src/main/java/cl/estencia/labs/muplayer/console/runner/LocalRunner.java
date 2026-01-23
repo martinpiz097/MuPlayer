@@ -3,7 +3,7 @@ package cl.estencia.labs.muplayer.console.runner;
 import cl.estencia.labs.ebot.utils.threads.Interruptor;
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.audio.player.Player;
-import cl.estencia.labs.muplayer.config.ResourceFiles;
+import cl.estencia.labs.muplayer.config.Resources;
 import cl.estencia.labs.muplayer.console.common.constants.KeyCodes;
 import cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode;
 import cl.estencia.labs.muplayer.console.model.ConsoleImage;
@@ -25,9 +25,10 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Scanner;
 
+import static cl.estencia.labs.muplayer.config.Resources.BANNER_PATH;
 import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.*;
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode.cls;
-import static cl.estencia.labs.muplayer.console.common.enums.HeaderMode.DEFAULT;
+import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.DEFAULT;
 import static cl.estencia.labs.muplayer.console.unix.InputMode.SINGLE_SHORCUTS;
 import static cl.estencia.labs.muplayer.console.util.ConsolePainter.GradientStyle.LIGHTEN;
 import static cl.estencia.labs.muplayer.console.util.ConsolePainter.paintMuPlayerStyle;
@@ -69,14 +70,14 @@ public class LocalRunner extends ConsoleRunner {
                     @Override
                     public void intercept(KeyInputEvent event) {
                         sendCommand(cls);
-                        printConsoleInfo(player);
+                        printConsoleInfo(player, DEFAULT, false);
                     }
                 },
                 new KeyInterceptor(CTRL_L) {
                     @Override
                     public void intercept(KeyInputEvent event) {
                         sendCommand(cls);
-                        printConsoleInfo(player);
+                        printConsoleInfo(player, DEFAULT, false);
                     }
                 },
                 new KeyInterceptor(KeyCodes.EXT_PAGE_UP) {
@@ -199,7 +200,7 @@ public class LocalRunner extends ConsoleRunner {
             @Override
             public void onInputEvent(KeyInputEvent event) {
                 printBannerLogo();
-                printConsoleInfo(player);
+                printConsoleInfo(player, DEFAULT, false);
             }
         });
 
@@ -207,7 +208,7 @@ public class LocalRunner extends ConsoleRunner {
             @Override
             public void onInputEvent(KeyInputEvent event) {
                 sendCommand(ConsoleOrderCode.lf);
-                printConsoleInfo(player);
+                printConsoleInfo(player, DEFAULT, false);
             }
         });
 
@@ -215,7 +216,7 @@ public class LocalRunner extends ConsoleRunner {
             @Override
             public void onInputEvent(KeyInputEvent event) {
                 sendCommand(ConsoleOrderCode.lc);
-                printConsoleInfo(player);
+                printConsoleInfo(player, DEFAULT, false);
             }
         });
 
@@ -223,7 +224,7 @@ public class LocalRunner extends ConsoleRunner {
             @Override
             public void onInputEvent(KeyInputEvent event) {
                 sendCommand(ConsoleOrderCode.lf);
-                printConsoleInfo(player);
+                printConsoleInfo(player, DEFAULT, false);
             }
         });
 
@@ -254,7 +255,7 @@ public class LocalRunner extends ConsoleRunner {
                 }
 
                 sendCommand(cls);
-                printConsoleInfo(player);
+                printConsoleInfo(player, DEFAULT, false);
             }
         });
 
@@ -283,7 +284,7 @@ public class LocalRunner extends ConsoleRunner {
                 }
 
                 sendCommand(key);
-                printConsoleInfo(player);
+                printConsoleInfo(player, DEFAULT, false);
             }
         });
 
@@ -294,7 +295,7 @@ public class LocalRunner extends ConsoleRunner {
             @Override
             protected void onCombination(AltKeyCombinationEvent event) {
                 sendCommand(ConsoleOrderCode.cover);
-                printConsoleInfo(player);
+                printConsoleInfo(player, DEFAULT, false);
             }
         });
     }
@@ -310,7 +311,7 @@ public class LocalRunner extends ConsoleRunner {
                 sendCommand(line);
             }
 
-            printConsoleInfo(player);
+            printConsoleInfo(player, DEFAULT, false);
         });
 
     }
@@ -328,7 +329,7 @@ public class LocalRunner extends ConsoleRunner {
 
     private void printBannerLogo() {
         int terminalWidth = SystemCommandExecutor.getRealTerminalWidth();
-        InputStream bannerStream = ResourceFiles.getResStream("/img/banner.png");
+        InputStream bannerStream = Resources.getResStream(BANNER_PATH);
         ConsoleImage image = new ConsoleImage(
                 bannerStream, 80, 15, terminalWidth);
 

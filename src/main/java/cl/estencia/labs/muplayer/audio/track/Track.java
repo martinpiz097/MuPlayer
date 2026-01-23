@@ -8,11 +8,11 @@ import cl.estencia.labs.muplayer.audio.interfaces.TrackData;
 import cl.estencia.labs.muplayer.audio.model.TrackStatusData;
 import cl.estencia.labs.muplayer.audio.track.data.TrackInfo;
 import cl.estencia.labs.muplayer.audio.track.data.HeaderData;
-import cl.estencia.labs.muplayer.audio.util.AudioDriverUtil;
 import cl.estencia.labs.muplayer.audio.track.state.*;
 import cl.estencia.labs.muplayer.core.exception.MuPlayerException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.jaudiotagger.tag.FieldKey;
 
@@ -23,6 +23,8 @@ import java.io.IOException;
 
 import static cl.estencia.labs.aucom.common.AudioConstants.DEFAULT_MAX_VOL;
 import static cl.estencia.labs.aucom.common.AudioConstants.DEFAULT_MIN_VOL;
+import static cl.estencia.labs.muplayer.audio.util.AudioDriverUtil.getSecondsPosition;
+import static cl.estencia.labs.muplayer.audio.util.AudioDriverUtil.isTrackStreamsOpened;
 import static cl.estencia.labs.muplayer.audio.util.TrackInfoUtil.loadTrackInfo;
 
 @EqualsAndHashCode(callSuper = true)
@@ -92,7 +94,7 @@ public abstract class Track extends Thread
 
     @Override
     public synchronized double getProgress() {
-        return AudioDriverUtil.getSecondsPosition(speaker) + trackStatusData.getSecsSeeked();
+        return getSecondsPosition(speaker) + trackStatusData.getSecsSeeked();
     }
 
     @Override
@@ -240,7 +242,7 @@ public abstract class Track extends Thread
     @Override
     public void setVolume(float volume) {
         trackStatusData.setVolume(volume);
-        if (!AudioDriverUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedAudioStream())) {
+        if (!isTrackStreamsOpened(speaker, audioDecoder.getDecodedAudioStream())) {
             return;
         }
 
@@ -251,7 +253,7 @@ public abstract class Track extends Thread
     @Override
     public void mute() {
         trackStatusData.setMute(true);
-        if (!AudioDriverUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedAudioStream())) {
+        if (!isTrackStreamsOpened(speaker, audioDecoder.getDecodedAudioStream())) {
             return;
         }
 
@@ -265,7 +267,7 @@ public abstract class Track extends Thread
             trackStatusData.setVolume(DEFAULT_MAX_VOL);
         }
 
-        if (!AudioDriverUtil.isTrackStreamsOpened(speaker, audioDecoder.getDecodedAudioStream())) {
+        if (!isTrackStreamsOpened(speaker, audioDecoder.getDecodedAudioStream())) {
             return;
         }
 
@@ -335,7 +337,7 @@ public abstract class Track extends Thread
     @Override
     public synchronized void start() {
         if (getState() != State.NEW) {
-            throw new MuPlayerException("Already started track");
+            return;
         }
 
         super.start();

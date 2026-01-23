@@ -2,6 +2,7 @@ package cl.estencia.labs.muplayer.console.unix.listener;
 
 import cl.estencia.labs.muplayer.console.unix.event.AltKeyCombinationEvent;
 import cl.estencia.labs.muplayer.core.exception.MuPlayerException;
+import cl.estencia.labs.muplayer.core.exception.MuPlayerRuntimeException;
 
 import java.util.Arrays;
 
@@ -19,7 +20,7 @@ public abstract class AltKeyCombinationListener implements NativeInputListener<A
             throw new NullPointerException("Key combination parameter is null!");
         }
         if (keys.length != 2) {
-            throw new MuPlayerException("Not valid ALT combination: " + Arrays.toString(keys));
+            throw new MuPlayerRuntimeException("Not valid ALT combination: " + Arrays.toString(keys));
         }
 
         this.keys = keys;

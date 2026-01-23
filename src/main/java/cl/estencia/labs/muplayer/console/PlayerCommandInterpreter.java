@@ -4,6 +4,7 @@ import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.muplayer.audio.model.Album;
 import cl.estencia.labs.muplayer.audio.model.Artist;
 import cl.estencia.labs.muplayer.audio.player.Player;
+import cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode;
 import cl.estencia.labs.muplayer.console.model.table.Alignment;
 import cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic;
 import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
@@ -38,10 +39,13 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SANDGLASS;
+import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.CLEAN;
+import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.DEFAULT;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputType.*;
 import static cl.estencia.labs.muplayer.console.util.PlayerInterpreterUtil.*;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.PREV;
+import static cl.estencia.labs.muplayer.console.util.SystemCommandExecutor.clearConsole;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.*;
 import static java.nio.file.StandardOpenOption.WRITE;
 
@@ -98,8 +102,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                                     PLAYER_CURRENT_DATA, playerCurrentData.get());
                         }
 
-                        showTrackInfo(muPlayerResponse.getCurrentTrack(), true);
-                        printConsoleInfo(player);
+                        printConsoleInfo(player, CLEAN, true);
                     });
 
                     messageBus.subscribe(MuPlayerTopic.SHUTDOWN.name(),
@@ -331,8 +334,9 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
             }
             case info -> {
                 if (player.isAlive()) {
-                    if (playerCurrentData.get() != null) {
-                        showTrackInfo(playerCurrentData.get().getCurrentTrack(), consoleOutput, true);
+                    if (playerCurrentData.get() != null && playerCurrentData.get().getCurrentTrack() != null) {
+                        String trackInfo = getTrackInfo(playerCurrentData.get().getCurrentTrack(), CLEAN);
+                        consoleOutput.append(trackInfo);
                     } else {
                         consoleOutput.append("No current track available", warn);
                     }
@@ -423,7 +427,6 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     }
                 }
             }
-//           s
             case arts -> {
                 if (player.isAlive() && player.hasSounds()) {
                     final List<Artist> listArtists = player.getArtists();

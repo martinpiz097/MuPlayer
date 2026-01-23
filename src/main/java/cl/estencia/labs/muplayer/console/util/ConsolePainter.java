@@ -2,7 +2,7 @@ package cl.estencia.labs.muplayer.console.util;
 
 import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.console.common.enums.HeaderMode;
+import cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode;
 import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import lombok.extern.slf4j.Slf4j;
@@ -13,10 +13,8 @@ import static cl.estencia.labs.muplayer.console.common.constants.ConsoleChars.SE
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleEscapeSequences.FULL_RESET;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleEscapeSequences.SETUP_FG_RGB_TRUE_COLOR;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.*;
-import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.SLASH;
-import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.toChar;
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode.cls;
-import static cl.estencia.labs.muplayer.console.common.enums.HeaderMode.CLEAN;
+import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.CLEAN;
 import static cl.estencia.labs.muplayer.console.util.ConsolePainter.GradientStyle.LIGHTEN;
 import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.createConsoleHeader;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.RUNNER;
@@ -184,9 +182,9 @@ public class ConsolePainter {
                 .toString();
     }
 
-    public static void printConsoleHeader(Player player, HeaderMode headerMode, ConsoleRunner consoleRunner) {
+    public static void printConsoleHeader(Player player, ConsoleOutputMode consoleOutputMode, ConsoleRunner consoleRunner) {
         try {
-            if (consoleRunner != null && headerMode == CLEAN) {
+            if (consoleRunner != null && consoleOutputMode == CLEAN) {
                 consoleRunner.sendCommand(cls);
             }
 
@@ -200,11 +198,11 @@ public class ConsolePainter {
         }
     }
 
-    public static void printConsoleHeader(Player player, HeaderMode headerMode) {
+    public static void printConsoleHeader(Player player, ConsoleOutputMode consoleOutputMode) {
         ConsoleRunner consoleRunner = CacheManager.getGlobalCache().loadValue(RUNNER,
                 ConsoleRunner.class);
 
-        printConsoleHeader(player, headerMode, consoleRunner);
+        printConsoleHeader(player, consoleOutputMode, consoleRunner);
     }
 
 }

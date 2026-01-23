@@ -2,11 +2,24 @@ package cl.estencia.labs.muplayer.console.util;
 
 import cl.estencia.labs.aucom.core.util.ProcessManager;
 import cl.estencia.labs.muplayer.core.util.IOUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.orangelogger.sys.SystemUtil;
 
+import static cl.estencia.labs.aucom.core.util.ProcessManager.execute;
+import static cl.estencia.labs.aucom.core.util.ProcessManager.writeProcessOutputTo;
+import static cl.estencia.labs.muplayer.console.command.SystemCommands.CLEAR_CONSOLE_UNIX;
+import static cl.estencia.labs.muplayer.console.command.SystemCommands.CLEAR_CONSOLE_WINDOWS;
+import static cl.estencia.labs.muplayer.core.system.SysInfo.IS_UNIX;
+
+@Slf4j
 public class SystemCommandExecutor {
+
+    private static final String CLEAR_CONSOLE_COMMAND = IS_UNIX
+            ? CLEAR_CONSOLE_UNIX : CLEAR_CONSOLE_WINDOWS;
+
     public static boolean isChargerConnected() {
         try {
-            String output = ProcessManager.execute("cat", "/sys/class/power_supply/BAT0/status");
+            String output = execute("cat", "/sys/class/power_supply/BAT0/status");
             return !output.trim().equalsIgnoreCase("discharging");
         } catch (Exception e) {
             return true;
@@ -15,7 +28,7 @@ public class SystemCommandExecutor {
 
     public static int getBatteryPercentage() {
         try {
-            String output = ProcessManager.execute("cat", "/sys/class/power_supply/BAT0/capacity");
+            String output = execute("cat", "/sys/class/power_supply/BAT0/capacity");
             return Integer.parseInt(output.trim());
         } catch (Exception e) {
             return 100;
@@ -46,7 +59,7 @@ public class SystemCommandExecutor {
 
     public static int getRealTerminalWidth() {
         try {
-            String output = ProcessManager.execute("sh", "-lc", "stty size < /dev/tty");
+            String output = execute("sh", "-lc", "stty size < /dev/tty");
             return Integer.parseInt(output.trim().split(" ")[1].trim());
         } catch (Exception e) {
             return -1;
@@ -67,6 +80,24 @@ public class SystemCommandExecutor {
                     || reducedOutput.contains("headset");
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    public static String getClearConsoleOutput() {
+        try {
+            return execute(CLEAR_CONSOLE_COMMAND);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return "";
+        }
+    }
+
+    public static void clearConsole() {
+        try {
+            String clearProcOutput = getClearConsoleOutput();
+            writeProcessOutputTo(clearProcOutput, SystemUtil.getStdout());
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
     }
 
