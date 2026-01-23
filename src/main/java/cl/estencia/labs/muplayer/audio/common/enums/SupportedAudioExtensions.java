@@ -8,10 +8,10 @@ public enum SupportedAudioExtensions {
     flac,   // Free Lossless Audio Codec
     mp3,    // MPEG-1/2 Audio Layer III
     ogg,    // Ogg Vorbis
-    opus,   // Opus Audio Format
+//    opus,   // Opus Audio Format
 //    pcm,    // Pulse Code Modulation (raw)
     snd,    // Sound
     wav,    // Waveform Audio File Format
-    //m4a,
-    //aac
+//    m4a,
+//    aac
 }

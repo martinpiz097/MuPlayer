@@ -4,27 +4,27 @@ import cl.estencia.labs.aucom.core.util.AudioSystemManager;
 import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.ebot.bus.exception.BusException;
 import cl.estencia.labs.ebot.utils.threads.Interruptor;
+import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.audio.interfaces.SystemVolumeController;
 import cl.estencia.labs.muplayer.audio.model.Album;
 import cl.estencia.labs.muplayer.audio.model.Artist;
 import cl.estencia.labs.muplayer.audio.model.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.model.TrackIndexed;
 import cl.estencia.labs.muplayer.audio.track.Track;
+import cl.estencia.labs.muplayer.audio.track.TracksDirectory;
+import cl.estencia.labs.muplayer.audio.track.factory.StandardTrackFactory;
 import cl.estencia.labs.muplayer.audio.track.state.TrackStateName;
-import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
-
+import cl.estencia.labs.muplayer.audio.util.AudioFileUtil;
+import cl.estencia.labs.muplayer.audio.util.MuPlayerUtil;
 import cl.estencia.labs.muplayer.core.bus.listener.PlayerResponseListener;
-import cl.estencia.labs.muplayer.core.bus.message.Messages;
 import cl.estencia.labs.muplayer.core.bus.model.MuPlayerResponse;
 import cl.estencia.labs.muplayer.core.bus.model.SkipData;
-import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
-import cl.estencia.labs.muplayer.audio.util.AudioFileUtil;
+import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import cl.estencia.labs.muplayer.core.cache.CacheVar;
+import cl.estencia.labs.muplayer.core.thread.ThreadUtil;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import cl.estencia.labs.muplayer.core.util.FilterUtil;
-import cl.estencia.labs.muplayer.audio.util.MuPlayerUtil;
-import cl.estencia.labs.muplayer.io.file.AudioFileScanner;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,17 +35,23 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.DecimalFormat;
+import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.LongAdder;
+import java.util.concurrent.locks.LockSupport;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static cl.estencia.labs.aucom.core.util.AudioDecodingUtil.DEFAULT_VOLUME;
-import static cl.estencia.labs.muplayer.audio.track.state.TrackStateName.FINISHED;
-import static cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic.*;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.PREV;
+import static cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic.*;
+import static cl.estencia.labs.muplayer.core.thread.ThreadUtil.getTaskValueOrNull;
 
 @Slf4j
 public class MuPlayer extends Player implements SystemVolumeController {
@@ -54,6 +60,7 @@ public class MuPlayer extends Player implements SystemVolumeController {
 
     private final List<Track> listTracks;
     private final List<File> listFolders;
+    private final Map<Integer, TracksDirectory> trackDirectories;
 
     private final PlayerStatusData playerStatusData;
     @Getter private final MuPlayerUtil muPlayerUtil;
@@ -71,6 +78,7 @@ public class MuPlayer extends Player implements SystemVolumeController {
         this.currentTrack = new AtomicReference<>();
         this.listTracks = CollectionUtil.newFastArrayList();
         this.listFolders = CollectionUtil.newMinimalFastArrayList();
+        this.trackDirectories = CollectionUtil.newFastMap();
         this.playerStatusData = new PlayerStatusData();
         this.muPlayerUtil = new MuPlayerUtil(this, playerStatusData);
         this.audioSystemManager = new AudioSystemManager();
@@ -86,31 +94,63 @@ public class MuPlayer extends Player implements SystemVolumeController {
     }
 
     private void loadTracks(File folderToLoad) {
-        try (Stream<Path> paths = Files.walk(
-                Path.of(folderToLoad.toURI())).parallel()) {
+//        long ti = System.currentTimeMillis();
+        ExecutorService tracksLoadExecutor = Executors.newVirtualThreadPerTaskExecutor();
+        List<Future<TracksDirectory>> tasks = CollectionUtil.newFastList(500);
+
+        try (Stream<Path> paths = Files.walk(folderToLoad.toPath()).parallel()) {
+            // TODO si cambio a map, este metodo debe modificarse
             if (hasSounds()) {
                 muPlayerUtil.killActiveTracks();
 
                 listTracks.clear();
                 listFolders.clear();
+                trackDirectories.clear();
             }
 
-            paths
-                    .map(path -> muPlayerUtil.
-                            loadTrackFromFile(path.toFile()))
-                    .filter(Objects::nonNull)
-                    .sorted(muPlayerUtil.createTracksSortComparator())
-                    .forEachOrdered(listTracks::add);
 
-            listTracks.parallelStream()
-                    .map(track -> track.getDataSource().getParentFile())
-                    .distinct()
-                    .sorted(muPlayerUtil.createFoldersComparator())
-                    .forEachOrdered(listFolders::add);
+            LongAdder taskFinalizationCounter = new LongAdder();
+            paths.filter(path -> path.toFile().exists()
+                            && path.toFile().isDirectory())
+                    .map(path -> tracksLoadExecutor.submit(() -> {
+                        TracksDirectory tracksDirectory = new TracksDirectory(
+                                path.toFile(), new StandardTrackFactory(),
+                                muPlayerUtil.createTracksSortComparator());
+
+                        tracksDirectory.scanDirectory();
+                        taskFinalizationCounter.increment();
+                        return tracksDirectory;
+                    }))
+                    .forEachOrdered(tasks::add);
+
+            Set<File> foldersSet = CollectionUtil.newSet();
+            AtomicInteger counter = new AtomicInteger(1);
+
+            while (taskFinalizationCounter.sum() < tasks.size()) {
+                LockSupport.parkNanos(Duration.ofMillis(1).toNanos());
+            }
+
+            tasks.parallelStream()
+                    .map(ThreadUtil::getTaskValueOrNull)
+                    .filter(directory -> directory != null && directory.hasTracks())
+                    .sorted(Comparator.comparing(TracksDirectory::getPath))
+                    .forEachOrdered(tracksDirectory -> {
+                        trackDirectories.put(counter.getAndIncrement(), tracksDirectory);
+                        listTracks.addAll(tracksDirectory.getTracks());
+                        foldersSet.add(tracksDirectory.getFolder());
+                    });
+
+            listFolders.addAll(foldersSet);
+            tracksLoadExecutor.shutdown();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error(e.getMessage(), e);
         }
 
+//        long tf = System.currentTimeMillis();
+//        IO.println("diff: " + (new DecimalFormat("#0.000").format(((double) (tf - ti)) / 1000)));
+//        if (tf > ti) {
+//            System.exit(0);
+//        }
     }
 
     private void configureEventListeners() {
