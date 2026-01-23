@@ -1,6 +1,7 @@
 package cl.estencia.labs.muplayer.audio.track.factory;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
+import cl.estencia.labs.muplayer.core.exception.AudioFileInvalidException;
 import cl.estencia.labs.muplayer.core.exception.FormatNotSupportedException;
 import cl.estencia.labs.muplayer.io.file.AudioFileScanner;
 import lombok.extern.slf4j.Slf4j;
@@ -14,8 +15,8 @@ import java.io.IOException;
 public class StandardTrackFactory implements TrackFactory {
 
     @Override
-    public Track getTrack(File dataSource) throws FormatNotSupportedException,
-            UnsupportedAudioFileException, LineUnavailableException, IOException {
-        return new AudioFileScanner(dataSource).loadTrack();
+    public Track getTrack(File dataSource) throws FormatNotSupportedException, AudioFileInvalidException {
+        AudioFileScanner audioFileScanner = new AudioFileScanner(dataSource);
+        return audioFileScanner.loadTrack();
     }
 }

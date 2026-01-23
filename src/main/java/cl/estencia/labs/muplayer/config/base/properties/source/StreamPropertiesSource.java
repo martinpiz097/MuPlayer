@@ -1,6 +1,6 @@
 package cl.estencia.labs.muplayer.config.base.properties.source;
 
-import cl.estencia.labs.muplayer.config.ResourceFiles;
+import cl.estencia.labs.muplayer.config.Resources;
 import cl.estencia.labs.muplayer.config.base.properties.PropertiesSource;
 
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.util.Properties;
 
 public class StreamPropertiesSource extends PropertiesSource<InputStream> {
     public StreamPropertiesSource(String sourcePath) {
-        super(ResourceFiles.getResStream(sourcePath));
+        super(Resources.getResStream(sourcePath));
     }
 
     @Override

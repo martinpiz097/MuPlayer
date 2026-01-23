@@ -1,6 +1,6 @@
 package cl.estencia.labs.muplayer.config.reader;
 
-import cl.estencia.labs.muplayer.config.ResourceFiles;
+import cl.estencia.labs.muplayer.config.Resources;
 import cl.estencia.labs.muplayer.config.base.properties.PropertiesInfo;
 import cl.estencia.labs.muplayer.config.base.properties.source.FilePropertiesSource;
 import lombok.Getter;
@@ -12,7 +12,7 @@ public class ConfigReader extends PropertiesInfo<File> {
     private static ConfigReader instance = new ConfigReader();
 
     protected ConfigReader() {
-        super(new FilePropertiesSource(ResourceFiles.CONFIG_FILE_PATH));
+        super(new FilePropertiesSource(Resources.CONFIG_FILE_PATH));
     }
 
     @Override

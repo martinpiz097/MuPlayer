@@ -47,8 +47,10 @@ public class CollectionUtil {
         return new TreeMap<>();
     }
 
-    public static <T> Set<T> newHashSet() {
-        return new HashSet<>();
+    // no usar hashset porque cambia el orden de los elementos
+    // linkedHashSet no hace eso
+    public static <T> Set<T> newSet() {
+        return new LinkedHashSet<>();
     }
 
     public static <T> Stream<T> streamOf(T[] array, boolean parallel) {

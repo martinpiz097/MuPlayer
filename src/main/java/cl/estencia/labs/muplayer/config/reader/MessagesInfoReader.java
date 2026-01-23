@@ -1,6 +1,6 @@
 package cl.estencia.labs.muplayer.config.reader;
 
-import cl.estencia.labs.muplayer.config.ResourceFiles;
+import cl.estencia.labs.muplayer.config.Resources;
 import cl.estencia.labs.muplayer.config.base.properties.PropertiesInfo;
 import cl.estencia.labs.muplayer.config.base.properties.source.StreamPropertiesSource;
 import lombok.Getter;
@@ -12,7 +12,7 @@ public class MessagesInfoReader extends PropertiesInfo<InputStream> {
     private static final MessagesInfoReader instance = new MessagesInfoReader();
 
     private MessagesInfoReader() {
-        super(new StreamPropertiesSource(ResourceFiles.MESSAGES_RES_PATH));
+        super(new StreamPropertiesSource(Resources.MESSAGES_RES_PATH));
     }
 
     @Override

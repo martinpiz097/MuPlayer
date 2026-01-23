@@ -1,6 +1,6 @@
 package cl.estencia.labs.muplayer.config.reader;
 
-import cl.estencia.labs.muplayer.config.ResourceFiles;
+import cl.estencia.labs.muplayer.config.Resources;
 import cl.estencia.labs.muplayer.config.base.properties.PropertiesInfo;
 import cl.estencia.labs.muplayer.config.base.properties.source.StreamPropertiesSource;
 import lombok.Getter;
@@ -13,7 +13,7 @@ public class LogConfigReader extends PropertiesInfo<InputStream> {
     private static LogConfigReader instance = new LogConfigReader();
 
     protected LogConfigReader() {
-        super(new StreamPropertiesSource(ResourceFiles.LOG_CONFIG_RES_PATH));
+        super(new StreamPropertiesSource(Resources.LOG_CONFIG_RES_PATH));
     }
 
     @Override

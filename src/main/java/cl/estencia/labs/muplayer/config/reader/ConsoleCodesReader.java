@@ -10,7 +10,7 @@ import lombok.Getter;
 
 import java.util.LinkedList;
 
-import static cl.estencia.labs.muplayer.config.ResourceFiles.CONSOLE_PLAYER_CODES_RES_PATH;
+import static cl.estencia.labs.muplayer.config.Resources.CONSOLE_PLAYER_CODES_RES_PATH;
 
 public class ConsoleCodesReader extends JsonInfo<String, LinkedList<ConsoleCodesData>> {
 

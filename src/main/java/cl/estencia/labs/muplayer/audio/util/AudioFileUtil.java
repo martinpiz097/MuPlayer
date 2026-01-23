@@ -34,8 +34,7 @@ public class AudioFileUtil {
         return isSupportedAudioFile(audioPath.toFile());
     }
 
-    public static SupportedAudioExtensions getAudioFileExtension(File file) {
-        String fileFormatName = getFileFormatName(file);
+    public static SupportedAudioExtensions getAudioExtensionFromFormat(String fileFormatName) {
         if (fileFormatName == null) {
             return null;
         }
@@ -45,6 +44,10 @@ public class AudioFileUtil {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public static SupportedAudioExtensions getAudioFileExtension(File file) {
+        return getAudioExtensionFromFormat(getFileFormatName(file));
     }
 
     public static int getIndexFromOption(SeekOption seekOption,

@@ -1,6 +1,6 @@
 package cl.estencia.labs.muplayer.config.base.json.source;
 
-import cl.estencia.labs.muplayer.config.ResourceFiles;
+import cl.estencia.labs.muplayer.config.Resources;
 import cl.estencia.labs.muplayer.config.base.json.JsonSource;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -33,7 +33,7 @@ public class InternalJsonSource<O> extends JsonSource<String, O> {
     @Override
     public boolean exists() {
         try {
-            InputStream resStream = ResourceFiles.getResStream(source);
+            InputStream resStream = Resources.getResStream(source);
             return resStream != null && resStream.available() > 0;
         } catch (IOException e) {
             return false;
@@ -44,7 +44,7 @@ public class InternalJsonSource<O> extends JsonSource<String, O> {
     public void loadData() throws Exception {
         O cacheData;
         if (!enableCache || (cacheData = getCacheData()) == null) {
-            InputStream resStream = ResourceFiles.getResStream(source);
+            InputStream resStream = Resources.getResStream(source);
             ObjectReader reader = objectMapper.readerFor(dataType);
             this.data = reader.readValue(resStream);
         }

@@ -3,7 +3,7 @@ package cl.estencia.labs.muplayer.config;
 import java.io.File;
 import java.io.InputStream;
 
-public class ResourceFiles {
+public class Resources {
     public static final String CONFIG_FILE_PATH = getJarParentPath()+"/config.properties";
 
     public static final String HELP_RES_PATH = "/help.properties";
@@ -18,12 +18,14 @@ public class ResourceFiles {
 
     public static final String LOG_CONFIG_RES_PATH = "/log-config.properties";
 
+    public static final String BANNER_PATH = "/img/banner.png";
+
     private static String getFilePath(String fileName) {
         return getJarParentPath() + fileName;
     }
 
     public static String getJarParentPath() {
-        final String parentPath = new File(ResourceFiles.class.getProtectionDomain()
+        final String parentPath = new File(Resources.class.getProtectionDomain()
                 .getCodeSource().getLocation().getFile()).getParent();
         final String jarParentPath = parentPath.endsWith("/") ? parentPath.substring(0, parentPath.length() - 1) : parentPath;
 
@@ -37,7 +39,7 @@ public class ResourceFiles {
     }
 
     public static InputStream getResStream(String path) {
-        return ResourceFiles.class.getResourceAsStream(path);
+        return Resources.class.getResourceAsStream(path);
     }
 
 }

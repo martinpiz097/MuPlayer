@@ -7,6 +7,8 @@ import org.orangelogger.sys.Logger;
 import java.io.File;
 import java.time.Duration;
 import java.time.temporal.TemporalUnit;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.locks.LockSupport;
 
 public class ThreadUtil {
@@ -32,6 +34,14 @@ public class ThreadUtil {
 
     public static void sleepInNanos(long nanos) {
         LockSupport.parkNanos(nanos);
+    }
+
+    public static <V> V getTaskValueOrNull(Future<V> task) {
+        try {
+            return task.get();
+        } catch (InterruptedException | ExecutionException e) {
+            return null;
+        }
     }
 
 }

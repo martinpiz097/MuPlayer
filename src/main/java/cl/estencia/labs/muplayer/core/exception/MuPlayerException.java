@@ -1,8 +1,8 @@
 package cl.estencia.labs.muplayer.core.exception;
 
-public class MuPlayerException extends RuntimeException {
+public class MuPlayerException extends Exception {
     public MuPlayerException(String message) {
-        super("Error: " + message);
+        super(message);
     }
 
     public MuPlayerException(Throwable cause) {

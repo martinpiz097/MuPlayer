@@ -13,6 +13,8 @@ import cl.estencia.labs.muplayer.core.bus.message.Messages;
 import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
 import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
+import cl.estencia.labs.muplayer.core.exception.AudioFileInvalidException;
+import cl.estencia.labs.muplayer.core.exception.FormatNotSupportedException;
 import cl.estencia.labs.muplayer.core.util.FilterUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,10 +52,8 @@ public class MuPlayerUtil {
     public Track loadTrackFromFile(File audioFile) {
         try {
             return trackFactory.getTrack(audioFile);
-        } catch (Exception e) {
-            log.error("Error on load track ("
-                    + e.getClass().getSimpleName()
-                    + "): " + e.getMessage());
+        } catch (AudioFileInvalidException | FormatNotSupportedException e) {
+            log.warn(e.getMessage());
             return null;
         }
     }
@@ -140,8 +140,11 @@ public class MuPlayerUtil {
 
         File dataSource = current.getDataSource();
         current = loadTrackFromFile(dataSource);
-        listTracks.set(playerStatusData.getCurrentTrackIndex(), current);
+        if (current == null) {
+            return;
+        }
 
+        listTracks.set(playerStatusData.getCurrentTrackIndex(), current);
         killCurrentTrackIfActive();
     }
 
