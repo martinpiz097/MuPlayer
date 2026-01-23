@@ -109,7 +109,7 @@ import cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic;
 messageBus.subscribe(MuPlayerTopic.PLAYER_RESPONSE.name(), message -> {
     MuPlayerResponse response = message.getData(MuPlayerResponse.class);
     Track currentTrack = response.getCurrentTrack();
-    System.out.println("Now playing: " + currentTrack.getTitle());
+    IO.println("Now playing: " + currentTrack.getTitle());
 });
 ```
 
