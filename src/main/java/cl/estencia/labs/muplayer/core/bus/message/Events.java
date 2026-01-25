@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic.*;
 
-public class Messages {
+public class Events {
     public static Message createMsg(MuPlayerTopic topic, Object data) {
         return new Message(MessageType.NO_TYPE, topic.name(),
                 data, SerializationType.ORIGINAL);

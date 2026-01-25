@@ -4,7 +4,7 @@ import cl.estencia.labs.muplayer.core.aucom.util.ProcessManager;
 import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.ebot.bus.exception.BusException;
 import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
-import cl.estencia.labs.muplayer.audio.player.Player;
+import cl.estencia.labs.muplayer.audio.player.MusicPlayer;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.config.model.ConsoleCodesData;
 import cl.estencia.labs.muplayer.config.reader.ConsoleCodesReader;
@@ -15,7 +15,7 @@ import cl.estencia.labs.muplayer.console.model.table.*;
 import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
 import cl.estencia.labs.muplayer.console.runner.LocalRunner;
 import cl.estencia.labs.muplayer.console.unix.NativeConsole;
-import cl.estencia.labs.muplayer.core.bus.message.Messages;
+import cl.estencia.labs.muplayer.core.bus.message.Events;
 import cl.estencia.labs.muplayer.core.bus.model.MuPlayerResponse;
 import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
@@ -63,7 +63,7 @@ public class PlayerInterpreterUtil {
         }
     }
 
-    public static void printTracks(Player player, AtomicReference<MuPlayerResponse> playerCurrentData,
+    public static void printTracks(MusicPlayer player, AtomicReference<MuPlayerResponse> playerCurrentData,
                                    ConsoleOutput consoleOutput, Alignment alignment) {
         if (player == null || playerCurrentData.get() == null
                 || playerCurrentData.get().getCurrentTrack() == null) {
@@ -96,7 +96,7 @@ public class PlayerInterpreterUtil {
         consoleOutput.append(consoleTable.draw());
     }
 
-    public static void printDetailedTracks(Player player, AtomicReference<MuPlayerResponse> playerCurrentData,
+    public static void printDetailedTracks(MusicPlayer player, AtomicReference<MuPlayerResponse> playerCurrentData,
                                            ConsoleOutput execution) {
         final File rootFolder = player.getRootFolder();
         final List<Track> listTracks = player.getTracks();
@@ -138,7 +138,7 @@ public class PlayerInterpreterUtil {
         }
     }
 
-    public static synchronized void printFolderTracks(Player player, File tracksFolder, AtomicReference<MuPlayerResponse> playerCurrentData,
+    public static synchronized void printFolderTracks(MusicPlayer player, File tracksFolder, AtomicReference<MuPlayerResponse> playerCurrentData,
                                                       ConsoleOutput consoleOutput, Alignment alignment) {
         if (player == null) {
             return;
@@ -194,7 +194,7 @@ public class PlayerInterpreterUtil {
         consoleOutput.append(consoleTable.draw());
     }
 
-    public static synchronized void printFolderTracks(Player player, AtomicReference<MuPlayerResponse> playerCurrentData,
+    public static synchronized void printFolderTracks(MusicPlayer player, AtomicReference<MuPlayerResponse> playerCurrentData,
                                                       ConsoleOutput consoleOutput, Alignment alignment) {
         if (player == null) {
             return;
@@ -217,7 +217,7 @@ public class PlayerInterpreterUtil {
                 playerCurrentData, consoleOutput, alignment);
     }
 
-    public static synchronized void printFolderTracks(Player player, ConsoleOutput execution, int number) {
+    public static synchronized void printFolderTracks(MusicPlayer player, ConsoleOutput execution, int number) {
         final AtomicReference<Track> currentTrack = player.getCurrentTrack();
         final File folder = player.getFolder(number);
         final File currentFile = currentTrack.get() != null
@@ -248,7 +248,7 @@ public class PlayerInterpreterUtil {
         }
     }
 
-    public static synchronized void printFolders(Player player, AtomicReference<MuPlayerResponse> playerCurrentData,
+    public static synchronized void printFolders(MusicPlayer player, AtomicReference<MuPlayerResponse> playerCurrentData,
                                                  ConsoleOutput execution) {
         final File rootFolder = player.getRootFolder();
         final List<String> listFolderPaths = player.getListFolders()
@@ -322,7 +322,7 @@ public class PlayerInterpreterUtil {
         execution.append(helpInfoData, info);
     }
 
-    public static void changeOrSkipTrack(Player player, Command cmd, ConsoleOutput execution, SeekOption seekOption) throws BusException {
+    public static void changeOrSkipTrack(MusicPlayer player, Command cmd, ConsoleOutput execution, SeekOption seekOption) throws BusException {
         if (!player.isAlive()) {
             return;
         }
@@ -333,10 +333,10 @@ public class PlayerInterpreterUtil {
             if (skipCount == null) {
                 execution.append("Incorrect skip value ", error);
             } else {
-                messageBus.publish(Messages.skipTracks(skipCount.intValue(), seekOption));
+                player.sendEvent(Events.skipTracks(skipCount.intValue(), seekOption));
             }
         } else {
-            messageBus.publish(seekOption == NEXT ? Messages.playNext() : Messages.playPrev());
+            player.sendEvent(seekOption == NEXT ? Events.playNext() : Events.playPrev());
         }
     }
 
@@ -432,7 +432,7 @@ public class PlayerInterpreterUtil {
         }
     }
 
-    public static void printConsoleInfo(Player player, ConsoleOutputMode outputMode, boolean withCurrentTrack) {
+    public static void printConsoleInfo(MusicPlayer player, ConsoleOutputMode outputMode, boolean withCurrentTrack) {
         if (withCurrentTrack) {
             printTrackInfo(player.getCurrentTrack().get(), outputMode);
         }
@@ -441,7 +441,7 @@ public class PlayerInterpreterUtil {
         printConsoleLine();
     }
 
-    public static void printPlayerVolume(Player player, ConsoleOutput consoleOutput, boolean isSystemVolume) {
+    public static void printPlayerVolume(MusicPlayer player, ConsoleOutput consoleOutput, boolean isSystemVolume) {
         if (!player.isAlive()) {
             return;
         }
@@ -453,7 +453,7 @@ public class PlayerInterpreterUtil {
         consoleOutput.append(volumeMsg, warn);
     }
 
-    public static void changePlayerVolume(Player player, Command cmd, boolean isSystemVolume) {
+    public static void changePlayerVolume(MusicPlayer player, Command cmd, boolean isSystemVolume) {
         float volume;
         if (player.isAlive() && cmd.hasOptions()) {
             String firstOption = cmd.getOptionAt(0);

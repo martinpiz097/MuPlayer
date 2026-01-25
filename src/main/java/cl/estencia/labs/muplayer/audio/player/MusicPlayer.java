@@ -1,5 +1,6 @@
 package cl.estencia.labs.muplayer.audio.player;
 
+import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.audio.interfaces.ControllableMusic;
 import cl.estencia.labs.muplayer.audio.interfaces.SystemVolumeController;
 import cl.estencia.labs.muplayer.audio.model.Album;
@@ -7,15 +8,13 @@ import cl.estencia.labs.muplayer.audio.model.Artist;
 import cl.estencia.labs.muplayer.audio.model.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.state.TrackStateName;
-import cl.estencia.labs.muplayer.core.bus.listener.PlayerResponseListener;
-import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
 
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class Player extends Thread implements ControllableMusic, SystemVolumeController {
+public abstract class MusicPlayer extends EventPlayer implements ControllableMusic, SystemVolumeController {
     public abstract boolean isOn();
     public abstract boolean hasSounds();
     public abstract boolean isValidRootFolder();
@@ -35,9 +34,6 @@ public abstract class Player extends Thread implements ControllableMusic, System
     public abstract void skipTracks(int skipCount, SeekOption option);
 
     public abstract void shutdown();
-
-    public abstract void addResponseListener(PlayerResponseListener responseListener);
-    public abstract void removeAllResponseListeners();
 
     public abstract TrackStateName getCurrentTrackState();
     public abstract PlayerStatusData getPlayerStatusData();

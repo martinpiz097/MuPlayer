@@ -2,7 +2,7 @@ package cl.estencia.labs.muplayer.console.runner;
 
 import cl.estencia.labs.ebot.utils.threads.Interruptor;
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
-import cl.estencia.labs.muplayer.audio.player.Player;
+import cl.estencia.labs.muplayer.audio.player.MusicPlayer;
 import cl.estencia.labs.muplayer.config.Resources;
 import cl.estencia.labs.muplayer.console.common.constants.KeyCodes;
 import cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode;
@@ -55,7 +55,7 @@ public class LocalRunner extends ConsoleRunner {
         this(new MuPlayer(rootFolder));
     }
 
-    public LocalRunner(Player player) {
+    public LocalRunner(MusicPlayer player) {
         super(player);
         scanner = new Scanner(System.in);
         nativeConsole = new NativeConsole(EXT_F5, ESC, SINGLE_SHORCUTS);

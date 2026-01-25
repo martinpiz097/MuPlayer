@@ -1,7 +1,7 @@
 package cl.estencia.labs.muplayer.audio.track.state;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.core.bus.message.Messages;
+import cl.estencia.labs.muplayer.core.bus.message.Events;
 import lombok.extern.slf4j.Slf4j;
 
 import static cl.estencia.labs.muplayer.audio.util.AudioDriverUtil.closeStream;
@@ -20,7 +20,7 @@ public class FinishedState extends TrackState {
             speaker.close();
             trackStatusData.setCanTrackContinue(false);
 
-            messageBus.publish(Messages.playNext());
+            messageBus.publish(Events.playNext());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

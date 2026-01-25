@@ -12,13 +12,6 @@ public class MessageBusUtil {
         return MessageBus.multiPublisherPerTopic(1, false);
     }
 
-    private static void shutdownCurrentBus() {
-        MessageBus messageBus = GLOBAL_CACHE.loadValue(MESSAGE_BUS, MessageBus.class);
-        if (messageBus != null && messageBus.isAlive()) {
-            messageBus.shutdown();
-        }
-    }
-
     private static void initMessageBus(MessageBus messageBus) {
         if (!messageBus.isAlive()) {
             messageBus.start();
@@ -26,7 +19,7 @@ public class MessageBusUtil {
     }
 
     private static MessageBus createMessageBus() {
-        shutdownCurrentBus();
+        shutdownMessageBus();
         return GLOBAL_CACHE.saveValue(MESSAGE_BUS, newMessageBus());
     }
 
@@ -42,6 +35,13 @@ public class MessageBusUtil {
 
     public static void removeMessageBus() {
         GLOBAL_CACHE.removeValue(MESSAGE_BUS);
+    }
+
+    public static void shutdownMessageBus() {
+        MessageBus messageBus = GLOBAL_CACHE.loadValue(MESSAGE_BUS, MessageBus.class);
+        if (messageBus != null && messageBus.isAlive()) {
+            messageBus.shutdown();
+        }
     }
 
 }

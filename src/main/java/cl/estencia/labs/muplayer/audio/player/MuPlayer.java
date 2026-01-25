@@ -1,5 +1,7 @@
 package cl.estencia.labs.muplayer.audio.player;
 
+import cl.estencia.labs.ebot.bus.model.message.Message;
+import cl.estencia.labs.ebot.bus.model.pubsub.sub.MessageListener;
 import cl.estencia.labs.muplayer.core.aucom.util.AudioSystemManager;
 import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.ebot.bus.exception.BusException;
@@ -17,6 +19,7 @@ import cl.estencia.labs.muplayer.audio.track.state.TrackStateName;
 import cl.estencia.labs.muplayer.audio.util.AudioFileUtil;
 import cl.estencia.labs.muplayer.audio.util.MuPlayerUtil;
 import cl.estencia.labs.muplayer.core.bus.listener.PlayerResponseListener;
+import cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic;
 import cl.estencia.labs.muplayer.core.bus.model.MuPlayerResponse;
 import cl.estencia.labs.muplayer.core.bus.model.SkipData;
 import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
@@ -26,6 +29,7 @@ import cl.estencia.labs.muplayer.core.thread.ThreadUtil;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import cl.estencia.labs.muplayer.core.util.FilterUtil;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -35,11 +39,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.DecimalFormat;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.concurrent.locks.LockSupport;
@@ -51,16 +53,15 @@ import static cl.estencia.labs.muplayer.core.aucom.util.AudioDecodingUtil.DEFAUL
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.PREV;
 import static cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic.*;
-import static cl.estencia.labs.muplayer.core.thread.ThreadUtil.getTaskValueOrNull;
 
 @Slf4j
-public class MuPlayer extends Player implements SystemVolumeController {
+public class MuPlayer extends MusicPlayer implements SystemVolumeController {
     private final File rootFolder;
     private final AtomicReference<Track> currentTrack;
 
     private final List<Track> listTracks;
     private final List<File> listFolders;
-    private final Map<Integer, TracksDirectory> trackDirectories;
+//    private final Map<Integer, TracksDirectory> trackDirectories;
 
     private final PlayerStatusData playerStatusData;
     @Getter private final MuPlayerUtil muPlayerUtil;
@@ -78,7 +79,7 @@ public class MuPlayer extends Player implements SystemVolumeController {
         this.currentTrack = new AtomicReference<>();
         this.listTracks = CollectionUtil.newFastArrayList();
         this.listFolders = CollectionUtil.newMinimalFastArrayList();
-        this.trackDirectories = CollectionUtil.newFastMap();
+//        this.trackDirectories = CollectionUtil.newFastMap();
         this.playerStatusData = new PlayerStatusData();
         this.muPlayerUtil = new MuPlayerUtil(this, playerStatusData);
         this.audioSystemManager = new AudioSystemManager();
@@ -86,7 +87,7 @@ public class MuPlayer extends Player implements SystemVolumeController {
         this.messageBus = MessageBusUtil.getMessageBus();
 
         setName("MuPlayer " + getId());
-        configureEventListeners();
+        configureListeners();
     }
 
     public MuPlayer(String folderPath) throws FileNotFoundException {
@@ -95,7 +96,6 @@ public class MuPlayer extends Player implements SystemVolumeController {
 
     private void loadTracks(File folderToLoad) {
 //        long ti = System.currentTimeMillis();
-        List<Future<TracksDirectory>> tasks = CollectionUtil.newFastList(500);
 
         try (Stream<Path> paths = Files.walk(folderToLoad.toPath()).parallel();
              ExecutorService tracksLoadExecutor = Executors.newVirtualThreadPerTaskExecutor()) {
@@ -105,11 +105,11 @@ public class MuPlayer extends Player implements SystemVolumeController {
 
                 listTracks.clear();
                 listFolders.clear();
-                trackDirectories.clear();
+//                trackDirectories.clear();
             }
 
-
-            LongAdder taskFinalizationCounter = new LongAdder();
+            List<Future<TracksDirectory>> tasks = CollectionUtil.newFastList(500);
+            LongAdder tasksCounter = new LongAdder();
             paths.filter(path -> path.toFile().exists()
                             && path.toFile().isDirectory())
                     .map(path -> tracksLoadExecutor.submit(() -> {
@@ -118,24 +118,22 @@ public class MuPlayer extends Player implements SystemVolumeController {
                                 muPlayerUtil.createTracksSortComparator());
 
                         tracksDirectory.scanDirectory();
-                        taskFinalizationCounter.increment();
+                        tasksCounter.increment();
                         return tracksDirectory;
                     }))
                     .forEachOrdered(tasks::add);
 
-            Set<File> foldersSet = CollectionUtil.newSet();
-            AtomicInteger counter = new AtomicInteger(1);
-
-            while (taskFinalizationCounter.sum() < tasks.size()) {
-                LockSupport.parkNanos(Duration.ofMillis(1).toNanos());
+            while (tasksCounter.sum() < tasks.size()) {
+                LockSupport.parkNanos(Duration.ofNanos(1).toNanos());
             }
 
+            Set<File> foldersSet = CollectionUtil.newSet();
             tasks.parallelStream()
                     .map(ThreadUtil::getTaskValueOrNull)
                     .filter(directory -> directory != null && directory.hasTracks())
                     .sorted(Comparator.comparing(TracksDirectory::getPath))
                     .forEachOrdered(tracksDirectory -> {
-                        trackDirectories.put(counter.getAndIncrement(), tracksDirectory);
+//                        trackDirectories.put(counter.getAndIncrement(), tracksDirectory);
                         listTracks.addAll(tracksDirectory.getTracks());
                         foldersSet.add(tracksDirectory.getFolder());
                     });
@@ -153,19 +151,19 @@ public class MuPlayer extends Player implements SystemVolumeController {
 //        }
     }
 
-    private void configureEventListeners() {
+    @Override
+    protected void configureListeners() {
         try {
-            messageBus.subscribe(START.name(), message -> {
+            addListener(START, message -> {
                 if (!isAlive()) {
                     start();
                 }
             });
 
-            messageBus.subscribe(RELOAD.name(), message -> reload());
-            messageBus.subscribe(PLAY_NEXT.name(), message -> playNext());
-            messageBus.subscribe(PLAY_PREVIOUS.name(), message -> playPrevious());
-
-            messageBus.subscribe(PLAY_INDEX.name(), message -> {
+            addListener(RELOAD, message -> reload());
+            addListener(PLAY_NEXT, message -> playNext());
+            addListener(PLAY_PREVIOUS, message -> playPrevious());
+            addListener(PLAY_INDEX, message -> {
                 Integer index = message.getData(Integer.class);
                 if (index == null) {
                     return;
@@ -174,7 +172,7 @@ public class MuPlayer extends Player implements SystemVolumeController {
                 play(index);
             });
 
-            messageBus.subscribe(PLAY_FOLDER.name(), message -> {
+            addListener(PLAY_FOLDER, message -> {
                 Integer index = message.getData(Integer.class);
                 if (index == null) {
                     return;
@@ -183,13 +181,13 @@ public class MuPlayer extends Player implements SystemVolumeController {
                 playFolder(index);
             });
 
-            messageBus.subscribe(PLAY.name(), message -> play());
-            messageBus.subscribe(SHUTDOWN.name(), message -> shutdown());
-            messageBus.subscribe(PAUSE.name(), message -> pause());
-            messageBus.subscribe(RESUME.name(), message -> resumeTrack());
-            messageBus.subscribe(STOP.name(), message -> stopTrack());
+            addListener(PLAY, message -> play());
+            addListener(SHUTDOWN, message -> shutdown());
+            addListener(PAUSE, message -> pause());
+            addListener(RESUME, message -> resumeTrack());
+            addListener(STOP, message -> stopTrack());
 
-            messageBus.subscribe(SEEK_SECONDS.name(), message -> {
+            addListener(SEEK_SECONDS, message -> {
                 Integer seconds = message.getData(Integer.class);
                 if (seconds == null) {
                     return;
@@ -198,17 +196,17 @@ public class MuPlayer extends Player implements SystemVolumeController {
                 seek(seconds);
             });
 
-            messageBus.subscribe(SKIP_TRACKS.name(), message -> {
+            addListener(SKIP_TRACKS, message -> {
                 SkipData skipData = message.getData(SkipData.class);
                 skipTracks(skipData.getSkipCount(), skipData.getSeekOption());
             });
 
-            messageBus.subscribe(SEEK_FOLDER.name(), message -> {
+            addListener(SEEK_FOLDER, message -> {
                 SkipData skipData = message.getData(SkipData.class);
                 seekFolder(skipData.getSeekOption(), skipData.getSkipCount());
             });
 
-            messageBus.subscribe(GOTO.name(), message -> {
+            addListener(GOTO, message -> {
                 Integer seconds = message.getData(Integer.class);
                 if (seconds == null) {
                     return;
@@ -217,13 +215,13 @@ public class MuPlayer extends Player implements SystemVolumeController {
                 gotoSecond(seconds);
             });
 
-            messageBus.subscribe(MUTE.name(), message -> mute());
-            messageBus.subscribe(UNMUTE.name(), message -> unMute());
+            addListener(MUTE, message -> mute());
+            addListener(UNMUTE, message -> unMute());
 
-//            messageBus.subscribe(GET_VOLUME.name(), message -> {
+//            addListener(GET_VOLUME, message -> {
 //            });
 
-            messageBus.subscribe(SET_VOLUME.name(), message -> {
+            addListener(SET_VOLUME, message -> {
                 float volume = message.getData(Float.class);
                 setVolume(volume);
             });
@@ -281,8 +279,7 @@ public class MuPlayer extends Player implements SystemVolumeController {
     public synchronized List<File> getTrackFiles() {
         return listTracks.stream()
                 .map(Track::getDataSource)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toCollection(CollectionUtil::newLinkedList));
+                .collect(Collectors.toCollection(CollectionUtil::newFastArrayList));
     }
 
     @Override
@@ -346,22 +343,25 @@ public class MuPlayer extends Player implements SystemVolumeController {
 
     @Override
     public void addResponseListener(PlayerResponseListener responseListener) {
-        try {
-            messageBus.subscribe(PLAYER_RESPONSE.name(), message -> {
-               responseListener.onPlayerResponse(message.getData(MuPlayerResponse.class));
-            });
-        } catch (BusException e) {
-            log.error(e.getMessage(), e);
-        }
+        addListener(PLAYER_RESPONSE, message ->
+                responseListener.onPlayerResponse(
+                        message.getData(MuPlayerResponse.class)));
+    }
+
+    @Override
+    public void removeAllListeners() {
+        messageBus.getSubscriptionTopics().forEach(topic -> {
+            try {
+                messageBus.unsubscribeAll(topic);
+            } catch (BusException ignored) {}
+        });
     }
 
     @Override
     public void removeAllResponseListeners() {
         try {
             messageBus.unsubscribeAll(PLAYER_RESPONSE.name());
-        } catch (BusException e) {
-            log.error(e.getMessage(), e);
-        }
+        } catch (BusException ignored) {}
     }
 
     @Override
@@ -741,6 +741,24 @@ public class MuPlayer extends Player implements SystemVolumeController {
     }
 
     @Override
+    public void sendEvent(Message message) {
+        try {
+            if (message == null) {
+                return;
+            }
+
+            messageBus.publish(message);
+        } catch (BusException ignored) {}
+    }
+
+    @Override
+    public void addListener(MuPlayerTopic topic, MessageListener listener) {
+        try {
+            messageBus.subscribe(topic.name(), listener);
+        } catch (BusException ignored) {}
+    }
+
+    @Override
     public float getSystemVolume() {
         return audioSystemManager.getConsoleMasterVolume();
     }
@@ -753,11 +771,11 @@ public class MuPlayer extends Player implements SystemVolumeController {
     @Override
     public void run() {
         CacheManager.getGlobalCache().saveValue(CacheVar.PLAYER, this);
-        playerStatusData.setOn(true);
 
         loadTracks(rootFolder);
         playNext();
 
+        playerStatusData.setOn(true);
         while (playerStatusData.isOn() && !isInterrupted()) {
             interruptor.checkSignal();
         }

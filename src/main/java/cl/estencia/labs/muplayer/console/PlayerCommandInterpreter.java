@@ -1,13 +1,10 @@
 package cl.estencia.labs.muplayer.console;
 
-import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.muplayer.audio.model.Album;
 import cl.estencia.labs.muplayer.audio.model.Artist;
-import cl.estencia.labs.muplayer.audio.player.Player;
+import cl.estencia.labs.muplayer.audio.player.MusicPlayer;
 import cl.estencia.labs.muplayer.console.model.table.Alignment;
-import cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic;
-import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
-import cl.estencia.labs.muplayer.core.bus.message.Messages;
+import cl.estencia.labs.muplayer.core.bus.message.Events;
 import cl.estencia.labs.muplayer.core.bus.model.MuPlayerResponse;
 import cl.estencia.labs.muplayer.core.bus.model.SkipData;
 import cl.estencia.labs.muplayer.config.reader.ConsoleCodesReader;
@@ -42,12 +39,14 @@ import static cl.estencia.labs.muplayer.console.util.PlayerInterpreterUtil.*;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.PREV;
 import static cl.estencia.labs.muplayer.console.util.SystemCommandExecutor.clearConsole;
+import static cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic.SHUTDOWN;
+import static cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic.START;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.*;
 import static java.nio.file.StandardOpenOption.WRITE;
 
 @Slf4j
 public class PlayerCommandInterpreter implements CommandInterpreter {
-    private final Player player;
+    private final MusicPlayer player;
 
     @Getter
     @Setter
@@ -55,14 +54,12 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
 
     private final CacheManager globalCacheManager;
     private final ConsoleCodesReader consoleCodesReader;
-    private final MessageBus messageBus;
     private final AtomicReference<MuPlayerResponse> playerCurrentData;
 
-    public PlayerCommandInterpreter(Player player) {
+    public PlayerCommandInterpreter(MusicPlayer player) {
         this.player = player;
         this.globalCacheManager = CacheManager.getGlobalCache();
         this.consoleCodesReader = ConsoleCodesReader.getInstance();
-        this.messageBus = MessageBusUtil.getMessageBus();
         this.playerCurrentData = new AtomicReference<>();
     }
 
@@ -86,7 +83,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
         switch (consoleOrderCode) {
             case st -> {
                 if (player.isAlive()) {
-                    messageBus.publish(Messages.reload());
+                    player.sendEvent(Events.reload());
                 } else {
                     player.removeAllResponseListeners();
                     player.addResponseListener(muPlayerResponse -> {
@@ -99,14 +96,14 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                         printConsoleInfo(player, CLEAN, true);
                     });
 
-                    messageBus.subscribe(MuPlayerTopic.SHUTDOWN.name(),
-                            message -> {
+                    player.addListener(SHUTDOWN, message -> {
                         globalCacheManager.clear();
 
                         System.exit(0);
                     });
 
-                    messageBus.publish(Messages.start());
+
+                    player.sendEvent(Events.start());
                     consoleOutput.append("Loading tracks " + SANDGLASS);
                 }
             }
@@ -116,21 +113,21 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     if (cmd.hasOptions()) {
                         Number playIndex = cmd.getOptionAsNumber(0);
                         if (playIndex != null && playIndex.intValue() > 0 && playIndex.intValue() <= player.getSongsCount()) {
-                            messageBus.publish(Messages.playIndex(playIndex.intValue() - 1));
+                            player.sendEvent(Events.playIndex(playIndex.intValue() - 1));
                         }
                     } else {
-                        messageBus.publish(Messages.play());
+                        player.sendEvent(Events.play());
                     }
                 }
             }
             case ps -> {
                 if (player.isAlive()) {
-                    messageBus.publish(Messages.pause());
+                    player.sendEvent(Events.pause());
                 }
             }
             case r -> {
                 if (player.isAlive()) {
-                    messageBus.publish(Messages.resume());
+                    player.sendEvent(Events.resume());
                 }
             }
             case root -> {
@@ -141,7 +138,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
             }
             case s -> {
                 if (player.isAlive()) {
-                    messageBus.publish(Messages.stop());
+                    player.sendEvent(Events.stop());
                 }
             }
             case n -> changeOrSkipTrack(player, cmd, consoleOutput, NEXT);
@@ -154,9 +151,9 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     }
 
                     if (playerResponse.getPlayerStatusData().isMute()) {
-                        messageBus.publish(Messages.unmute());
+                        player.sendEvent(Events.unmute());
                     } else {
-                        messageBus.publish(Messages.mute());
+                        player.sendEvent(Events.mute());
                     }
                 }
             }
@@ -204,7 +201,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
             case sv -> changePlayerVolume(player, cmd, true);
             case sh -> {
                 if (player.isAlive()) {
-                    messageBus.publish(Messages.shutdown());
+                    player.sendEvent(Events.shutdown());
                 }
 
                 on = false;
@@ -215,7 +212,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     if (seconds == null) {
                         consoleOutput.append("Seek value incorrect", error);
                     } else {
-                        messageBus.publish(Messages.seekSeconds(seconds.intValue()));
+                        player.sendEvent(Events.seekSeconds(seconds.intValue()));
                     }
                 }
             }
@@ -260,12 +257,12 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                 }
 
                 if (skipData != null) {
-                    messageBus.publish(Messages.seekFolder(skipData));
+                    player.sendEvent(Events.seekFolder(skipData));
                 }
             }
             case u -> {
                 if (player.isAlive()) {
-                    messageBus.publish(Messages.reload());
+                    player.sendEvent(Events.reload());
                 }
             }
             case g -> {
@@ -274,7 +271,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     if (seconds == null) {
                         consoleOutput.append("Go to value incorrect", error);
                     } else {
-                        messageBus.publish(Messages.gotoSeconds(seconds.intValue()));
+                        player.sendEvent(Events.gotoSeconds(seconds.intValue()));
                     }
                 }
             }
@@ -417,7 +414,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                 if (isPlayerOn() && cmd.hasOptions()) {
                     final Number fldIndex = cmd.getOptionAsNumber(0);
                     if (fldIndex != null && fldIndex.intValue() > 0) {
-                        messageBus.publish(Messages.playFolder(fldIndex.intValue() - 1));
+                        player.sendEvent(Events.playFolder(fldIndex.intValue() - 1));
                     }
                 }
             }

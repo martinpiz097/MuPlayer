@@ -1,6 +1,6 @@
 package cl.estencia.labs.muplayer.console.util;
 
-import cl.estencia.labs.muplayer.audio.player.Player;
+import cl.estencia.labs.muplayer.audio.player.MusicPlayer;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode;
 import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
@@ -182,7 +182,7 @@ public class ConsolePaintUtil {
                 .toString();
     }
 
-    public static void printConsoleHeader(Player player, ConsoleOutputMode consoleOutputMode, ConsoleRunner consoleRunner) {
+    public static void printConsoleHeader(MusicPlayer player, ConsoleOutputMode consoleOutputMode, ConsoleRunner consoleRunner) {
         try {
             if (consoleRunner != null && consoleOutputMode == CLEAN) {
                 consoleRunner.sendCommand(cls);
@@ -195,7 +195,7 @@ public class ConsolePaintUtil {
         }
     }
 
-    public static void printConsoleHeader(Player player, ConsoleOutputMode consoleOutputMode) {
+    public static void printConsoleHeader(MusicPlayer player, ConsoleOutputMode consoleOutputMode) {
         ConsoleRunner consoleRunner = CacheManager.getGlobalCache().loadValue(RUNNER,
                 ConsoleRunner.class);
 

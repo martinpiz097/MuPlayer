@@ -1,7 +1,7 @@
 package cl.estencia.labs.muplayer.console.util;
 
 import cl.estencia.labs.muplayer.audio.model.PlayerStatusData;
-import cl.estencia.labs.muplayer.audio.player.Player;
+import cl.estencia.labs.muplayer.audio.player.MusicPlayer;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.config.model.MuPlayerConfigKeys;
 import cl.estencia.labs.muplayer.config.reader.MuPlayerConfigReader;
@@ -120,7 +120,7 @@ public class ConsoleUtil {
     }
 
     // TODO hacerlo con una clase con dos subclases y un console header util
-    public static String createConsoleHeader(Player player) throws Exception {
+    public static String createConsoleHeader(MusicPlayer player) throws Exception {
         StringBuilder sbHeader = new StringBuilder();
         ConsoleHeaderMode consoleHeaderMode = ConsoleHeaderMode.valueOf(MU_PLAYER_CONFIG_READER.getProperty(MuPlayerConfigKeys.CONSOLE_HEADER_MODE));
         var playerCurrentData = CACHE_MANAGER.loadValue(

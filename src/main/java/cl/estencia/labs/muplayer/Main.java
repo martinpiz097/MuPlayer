@@ -1,6 +1,8 @@
 package cl.estencia.labs.muplayer;
 
 import cl.estencia.labs.ebot.bus.MessageBus;
+import cl.estencia.labs.muplayer.audio.player.EventPlayer;
+import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.config.model.MessagesInfoKeys;
 import cl.estencia.labs.muplayer.config.reader.MessagesInfoReader;
 import cl.estencia.labs.muplayer.config.model.LogConfigKeys;
@@ -23,14 +25,13 @@ import java.util.logging.LogManager;
 @Slf4j
 public class Main {
 
-    static void main(String[] args) throws Exception {
+    static void main(String[] args) {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
 
         setJvmAppName();
         MessagesInfoReader messagesInfoReader = MessagesInfoReader.getInstance();
         CacheManager globalCache = CacheManager.getGlobalCache();
-        MessageBus messageBus = MessageBusUtil.getMessageBus();
 
         try {
             loadLogConfig();
@@ -72,7 +73,7 @@ public class Main {
             e.printStackTrace();
             log.error("Error on MuPlayer class", e);
 
-            messageBus.shutdown();
+            MessageBusUtil.shutdownMessageBus();
         }
     }
 

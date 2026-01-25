@@ -1,18 +1,16 @@
 package cl.estencia.labs.muplayer.audio.util;
 
 import cl.estencia.labs.ebot.bus.MessageBus;
-import cl.estencia.labs.ebot.bus.exception.BusException;
 import cl.estencia.labs.muplayer.audio.model.TrackIndexed;
 import cl.estencia.labs.muplayer.audio.model.TrackStatusData;
-import cl.estencia.labs.muplayer.audio.player.Player;
+import cl.estencia.labs.muplayer.audio.player.MusicPlayer;
 import cl.estencia.labs.muplayer.audio.model.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.factory.StandardTrackFactory;
 import cl.estencia.labs.muplayer.audio.track.factory.TrackFactory;
-import cl.estencia.labs.muplayer.core.bus.message.Messages;
+import cl.estencia.labs.muplayer.core.bus.message.Events;
 import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
 import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
-import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import cl.estencia.labs.muplayer.core.exception.AudioFileInvalidException;
 import cl.estencia.labs.muplayer.core.exception.FormatNotSupportedException;
 import cl.estencia.labs.muplayer.core.util.FilterUtil;
@@ -31,22 +29,20 @@ import static cl.estencia.labs.muplayer.core.thread.ThreadUtil.generateTrackThre
 
 @Slf4j
 public class MuPlayerUtil {
-    private final Player player;
+    private final MusicPlayer player;
     private final List<Track> listTracks;
     private final List<File> listFolders;
     private final PlayerStatusData playerStatusData;
     private final TrackFactory trackFactory;
     private final MessageBus messageBus;
-    private final CacheManager globalCacheManager;
 
-    public MuPlayerUtil(Player player, PlayerStatusData playerStatusData) {
+    public MuPlayerUtil(MusicPlayer player, PlayerStatusData playerStatusData) {
         this.player = player;
         this.listTracks = player.getTracks();
         this.listFolders = player.getListFolders();
         this.playerStatusData = playerStatusData;
         this.trackFactory = new StandardTrackFactory();
         this.messageBus = MessageBusUtil.getMessageBus();
-        this.globalCacheManager = CacheManager.getGlobalCache();
     }
 
     public Track loadTrackFromFile(File audioFile) {
@@ -76,13 +72,11 @@ public class MuPlayerUtil {
     }
 
     public void sendTrackChangedEvent() {
-        try {
-            if (messageBus == null || messageBus.getState() == Thread.State.TERMINATED) {
-                return;
-            }
+        if (messageBus == null || messageBus.getState() == Thread.State.TERMINATED) {
+            return;
+        }
 
-            messageBus.publish(Messages.playerResponse(player.getCurrentTrack(), playerStatusData));
-        } catch (BusException ignored) {}
+        player.sendEvent(Events.playerResponse(player.getCurrentTrack(), playerStatusData));
     }
 
     public int getFolderIndex(Track current) {

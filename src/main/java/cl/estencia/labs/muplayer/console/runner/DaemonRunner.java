@@ -1,7 +1,7 @@
 package cl.estencia.labs.muplayer.console.runner;
 
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
-import cl.estencia.labs.muplayer.audio.player.Player;
+import cl.estencia.labs.muplayer.audio.player.MusicPlayer;
 import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import cl.estencia.labs.muplayer.io.net.NetworkServer;
 import cl.estencia.labs.muplayer.io.net.TCPClient;
@@ -28,7 +28,7 @@ public class DaemonRunner extends ConsoleRunner {
         this(new MuPlayer(rootFolder));
     }
 
-    public DaemonRunner(Player player) throws IOException {
+    public DaemonRunner(MusicPlayer player) throws IOException {
         super(player);
         this.networkServer = new NetworkServer();
     }
