@@ -4,6 +4,8 @@ import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 
 import java.util.List;
 
+import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.infoLine;
+
 public class ConsoleHistory {
     private final List<String> commands;
     private volatile int currentCommandIndex;
@@ -23,11 +25,17 @@ public class ConsoleHistory {
     }
 
     public void changeIndex(boolean next) {
+        infoLine(commands);
         if (next) {
             currentCommandIndex = Math.min(currentCommandIndex + 1, commands.size() - 1);
+            infoLine("("+currentCommandIndex+"/"+(commands.size()-1)+"; "+commands.size()+") next index");
         } else {
             currentCommandIndex = Math.max(currentCommandIndex - 1, 0);
+            infoLine("("+currentCommandIndex+"/"+(commands.size()-1)+"; "+commands.size()+") prev index");
         }
+
+        infoLine(commands.get(currentCommandIndex));
+        infoLine("-------------------");
     }
 
     public void updateCommand(int index, String cmd) {

@@ -129,8 +129,8 @@ public class ConsoleImage {
     public String drawString() {
         final BufferedImage scaledBufferedImage = scaleImage(originalBufferedImage);
 
-//        IO.println("Terminal Width: " + terminalWidth);
-//        IO.println("Width: " + scaledBufferedImage.getWidth());
+//        infoLine("Terminal Width: " + terminalWidth);
+//        infoLine("Width: " + scaledBufferedImage.getWidth());
 
         return toConsoleHalfBlocks2
                 (scaledBufferedImage);

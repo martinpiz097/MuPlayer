@@ -6,19 +6,22 @@ import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.config.model.MuPlayerConfigKeys;
 import cl.estencia.labs.muplayer.config.reader.MuPlayerConfigReader;
 import cl.estencia.labs.muplayer.console.common.enums.ConsoleHeaderMode;
-import cl.estencia.labs.muplayer.console.common.enums.OutputType;
+import cl.estencia.labs.muplayer.console.common.enums.OutputLevel;
 import cl.estencia.labs.muplayer.core.bus.model.MuPlayerResponse;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
-import org.orangelogger.sys.ConsoleColor;
-import org.orangelogger.sys.Logger;
 
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+
+import static cl.estencia.labs.muplayer.console.command.ConsoleColor.*;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.*;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.ARROW;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SINGLE_VERTICAL_LINE;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE_CHAR;
 import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.*;
-import static cl.estencia.labs.muplayer.console.common.enums.OutputType.info;
-import static cl.estencia.labs.muplayer.console.util.ConsolePainter.*;
+import static cl.estencia.labs.muplayer.console.common.enums.OutputLevel.info;
+import static cl.estencia.labs.muplayer.console.util.ConsolePaintUtil.*;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.PLAYER_CURRENT_DATA;
 
 public class ConsoleUtil {
@@ -31,21 +34,29 @@ public class ConsoleUtil {
                 && !color.trim().equalsIgnoreCase("null");
     }
 
-    public static String getOutputColor(OutputType outputType) {
-        if (outputType == null) {
-            outputType = info;
+    public static FileInputStream getStdin() {
+        return new FileInputStream(FileDescriptor.in);
+    }
+
+    public static FileOutputStream getStdout() {
+        return new FileOutputStream(FileDescriptor.out);
+    }
+
+    public static String getOutputColor(OutputLevel outputLevel) {
+        if (outputLevel == null) {
+            outputLevel = info;
         }
 
-        return switch (outputType) {
-            case info -> Logger.INFOCOLOR;
-            case warn -> Logger.WARNINGCOLOR;
-            case error -> Logger.ERRORCOLOR;
-            case raw -> Logger.RAWCOLOR;
+        return switch (outputLevel) {
+            case info -> INFO_LEVEL_COLOR;
+            case warn -> WARN_LEVEL_COLOR;
+            case error -> ERROR_LEVEL_COLOR;
+            case raw -> RAW_LEVEL_COLOR;
         };
     }
 
     public static String getResetColor() {
-        return ConsoleColor.ANSI_RESET;
+        return RESET_COLOR;
     }
 
     public static String coloredString(Object data, String color, boolean withReset) {
@@ -60,19 +71,19 @@ public class ConsoleUtil {
         return coloredString(data, color, withReset) + LINE_BREAK_CHAR;
     }
 
-    public static String coloredString(Object data, OutputType outputType, boolean withReset) {
+    public static String coloredString(Object data, OutputLevel outputLevel, boolean withReset) {
         if (data == null || data.toString().isBlank()) {
             return getResetColor();
         }
-        if (outputType == null) {
+        if (outputLevel == null) {
             return data + getResetColor();
         }
 
-        return coloredString(data, getOutputColor(outputType), withReset);
+        return coloredString(data, getOutputColor(outputLevel), withReset);
     }
 
-    public static String coloredStringLine(Object data, OutputType outputType, boolean withReset) {
-        return coloredString(data, outputType, withReset) + LINE_BREAK_CHAR;
+    public static String coloredStringLine(Object data, OutputLevel outputLevel, boolean withReset) {
+        return coloredString(data, outputLevel, withReset) + LINE_BREAK_CHAR;
     }
 
     public static String padding(int count, String paddingStr) {

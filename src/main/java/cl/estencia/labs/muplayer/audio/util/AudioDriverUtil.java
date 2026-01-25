@@ -1,6 +1,6 @@
 package cl.estencia.labs.muplayer.audio.util;
 
-import cl.estencia.labs.aucom.core.device.output.Speaker;
+import cl.estencia.labs.muplayer.core.aucom.device.output.Speaker;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

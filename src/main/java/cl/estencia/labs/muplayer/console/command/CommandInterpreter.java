@@ -2,17 +2,17 @@ package cl.estencia.labs.muplayer.console.command;
 
 import cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
-import cl.estencia.labs.muplayer.core.exception.MuPlayerException;
 import cl.estencia.labs.muplayer.core.exception.MuPlayerRuntimeException;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 
 import java.util.List;
 
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.CMD_DIVISOR;
+import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.infoLine;
 
 public interface CommandInterpreter {
     default ConsoleOutput execute(String commandString) throws Exception {
-        IO.println("Command to execute: " + commandString);
+        infoLine("Command to execute: " + commandString);
 
         if (commandString == null || commandString.isBlank()) {
             return execute(new Command(""));

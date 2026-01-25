@@ -2,13 +2,14 @@ package cl.estencia.labs.muplayer.io.net;
 
 import cl.estencia.labs.muplayer.console.PlayerCommandInterpreter;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
-import org.orangelogger.sys.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+
+import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.infoLine;
 
 public class TCPClient extends Client {
     private final Socket clientSocket;
@@ -58,21 +59,21 @@ public class TCPClient extends Client {
     public void run() {
         String command;
         ConsoleOutput consoleOutput;
-        Logger.getLogger(this, "Client connected from IP "+clientSocket.getRemoteSocketAddress().toString());
+        infoLine("Client connected from IP " + clientSocket.getRemoteSocketAddress().toString());
         while (true) {
             try {
                 command = recvString();
                 if (command != null && !command.trim().isEmpty()) {
                     command = command.trim();
-                    Logger.getLogger(this, getLoggerHeader()+"Command received: "+command).info();
+                    infoLine(getLoggerHeader()+"Command received: "+command);
 
                     consoleOutput = playerCommandInterpreter.execute(command.toLowerCase());
-                    Logger.getLogger(this, getLoggerHeader()+"Command executed. ").info();
+                    infoLine(getLoggerHeader()+"Command executed. ");
 
                     if (consoleOutput != null && consoleOutput.hasOutput()) {
-                        Logger.getLogger(this, getLoggerHeader()+"Waiting for command processing...").info();
+                        infoLine(getLoggerHeader()+"Waiting for command processing...");
                         sendString(consoleOutput.getOutputMsg());
-                        Logger.getLogger(this, getLoggerHeader()+"Command response sent: "+ consoleOutput.getOutputMsg()).info();
+                        infoLine(getLoggerHeader()+"Command response sent: "+ consoleOutput.getOutputMsg());
                     }
                 }
                 sleep(1);
@@ -85,6 +86,7 @@ public class TCPClient extends Client {
                 }
             }
         }
-        Logger.getLogger(this, "Client with IP "+clientSocket.getRemoteSocketAddress().toString() + " closed");
+
+        infoLine("Client with IP "+clientSocket.getRemoteSocketAddress().toString() + " closed");
     }
 }

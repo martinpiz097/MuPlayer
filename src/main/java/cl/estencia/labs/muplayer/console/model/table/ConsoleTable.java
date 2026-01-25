@@ -10,8 +10,8 @@ import java.util.Optional;
 
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.*;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.DOUBLE_BOTTOM_LEFT_CORNER;
-import static cl.estencia.labs.muplayer.console.common.enums.OutputType.info;
-import static cl.estencia.labs.muplayer.console.common.enums.OutputType.raw;
+import static cl.estencia.labs.muplayer.console.common.enums.OutputLevel.info;
+import static cl.estencia.labs.muplayer.console.common.enums.OutputLevel.raw;
 
 public class ConsoleTable {
     private final String title;

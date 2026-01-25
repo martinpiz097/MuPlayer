@@ -8,4 +8,5 @@ public abstract class Client extends Thread implements Connectable {
     protected Client(PlayerCommandInterpreter playerCommandInterpreter) {
         this.playerCommandInterpreter = playerCommandInterpreter;
     }
+
 }

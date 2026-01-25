@@ -18,7 +18,7 @@ import cl.estencia.labs.muplayer.console.util.SystemCommandExecutor;
 import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import cl.estencia.labs.muplayer.core.system.SysInfo;
 import lombok.SneakyThrows;
-import org.orangelogger.sys.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,12 +30,14 @@ import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.*;
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode.cls;
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.DEFAULT;
 import static cl.estencia.labs.muplayer.console.unix.InputMode.SINGLE_SHORCUTS;
-import static cl.estencia.labs.muplayer.console.util.ConsolePainter.GradientStyle.LIGHTEN;
-import static cl.estencia.labs.muplayer.console.util.ConsolePainter.paintMuPlayerStyle;
-import static cl.estencia.labs.muplayer.console.util.ConsolePainter.printConsoleHeader;
+import static cl.estencia.labs.muplayer.console.util.ConsolePaintUtil.GradientStyle.LIGHTEN;
+import static cl.estencia.labs.muplayer.console.util.ConsolePaintUtil.paintMuPlayerStyle;
+import static cl.estencia.labs.muplayer.console.util.ConsolePaintUtil.printConsoleHeader;
 import static cl.estencia.labs.muplayer.console.util.PlayerInterpreterUtil.printConsoleInfo;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.*;
+import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.printLine;
 
+@Slf4j
 public class LocalRunner extends ConsoleRunner {
     protected final Scanner scanner;
     protected final NativeConsole nativeConsole;
@@ -92,13 +94,13 @@ public class LocalRunner extends ConsoleRunner {
                         sendCommand(ConsoleOrderCode.skf.name() + " next");
                     }
                 },
-                new KeyInterceptor(KeyCodes.SEQ_HOME) {
+                new KeyInterceptor(SEQ_LEFT) {
                     @Override
                     public void intercept(KeyInputEvent event) {
                         sendCommand(ConsoleOrderCode.p);
                     }
                 },
-                new KeyInterceptor(KeyCodes.SEQ_END) {
+                new KeyInterceptor(SEQ_RIGHT) {
                     @Override
                     public void intercept(KeyInputEvent event) {
                         sendCommand(ConsoleOrderCode.n);
@@ -141,7 +143,7 @@ public class LocalRunner extends ConsoleRunner {
             }
         });
 
-        nativeConsole.addInputListener(new KeyInputListener(SEQ_LEFT) {
+        nativeConsole.addInputListener(new KeyInputListener(SEQ_HOME) {
             @Override
             public void onInputEvent(KeyInputEvent event) {
                 if (!player.isAlive()) {
@@ -152,7 +154,7 @@ public class LocalRunner extends ConsoleRunner {
             }
         });
 
-        nativeConsole.addInputListener(new KeyInputListener(SEQ_RIGHT) {
+        nativeConsole.addInputListener(new KeyInputListener(SEQ_END) {
             @Override
             public void onInputEvent(KeyInputEvent event) {
                 if (!player.isAlive()) {
@@ -334,7 +336,7 @@ public class LocalRunner extends ConsoleRunner {
                 bannerStream, 80, 15, terminalWidth);
 
         String consoleString = image.drawString();
-        Logger.getLogger(this, consoleString).rawMessage();
+        printLine(consoleString);
     }
 
     private void printAppVersion() {
@@ -344,7 +346,7 @@ public class LocalRunner extends ConsoleRunner {
         }
 
         final String msg = "Version " + appVersion + " started!\n\n";
-        Logger.getLogger(this, paintMuPlayerStyle(msg, LIGHTEN)).rawMessage();
+        printLine(paintMuPlayerStyle(msg, LIGHTEN));
     }
 
     public void shutdown() {

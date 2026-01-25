@@ -1,7 +1,7 @@
 package cl.estencia.labs.muplayer.console.model;
 
 import cl.estencia.labs.muplayer.console.command.Command;
-import cl.estencia.labs.muplayer.console.common.enums.OutputType;
+import cl.estencia.labs.muplayer.console.common.enums.OutputLevel;
 import cl.estencia.labs.muplayer.console.util.ConsoleUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,8 +30,8 @@ public class ConsoleOutput {
         sbOutputMsg.append(output);
     }
 
-    public void append(Object output, OutputType outputType) {
-        String coloredStringLine = ConsoleUtil.coloredStringLine(output, outputType, true);
+    public void append(Object output, OutputLevel outputLevel) {
+        String coloredStringLine = ConsoleUtil.coloredStringLine(output, outputLevel, true);
         sbOutputMsg.append(coloredStringLine);
     }
 

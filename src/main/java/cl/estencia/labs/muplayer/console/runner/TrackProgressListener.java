@@ -17,7 +17,7 @@ public class TrackProgressListener extends Thread {
     public void run() {
         try {
             while (!Thread.currentThread().isInterrupted()) {
-//                IO.print();
+//                info(();
                 LockSupport.parkNanos(Duration.ofMillis(800).toNanos());
             }
         } catch (Exception e) {

@@ -26,13 +26,7 @@ public abstract class AudioDevice<D extends Line, I extends Line.Info> {
     protected abstract boolean setupDriver(D driver);
 
     protected D initAudioDevice(AudioFormat audioFormat) {
-        try {
-            return (D) VirtualOutput.getVirtualLine(audioFormat);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-//        return initAudioDevice(getLineInfo(audioFormat));
+        return initAudioDevice(getLineInfo(audioFormat));
     }
 
     protected D initAudioDevice(I driverInfo) {

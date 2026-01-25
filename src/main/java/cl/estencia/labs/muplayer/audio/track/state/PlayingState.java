@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
-import static cl.estencia.labs.aucom.common.IOConstants.DEFAULT_BUFF_SIZE;
-import static cl.estencia.labs.aucom.common.IOConstants.EOF;
+import static cl.estencia.labs.muplayer.core.aucom.common.IOConstants.DEFAULT_BUFF_SIZE;
+import static cl.estencia.labs.muplayer.core.aucom.common.IOConstants.EOF;
 
 @Slf4j
 public class PlayingState extends TrackState {

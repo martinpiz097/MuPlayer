@@ -5,13 +5,13 @@ import cl.estencia.labs.muplayer.audio.player.Player;
 import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import cl.estencia.labs.muplayer.io.net.NetworkServer;
 import cl.estencia.labs.muplayer.io.net.TCPClient;
-import org.orangelogger.sys.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.PLAYER;
+import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.infoLine;
 
 public class DaemonRunner extends ConsoleRunner {
     private final NetworkServer networkServer;
@@ -43,20 +43,20 @@ public class DaemonRunner extends ConsoleRunner {
         validateRootFolder();
         globalCacheManager.saveValue(PLAYER, player);
 
-        Logger.getLogger(this, "MuPlayer daemon mode started.").info();
+        infoLine("MuPlayer daemon mode started.");
         interpreter.setOn(true);
 
         Socket reqSocket = null;
 
-        Logger.getLogger(this, "Waiting clients...").info();
+        infoLine("Waiting clients...");
         while (interpreter.isOn() && networkServer.isAlive()) {
             try {
                 reqSocket = networkServer.getRequestSocket();
                 if (reqSocket != null) {
                     networkServer.addClient(new TCPClient(super.interpreter, reqSocket));
-                    Logger.getLogger(this, "Client connected from IP "+reqSocket.getRemoteSocketAddress()
-                            .toString()).info();
-                    Logger.getLogger(this, "Waiting clients...").info();
+                    infoLine("Client connected from IP "+reqSocket.getRemoteSocketAddress()
+                            .toString());
+                    infoLine("Waiting clients...");
                 }
                 Thread.sleep(100);
             } catch (Exception e) {
@@ -64,7 +64,7 @@ public class DaemonRunner extends ConsoleRunner {
             }
         }
 
-        Logger.getLogger(this, "Daemon server closed!");
+        infoLine("Daemon server closed!");
         try {
             networkServer.shutdownServer();
             final ConsoleRunner runner = globalCacheManager.loadValue(CacheVar.RUNNER);

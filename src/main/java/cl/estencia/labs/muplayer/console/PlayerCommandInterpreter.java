@@ -4,7 +4,6 @@ import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.muplayer.audio.model.Album;
 import cl.estencia.labs.muplayer.audio.model.Artist;
 import cl.estencia.labs.muplayer.audio.player.Player;
-import cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode;
 import cl.estencia.labs.muplayer.console.model.table.Alignment;
 import cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic;
 import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
@@ -24,8 +23,6 @@ import cl.estencia.labs.muplayer.console.runner.LocalRunner;
 import cl.estencia.labs.muplayer.console.runner.RunnerMode;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
-import cl.estencia.labs.muplayer.core.service.LogService;
-import cl.estencia.labs.muplayer.core.service.impl.LogServiceImpl;
 import cl.estencia.labs.muplayer.core.thread.TaskRunner;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import lombok.Getter;
@@ -40,8 +37,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SANDGLASS;
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.CLEAN;
-import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.DEFAULT;
-import static cl.estencia.labs.muplayer.console.common.enums.OutputType.*;
+import static cl.estencia.labs.muplayer.console.common.enums.OutputLevel.*;
 import static cl.estencia.labs.muplayer.console.util.PlayerInterpreterUtil.*;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.PREV;
@@ -59,7 +55,6 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
 
     private final CacheManager globalCacheManager;
     private final ConsoleCodesReader consoleCodesReader;
-    private final LogService logService;
     private final MessageBus messageBus;
     private final AtomicReference<MuPlayerResponse> playerCurrentData;
 
@@ -67,7 +62,6 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
         this.player = player;
         this.globalCacheManager = CacheManager.getGlobalCache();
         this.consoleCodesReader = ConsoleCodesReader.getInstance();
-        this.logService = new LogServiceImpl();
         this.messageBus = MessageBusUtil.getMessageBus();
         this.playerCurrentData = new AtomicReference<>();
     }

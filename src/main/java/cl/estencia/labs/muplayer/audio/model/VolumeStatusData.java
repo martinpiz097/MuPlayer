@@ -3,7 +3,7 @@ package cl.estencia.labs.muplayer.audio.model;
 import lombok.Getter;
 import lombok.Setter;
 
-import static cl.estencia.labs.aucom.core.util.AudioDecodingUtil.DEFAULT_VOLUME;
+import static cl.estencia.labs.muplayer.core.aucom.util.AudioDecodingUtil.DEFAULT_VOLUME;
 
 @Getter
 @Setter

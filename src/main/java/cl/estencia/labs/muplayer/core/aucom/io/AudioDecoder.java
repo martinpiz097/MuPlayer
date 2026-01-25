@@ -4,6 +4,7 @@ import cl.estencia.labs.muplayer.core.aucom.util.AudioDecodingUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;

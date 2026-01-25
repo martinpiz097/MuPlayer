@@ -1,12 +1,12 @@
 package cl.estencia.labs.muplayer.console.util;
 
-import cl.estencia.labs.aucom.core.util.ProcessManager;
+import cl.estencia.labs.muplayer.core.aucom.util.ProcessManager;
 import cl.estencia.labs.muplayer.core.util.IOUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.orangelogger.sys.SystemUtil;
 
-import static cl.estencia.labs.aucom.core.util.ProcessManager.execute;
-import static cl.estencia.labs.aucom.core.util.ProcessManager.writeProcessOutputTo;
+import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.getStdout;
+import static cl.estencia.labs.muplayer.core.aucom.util.ProcessManager.execute;
+import static cl.estencia.labs.muplayer.core.aucom.util.ProcessManager.writeProcessOutputTo;
 import static cl.estencia.labs.muplayer.console.command.SystemCommands.CLEAR_CONSOLE_UNIX;
 import static cl.estencia.labs.muplayer.console.command.SystemCommands.CLEAR_CONSOLE_WINDOWS;
 import static cl.estencia.labs.muplayer.core.system.SysInfo.IS_UNIX;
@@ -95,7 +95,7 @@ public class SystemCommandExecutor {
     public static void clearConsole() {
         try {
             String clearProcOutput = getClearConsoleOutput();
-            writeProcessOutputTo(clearProcOutput, SystemUtil.getStdout());
+            writeProcessOutputTo(clearProcOutput, getStdout());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

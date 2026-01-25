@@ -1,11 +1,12 @@
 package cl.estencia.labs.muplayer.core.aucom.device.input;
 
-import cl.estencia.labs.muplayer.core.aucom.device.input.AudioInputDevice;
-import lombok.extern.java.Log;
-import cl.estencia.labs.aucom.event.input.listener.MicrophoneListener;
-import cl.estencia.labs.aucom.event.input.MicrophoneEvent;
+import cl.estencia.labs.muplayer.core.aucom.event.input.MicrophoneEvent;
+import cl.estencia.labs.muplayer.core.aucom.event.input.listener.MicrophoneListener;
+import lombok.extern.slf4j.Slf4j;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.TargetDataLine;
 
 /**
  * @author martin

@@ -1,8 +1,8 @@
 package cl.estencia.labs.muplayer.audio.track;
 
-import cl.estencia.labs.aucom.core.device.output.Speaker;
-import cl.estencia.labs.aucom.core.io.AudioDecoder;
-import cl.estencia.labs.aucom.core.util.AudioSystemManager;
+import cl.estencia.labs.muplayer.core.aucom.device.output.Speaker;
+import cl.estencia.labs.muplayer.core.aucom.io.AudioDecoder;
+import cl.estencia.labs.muplayer.core.aucom.util.AudioSystemManager;
 import cl.estencia.labs.muplayer.audio.interfaces.ControllableMusic;
 import cl.estencia.labs.muplayer.audio.interfaces.TrackData;
 import cl.estencia.labs.muplayer.audio.model.TrackStatusData;
@@ -21,8 +21,8 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
 
-import static cl.estencia.labs.aucom.common.AudioConstants.DEFAULT_MAX_VOL;
-import static cl.estencia.labs.aucom.common.AudioConstants.DEFAULT_MIN_VOL;
+import static cl.estencia.labs.muplayer.core.aucom.common.AudioConstants.DEFAULT_MAX_VOL;
+import static cl.estencia.labs.muplayer.core.aucom.common.AudioConstants.DEFAULT_MIN_VOL;
 import static cl.estencia.labs.muplayer.audio.util.AudioDriverUtil.getSecondsPosition;
 import static cl.estencia.labs.muplayer.audio.util.AudioDriverUtil.isTrackStreamsOpened;
 import static cl.estencia.labs.muplayer.audio.util.TrackInfoUtil.loadTrackInfo;

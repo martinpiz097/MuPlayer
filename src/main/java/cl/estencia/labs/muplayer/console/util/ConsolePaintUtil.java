@@ -6,7 +6,6 @@ import cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode;
 import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import lombok.extern.slf4j.Slf4j;
-import org.orangelogger.sys.Logger;
 
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleChars.M;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleChars.SEMICOLON;
@@ -15,13 +14,14 @@ import static cl.estencia.labs.muplayer.console.common.constants.ConsoleEscapeSe
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.*;
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode.cls;
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.CLEAN;
-import static cl.estencia.labs.muplayer.console.util.ConsolePainter.GradientStyle.LIGHTEN;
-import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.createConsoleHeader;
+import static cl.estencia.labs.muplayer.console.util.ConsolePaintUtil.GradientStyle.LIGHTEN;
+import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.*;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.RUNNER;
+import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.info;
 import static cl.estencia.labs.muplayer.core.util.StringUtils.reduceString;
 
 @Slf4j
-public class ConsolePainter {
+public class ConsolePaintUtil {
     private static final int[] LIGHTEN_GREEN_GRADIENTE = new int[]{0x1A4D00, 0x2D6B08,
             0x3D8C0A, 0x4E9A12, 0x5FAD1B, 0x7CC828, 0x8CD932, 0xB8FF4A};
 
@@ -189,12 +189,9 @@ public class ConsolePainter {
             }
 
             final String header = createConsoleHeader(player);
-            final String coloredMessage = Logger.getLogger(ConsolePainter.class, header)
-                    .getColoredMsg(Logger.INFOCOLOR);
-
-            IO.print(coloredMessage);
+            info(header);
         } catch (Exception e) {
-            Logger.getLogger(ConsolePainter.class, e.getClass().getSimpleName(), e.getMessage()).error();
+            log.error(e.getMessage(), e);
         }
     }
 

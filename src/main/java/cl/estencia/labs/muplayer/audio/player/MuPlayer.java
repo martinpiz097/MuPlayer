@@ -1,6 +1,6 @@
 package cl.estencia.labs.muplayer.audio.player;
 
-import cl.estencia.labs.aucom.core.util.AudioSystemManager;
+import cl.estencia.labs.muplayer.core.aucom.util.AudioSystemManager;
 import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.ebot.bus.exception.BusException;
 import cl.estencia.labs.ebot.utils.threads.Interruptor;
@@ -47,7 +47,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static cl.estencia.labs.aucom.core.util.AudioDecodingUtil.DEFAULT_VOLUME;
+import static cl.estencia.labs.muplayer.core.aucom.util.AudioDecodingUtil.DEFAULT_VOLUME;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.PREV;
 import static cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic.*;
@@ -95,10 +95,10 @@ public class MuPlayer extends Player implements SystemVolumeController {
 
     private void loadTracks(File folderToLoad) {
 //        long ti = System.currentTimeMillis();
-        ExecutorService tracksLoadExecutor = Executors.newVirtualThreadPerTaskExecutor();
         List<Future<TracksDirectory>> tasks = CollectionUtil.newFastList(500);
 
-        try (Stream<Path> paths = Files.walk(folderToLoad.toPath()).parallel()) {
+        try (Stream<Path> paths = Files.walk(folderToLoad.toPath()).parallel();
+             ExecutorService tracksLoadExecutor = Executors.newVirtualThreadPerTaskExecutor()) {
             // TODO si cambio a map, este metodo debe modificarse
             if (hasSounds()) {
                 muPlayerUtil.killActiveTracks();
@@ -147,7 +147,7 @@ public class MuPlayer extends Player implements SystemVolumeController {
         }
 
 //        long tf = System.currentTimeMillis();
-//        IO.println("diff: " + (new DecimalFormat("#0.000").format(((double) (tf - ti)) / 1000)));
+//        infoLine("diff: " + (new DecimalFormat("#0.000").format(((double) (tf - ti)) / 1000)));
 //        if (tf > ti) {
 //            System.exit(0);
 //        }

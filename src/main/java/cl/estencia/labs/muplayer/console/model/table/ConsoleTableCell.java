@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE_CHAR;
-import static cl.estencia.labs.muplayer.console.common.enums.OutputType.info;
+import static cl.estencia.labs.muplayer.console.common.enums.OutputLevel.info;
 import static cl.estencia.labs.muplayer.console.model.table.ConsoleTable.DEFAULT_CONTENT_SIZE_LIMIT;
 import static cl.estencia.labs.muplayer.core.util.StringUtils.reduceString;
 

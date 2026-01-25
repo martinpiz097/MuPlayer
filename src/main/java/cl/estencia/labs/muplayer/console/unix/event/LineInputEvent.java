@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import static cl.estencia.labs.aucom.common.IOConstants.EOF;
+import static cl.estencia.labs.muplayer.core.aucom.common.IOConstants.EOF;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
 

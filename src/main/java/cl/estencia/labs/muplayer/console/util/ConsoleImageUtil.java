@@ -8,6 +8,7 @@ import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE_CHAR;
 import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.ESC;
 import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.toChar;
+import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.infoLine;
 
 public class ConsoleImageUtil {
     private static final char[] QUADRANTS = {' ', '▘', '▝', '▀', '▖', '▌', '▞', '▛', '▗', '▚', '▐', '▜', '▄', '▙', '▟', '█'};
@@ -48,13 +49,13 @@ public class ConsoleImageUtil {
                 if (isCloser(colors[2], fg, bg)) mask |= 4;
                 if (isCloser(colors[3], fg, bg)) mask |= 8;
 
-                IO.println("Before: " + sb.length());
+                infoLine("Before: " + sb.length());
                 sb.append(SETUP_FG_RGB_TRUE_COLOR).append((fg >> 16) & 0xFF).append(SEMICOLON)
                         .append((fg >> 8) & 0xFF).append(SEMICOLON).append(fg & 0xFF).append("m");
                 sb.append(SETUP_BG_RGB_TRUE_COLOR).append((bg >> 16) & 0xFF).append(SEMICOLON)
                         .append((bg >> 8) & 0xFF).append(SEMICOLON).append(bg & 0xFF).append("m");
                 sb.append(QUADRANTS[mask]);
-                IO.println("After: " + sb.length());
+                infoLine("After: " + sb.length());
             }
             sizeAfterRow = sb.length();
 
@@ -65,7 +66,7 @@ public class ConsoleImageUtil {
             sb.append(FULL_RESET + LINE_BREAK_CHAR);
         }
 
-        IO.println("Total: " + sb.length());
+        infoLine("Total: " + sb.length());
         return sb.toString();
     }
 

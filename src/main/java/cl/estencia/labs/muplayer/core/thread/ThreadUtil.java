@@ -1,12 +1,9 @@
 package cl.estencia.labs.muplayer.core.thread;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.core.system.Time;
-import org.orangelogger.sys.Logger;
 
 import java.io.File;
 import java.time.Duration;
-import java.time.temporal.TemporalUnit;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.locks.LockSupport;

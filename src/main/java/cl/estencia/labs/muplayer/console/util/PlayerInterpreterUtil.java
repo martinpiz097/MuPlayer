@@ -1,6 +1,6 @@
 package cl.estencia.labs.muplayer.console.util;
 
-import cl.estencia.labs.aucom.core.util.ProcessManager;
+import cl.estencia.labs.muplayer.core.aucom.util.ProcessManager;
 import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.ebot.bus.exception.BusException;
 import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
@@ -21,8 +21,6 @@ import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import cl.estencia.labs.muplayer.core.util.NumberUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.orangelogger.sys.Logger;
-import org.orangelogger.sys.SystemUtil;
 
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.SourceDataLine;
@@ -40,13 +38,15 @@ import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE_CHAR;
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.CLEAN;
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.DEFAULT;
-import static cl.estencia.labs.muplayer.console.common.enums.OutputType.*;
-import static cl.estencia.labs.muplayer.console.util.ConsolePainter.printConsoleHeader;
+import static cl.estencia.labs.muplayer.console.common.enums.OutputLevel.*;
+import static cl.estencia.labs.muplayer.console.util.ConsolePaintUtil.printConsoleHeader;
 import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.getOutputColor;
-import static cl.estencia.labs.muplayer.console.util.SystemCommandExecutor.clearConsole;
+import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.getStdout;
 import static cl.estencia.labs.muplayer.console.util.SystemCommandExecutor.getClearConsoleOutput;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.NATIVE_CONSOLE;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.RUNNER;
+import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.infoLine;
+import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.info;
 
 @Slf4j
 public class PlayerInterpreterUtil {
@@ -57,9 +57,9 @@ public class PlayerInterpreterUtil {
         try {
             String output = ProcessManager.executeLegacy(
                     cmd.split(String.valueOf(SPACE_CHAR)));
-            ProcessManager.writeProcessOutputTo(output, SystemUtil.getStdout());
+            ProcessManager.writeProcessOutputTo(output, getStdout());
         } catch (IOException | InterruptedException e) {
-            Logger.getLogger(PlayerInterpreterUtil.class, e.getMessage()).error();
+            log.error(e.getMessage(), e);
         }
     }
 
@@ -200,7 +200,12 @@ public class PlayerInterpreterUtil {
             return;
         }
 
-        final Track currentTrack = playerCurrentData.get().getCurrentTrack();
+        MuPlayerResponse playerResponse = playerCurrentData.get();
+        if (playerResponse == null) {
+            return;
+        }
+
+        final Track currentTrack = playerResponse.getCurrentTrack();
         if (currentTrack == null) {
             return;
         }
@@ -248,7 +253,6 @@ public class PlayerInterpreterUtil {
         final File rootFolder = player.getRootFolder();
         final List<String> listFolderPaths = player.getListFolders()
                 .stream().map(File::getPath).toList();
-        final Track current = playerCurrentData.get().getCurrentTrack();
 
         execution.append("------------------------------", info);
         if (rootFolder == null) {
@@ -258,6 +262,8 @@ public class PlayerInterpreterUtil {
         }
         execution.append("------------------------------", info);
 
+        final MuPlayerResponse playerResponse = playerCurrentData.get();
+        final Track current = playerResponse != null ? playerResponse.getCurrentTrack() : null;
         if (current == null) {
             return;
         }
@@ -276,6 +282,7 @@ public class PlayerInterpreterUtil {
             }
 
         }
+
         execution.append("------------------------------", info);
     }
 
@@ -413,7 +420,7 @@ public class PlayerInterpreterUtil {
 
     public static void printTrackInfo(Track track, ConsoleOutputMode outputMode) {
         String trackInfo = getTrackInfo(track, outputMode);
-        IO.println(trackInfo);
+        infoLine(trackInfo);
     }
 
     public static void printConsoleLine() {
@@ -421,7 +428,7 @@ public class PlayerInterpreterUtil {
         NativeConsole nativeConsole = GLOBAL_CACHE.loadValue(NATIVE_CONSOLE, NativeConsole.class);
 
         if (consoleRunner instanceof LocalRunner && (nativeConsole != null && nativeConsole.hasLine())) {
-            IO.print(nativeConsole.getLine());
+            info(nativeConsole.getLine());
         }
     }
 

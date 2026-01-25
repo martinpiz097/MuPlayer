@@ -11,13 +11,13 @@ import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import cl.estencia.labs.muplayer.core.system.SysInfo;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.orangelogger.sys.Logger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.*;
+import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.infoLine;
 
 @Slf4j
 public abstract class ConsoleRunner implements Runnable {
@@ -60,7 +60,7 @@ public abstract class ConsoleRunner implements Runnable {
                     ? "Root folder not exists: " + player.getRootFolder().getPath()
                     : "Root folder is null!";
 
-            Logger.getLogger(this, msg).rawError();
+            log.error(msg);
             System.exit(1);
         }
     }
@@ -90,7 +90,7 @@ public abstract class ConsoleRunner implements Runnable {
         try {
             ConsoleOutput consoleOutput = interpreter.execute(cmd);
             if (consoleOutput != null && consoleOutput.hasOutput()) {
-                IO.println(consoleOutput);
+                infoLine(consoleOutput);
             }
 
         } catch (Exception e) {

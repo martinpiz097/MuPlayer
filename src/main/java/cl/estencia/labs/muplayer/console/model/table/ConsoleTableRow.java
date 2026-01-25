@@ -1,7 +1,6 @@
 package cl.estencia.labs.muplayer.console.model.table;
 
 import cl.estencia.labs.muplayer.console.util.ConsoleUtil;
-import cl.estencia.labs.muplayer.core.exception.MuPlayerException;
 import cl.estencia.labs.muplayer.core.exception.MuPlayerRuntimeException;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import lombok.Getter;
@@ -11,7 +10,7 @@ import java.util.List;
 
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.*;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
-import static cl.estencia.labs.muplayer.console.common.enums.OutputType.info;
+import static cl.estencia.labs.muplayer.console.common.enums.OutputLevel.info;
 import static cl.estencia.labs.muplayer.console.model.table.ConsoleTable.DEFAULT_CONTENT_SIZE_LIMIT;
 
 @Getter

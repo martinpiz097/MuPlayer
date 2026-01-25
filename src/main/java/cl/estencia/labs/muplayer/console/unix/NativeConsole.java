@@ -1,6 +1,6 @@
 package cl.estencia.labs.muplayer.console.unix;
 
-import cl.estencia.labs.aucom.core.util.ProcessManager;
+import cl.estencia.labs.muplayer.core.aucom.util.ProcessManager;
 import cl.estencia.labs.muplayer.console.common.enums.InterceptorMode;
 import cl.estencia.labs.muplayer.console.unix.event.AltKeyCombinationEvent;
 import cl.estencia.labs.muplayer.console.unix.event.KeyInputEvent;
@@ -17,6 +17,7 @@ import java.util.List;
 import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.*;
 import static cl.estencia.labs.muplayer.console.unix.InputMode.COMMANDS;
 import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.cartReturn;
+import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.info;
 
 @Getter
 public class NativeConsole extends Console {
@@ -69,11 +70,11 @@ public class NativeConsole extends Console {
         sbInput.delete(0, sbInput.length());
         sbInput.append(command);
 
-//        IO.print(cartReturn(cartReturnColumns) + command);
+//        info((cartReturn(cartReturnColumns) + command);
     }
 
     private void printKey(int key) {
-        IO.print((char) key);
+        info((char) key);
     }
 
     private void sendInputEvent(KeyInputEvent event) {
@@ -202,7 +203,7 @@ public class NativeConsole extends Console {
                 sbInput.deleteCharAt(sbInput.length() - 1);
                 consoleHistory.updateCurrentCommand(sbInput.toString());
 
-                IO.print(cartReturn(cartReturnCount) + sbInput);
+                info(cartReturn(cartReturnCount) + sbInput);
             }
         });
 

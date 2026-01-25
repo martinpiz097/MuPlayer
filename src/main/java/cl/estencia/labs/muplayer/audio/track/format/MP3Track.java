@@ -1,5 +1,6 @@
 package cl.estencia.labs.muplayer.audio.track.format;
 
+import cl.estencia.labs.muplayer.core.aucom.io.AudioDecoder;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.data.HeaderData;
 import cl.estencia.labs.muplayer.audio.track.decoder.DefaultAudioDecoder;
@@ -21,6 +22,10 @@ public class MP3Track extends Track {
 
     public MP3Track(File dataSource) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         super(dataSource, new DefaultAudioDecoder(dataSource));
+    }
+
+    public MP3Track(String trackPath, AudioDecoder audioDecoder) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        super(trackPath, audioDecoder);
     }
 
     private long calculateFrameSize(MP3AudioHeader mp3AudioHeader) {
