@@ -63,53 +63,54 @@ dependencies {
 ## Usage
 
 ### Basic playback
+
 ```java
-Player player = new MuPlayer("/path/to/music");
+import cl.estencia.labs.muplayer.audio.player.MusicPlayer;
+
+MusicPlayer player = new MuPlayer("/path/to/music");
 player.start();
 ```
 
-### Event-driven mode (MessageBus)
+### Event-driven mode
 
 Control the player through messages without direct interaction with the player object:
+
 ```java
+import cl.estencia.labs.muplayer.core.bus.message.Events;
 import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
-import cl.estencia.labs.muplayer.core.bus.message.Messages;
+import cl.estencia.labs.muplayer.core.bus.message.Events;
 import cl.estencia.labs.ebot.bus.MessageBus;
 
-// Get the global MessageBus instance
-MessageBus messageBus = MessageBusUtil.getMessageBus();
-
 // Start playback
-messageBus.publish(Messages.start());
+player.sendEvent(Events.start());
 
 // Playback controls
-messageBus.publish(Messages.play());
-messageBus.publish(Messages.pause());
-messageBus.publish(Messages.resume());
-messageBus.publish(Messages.stop());
+player.sendEvent(Events.play());
+player.sendEvent(Events.pause());
+player.sendEvent(Events.resume());
+player.sendEvent(Events.stop());
 
 // Navigation
-messageBus.publish(Messages.playNext());
-messageBus.publish(Messages.playPrev());
-messageBus.publish(Messages.playIndex(5));
+player.sendEvent(Events.playNext());
+player.sendEvent(Events.playPrev());
+player.sendEvent(Events.playIndex(5));
 
 // Volume control
-messageBus.publish(Messages.setVolume(75.0f));
-messageBus.publish(Messages.mute());
-messageBus.publish(Messages.unmute());
+player.sendEvent(Events.setVolume(75.0f));
+player.sendEvent(Events.mute());
+player.sendEvent(Events.unmute());
 
 // Shutdown player
-messageBus.publish(Messages.shutdown());
+player.sendEvent(Events.shutdown());
 ```
 
 ### Listening to player events
 ```java
 import cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic;
 
-messageBus.subscribe(MuPlayerTopic.PLAYER_RESPONSE.name(), message -> {
-    MuPlayerResponse response = message.getData(MuPlayerResponse.class);
-    Track currentTrack = response.getCurrentTrack();
-    IO.println("Now playing: " + currentTrack.getTitle());
+player.addResponseListener(muPlayerResponse -> {
+    Track currentTrack = muPlayerResponse.getCurrentTrack();
+    infoLine("Now playing: " + currentTrack.getTitle());
 });
 ```
 
