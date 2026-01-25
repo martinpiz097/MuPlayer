@@ -34,6 +34,7 @@ import static cl.estencia.labs.muplayer.console.util.ConsolePaintUtil.GradientSt
 import static cl.estencia.labs.muplayer.console.util.ConsolePaintUtil.paintMuPlayerStyle;
 import static cl.estencia.labs.muplayer.console.util.ConsolePaintUtil.printConsoleHeader;
 import static cl.estencia.labs.muplayer.console.util.PlayerInterpreterUtil.printConsoleInfo;
+import static cl.estencia.labs.muplayer.core.cache.CacheManager.GLOBAL_CACHE;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.*;
 import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.printLine;
 
@@ -236,7 +237,7 @@ public class LocalRunner extends ConsoleRunner {
                 if (player.isAlive() && interpreter.isOn()) {
                     sendCommand(ConsoleOrderCode.sh);
                 } else {
-                    globalCacheManager.clear();
+                    GLOBAL_CACHE.clear();
                     System.exit(0);
                 }
             }
@@ -359,8 +360,8 @@ public class LocalRunner extends ConsoleRunner {
         validateRootFolder();
         setupNativeConsole();
 
-        globalCacheManager.saveValue(RUNNER, this);
-        globalCacheManager.saveValue(NATIVE_CONSOLE, nativeConsole);
+        GLOBAL_CACHE.saveValue(RUNNER, this);
+        GLOBAL_CACHE.saveValue(NATIVE_CONSOLE, nativeConsole);
 
         printBannerLogo();
         printAppVersion();
@@ -371,7 +372,7 @@ public class LocalRunner extends ConsoleRunner {
             interruptor.checkSignal();
         }
 
-        final ConsoleRunner runner = globalCacheManager.loadValue(CacheVar.RUNNER);
+        final ConsoleRunner runner = GLOBAL_CACHE.loadValue(CacheVar.RUNNER);
         if (runner == null || runner instanceof LocalRunner) {
             nativeConsole.shutdown();
             System.exit(0);

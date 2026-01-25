@@ -23,13 +23,11 @@ import cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic;
 import cl.estencia.labs.muplayer.core.bus.model.MuPlayerResponse;
 import cl.estencia.labs.muplayer.core.bus.model.SkipData;
 import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
-import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import cl.estencia.labs.muplayer.core.thread.ThreadUtil;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import cl.estencia.labs.muplayer.core.util.FilterUtil;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -53,6 +51,7 @@ import static cl.estencia.labs.muplayer.core.aucom.util.AudioDecodingUtil.DEFAUL
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.PREV;
 import static cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic.*;
+import static cl.estencia.labs.muplayer.core.cache.CacheManager.GLOBAL_CACHE;
 
 @Slf4j
 public class MuPlayer extends MusicPlayer implements SystemVolumeController {
@@ -667,11 +666,7 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
             return;
         }
 
-        try {
-            current.gotoSecond(second);
-        } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
-            log.error(e.getMessage(), e);
-        }
+        current.gotoSecond(second);
     }
 
     @Override
@@ -770,7 +765,7 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
 
     @Override
     public void run() {
-        CacheManager.getGlobalCache().saveValue(CacheVar.PLAYER, this);
+        GLOBAL_CACHE.saveValue(CacheVar.PLAYER, this);
 
         loadTracks(rootFolder);
         playNext();

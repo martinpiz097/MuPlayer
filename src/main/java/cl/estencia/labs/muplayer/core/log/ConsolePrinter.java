@@ -2,9 +2,7 @@ package cl.estencia.labs.muplayer.core.log;
 
 import cl.estencia.labs.muplayer.console.common.enums.OutputLevel;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
@@ -20,14 +18,14 @@ public class ConsolePrinter {
         this.stdOut = getStdout();
     }
 
-    private void print(Object message, OutputLevel outputLevel) {
+    private synchronized void print(Object message, OutputLevel outputLevel) {
         try {
             String coloredMessage = coloredString(message, outputLevel, true);
             stdOut.write(coloredMessage.getBytes(StandardCharsets.UTF_8));
         } catch (IOException ignored) {}
     }
 
-    private void println(Object message, OutputLevel outputLevel) {
+    private synchronized void println(Object message, OutputLevel outputLevel) {
         print(message.toString() + LINE_BREAK_CHAR, outputLevel);
     }
 

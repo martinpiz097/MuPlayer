@@ -43,7 +43,7 @@ public class ConsoleTableRow {
     }
 
     public ConsoleTableRow(String color, int contentSizeLimit) {
-        this.color = ConsoleUtil.isValidColor(color) ? color : ConsoleUtil.getOutputColor(info);
+        this.color = ConsoleUtil.isValidColor(color) ? color : ConsoleUtil.getColorFromLevel(info);
         this.cells = CollectionUtil.newFastArrayList();
         this.contentSizeLimit  = contentSizeLimit;
     }
@@ -110,7 +110,7 @@ public class ConsoleTableRow {
         boolean isValidTableColor = ConsoleUtil.isValidColor(this.color);
         String color = isValidTableColor
                 ? this.color : (ConsoleUtil.isValidColor(tableColor)
-                             ? tableColor : ConsoleUtil.getOutputColor(info));
+                             ? tableColor : ConsoleUtil.getColorFromLevel(info));
 
         char borderChar = useSingleLines ? SINGLE_VERTICAL_LINE : DOUBLE_VERTICAL_LINE;
         char interColumnChar = useInternalLines

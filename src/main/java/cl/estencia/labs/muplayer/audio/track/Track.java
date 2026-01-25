@@ -170,7 +170,7 @@ public abstract class Track extends Thread
     }
 
     @Override
-    public void reload() throws Exception {
+    public void reload() {
         //trackState = new ReloadedState(this, notifier);
         throw new UnsupportedOperationException("Reload not supported yet!");
     }
@@ -185,8 +185,7 @@ public abstract class Track extends Thread
 
     // en este caso pasan a ser seconds
     @Override
-    public synchronized void seek(double seconds)
-            throws IOException {
+    public synchronized void seek(double seconds) {
         if (seconds == 0) {
             return;
         }
@@ -197,27 +196,27 @@ public abstract class Track extends Thread
 
         if (seconds > 0) {
             final long bytesToSeek = Math.round(convertSecondsToBytes(seconds));
-            final long skip = audioDecoder.getDecodedAudioStream().skip(bytesToSeek);
-            final double skippedSeconds = convertBytesToSeconds(skip);
+            final long skip;
+            try {
+                skip = audioDecoder.getDecodedAudioStream().skip(bytesToSeek);
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
+                return;
+            }
 
+            final double skippedSeconds = convertBytesToSeconds(skip);
             if (skip > 0) {
                 trackStatusData.setSecsSeeked(trackStatusData.getSecsSeeked() + skippedSeconds);
             }
             // se deben sumar los segundos que realmente se saltaron
             // o saltar bytes hasta completar esos segundos
         } else {
-            try {
-                gotoSecond(Math.max(0d, getProgress() + seconds));
-            } catch (LineUnavailableException | UnsupportedAudioFileException e) {
-                log.error(e.getMessage(), e);
-            }
+            gotoSecond(Math.max(0d, getProgress() + seconds));
         }
-
     }
 
     @Override
-    public void gotoSecond(double second) throws
-            IOException, LineUnavailableException, UnsupportedAudioFileException {
+    public void gotoSecond(double second) {
         second = Math.max(0d, second);
         final double progress = getProgress();
         if (second >= progress) {

@@ -18,7 +18,7 @@ public class ConsoleTableCell {
     private final int contentSizeLimit;
 
     public ConsoleTableCell(Object value) {
-        this(value, ConsoleUtil.getOutputColor(info), DEFAULT_CONTENT_SIZE_LIMIT);
+        this(value, ConsoleUtil.getColorFromLevel(info), DEFAULT_CONTENT_SIZE_LIMIT);
     }
 
     public ConsoleTableCell(Object value, String color) {
@@ -26,7 +26,7 @@ public class ConsoleTableCell {
     }
 
     public ConsoleTableCell(Object value, int contentSizeLimit) {
-        this(value, ConsoleUtil.getOutputColor(info), contentSizeLimit);
+        this(value, ConsoleUtil.getColorFromLevel(info), contentSizeLimit);
     }
 
     public ConsoleTableCell(Object value, String color, int contentSizeLimit) {
@@ -63,7 +63,7 @@ public class ConsoleTableCell {
     public String getColoredLineWithPadding(String rowColor, Padding cellPadding, Padding extraPadding) {
         String color = ConsoleUtil.isValidColor(this.color)
                 ? this.color : (ConsoleUtil.isValidColor(rowColor)
-                ? rowColor : ConsoleUtil.getOutputColor(info));
+                ? rowColor : ConsoleUtil.getColorFromLevel(info));
 
         if (cellPadding == null) {
             cellPadding = new Padding(0, 0, 0, 0);

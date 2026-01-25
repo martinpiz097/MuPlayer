@@ -25,7 +25,6 @@ public abstract class ConsoleRunner implements Runnable {
     protected final MusicPlayer player;
     protected final PlayerCommandInterpreter interpreter;
     protected final Scanner scanner;
-    protected final CacheManager globalCacheManager;
     protected final MuPlayerConfigReader muPlayerConfigReader;
 
     protected static final String APP_NAME = "MuPlayer";
@@ -46,7 +45,6 @@ public abstract class ConsoleRunner implements Runnable {
         this.player = player;
         this.interpreter = new PlayerCommandInterpreter(player);
         this.scanner = new Scanner(System.in);
-        this.globalCacheManager = CacheManager.getGlobalCache();
         this.muPlayerConfigReader = MuPlayerConfigReader.getInstance();
     }
 

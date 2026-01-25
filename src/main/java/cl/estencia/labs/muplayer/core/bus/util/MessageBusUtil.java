@@ -3,11 +3,10 @@ package cl.estencia.labs.muplayer.core.bus.util;
 import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.muplayer.core.cache.CacheManager;
 
+import static cl.estencia.labs.muplayer.core.cache.CacheManager.GLOBAL_CACHE;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.MESSAGE_BUS;
 
 public class MessageBusUtil {
-    private static final CacheManager GLOBAL_CACHE = CacheManager.getGlobalCache();
-
     private static MessageBus newMessageBus() {
         return MessageBus.multiPublisherPerTopic(1, false);
     }

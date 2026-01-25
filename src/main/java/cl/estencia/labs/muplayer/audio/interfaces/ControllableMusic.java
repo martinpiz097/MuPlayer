@@ -3,18 +3,18 @@ package cl.estencia.labs.muplayer.audio.interfaces;
 import cl.estencia.labs.muplayer.core.system.Time;
 
 public interface ControllableMusic {
-    boolean isPlaying() throws Exception;
-    boolean isPaused() throws Exception;
-    boolean isStopped() throws Exception;
+    boolean isPlaying();
+    boolean isPaused();
+    boolean isStopped();
     boolean isMute();
 
-    void play() throws Exception;
-    void pause() throws Exception;
-    void resumeTrack() throws Exception;
-    void stopTrack() throws Exception;
-    void reload() throws Exception;
-    void seek(double seconds) throws Exception;
-    void gotoSecond(double second) throws Exception;
+    void play();
+    void pause();
+    void resumeTrack();
+    void stopTrack();
+    void reload();
+    void seek(double seconds);
+    void gotoSecond(double second);
     float getVolume();
     void setVolume(float volume);
     void mute();

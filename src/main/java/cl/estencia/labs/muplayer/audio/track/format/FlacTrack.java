@@ -2,6 +2,7 @@ package cl.estencia.labs.muplayer.audio.track.format;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.decoder.FlacAudioDecoder;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -10,6 +11,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
 
+@Slf4j
 public class FlacTrack extends Track {
 
     public FlacTrack(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
@@ -36,14 +38,18 @@ public class FlacTrack extends Track {
     }
 
     @Override
-    public synchronized void seek(double seconds) throws IOException {
+    public synchronized void seek(double seconds) {
        if (seconds != 0) {
            trackStatusData.setSecsSeeked(trackStatusData.getSecsSeeked()+seconds);
            final int bytesToSeek = (int) Math.round(convertSecondsToBytes(seconds));
 
            AudioInputStream decodedStream = audioDecoder.getDecodedAudioStream();
            if (decodedStream != null) {
-               decodedStream.read(new byte[bytesToSeek]);
+               try {
+                   decodedStream.read(new byte[bytesToSeek]);
+               } catch (IOException e) {
+                   log.error(e.getMessage(), e);
+               }
            }
        }
     }

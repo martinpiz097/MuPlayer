@@ -6,13 +6,6 @@ import java.time.Duration;
 import java.util.concurrent.locks.LockSupport;
 
 public class TrackProgressListener extends Thread {
-    private final CacheManager globalCache;
-
-
-    public TrackProgressListener() {
-        this.globalCache = CacheManager.getGlobalCache();
-    }
-
     @Override
     public void run() {
         try {

@@ -1,9 +1,12 @@
 package cl.estencia.labs.muplayer.console;
 
+import cl.estencia.labs.ebot.bus.model.message.Message;
+import cl.estencia.labs.ebot.bus.model.pubsub.sub.MessageListener;
 import cl.estencia.labs.muplayer.audio.model.Album;
 import cl.estencia.labs.muplayer.audio.model.Artist;
 import cl.estencia.labs.muplayer.audio.player.MusicPlayer;
 import cl.estencia.labs.muplayer.console.model.table.Alignment;
+import cl.estencia.labs.muplayer.core.bus.listener.PlayerResponseListener;
 import cl.estencia.labs.muplayer.core.bus.message.Events;
 import cl.estencia.labs.muplayer.core.bus.model.MuPlayerResponse;
 import cl.estencia.labs.muplayer.core.bus.model.SkipData;
@@ -28,9 +31,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.LockSupport;
 
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleChars.CART_RETURN;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SANDGLASS;
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.CLEAN;
@@ -41,7 +47,10 @@ import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.PREV;
 import static cl.estencia.labs.muplayer.console.util.SystemCommandExecutor.clearConsole;
 import static cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic.SHUTDOWN;
 import static cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic.START;
+import static cl.estencia.labs.muplayer.core.cache.CacheManager.GLOBAL_CACHE;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.*;
+import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.info;
+import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.print;
 import static java.nio.file.StandardOpenOption.WRITE;
 
 @Slf4j
@@ -52,13 +61,11 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
     @Setter
     private volatile boolean on;
 
-    private final CacheManager globalCacheManager;
     private final ConsoleCodesReader consoleCodesReader;
     private final AtomicReference<MuPlayerResponse> playerCurrentData;
 
     public PlayerCommandInterpreter(MusicPlayer player) {
         this.player = player;
-        this.globalCacheManager = CacheManager.getGlobalCache();
         this.consoleCodesReader = ConsoleCodesReader.getInstance();
         this.playerCurrentData = new AtomicReference<>();
     }
@@ -89,7 +96,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     player.addResponseListener(muPlayerResponse -> {
                         synchronized (playerCurrentData) {
                             playerCurrentData.set(muPlayerResponse);
-                            globalCacheManager.saveValue(
+                            GLOBAL_CACHE.saveValue(
                                     PLAYER_CURRENT_DATA, playerCurrentData.get());
                         }
 
@@ -97,14 +104,20 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     });
 
                     player.addListener(SHUTDOWN, message -> {
-                        globalCacheManager.clear();
+                        GLOBAL_CACHE.clear();
 
                         System.exit(0);
                     });
 
+                    player.addListener(START, message -> {
+                        while (!player.isOn()) {
+                            print(CART_RETURN + SANDGLASS
+                                    + " Loading " + player.getSongsCount() + " tracks ...");
+                            LockSupport.parkNanos(Duration.ofMillis(1).toNanos());
+                        }
+                    });
 
                     player.sendEvent(Events.start());
-                    consoleOutput.append("Loading tracks " + SANDGLASS);
                 }
             }
             case ist -> consoleOutput.append(isPlayerOn() ? "Is playing" : "Is not playing", warn);
@@ -445,12 +458,12 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
             case chm -> {
                 if (cmd.hasOptions()) {
                     final String firstOpt = cmd.getOptionAt(0);
-                    final ConsoleRunner consoleRunner = globalCacheManager.loadValue(RUNNER);
+                    final ConsoleRunner consoleRunner = GLOBAL_CACHE.loadValue(RUNNER);
                     if (firstOpt.equalsIgnoreCase(RunnerMode.LOCAL.name())) {
                         if (consoleRunner instanceof DaemonRunner) {
                             final LocalRunner localRunner = new LocalRunner(player);
                             TaskRunner.execute(localRunner, localRunner.getClass().getSimpleName());
-                            globalCacheManager.saveValue(RUNNER, localRunner);
+                            GLOBAL_CACHE.saveValue(RUNNER, localRunner);
                             ((DaemonRunner) consoleRunner).shutdown();
                             consoleOutput.append("MuPlayer changed from DAEMON to LOCAL mode!", info);
                         } else {
@@ -460,7 +473,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                         if (consoleRunner instanceof LocalRunner) {
                             final DaemonRunner daemonRunner = new DaemonRunner(player);
                             TaskRunner.execute(daemonRunner, daemonRunner.getClass().getSimpleName());
-                            globalCacheManager.saveValue(RUNNER, daemonRunner);
+                            GLOBAL_CACHE.saveValue(RUNNER, daemonRunner);
                             ((LocalRunner) consoleRunner).shutdown();
                             consoleOutput.append("MuPlayer changed from LOCAL to DAEMON mode!", info);
                         } else {

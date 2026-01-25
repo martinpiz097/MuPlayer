@@ -27,7 +27,7 @@ public class ConsoleTable {
     public static final byte DEFAULT_CONTENT_SIZE_LIMIT = 30;
 
     public ConsoleTable(String title) {
-        this(title, ConsoleUtil.getOutputColor(info));
+        this(title, ConsoleUtil.getColorFromLevel(info));
     }
 
     public ConsoleTable(String title, String color) {
@@ -51,7 +51,7 @@ public class ConsoleTable {
     }
 
     public ConsoleTable(String title, int contentSizeLimit) {
-        this(title, ConsoleUtil.getOutputColor(info), contentSizeLimit);
+        this(title, ConsoleUtil.getColorFromLevel(info), contentSizeLimit);
     }
 
     public ConsoleTable(String title, String color, int contentSizeLimit) {
@@ -76,9 +76,9 @@ public class ConsoleTable {
     public ConsoleTable(String title, String color, Alignment alignment, Padding borderPadding,
                         boolean useSingleLines, boolean useInternalLines, int contentSizeLimit) {
         this.title = title;
-        this.color = ConsoleUtil.isValidColor(color) ? color : ConsoleUtil.getOutputColor(info);
+        this.color = ConsoleUtil.isValidColor(color) ? color : ConsoleUtil.getColorFromLevel(info);
         this.useInternalLines = useInternalLines;
-        this.columnTitles = new TableColumnTitle(ConsoleUtil.getOutputColor(raw));
+        this.columnTitles = new TableColumnTitle(ConsoleUtil.getColorFromLevel(raw));
         this.rows = CollectionUtil.newFastArrayList();
         this.alignment = alignment != null ? alignment : Alignment.LEFT;
         this.borderPadding = borderPadding != null ? borderPadding : new Padding(0, 0, 0, 0);
@@ -137,7 +137,7 @@ public class ConsoleTable {
         StringBuilder sbMargin = new StringBuilder();
 
         if (!ConsoleUtil.isValidColor(color)) {
-            color = ConsoleUtil.getOutputColor(info);
+            color = ConsoleUtil.getColorFromLevel(info);
         }
 
         int columnWidth;
@@ -357,7 +357,7 @@ public class ConsoleTable {
 
         sbTable.append(LINE_BREAK_CHAR);
         if (title != null && !title.isBlank()) {
-            String headerColor = ConsoleUtil.getOutputColor(raw);
+            String headerColor = ConsoleUtil.getColorFromLevel(raw);
 
             paintTableTitleHeader(sbTable, headerColor,biggerColumnLenghts, columnsCount, externalPadding);
             paintTableTitle(sbTable, headerColor, biggerColumnLenghts, externalPadding);

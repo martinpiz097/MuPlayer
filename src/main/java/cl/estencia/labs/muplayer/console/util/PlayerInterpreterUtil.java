@@ -40,9 +40,10 @@ import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.C
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.DEFAULT;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputLevel.*;
 import static cl.estencia.labs.muplayer.console.util.ConsolePaintUtil.printConsoleHeader;
-import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.getOutputColor;
+import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.getColorFromLevel;
 import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.getStdout;
 import static cl.estencia.labs.muplayer.console.util.SystemCommandExecutor.getClearConsoleOutput;
+import static cl.estencia.labs.muplayer.core.cache.CacheManager.GLOBAL_CACHE;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.NATIVE_CONSOLE;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.RUNNER;
 import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.infoLine;
@@ -50,8 +51,6 @@ import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.info;
 
 @Slf4j
 public class PlayerInterpreterUtil {
-
-    private static final CacheManager GLOBAL_CACHE = CacheManager.getGlobalCache();
 
     public static void execSysCommand(String cmd) {
         try {
@@ -71,7 +70,7 @@ public class PlayerInterpreterUtil {
         }
 
         final Track current = playerCurrentData.get().getCurrentTrack();
-        final String tableColor = getOutputColor(info);
+        final String tableColor = getColorFromLevel(info);
         final int contentSizeLimit = 100;
 
         ConsoleTable consoleTable = new ConsoleTable("Tracks List",
@@ -84,7 +83,7 @@ public class PlayerInterpreterUtil {
         player.getTracks().forEach(track -> {
             String album = track.getAlbum() != null ? track.getAlbum() : "Unknown";
             String artist = track.getArtist() != null ? track.getArtist() : "Unknown";
-            String color = getOutputColor(track.equals(current) ? warn : info);
+            String color = getColorFromLevel(track.equals(current) ? warn : info);
 
             ConsoleTableRow row = new ConsoleTableRow(color);
             row.addCells(indexCounter.incrementAndGet(),
@@ -150,7 +149,7 @@ public class PlayerInterpreterUtil {
         final List<Track> listTracks = player.getTracks();
         final int songsCount = player.getSongsCount();
 
-        final String tableColor = getOutputColor(info);
+        final String tableColor = getColorFromLevel(info);
         final int contentSizeLimit = 40;
 
         final Track currentTrack = playerCurrentData.get().getCurrentTrack();
@@ -178,7 +177,7 @@ public class PlayerInterpreterUtil {
             track = listTracks.get(i);
             fileTrack = track.getDataSource();
             if (fileTrack.getParentFile().equals(tracksFolder)) {
-                color = ConsoleUtil.getOutputColor(
+                color = ConsoleUtil.getColorFromLevel(
                         fileTrack.getPath().equals(currentTrackFile.getPath())
                                 ? warn : info);
                 album = track.getAlbum() != null ? track.getAlbum() : "Unknown";
@@ -345,7 +344,7 @@ public class PlayerInterpreterUtil {
             return "";
         }
 
-        String elementsColor = getOutputColor(info);
+        String elementsColor = getColorFromLevel(info);
         ConsoleTable consoleTable = new ConsoleTable(null, elementsColor, Alignment.CENTER,
                 new Padding(0, 3, 0, 3),
                 false, false);

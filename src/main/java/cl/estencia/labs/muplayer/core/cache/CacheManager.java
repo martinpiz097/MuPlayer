@@ -6,15 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CacheManager {
     private final Map<String, Object> mapCache;
 
-    private static final CacheManager globalCacheManager = new CacheManager();
-
-    public static CacheManager getGlobalCache() {
-        return globalCacheManager;
-    }
-
-//    public static CacheManager newLocalCacheManager() {
-//        return new CacheManager();
-//    }
+    public static final CacheManager GLOBAL_CACHE = new CacheManager();
 
     private CacheManager() {
         this.mapCache = new ConcurrentHashMap<>();

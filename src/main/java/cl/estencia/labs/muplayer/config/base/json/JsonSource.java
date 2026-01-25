@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import static cl.estencia.labs.muplayer.core.cache.CacheManager.GLOBAL_CACHE;
+
 @Slf4j
 public abstract class JsonSource<T, O> {
     protected final T source;
@@ -16,7 +18,6 @@ public abstract class JsonSource<T, O> {
     protected volatile O data;
     protected final ObjectMapper objectMapper;
 
-    protected final CacheManager cacheManager;
     protected volatile boolean enableCache;
 
     public JsonSource(T source, TypeReference<O> dataType) {
@@ -27,7 +28,6 @@ public abstract class JsonSource<T, O> {
         this.source = source;
         this.dataType = dataType;
         this.objectMapper = createObjectMapper();
-        this.cacheManager = CacheManager.getGlobalCache();
         this.enableCache = enableCache;
     }
 
@@ -36,7 +36,7 @@ public abstract class JsonSource<T, O> {
     }
 
     protected O getCacheData() {
-        return cacheManager.loadValue(CacheVar.SOURCE_DATA);
+        return GLOBAL_CACHE.loadValue(CacheVar.SOURCE_DATA);
     }
 
     public abstract boolean validate();
