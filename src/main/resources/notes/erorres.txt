@@ -1,12 +1,12 @@
 - Revisar y actualizar DaemonRunner usando la native console y el messageBus
 - Revisar setup del historial de comandos
 - Arreglar alignment de ConsoleImage
-- Revisar y actualizar DaemonRunner usando la native console y el messageBus
 - Arreglar secuencia de numeros de uno de los list
-- Esconder logs
+- Esconder logs jaudiotagger y refactorizar todos los logs
 - Revisar carga de archivos de configuracion desde carpeta del muplayer
 - Love cant wait en formato opus no reproduce
 - En modo command, la flecha izquierda provoca un nuevo espacio
 - Revisar el metodo para agregar musica y utilizarlo mediante un comando add para sumar mas carpetas
 - Arreglar calculo de progreso actual (jaudiotagger tiene en la clase AudioFile,
         especificamente el header, info que me podria servir)
+- Gurdar cover en formato de imagen correcto segun el mimetype del artwork

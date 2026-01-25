@@ -24,3 +24,7 @@ o el modo por defecto
 automontando el dispositivo si es que no lo esta
 
 - Usar los comandos de historial solo en el modo comando, en el modo shorcut usarlos para volumen
+- Transformar Track en runnable
+- Combinaciones de teclas con ALT
+- Agregar numero de cancion a header
+- Cargar listas de reproduccion desde archivos m3u
