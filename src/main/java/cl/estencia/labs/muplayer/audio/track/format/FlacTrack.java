@@ -14,11 +14,11 @@ import java.io.IOException;
 @Slf4j
 public class FlacTrack extends Track {
 
-    public FlacTrack(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+    public FlacTrack(String trackPath) {
         this(new File(trackPath));
     }
 
-    public FlacTrack(File dataSource) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+    public FlacTrack(File dataSource) {
         super(dataSource, new FlacAudioDecoder(dataSource));
     }
 

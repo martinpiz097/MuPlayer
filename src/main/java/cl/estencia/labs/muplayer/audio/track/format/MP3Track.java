@@ -16,15 +16,15 @@ import java.io.IOException;
 @Slf4j
 public class MP3Track extends Track {
 
-    public MP3Track(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+    public MP3Track(String trackPath) {
         this(new File(trackPath));
     }
 
-    public MP3Track(File dataSource) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+    public MP3Track(File dataSource) {
         super(dataSource, new DefaultAudioDecoder(dataSource));
     }
 
-    public MP3Track(String trackPath, AudioDecoder audioDecoder) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+    public MP3Track(String trackPath, AudioDecoder audioDecoder) {
         super(trackPath, audioDecoder);
     }
 

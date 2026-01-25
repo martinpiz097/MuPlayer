@@ -11,11 +11,11 @@ import static cl.estencia.labs.muplayer.core.util.IOUtil.isSystemBigEndian;
 
 public class DefaultAudioDecoder extends AudioDecoder {
 
-    public DefaultAudioDecoder(String path) throws UnsupportedAudioFileException, IOException {
+    public DefaultAudioDecoder(String path) {
         super(path);
     }
 
-    public DefaultAudioDecoder(File file) throws UnsupportedAudioFileException, IOException {
+    public DefaultAudioDecoder(File file) {
         super(file);
     }
 

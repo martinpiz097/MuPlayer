@@ -11,11 +11,11 @@ import java.io.IOException;
 
 public class PCMTrack extends Track {
 
-    public PCMTrack(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+    public PCMTrack(String trackPath) {
         this(new File(trackPath));
     }
 
-    public PCMTrack(File dataSource) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+    public PCMTrack(File dataSource) {
         super(dataSource, new DefaultAudioDecoder(dataSource));
     }
 

@@ -27,19 +27,19 @@
 //public class M4ATrack extends Track {
 //    private boolean isAac;
 //
-//    public M4ATrack(File dataSource) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+//    public M4ATrack(File dataSource) {
 //        super(dataSource);
 //    }
 //
-//    public M4ATrack(String trackPath) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+//    public M4ATrack(String trackPath) {
 //        super(trackPath);
 //    }
 //
-//    public M4ATrack(File dataSource, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+//    public M4ATrack(File dataSource, Player player) {
 //        super(dataSource, player);
 //    }
 //
-//    public M4ATrack(String trackPath, Player player) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+//    public M4ATrack(String trackPath, Player player) {
 //        super(trackPath, player);
 //    }
 //

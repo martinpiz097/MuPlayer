@@ -22,19 +22,19 @@ public abstract class AudioDecoder {
 
     protected volatile AudioInputStream decodedAudioStream;
 
-    public AudioDecoder(String path) throws UnsupportedAudioFileException, IOException {
+    public AudioDecoder(String path) {
         this(new File(path), new AudioDecodingUtil());
     }
 
-    public AudioDecoder(File file) throws UnsupportedAudioFileException, IOException {
+    public AudioDecoder(File file) {
         this(file, new AudioDecodingUtil());
     }
 
-    public AudioDecoder(String path, AudioDecodingUtil audioDecodingUtil) throws UnsupportedAudioFileException, IOException {
+    public AudioDecoder(String path, AudioDecodingUtil audioDecodingUtil) {
         this(new File(path), audioDecodingUtil);
     }
 
-    public AudioDecoder(File file, AudioDecodingUtil audioDecodingUtil) throws UnsupportedAudioFileException, IOException {
+    public AudioDecoder(File file, AudioDecodingUtil audioDecodingUtil) {
         this.source = file;
         this.audioDecodingUtil = audioDecodingUtil;
         this.decodedAudioStream = buildDecodedAudioStream();

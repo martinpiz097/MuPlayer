@@ -43,12 +43,11 @@ public abstract class Track extends Thread
 
     protected final AudioSystemManager audioSystemManager;
 
-    public Track(String trackPath, AudioDecoder audioDecoder) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+    public Track(String trackPath, AudioDecoder audioDecoder) {
         this(new File(trackPath), audioDecoder);
     }
 
-    public Track(File dataSource, AudioDecoder audioDecoder)
-            throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+    public Track(File dataSource, AudioDecoder audioDecoder) {
         this.dataSource = dataSource;
         this.audioDecoder = audioDecoder;
         this.speaker = new Speaker(audioDecoder.getDecodedAudioStream());
