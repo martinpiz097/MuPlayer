@@ -41,7 +41,7 @@ public class MuPlayerUtil {
         this.listTracks = player.getTracks();
         this.listFolders = player.getListFolders();
         this.playerStatusData = playerStatusData;
-        this.trackFactory = new StandardTrackFactory();
+        this.trackFactory = TrackFactory.newFactory();
         this.messageBus = MessageBusUtil.getMessageBus();
     }
 
@@ -97,6 +97,7 @@ public class MuPlayerUtil {
             if (filter.test(track)) {
                 return new TrackIndexed(track, index);
             }
+
             index++;
         }
 

@@ -16,7 +16,11 @@ import java.io.File;
 import static cl.estencia.labs.muplayer.audio.util.AudioFileUtil.getAudioExtensionFromFormat;
 
 @Slf4j
-public class StandardTrackFactory implements TrackFactory {
+public class StandardTrackFactory extends TrackFactory {
+
+    protected StandardTrackFactory() {
+        super();
+    }
 
     @Override
     public Track getTrack(File dataSource) throws FormatNotSupportedException, AudioFileInvalidException {

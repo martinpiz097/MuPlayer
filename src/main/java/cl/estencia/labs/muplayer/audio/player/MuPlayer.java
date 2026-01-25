@@ -2,6 +2,7 @@ package cl.estencia.labs.muplayer.audio.player;
 
 import cl.estencia.labs.ebot.bus.model.message.Message;
 import cl.estencia.labs.ebot.bus.model.pubsub.sub.MessageListener;
+import cl.estencia.labs.muplayer.audio.track.factory.TrackFactory;
 import cl.estencia.labs.muplayer.core.aucom.util.AudioSystemManager;
 import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.ebot.bus.exception.BusException;
@@ -113,7 +114,7 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
                             && path.toFile().isDirectory())
                     .map(path -> tracksLoadExecutor.submit(() -> {
                         TracksDirectory tracksDirectory = new TracksDirectory(
-                                path.toFile(), new StandardTrackFactory(),
+                                path.toFile(), TrackFactory.newFactory(),
                                 muPlayerUtil.createTracksSortComparator());
 
                         tracksDirectory.scanDirectory();
