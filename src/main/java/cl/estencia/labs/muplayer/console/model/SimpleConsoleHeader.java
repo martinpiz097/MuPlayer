@@ -3,7 +3,7 @@ package cl.estencia.labs.muplayer.console.model;
 import cl.estencia.labs.muplayer.audio.model.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.player.MusicPlayer;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.core.bus.model.MuPlayerResponse;
+import cl.estencia.labs.muplayer.core.bus.model.PlayerInfo;
 import lombok.SneakyThrows;
 
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.ARROW;
@@ -17,13 +17,13 @@ public class SimpleConsoleHeader extends ConsoleHeader {
     @Override
     public String draw(MusicPlayer player) {
         StringBuilder sbHeader = new StringBuilder();
-        MuPlayerResponse muPlayerResponse = GLOBAL_CACHE.loadValue(
-                PLAYER_CURRENT_DATA, MuPlayerResponse.class);
-        Track currentTrack = muPlayerResponse != null
-                ? muPlayerResponse.getCurrentTrack()
+        PlayerInfo playerInfo = GLOBAL_CACHE.loadValue(
+                PLAYER_CURRENT_DATA, PlayerInfo.class);
+        Track currentTrack = playerInfo != null
+                ? playerInfo.getCurrentTrack()
                 : player.getCurrentTrack().get();
-        PlayerStatusData playerStatusData = muPlayerResponse != null
-                ? muPlayerResponse.getPlayerStatusData()
+        PlayerStatusData playerStatusData = playerInfo != null
+                ? playerInfo.getPlayerStatusData()
                 : player.getPlayerStatusData();
 
         var systemVolume = player.getSystemVolume();

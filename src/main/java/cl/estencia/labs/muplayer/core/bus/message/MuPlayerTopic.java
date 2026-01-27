@@ -1,5 +1,9 @@
 package cl.estencia.labs.muplayer.core.bus.message;
 
+// son ActionTopics, usados para ejecutar "acciones" especificas dentro
+// del reproductor, para obtener informacion del mismo se puede
+// usar el listener del objeto PlayerInfo o directamente los metodos de MusicPlayer
+// aunque la idea es ir orientandolo mas a eventos
 public enum MuPlayerTopic {
     PLAYER_RESPONSE,
     START,
@@ -19,6 +23,5 @@ public enum MuPlayerTopic {
     GOTO,
     MUTE,
     UNMUTE,
-    GET_VOLUME,
     SET_VOLUME
 }

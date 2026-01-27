@@ -23,7 +23,7 @@ public class StandardTrackFactory extends TrackFactory {
     }
 
     @Override
-    public Track getTrack(File dataSource) throws FormatNotSupportedException, AudioFileInvalidException {
+    public Track loadTrack(File dataSource) {
         try {
             // aca ya se evalua si el formato esta soportado, solo que de una manera mas directa
             if (dataSource == null || !dataSource.exists() || dataSource.isDirectory()) {
@@ -42,7 +42,7 @@ public class StandardTrackFactory extends TrackFactory {
                 case mp3 -> new MP3Track(dataSource);
                 case ogg -> new OGGTrack(dataSource);
             };
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | AudioFileInvalidException | FormatNotSupportedException e) {
 //            log.error(e.getMessage(), e);
             log.warn(e.getMessage());
             return null;

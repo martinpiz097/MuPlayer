@@ -47,8 +47,7 @@ public class DaemonRunner extends ConsoleRunner {
         infoLine("MuPlayer daemon mode started.");
         interpreter.setOn(true);
 
-        Socket reqSocket = null;
-
+        Socket reqSocket;
         infoLine("Waiting clients...");
         while (interpreter.isOn() && networkServer.isAlive()) {
             try {

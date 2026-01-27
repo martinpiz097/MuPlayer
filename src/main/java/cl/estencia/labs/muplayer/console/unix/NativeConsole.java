@@ -18,6 +18,7 @@ import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.*;
 import static cl.estencia.labs.muplayer.console.unix.InputMode.COMMANDS;
 import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.cartReturn;
 import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.info;
+import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.print;
 
 @Getter
 public class NativeConsole extends Console {
@@ -71,10 +72,6 @@ public class NativeConsole extends Console {
         sbInput.append(command);
 
 //        info((cartReturn(cartReturnColumns) + command);
-    }
-
-    private void printKey(int key) {
-        info((char) key);
     }
 
     private void sendInputEvent(KeyInputEvent event) {
@@ -146,7 +143,9 @@ public class NativeConsole extends Console {
             consoleHistory.updateCurrentCommand(sbInput.toString());
         }
 
-        printKey(key);
+        System.out.println(key);
+
+        print((char) key);
     }
 
     private void handleInput(int key, byte[] sequence) {

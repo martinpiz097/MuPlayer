@@ -6,14 +6,12 @@ import cl.estencia.labs.muplayer.audio.model.TrackStatusData;
 import cl.estencia.labs.muplayer.audio.player.MusicPlayer;
 import cl.estencia.labs.muplayer.audio.model.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.audio.track.factory.StandardTrackFactory;
 import cl.estencia.labs.muplayer.audio.track.factory.TrackFactory;
 import cl.estencia.labs.muplayer.core.bus.message.Events;
 import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
 import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
-import cl.estencia.labs.muplayer.core.exception.AudioFileInvalidException;
-import cl.estencia.labs.muplayer.core.exception.FormatNotSupportedException;
 import cl.estencia.labs.muplayer.core.util.FilterUtil;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -33,7 +31,7 @@ public class MuPlayerUtil {
     private final List<Track> listTracks;
     private final List<File> listFolders;
     private final PlayerStatusData playerStatusData;
-    private final TrackFactory trackFactory;
+    @Getter private final TrackFactory trackFactory;
     private final MessageBus messageBus;
 
     public MuPlayerUtil(MusicPlayer player, PlayerStatusData playerStatusData) {
@@ -45,18 +43,19 @@ public class MuPlayerUtil {
         this.messageBus = MessageBusUtil.getMessageBus();
     }
 
-    public Track loadTrackFromFile(File audioFile) {
-        try {
-            return trackFactory.getTrack(audioFile);
-        } catch (AudioFileInvalidException | FormatNotSupportedException e) {
-            log.warn(e.getMessage());
-            return null;
-        }
-    }
-
     public boolean isCurrentTrackActive() {
         AtomicReference<Track> currentTrack = player.getCurrentTrack();
         return currentTrack.get() != null  && currentTrack.get().isActive();
+    }
+
+    public void clearLists() {
+        synchronized (listTracks) {
+            listTracks.clear();
+        }
+
+        synchronized (listFolders) {
+            listFolders.clear();
+        }
     }
 
     public void killActiveTracks() {
@@ -134,7 +133,7 @@ public class MuPlayerUtil {
         }
 
         File dataSource = current.getDataSource();
-        current = loadTrackFromFile(dataSource);
+        current = trackFactory.loadTrack(dataSource);
         if (current == null) {
             return;
         }

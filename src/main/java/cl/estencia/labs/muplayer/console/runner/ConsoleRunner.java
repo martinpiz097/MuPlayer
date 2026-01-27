@@ -7,7 +7,6 @@ import cl.estencia.labs.muplayer.console.PlayerCommandInterpreter;
 import cl.estencia.labs.muplayer.console.command.Command;
 import cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
-import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import cl.estencia.labs.muplayer.core.system.SysInfo;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -88,7 +87,7 @@ public abstract class ConsoleRunner implements Runnable {
         try {
             ConsoleOutput consoleOutput = interpreter.execute(cmd);
             if (consoleOutput != null && consoleOutput.hasOutput()) {
-                infoLine(consoleOutput);
+                infoLine(consoleOutput.getOutputMsg());
             }
 
         } catch (Exception e) {

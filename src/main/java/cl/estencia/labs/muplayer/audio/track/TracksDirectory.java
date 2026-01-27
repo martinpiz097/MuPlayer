@@ -18,9 +18,9 @@ public class TracksDirectory {
     private final TrackFactory trackFactory;
     private final Comparator<Track> tracksComparator;
 
-    public TracksDirectory(File folder, TrackFactory trackFactory, Comparator<Track> tracksComparator) {
+    public TracksDirectory(File folder, Comparator<Track> tracksComparator) {
         this.folder = folder;
-        this.trackFactory = trackFactory;
+        this.trackFactory = TrackFactory.newFactory();
         this.tracksComparator = tracksComparator;
         this.tracks = CollectionUtil.newFastArrayList();
     }
@@ -41,15 +41,12 @@ public class TracksDirectory {
         final int filesCount = files.length;
         Track track;
         for (int i = 0; i < filesCount; i++) {
-            try {
-                track = trackFactory.getTrack(files[i]);
-                if (track == null) {
-                    return;
-                }
-
-                tracks.add(track);
-            } catch (FormatNotSupportedException | AudioFileInvalidException ignored) {
+            track = trackFactory.loadTrack(files[i]);
+            if (track == null) {
+                return;
             }
+
+            tracks.add(track);
         }
 
         if (tracks.isEmpty()) {

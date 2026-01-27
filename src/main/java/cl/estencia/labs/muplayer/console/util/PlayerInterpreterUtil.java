@@ -16,9 +16,8 @@ import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
 import cl.estencia.labs.muplayer.console.runner.LocalRunner;
 import cl.estencia.labs.muplayer.console.unix.NativeConsole;
 import cl.estencia.labs.muplayer.core.bus.message.Events;
-import cl.estencia.labs.muplayer.core.bus.model.MuPlayerResponse;
+import cl.estencia.labs.muplayer.core.bus.model.PlayerInfo;
 import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
-import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import cl.estencia.labs.muplayer.core.util.NumberUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -62,7 +61,7 @@ public class PlayerInterpreterUtil {
         }
     }
 
-    public static void printTracks(MusicPlayer player, AtomicReference<MuPlayerResponse> playerCurrentData,
+    public static void printTracks(MusicPlayer player, AtomicReference<PlayerInfo> playerCurrentData,
                                    ConsoleOutput consoleOutput, Alignment alignment) {
         if (player == null || playerCurrentData.get() == null
                 || playerCurrentData.get().getCurrentTrack() == null) {
@@ -95,7 +94,7 @@ public class PlayerInterpreterUtil {
         consoleOutput.append(consoleTable.draw());
     }
 
-    public static void printDetailedTracks(MusicPlayer player, AtomicReference<MuPlayerResponse> playerCurrentData,
+    public static void printDetailedTracks(MusicPlayer player, AtomicReference<PlayerInfo> playerCurrentData,
                                            ConsoleOutput execution) {
         final File rootFolder = player.getRootFolder();
         final List<Track> listTracks = player.getTracks();
@@ -137,7 +136,7 @@ public class PlayerInterpreterUtil {
         }
     }
 
-    public static synchronized void printFolderTracks(MusicPlayer player, File tracksFolder, AtomicReference<MuPlayerResponse> playerCurrentData,
+    public static synchronized void printFolderTracks(MusicPlayer player, File tracksFolder, AtomicReference<PlayerInfo> playerCurrentData,
                                                       ConsoleOutput consoleOutput, Alignment alignment) {
         if (player == null) {
             return;
@@ -193,13 +192,13 @@ public class PlayerInterpreterUtil {
         consoleOutput.append(consoleTable.draw());
     }
 
-    public static synchronized void printFolderTracks(MusicPlayer player, AtomicReference<MuPlayerResponse> playerCurrentData,
+    public static synchronized void printFolderTracks(MusicPlayer player, AtomicReference<PlayerInfo> playerCurrentData,
                                                       ConsoleOutput consoleOutput, Alignment alignment) {
         if (player == null) {
             return;
         }
 
-        MuPlayerResponse playerResponse = playerCurrentData.get();
+        PlayerInfo playerResponse = playerCurrentData.get();
         if (playerResponse == null) {
             return;
         }
@@ -247,7 +246,7 @@ public class PlayerInterpreterUtil {
         }
     }
 
-    public static synchronized void printFolders(MusicPlayer player, AtomicReference<MuPlayerResponse> playerCurrentData,
+    public static synchronized void printFolders(MusicPlayer player, AtomicReference<PlayerInfo> playerCurrentData,
                                                  ConsoleOutput execution) {
         final File rootFolder = player.getRootFolder();
         final List<String> listFolderPaths = player.getListFolders()
@@ -261,7 +260,7 @@ public class PlayerInterpreterUtil {
         }
         execution.append("------------------------------", info);
 
-        final MuPlayerResponse playerResponse = playerCurrentData.get();
+        final PlayerInfo playerResponse = playerCurrentData.get();
         final Track current = playerResponse != null ? playerResponse.getCurrentTrack() : null;
         if (current == null) {
             return;

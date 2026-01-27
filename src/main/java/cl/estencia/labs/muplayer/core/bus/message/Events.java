@@ -5,7 +5,7 @@ import cl.estencia.labs.ebot.bus.model.message.MessageType;
 import cl.estencia.labs.ebot.bus.model.message.SerializationType;
 import cl.estencia.labs.muplayer.audio.model.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.core.bus.model.MuPlayerResponse;
+import cl.estencia.labs.muplayer.core.bus.model.PlayerInfo;
 import cl.estencia.labs.muplayer.core.bus.model.SkipData;
 import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
 
@@ -23,12 +23,12 @@ public class Events {
         return createMsg(topic, "");
     }
 
-    public static Message playerResponse(MuPlayerResponse muPlayerResponse) {
-        return createMsg(PLAYER_RESPONSE, muPlayerResponse);
+    public static Message playerResponse(PlayerInfo playerInfo) {
+        return createMsg(PLAYER_RESPONSE, playerInfo);
     }
 
     public static Message playerResponse(AtomicReference<Track> currentTrack, PlayerStatusData playerStatusData) {
-        return playerResponse(new MuPlayerResponse(
+        return playerResponse(new PlayerInfo(
                 currentTrack.get(), playerStatusData));
     }
 
@@ -108,9 +108,9 @@ public class Events {
         return createMsg(UNMUTE);
     }
 
-    public static Message getVolume() {
-        return createMsg(GET_VOLUME);
-    }
+//    public static Message getVolume() {
+//        return createMsg(GET_VOLUME);
+//    }
 
     public static Message setVolume(float volume) {
         return createMsg(SET_VOLUME, volume);

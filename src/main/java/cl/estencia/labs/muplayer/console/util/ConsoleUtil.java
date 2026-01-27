@@ -1,13 +1,7 @@
 package cl.estencia.labs.muplayer.console.util;
 
-import cl.estencia.labs.muplayer.audio.model.PlayerStatusData;
-import cl.estencia.labs.muplayer.audio.player.MusicPlayer;
-import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.config.model.MuPlayerConfigKeys;
 import cl.estencia.labs.muplayer.config.reader.MuPlayerConfigReader;
-import cl.estencia.labs.muplayer.console.common.enums.ConsoleHeaderMode;
 import cl.estencia.labs.muplayer.console.common.enums.OutputLevel;
-import cl.estencia.labs.muplayer.core.bus.model.MuPlayerResponse;
 
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
@@ -15,14 +9,8 @@ import java.io.FileOutputStream;
 
 import static cl.estencia.labs.muplayer.console.command.ConsoleColor.*;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.*;
-import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.ARROW;
-import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SINGLE_VERTICAL_LINE;
-import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE_CHAR;
 import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.*;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputLevel.info;
-import static cl.estencia.labs.muplayer.console.util.ConsolePaintUtil.*;
-import static cl.estencia.labs.muplayer.core.cache.CacheManager.GLOBAL_CACHE;
-import static cl.estencia.labs.muplayer.core.cache.CacheVar.PLAYER_CURRENT_DATA;
 
 public class ConsoleUtil {
     private static final MuPlayerConfigReader MU_PLAYER_CONFIG_READER = MuPlayerConfigReader.getInstance();

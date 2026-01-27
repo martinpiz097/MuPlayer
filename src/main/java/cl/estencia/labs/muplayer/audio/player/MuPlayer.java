@@ -2,7 +2,6 @@ package cl.estencia.labs.muplayer.audio.player;
 
 import cl.estencia.labs.ebot.bus.model.message.Message;
 import cl.estencia.labs.ebot.bus.model.pubsub.sub.MessageListener;
-import cl.estencia.labs.muplayer.audio.track.factory.TrackFactory;
 import cl.estencia.labs.muplayer.core.aucom.util.AudioSystemManager;
 import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.ebot.bus.exception.BusException;
@@ -15,13 +14,12 @@ import cl.estencia.labs.muplayer.audio.model.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.model.TrackIndexed;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.TracksDirectory;
-import cl.estencia.labs.muplayer.audio.track.factory.StandardTrackFactory;
 import cl.estencia.labs.muplayer.audio.track.state.TrackStateName;
 import cl.estencia.labs.muplayer.audio.util.AudioFileUtil;
 import cl.estencia.labs.muplayer.audio.util.MuPlayerUtil;
 import cl.estencia.labs.muplayer.core.bus.listener.PlayerResponseListener;
 import cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic;
-import cl.estencia.labs.muplayer.core.bus.model.MuPlayerResponse;
+import cl.estencia.labs.muplayer.core.bus.model.PlayerInfo;
 import cl.estencia.labs.muplayer.core.bus.model.SkipData;
 import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
 import cl.estencia.labs.muplayer.core.cache.CacheVar;
@@ -31,8 +29,6 @@ import cl.estencia.labs.muplayer.core.util.FilterUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -53,6 +49,7 @@ import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.PREV;
 import static cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic.*;
 import static cl.estencia.labs.muplayer.core.cache.CacheManager.GLOBAL_CACHE;
+import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.printLine;
 
 @Slf4j
 public class MuPlayer extends MusicPlayer implements SystemVolumeController {
@@ -102,10 +99,7 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
             // TODO si cambio a map, este metodo debe modificarse
             if (hasSounds()) {
                 muPlayerUtil.killActiveTracks();
-
-                listTracks.clear();
-                listFolders.clear();
-//                trackDirectories.clear();
+                muPlayerUtil.clearLists();
             }
 
             List<Future<TracksDirectory>> tasks = CollectionUtil.newFastList(500);
@@ -114,8 +108,7 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
                             && path.toFile().isDirectory())
                     .map(path -> tracksLoadExecutor.submit(() -> {
                         TracksDirectory tracksDirectory = new TracksDirectory(
-                                path.toFile(), TrackFactory.newFactory(),
-                                muPlayerUtil.createTracksSortComparator());
+                                path.toFile(), muPlayerUtil.createTracksSortComparator());
 
                         tracksDirectory.scanDirectory();
                         tasksCounter.increment();
@@ -133,12 +126,20 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
                     .filter(directory -> directory != null && directory.hasTracks())
                     .sorted(Comparator.comparing(TracksDirectory::getPath))
                     .forEachOrdered(tracksDirectory -> {
-//                        trackDirectories.put(counter.getAndIncrement(), tracksDirectory);
-                        listTracks.addAll(tracksDirectory.getTracks());
+                        System.out.println("XD");
+                        synchronized (listTracks) {
+                            listTracks.addAll(tracksDirectory.getTracks());
+                            printLine("size: " + listTracks.size());
+                        }
+
                         foldersSet.add(tracksDirectory.getFolder());
                     });
 
-            listFolders.addAll(foldersSet);
+            System.out.println("track_directories: " + tasks.size());
+            synchronized (listFolders) {
+                listFolders.addAll(foldersSet);
+            }
+
             tracksLoadExecutor.shutdown();
         } catch (IOException e) {
             log.error(e.getMessage(), e);
@@ -217,9 +218,6 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
 
             addListener(MUTE, message -> mute());
             addListener(UNMUTE, message -> unMute());
-
-//            addListener(GET_VOLUME, message -> {
-//            });
 
             addListener(SET_VOLUME, message -> {
                 float volume = message.getData(Float.class);
@@ -345,7 +343,7 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
     public void addResponseListener(PlayerResponseListener responseListener) {
         addListener(PLAYER_RESPONSE, message ->
                 responseListener.onPlayerResponse(
-                        message.getData(MuPlayerResponse.class)));
+                        message.getData(PlayerInfo.class)));
     }
 
     @Override
@@ -587,7 +585,7 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
         TrackIndexed trackIndexed = muPlayerUtil.getTrackIndexedFromCondition(filter);
 
         if (trackIndexed == null) {
-            Track newTrack = muPlayerUtil.loadTrackFromFile(trackFile);
+            Track newTrack = muPlayerUtil.getTrackFactory().loadTrack(trackFile);
             listTracks.add(newTrack);
             if (!CollectionUtil.existsFolder(listFolders, trackFile.getParent())) {
                 listFolders.add(trackFile.getParentFile());
@@ -777,8 +775,7 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
         }
 
         muPlayerUtil.killCurrentTrackIfActive();
-        listTracks.clear();
-        listFolders.clear();
+        muPlayerUtil.clearLists();
     }
 
 }

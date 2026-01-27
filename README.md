@@ -108,8 +108,8 @@ player.sendEvent(Events.shutdown());
 ```java
 import cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic;
 
-player.addResponseListener(muPlayerResponse -> {
-    Track currentTrack = muPlayerResponse.getCurrentTrack();
+player.addResponseListener(playerInfo -> {
+    Track currentTrack = playerInfo.getCurrentTrack();
     infoLine("Now playing: " + currentTrack.getTitle());
 });
 ```

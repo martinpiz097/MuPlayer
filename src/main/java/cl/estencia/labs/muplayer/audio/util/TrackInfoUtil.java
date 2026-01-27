@@ -1,6 +1,6 @@
 package cl.estencia.labs.muplayer.audio.util;
 
-import cl.estencia.labs.muplayer.audio.track.data.TrackInfo;
+import cl.estencia.labs.muplayer.audio.track.data.TrackFileMetadata;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.jaudiotagger.audio.AudioFile;
@@ -69,9 +69,9 @@ public class TrackInfoUtil {
         return header != null ? header.getBitRateAsNumber() : 0;
     }
 
-    public static TrackInfo loadTrackInfo(File trackFile) {
+    public static TrackFileMetadata loadTrackInfo(File trackFile) {
         if (trackFile == null) {
-            return new TrackInfo();
+            return new TrackFileMetadata();
         }
 
         try {
@@ -81,10 +81,10 @@ public class TrackInfoUtil {
             double duration = readDuration(audioFile);
             long bitRate = readBitRate(audioFile);
 
-            return new TrackInfo(tags, coverData, duration, bitRate);
+            return new TrackFileMetadata(tags, coverData, duration, bitRate);
         } catch (Exception e) {
 //            log.error(e.getMessage(), e);
-            return new TrackInfo();
+            return new TrackFileMetadata();
         }
     }
 

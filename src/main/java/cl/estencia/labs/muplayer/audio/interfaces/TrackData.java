@@ -1,5 +1,6 @@
 package cl.estencia.labs.muplayer.audio.interfaces;
 
+import cl.estencia.labs.muplayer.audio.track.data.Cover;
 import org.jaudiotagger.tag.FieldKey;
 
 public interface TrackData {
@@ -10,6 +11,7 @@ public interface TrackData {
     String getAlbum();
     String getArtist();
     String getYear();
+    Cover getCover();
     byte[] getCoverData();
 
     String getEncoder();

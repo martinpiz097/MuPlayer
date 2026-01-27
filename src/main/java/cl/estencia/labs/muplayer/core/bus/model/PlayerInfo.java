@@ -5,11 +5,9 @@ import cl.estencia.labs.muplayer.audio.track.Track;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.io.File;
-
 @Getter
 @AllArgsConstructor
-public class MuPlayerResponse {
+public class PlayerInfo {
     private final Track currentTrack;
     private final PlayerStatusData playerStatusData;
 }

@@ -25,7 +25,7 @@ public class ConsoleHistory {
     }
 
     public void changeIndex(boolean next) {
-        infoLine(commands);
+        infoLine(commands.toString());
         if (next) {
             currentCommandIndex = Math.min(currentCommandIndex + 1, commands.size() - 1);
             infoLine("("+currentCommandIndex+"/"+(commands.size()-1)+"; "+commands.size()+") next index");

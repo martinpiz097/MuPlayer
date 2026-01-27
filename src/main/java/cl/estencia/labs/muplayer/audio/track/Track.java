@@ -1,18 +1,17 @@
 package cl.estencia.labs.muplayer.audio.track;
 
+import cl.estencia.labs.muplayer.audio.track.data.Cover;
 import cl.estencia.labs.muplayer.core.aucom.device.output.Speaker;
 import cl.estencia.labs.muplayer.core.aucom.io.AudioDecoder;
 import cl.estencia.labs.muplayer.core.aucom.util.AudioSystemManager;
 import cl.estencia.labs.muplayer.audio.interfaces.ControllableMusic;
 import cl.estencia.labs.muplayer.audio.interfaces.TrackData;
 import cl.estencia.labs.muplayer.audio.model.TrackStatusData;
-import cl.estencia.labs.muplayer.audio.track.data.TrackInfo;
+import cl.estencia.labs.muplayer.audio.track.data.TrackFileMetadata;
 import cl.estencia.labs.muplayer.audio.track.data.HeaderData;
 import cl.estencia.labs.muplayer.audio.track.state.*;
-import cl.estencia.labs.muplayer.core.exception.MuPlayerException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.jaudiotagger.tag.FieldKey;
 
@@ -37,7 +36,7 @@ public abstract class Track extends Thread
     protected final HeaderData headerData;
 
     @Getter protected final TrackStatusData trackStatusData;
-    @Getter protected final TrackInfo trackInfo;
+    @Getter protected final TrackFileMetadata metadata;
 
     protected volatile TrackState trackState;
 
@@ -53,7 +52,7 @@ public abstract class Track extends Thread
         this.speaker = new Speaker(audioDecoder.getDecodedAudioStream());
         this.headerData = initHeaderData();
         this.trackStatusData = new TrackStatusData();
-        this.trackInfo = loadTrackInfo(dataSource);
+        this.metadata = loadTrackInfo(dataSource);
         this.trackState = new UnknownState(this);
         this.audioSystemManager = new AudioSystemManager();
     }
@@ -83,7 +82,7 @@ public abstract class Track extends Thread
 
     @Override
     public long getDuration() {
-        return Math.round(trackInfo.getDuration());
+        return Math.round(metadata.getDuration());
     }
 
     @Override
@@ -275,17 +274,17 @@ public abstract class Track extends Thread
 
     @Override
     public boolean hasCover() {
-        return trackInfo.hasCover();
+        return metadata.hasCover();
     }
 
     @Override
     public String getProperty(String key) {
-        return trackInfo.getTag(key);
+        return metadata.getTag(key);
     }
 
     @Override
     public String getProperty(FieldKey key) {
-        return trackInfo.getTag(key);
+        return metadata.getTag(key);
     }
 
     @Override
@@ -313,8 +312,13 @@ public abstract class Track extends Thread
     }
 
     @Override
+    public Cover getCover() {
+        return metadata.getCover();
+    }
+
+    @Override
     public byte[] getCoverData() {
-        return trackInfo.getCoverData();
+        return getCover().coverData();
     }
 
     @Override
@@ -324,7 +328,7 @@ public abstract class Track extends Thread
 
     @Override
     public long getBitrate() {
-        return trackInfo.getBitRate();
+        return metadata.getBitRate();
     }
 
     @Override
