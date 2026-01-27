@@ -49,10 +49,10 @@ public class NativeConsole extends Console {
         this.inputConfig = new InputConfig(inputMode, false, toggleModeKey, unlockKeyCode);
         this.sbInput = new StringBuilder();
         this.defaultKeyInterceptors = loadDefaultKeyInterceptors();
-        this.keyInterceptors = CollectionUtil.newFastArrayList();
-        this.altKeyCombinationListeners = CollectionUtil.newFastArrayList();
-        this.keyInputListeners = CollectionUtil.newFastArrayList();
-        this.lineInputListeners = CollectionUtil.newFastArrayList();
+        this.keyInterceptors = CollectionUtil.newMiniList();
+        this.altKeyCombinationListeners = CollectionUtil.newMiniList();
+        this.keyInputListeners = CollectionUtil.newMiniList();
+        this.lineInputListeners = CollectionUtil.newMiniList();
         this.consoleHistory = new ConsoleHistory();
         setName("native-console");
     }
@@ -159,7 +159,7 @@ public class NativeConsole extends Console {
     }
 
     public List<KeyInterceptor> loadDefaultKeyInterceptors() {
-        List<KeyInterceptor> defaultInterceptors = CollectionUtil.newFastArrayList();
+        List<KeyInterceptor> defaultInterceptors = CollectionUtil.newMiniList();
 
         defaultInterceptors.add(new KeyInterceptor(inputConfig.getUnlockKey()) {
             @Override

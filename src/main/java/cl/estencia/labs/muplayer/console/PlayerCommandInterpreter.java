@@ -13,10 +13,8 @@ import cl.estencia.labs.muplayer.core.bus.model.SkipData;
 import cl.estencia.labs.muplayer.config.reader.ConsoleCodesReader;
 import cl.estencia.labs.muplayer.console.command.Command;
 import cl.estencia.labs.muplayer.console.command.CommandInterpreter;
-import cl.estencia.labs.muplayer.console.common.constants.ConsoleMessages;
 import cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
-import cl.estencia.labs.muplayer.console.model.ConsoleImage;
 import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
 import cl.estencia.labs.muplayer.console.runner.DaemonRunner;
 import cl.estencia.labs.muplayer.console.runner.LocalRunner;
@@ -29,13 +27,14 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.LockSupport;
 
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleChars.CART_RETURN;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SANDGLASS;
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.CLEAN;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputLevel.*;
 import static cl.estencia.labs.muplayer.console.util.PlayerInterpreterUtil.*;
@@ -46,7 +45,7 @@ import static cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic.SHUTDOWN;
 import static cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic.START;
 import static cl.estencia.labs.muplayer.core.cache.CacheManager.GLOBAL_CACHE;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.*;
-import static java.nio.file.StandardOpenOption.WRITE;
+import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.printLine;
 
 @Slf4j
 public class PlayerCommandInterpreter implements CommandInterpreter {
@@ -106,8 +105,8 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
 
                     player.addListener(START, message -> {
                         while (!player.isOn()) {
-//                            printLine(String.valueOf(CART_RETURN) + SANDGLASS
-//                                    + " Loading " + player.getTracks().size() + " tracks ...");
+                            printLine(String.valueOf(CART_RETURN) + SANDGLASS
+                                    + " Loading " + player.getTracks().size() + " tracks ...");
                             LockSupport.parkNanos(Duration.ofMillis(1).toNanos());
                         }
                     });
@@ -481,7 +480,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     consoleOutput.append("Search filters not found!", warn);
                 } else {
                     final String searchFilter = cmd.getOptionsAsString();
-                    final List<String> listResults = CollectionUtil.newFastList(10);
+                    final List<String> listResults = CollectionUtil.newMiniList();
 
                     player.getTracks().parallelStream()
                             .filter(track -> track.getTitle().toLowerCase()

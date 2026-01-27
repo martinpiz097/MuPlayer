@@ -4,7 +4,7 @@ import cl.estencia.labs.muplayer.audio.track.data.Cover;
 import cl.estencia.labs.muplayer.core.aucom.device.output.Speaker;
 import cl.estencia.labs.muplayer.core.aucom.io.AudioDecoder;
 import cl.estencia.labs.muplayer.core.aucom.util.AudioSystemManager;
-import cl.estencia.labs.muplayer.audio.interfaces.ControllableMusic;
+import cl.estencia.labs.muplayer.audio.interfaces.AudioElement;
 import cl.estencia.labs.muplayer.audio.interfaces.TrackData;
 import cl.estencia.labs.muplayer.audio.model.TrackStatusData;
 import cl.estencia.labs.muplayer.audio.track.data.TrackFileMetadata;
@@ -29,7 +29,7 @@ import static cl.estencia.labs.muplayer.audio.util.TrackInfoUtil.loadTrackInfo;
 @EqualsAndHashCode(callSuper = true)
 @Slf4j
 public abstract class Track extends Thread
-        implements Runnable, ControllableMusic, TrackData {
+        implements Runnable, AudioElement, TrackData {
     @Getter protected final File dataSource;
     @Getter protected final AudioDecoder audioDecoder;
     @Getter protected final Speaker speaker;

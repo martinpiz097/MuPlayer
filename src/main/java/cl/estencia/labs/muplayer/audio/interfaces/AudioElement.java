@@ -2,7 +2,7 @@ package cl.estencia.labs.muplayer.audio.interfaces;
 
 import cl.estencia.labs.muplayer.core.system.Time;
 
-public interface ControllableMusic {
+public interface AudioElement {
     boolean isPlaying();
     boolean isPaused();
     boolean isStopped();

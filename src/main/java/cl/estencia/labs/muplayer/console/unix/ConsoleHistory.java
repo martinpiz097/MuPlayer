@@ -11,7 +11,7 @@ public class ConsoleHistory {
     private volatile int currentCommandIndex;
 
     public ConsoleHistory() {
-        this.commands = CollectionUtil.newFastArrayList();
+        this.commands = CollectionUtil.newShortList();
         this.currentCommandIndex = 0;
     }
 

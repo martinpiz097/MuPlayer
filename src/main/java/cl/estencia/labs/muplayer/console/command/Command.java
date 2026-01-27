@@ -99,7 +99,7 @@ public class Command {
     }
 
     public List<String> getAllAsList() {
-        List<String> listCmd = CollectionUtil.newFastArrayList();
+        List<String> listCmd = CollectionUtil.newMiniList();
         listCmd.add(order.trim());
 
         int optCount = getOptionsCount();

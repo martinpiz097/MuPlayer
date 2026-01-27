@@ -3,15 +3,20 @@ package cl.estencia.labs.muplayer.core.bus.message;
 import cl.estencia.labs.ebot.bus.model.message.Message;
 import cl.estencia.labs.ebot.bus.model.message.MessageType;
 import cl.estencia.labs.ebot.bus.model.message.SerializationType;
+import cl.estencia.labs.muplayer.audio.interfaces.AudioElement;
 import cl.estencia.labs.muplayer.audio.model.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.core.bus.model.PlayerInfo;
 import cl.estencia.labs.muplayer.core.bus.model.SkipData;
 import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
+import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 
+import java.io.File;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic.*;
+import static cl.estencia.labs.muplayer.core.util.CollectionUtil.newList;
 
 public class Events {
     public static Message createMsg(MuPlayerTopic topic, Object data) {
@@ -23,13 +28,18 @@ public class Events {
         return createMsg(topic, "");
     }
 
-    public static Message playerResponse(PlayerInfo playerInfo) {
+    public static Message playerInfo(PlayerInfo playerInfo) {
         return createMsg(PLAYER_RESPONSE, playerInfo);
     }
 
-    public static Message playerResponse(AtomicReference<Track> currentTrack, PlayerStatusData playerStatusData) {
-        return playerResponse(new PlayerInfo(
-                currentTrack.get(), playerStatusData));
+    public static Message playerInfo(AtomicReference<Track> currentTrack,
+                                     List<Track> tracks,
+                                     List<File> folders,
+                                     PlayerStatusData playerStatusData) {
+        return playerInfo(new PlayerInfo(
+                currentTrack.get(),
+                newList(tracks),
+                newList(folders), playerStatusData));
     }
 
     public static Message start() {

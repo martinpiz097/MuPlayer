@@ -18,7 +18,7 @@ public class TableColumnTitle {
 
     public TableColumnTitle(String color) {
         this.color = ConsoleUtil.isValidColor(color) ? color : ConsoleUtil.getColorFromLevel(info);
-        this.cells = CollectionUtil.newFastArrayList();
+        this.cells = CollectionUtil.newList();
     }
 
     public void addCell(Object value) {

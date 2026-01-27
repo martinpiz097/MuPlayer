@@ -6,8 +6,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PlayerStatusData extends VolumeStatusData {
-    private volatile int currentTrackIndex;
-    private volatile boolean on;
+    protected volatile int currentTrackIndex;
+    protected volatile boolean on;
 
     public PlayerStatusData() {
         super();

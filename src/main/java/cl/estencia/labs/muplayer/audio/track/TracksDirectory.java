@@ -22,7 +22,7 @@ public class TracksDirectory {
         this.folder = folder;
         this.trackFactory = TrackFactory.newFactory();
         this.tracksComparator = tracksComparator;
-        this.tracks = CollectionUtil.newFastArrayList();
+        this.tracks = CollectionUtil.newList();
     }
 
     // tendre una doble validacion porque esto lo revisa el trackFactory

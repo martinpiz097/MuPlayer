@@ -58,10 +58,9 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
 
     private final List<Track> listTracks;
     private final List<File> listFolders;
-//    private final Map<Integer, TracksDirectory> trackDirectories;
 
     private final PlayerStatusData playerStatusData;
-    @Getter private final MuPlayerUtil muPlayerUtil;
+    private final MuPlayerUtil muPlayerUtil;
     private final AudioSystemManager audioSystemManager;
 
     private final Interruptor interruptor;
@@ -74,9 +73,8 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
     public MuPlayer(File rootFolder) throws FileNotFoundException {
         this.rootFolder = rootFolder;
         this.currentTrack = new AtomicReference<>();
-        this.listTracks = CollectionUtil.newFastArrayList();
-        this.listFolders = CollectionUtil.newMinimalFastArrayList();
-//        this.trackDirectories = CollectionUtil.newFastMap();
+        this.listTracks = CollectionUtil.newBigList();
+        this.listFolders = CollectionUtil.newList();
         this.playerStatusData = new PlayerStatusData();
         this.muPlayerUtil = new MuPlayerUtil(this, playerStatusData);
         this.audioSystemManager = new AudioSystemManager();
@@ -102,7 +100,7 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
                 muPlayerUtil.clearLists();
             }
 
-            List<Future<TracksDirectory>> tasks = CollectionUtil.newFastList(500);
+            List<Future<TracksDirectory>> tasks = CollectionUtil.newList();
             LongAdder tasksCounter = new LongAdder();
             paths.filter(path -> path.toFile().exists()
                             && path.toFile().isDirectory())
@@ -277,7 +275,7 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
     public synchronized List<File> getTrackFiles() {
         return listTracks.stream()
                 .map(Track::getDataSource)
-                .collect(Collectors.toCollection(CollectionUtil::newFastArrayList));
+                .collect(Collectors.toCollection(CollectionUtil::newList));
     }
 
     @Override
@@ -307,7 +305,7 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
                     }
                 });
 
-        final List<Artist> listArtists = CollectionUtil.newFastList(setArtists);
+        final List<Artist> listArtists = CollectionUtil.newList(setArtists);
         listArtists.sort(Comparator.comparing(Artist::getName));
         return listArtists;
     }
@@ -334,7 +332,7 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
                     }
                 });
 
-        final List<Album> listAlbums = CollectionUtil.newFastList(setAlbums);
+        final List<Album> listAlbums = CollectionUtil.newList(setAlbums);
         listAlbums.sort(Comparator.comparing(Album::getName));
         return listAlbums;
     }
@@ -540,7 +538,7 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
         }
 
         muPlayerUtil.playNewTrack(index);
-        muPlayerUtil.sendTrackChangedEvent();
+        muPlayerUtil.sendPlayerInfoEvent();
     }
 
     @Override

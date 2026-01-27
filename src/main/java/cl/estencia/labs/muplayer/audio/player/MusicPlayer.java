@@ -1,7 +1,7 @@
 package cl.estencia.labs.muplayer.audio.player;
 
 import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
-import cl.estencia.labs.muplayer.audio.interfaces.ControllableMusic;
+import cl.estencia.labs.muplayer.audio.interfaces.AudioElement;
 import cl.estencia.labs.muplayer.audio.interfaces.SystemVolumeController;
 import cl.estencia.labs.muplayer.audio.model.Album;
 import cl.estencia.labs.muplayer.audio.model.Artist;
@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class MusicPlayer extends EventPlayer implements ControllableMusic, SystemVolumeController {
+public abstract class MusicPlayer extends EventPlayer implements AudioElement, SystemVolumeController {
     public abstract boolean isOn();
     public abstract boolean hasSounds();
     public abstract boolean isValidRootFolder();

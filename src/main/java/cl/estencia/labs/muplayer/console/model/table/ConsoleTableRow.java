@@ -44,7 +44,7 @@ public class ConsoleTableRow {
 
     public ConsoleTableRow(String color, int contentSizeLimit) {
         this.color = ConsoleUtil.isValidColor(color) ? color : ConsoleUtil.getColorFromLevel(info);
-        this.cells = CollectionUtil.newFastArrayList();
+        this.cells = CollectionUtil.newList();
         this.contentSizeLimit  = contentSizeLimit;
     }
 

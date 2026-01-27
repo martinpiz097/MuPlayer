@@ -79,7 +79,7 @@ public class ConsoleTable {
         this.color = ConsoleUtil.isValidColor(color) ? color : ConsoleUtil.getColorFromLevel(info);
         this.useInternalLines = useInternalLines;
         this.columnTitles = new TableColumnTitle(ConsoleUtil.getColorFromLevel(raw));
-        this.rows = CollectionUtil.newFastArrayList();
+        this.rows = CollectionUtil.newList();
         this.alignment = alignment != null ? alignment : Alignment.LEFT;
         this.borderPadding = borderPadding != null ? borderPadding : new Padding(0, 0, 0, 0);
         this.useSingleLines = useSingleLines;
@@ -104,7 +104,7 @@ public class ConsoleTable {
     }
 
     private List<Integer> getBiggerColumnLenghts(int columnsCount) {
-        List<Integer> columnsBigLenghts = CollectionUtil.newFastArrayList();
+        List<Integer> columnsBigLenghts = CollectionUtil.newMiniList();
 
         if (!rows.isEmpty()) {
             for (int i = 0; i < columnsCount; i++) {

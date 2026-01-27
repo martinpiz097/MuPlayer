@@ -70,12 +70,15 @@ public class MuPlayerUtil {
         }
     }
 
-    public void sendTrackChangedEvent() {
+    public void sendPlayerInfoEvent() {
         if (messageBus == null || messageBus.getState() == Thread.State.TERMINATED) {
             return;
         }
 
-        player.sendEvent(Events.playerResponse(player.getCurrentTrack(), playerStatusData));
+        player.sendEvent(Events.playerInfo(player.getCurrentTrack(),
+                player.getTracks(),
+                player.getListFolders(),
+                playerStatusData));
     }
 
     public int getFolderIndex(Track current) {
