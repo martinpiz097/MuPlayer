@@ -1,9 +1,12 @@
 package cl.estencia.labs.muplayer.core.aucom.io;
 
+import cl.estencia.labs.muplayer.audio.common.enums.SupportedAudioExtension;
+import cl.estencia.labs.muplayer.audio.track.decoder.DefaultAudioDecoder;
+import cl.estencia.labs.muplayer.audio.track.decoder.FlacAudioDecoder;
+import cl.estencia.labs.muplayer.audio.util.AudioFileUtil;
 import cl.estencia.labs.muplayer.core.aucom.util.AudioDecodingUtil;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.sampled.AudioFormat;
@@ -40,15 +43,6 @@ public abstract class AudioDecoder {
         this.decodedAudioStream = buildDecodedAudioStream();
     }
 
-    protected AudioInputStream initSourceStream(File file) {
-        try {
-            return AudioSystem.getAudioInputStream(file);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     public synchronized AudioFormat getDecodedFormat() {
         return decodedAudioStream.getFormat();
     }
@@ -69,15 +63,21 @@ public abstract class AudioDecoder {
     }
 
     public AudioInputStream buildDecodedAudioStream() {
-        AudioInputStream sourceStream = initSourceStream(source);
-        if (sourceStream == null) {
+        try {
+            AudioInputStream sourceStream = AudioSystem.getAudioInputStream(source);
+            if (sourceStream == null) {
+                return null;
+            }
+
+            AudioFormat baseFormat = sourceStream.getFormat();
+            AudioFormat pcmFormat = convertToPcmFormat(baseFormat);
+
+            return audioDecodingUtil.decodeToPcm(sourceStream, pcmFormat);
+        } catch (UnsupportedAudioFileException | IOException e) {
+            log.error("Error on decode audio file " + source.getPath()
+                    + ": " + e.getMessage());
             return null;
         }
-
-        AudioFormat baseFormat = sourceStream.getFormat();
-        AudioFormat pcmFormat = convertToPcmFormat(baseFormat);
-
-        return audioDecodingUtil.decodeToPcm(sourceStream, pcmFormat);
     }
 
     public synchronized AudioInputStream getDecodedAudioStream() {
@@ -87,6 +87,18 @@ public abstract class AudioDecoder {
     public synchronized void setDecodedAudioStream(AudioInputStream decodedAudioStream) {
         tryCloseCurrentStream(this.decodedAudioStream);
         this.decodedAudioStream = decodedAudioStream;
+    }
+
+    public static AudioDecoder getDecoder(File audioFile, SupportedAudioExtension audioFileExtension) {
+        return switch (audioFileExtension) {
+            case flac -> new FlacAudioDecoder(audioFile);
+            default -> new DefaultAudioDecoder(audioFile);
+        };
+    }
+
+    public static AudioDecoder getDecoder(File audioFile) {
+        SupportedAudioExtension extension = AudioFileUtil.getAudioFileExtension(audioFile);
+        return getDecoder(audioFile, extension);
     }
 
 }

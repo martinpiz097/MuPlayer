@@ -37,6 +37,10 @@ public class CacheManager {
     }
 
     public <V> V loadValue(String cacheVarName, Class<V> valueClass) {
+        if (valueClass == null) {
+            return null;
+        }
+
         return valueClass.cast(mapCache.get(cacheVarName));
     }
 

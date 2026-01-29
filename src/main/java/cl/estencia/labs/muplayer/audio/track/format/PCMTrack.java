@@ -2,6 +2,7 @@ package cl.estencia.labs.muplayer.audio.track.format;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.decoder.DefaultAudioDecoder;
+import cl.estencia.labs.muplayer.core.aucom.io.AudioDecoder;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.LineUnavailableException;
@@ -11,12 +12,12 @@ import java.io.IOException;
 
 public class PCMTrack extends Track {
 
-    public PCMTrack(String trackPath) {
-        this(new File(trackPath));
+    public PCMTrack(String trackPath, AudioDecoder audioDecoder) {
+        super(trackPath, audioDecoder);
     }
 
-    public PCMTrack(File dataSource) {
-        super(dataSource, new DefaultAudioDecoder(dataSource));
+    public PCMTrack(File dataSource, AudioDecoder audioDecoder) {
+        super(dataSource, audioDecoder);
     }
 
     @Override

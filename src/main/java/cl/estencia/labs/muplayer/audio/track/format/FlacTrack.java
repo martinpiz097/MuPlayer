@@ -2,6 +2,7 @@ package cl.estencia.labs.muplayer.audio.track.format;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.decoder.FlacAudioDecoder;
+import cl.estencia.labs.muplayer.core.aucom.io.AudioDecoder;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.sampled.AudioFormat;
@@ -14,12 +15,12 @@ import java.io.IOException;
 @Slf4j
 public class FlacTrack extends Track {
 
-    public FlacTrack(String trackPath) {
-        this(new File(trackPath));
+    public FlacTrack(String trackPath, AudioDecoder audioDecoder) {
+        super(trackPath, audioDecoder);
     }
 
-    public FlacTrack(File dataSource) {
-        super(dataSource, new FlacAudioDecoder(dataSource));
+    public FlacTrack(File dataSource, AudioDecoder audioDecoder) {
+        super(dataSource, audioDecoder);
     }
 
     @Override

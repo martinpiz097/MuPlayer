@@ -2,7 +2,7 @@ package cl.estencia.labs.muplayer.audio.util;
 
 import cl.estencia.labs.muplayer.audio.model.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
-import cl.estencia.labs.muplayer.audio.common.enums.SupportedAudioExtensions;
+import cl.estencia.labs.muplayer.audio.common.enums.SupportedAudioExtension;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -34,19 +34,19 @@ public class AudioFileUtil {
         return isSupportedAudioFile(audioPath.toFile());
     }
 
-    public static SupportedAudioExtensions getAudioExtensionFromFormat(String fileFormatName) {
+    public static SupportedAudioExtension getAudioExtensionFromFormat(String fileFormatName) {
         if (fileFormatName == null) {
             return null;
         }
 
         try {
-            return SupportedAudioExtensions.valueOf(fileFormatName);
+            return SupportedAudioExtension.valueOf(fileFormatName);
         } catch (Exception e) {
             return null;
         }
     }
 
-    public static SupportedAudioExtensions getAudioFileExtension(File file) {
+    public static SupportedAudioExtension getAudioFileExtension(File file) {
         return getAudioExtensionFromFormat(getFileFormatName(file));
     }
 

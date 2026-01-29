@@ -3,6 +3,7 @@ package cl.estencia.labs.muplayer.audio.track.format;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.data.HeaderData;
 import cl.estencia.labs.muplayer.audio.track.decoder.DefaultAudioDecoder;
+import cl.estencia.labs.muplayer.core.aucom.io.AudioDecoder;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.LineUnavailableException;
@@ -12,12 +13,12 @@ import java.io.IOException;
 
 public class OGGTrack extends Track {
 
-    public OGGTrack(String trackPath) {
-        this(new File(trackPath));
+    public OGGTrack(String trackPath, AudioDecoder audioDecoder) {
+        super(trackPath, audioDecoder);
     }
 
-    public OGGTrack(File dataSource) {
-        super(dataSource, new DefaultAudioDecoder(dataSource));
+    public OGGTrack(File dataSource, AudioDecoder audioDecoder) {
+        super(dataSource, audioDecoder);
     }
 
     @Override

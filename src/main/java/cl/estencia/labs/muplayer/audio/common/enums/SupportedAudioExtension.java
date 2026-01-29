@@ -1,7 +1,7 @@
 package cl.estencia.labs.muplayer.audio.common.enums;
 
 // luego cargar desde un archivo
-public enum SupportedAudioExtensions {
+public enum SupportedAudioExtension {
     aifc,   // Compressed AIFF
     aiff,   // Audio Interchange File Format
     au,     // Sun Audio

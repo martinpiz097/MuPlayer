@@ -1,12 +1,13 @@
 package cl.estencia.labs.muplayer.audio.track.factory;
 
-import cl.estencia.labs.muplayer.audio.common.enums.SupportedAudioExtensions;
+import cl.estencia.labs.muplayer.audio.common.enums.SupportedAudioExtension;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.format.FlacTrack;
 import cl.estencia.labs.muplayer.audio.track.format.MP3Track;
 import cl.estencia.labs.muplayer.audio.track.format.OGGTrack;
 import cl.estencia.labs.muplayer.audio.track.format.PCMTrack;
 import cl.estencia.labs.muplayer.audio.util.AudioFileUtil;
+import cl.estencia.labs.muplayer.core.aucom.io.AudioDecoder;
 import cl.estencia.labs.muplayer.core.exception.AudioFileInvalidException;
 import cl.estencia.labs.muplayer.core.exception.FormatNotSupportedException;
 import lombok.extern.slf4j.Slf4j;
@@ -31,22 +32,31 @@ public class StandardTrackFactory extends TrackFactory {
             }
 
             final String fileFormatName = AudioFileUtil.getFileFormatName(dataSource);
-            final SupportedAudioExtensions extension = getAudioExtensionFromFormat(fileFormatName);
+            final SupportedAudioExtension extension = getAudioExtensionFromFormat(fileFormatName);
             if (extension == null) {
                 throw new FormatNotSupportedException(fileFormatName);
             }
 
+            final AudioDecoder decoder = AudioDecoder.getDecoder(dataSource, extension);
             return switch (extension) {
-                case aifc, aiff, au, snd, wav -> new PCMTrack(dataSource);
-                case flac -> new FlacTrack(dataSource);
-                case mp3 -> new MP3Track(dataSource);
-                case ogg -> new OGGTrack(dataSource);
+                case aifc, aiff, au, snd, wav -> new PCMTrack(dataSource, decoder);
+                case flac -> new FlacTrack(dataSource, decoder);
+                case mp3 -> new MP3Track(dataSource, decoder);
+                case ogg -> new OGGTrack(dataSource, decoder);
             };
-        } catch (IllegalArgumentException | AudioFileInvalidException | FormatNotSupportedException e) {
-//            log.error(e.getMessage(), e);
-            log.warn(e.getMessage());
-            return null;
+        } catch (IllegalArgumentException e) {
+            log.error("Unhandled " + e.getClass().getSimpleName()
+                    + " and message " + e.getMessage()
+                    + " type error while loading audio track " + dataSource);
+        } catch (AudioFileInvalidException e) {
+            log.error("Error of type " + e.getClass().getSimpleName()
+                    + " and message " + e.getMessage()
+                    + " when loading audio track " + dataSource);
+        } catch (FormatNotSupportedException e) {
+            log.error(e.getMessage() + " when loading audio track " + dataSource);
         }
+
+        return null;
     }
 
 }

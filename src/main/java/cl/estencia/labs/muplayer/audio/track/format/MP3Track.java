@@ -16,16 +16,12 @@ import java.io.IOException;
 @Slf4j
 public class MP3Track extends Track {
 
-    public MP3Track(String trackPath) {
-        this(new File(trackPath));
-    }
-
-    public MP3Track(File dataSource) {
-        super(dataSource, new DefaultAudioDecoder(dataSource));
-    }
-
     public MP3Track(String trackPath, AudioDecoder audioDecoder) {
         super(trackPath, audioDecoder);
+    }
+
+    public MP3Track(File dataSource, AudioDecoder audioDecoder) {
+        super(dataSource, audioDecoder);
     }
 
     private long calculateFrameSize(MP3AudioHeader mp3AudioHeader) {
