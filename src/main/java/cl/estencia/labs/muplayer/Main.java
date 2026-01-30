@@ -9,7 +9,7 @@ import cl.estencia.labs.muplayer.config.reader.MuPlayerConfigReader;
 import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
 import cl.estencia.labs.muplayer.console.runner.DaemonRunner;
 import cl.estencia.labs.muplayer.console.runner.LocalRunner;
-import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
+import cl.estencia.labs.muplayer.core.bus.util.PlayerBusUtil;
 import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import cl.estencia.labs.muplayer.core.thread.TaskRunner;
 import lombok.extern.slf4j.Slf4j;
@@ -70,7 +70,7 @@ public class Main {
             e.printStackTrace();
             log.error("Error on MuPlayer class", e);
 
-            MessageBusUtil.shutdownMessageBus();
+            PlayerBusUtil.shutdownPlayerBus();
         }
     }
 

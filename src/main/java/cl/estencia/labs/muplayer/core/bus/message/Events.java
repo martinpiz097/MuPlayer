@@ -3,28 +3,28 @@ package cl.estencia.labs.muplayer.core.bus.message;
 import cl.estencia.labs.ebot.bus.model.message.Message;
 import cl.estencia.labs.ebot.bus.model.message.MessageType;
 import cl.estencia.labs.ebot.bus.model.message.SerializationType;
-import cl.estencia.labs.muplayer.audio.interfaces.AudioElement;
 import cl.estencia.labs.muplayer.audio.model.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;
+import cl.estencia.labs.muplayer.core.bus.model.LoadingPlayerInfo;
 import cl.estencia.labs.muplayer.core.bus.model.PlayerInfo;
 import cl.estencia.labs.muplayer.core.bus.model.SkipData;
 import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
-import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic.*;
+import static cl.estencia.labs.muplayer.core.bus.message.PlayerEventTopics.*;
 import static cl.estencia.labs.muplayer.core.util.CollectionUtil.newList;
 
 public class Events {
-    public static Message createMsg(MuPlayerTopic topic, Object data) {
+
+    public static Message createMsg(PlayerEventTopics topic, Object data) {
         return new Message(MessageType.NO_TYPE, topic.name(),
                 data, SerializationType.ORIGINAL);
     }
 
-    public static Message createMsg(MuPlayerTopic topic) {
+    public static Message createMsg(PlayerEventTopics topic) {
         return createMsg(topic, "");
     }
 
@@ -44,6 +44,14 @@ public class Events {
 
     public static Message start() {
         return createMsg(START);
+    }
+
+    public static Message loading(LoadingPlayerInfo loadingPlayerInfo) {
+        return createMsg(LOADING, loadingPlayerInfo);
+    }
+
+    public static Message loading(int tracksCount) {
+        return loading(new LoadingPlayerInfo(tracksCount));
     }
 
     public static Message reload() {

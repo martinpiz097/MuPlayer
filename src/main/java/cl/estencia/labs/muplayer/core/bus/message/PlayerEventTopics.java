@@ -4,7 +4,7 @@ package cl.estencia.labs.muplayer.core.bus.message;
 // del reproductor, para obtener informacion del mismo se puede
 // usar el listener del objeto PlayerInfo o directamente los metodos de MusicPlayer
 // aunque la idea es ir orientandolo mas a eventos
-public enum ActionTopics {
+public enum PlayerEventTopics {
     PLAYER_RESPONSE,
     START,
     LOADING,

@@ -37,8 +37,8 @@ public abstract class MusicPlayer extends EventPlayer implements AudioElement, S
 
     public abstract TrackStateName getCurrentTrackState();
     public abstract PlayerStatusData getPlayerStatusData();
+    public abstract int getTracksCount();
     public abstract int getFoldersCount();
-    public abstract int getSongsCount();
     public abstract AtomicReference<Track> getCurrentTrack();
     public abstract File getCurrentTrackFolder();
     public abstract int getCurrentFolderNumber();

@@ -17,7 +17,7 @@ import cl.estencia.labs.muplayer.console.runner.LocalRunner;
 import cl.estencia.labs.muplayer.console.unix.NativeConsole;
 import cl.estencia.labs.muplayer.core.bus.message.Events;
 import cl.estencia.labs.muplayer.core.bus.model.PlayerInfo;
-import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
+import cl.estencia.labs.muplayer.core.bus.util.PlayerBusUtil;
 import cl.estencia.labs.muplayer.core.util.NumberUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -111,7 +111,7 @@ public class PlayerInterpreterUtil {
         if (rootFolder != null) {
             File trackFile;
             File trackFolder, prevTrackFolder = null;
-            for (int i = 0; i < player.getSongsCount(); i++) {
+            for (int i = 0; i < player.getTracksCount(); i++) {
                 trackFile = listTracks.get(i).getDataSource();
                 trackFolder = trackFile.getParentFile();
                 if (prevTrackFolder == null || !trackFolder.getPath().equals(prevTrackFolder.getPath())) {
@@ -146,7 +146,7 @@ public class PlayerInterpreterUtil {
         }
 
         final List<Track> listTracks = player.getTracks();
-        final int songsCount = player.getSongsCount();
+        final int songsCount = player.getTracksCount();
 
         final String tableColor = getColorFromLevel(info);
         final int contentSizeLimit = 40;
@@ -325,7 +325,7 @@ public class PlayerInterpreterUtil {
             return;
         }
 
-        final MessageBus messageBus = MessageBusUtil.getMessageBus();
+        final MessageBus messageBus = PlayerBusUtil.getPlayerBus();
         if (cmd.hasOptions()) {
             Number skipCount = cmd.getOptionAsNumber(0);
             if (skipCount == null) {

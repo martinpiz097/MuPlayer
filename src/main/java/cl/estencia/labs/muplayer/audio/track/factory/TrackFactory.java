@@ -8,6 +8,28 @@ import cl.estencia.labs.muplayer.console.common.enums.TrackFactoryType;
 import java.io.File;
 
 public abstract class TrackFactory {
+    private static final TrackFactoryType FACTORY_TYPE = readFactoryType();
+
+    private static TrackFactoryType readFactoryType() {
+        String factoryTypeName = MuPlayerConfigReader.getInstance()
+                .getProperty(MuPlayerConfigKeys.TRACK_FACTORY_TYPE);
+        if (factoryTypeName == null || factoryTypeName.isBlank()) {
+            return null;
+        }
+
+        return TrackFactoryType.valueOf(factoryTypeName);
+    }
+
+    public static TrackFactory newFactory() {
+        if (FACTORY_TYPE == null) {
+            return null;
+        }
+
+        return switch (FACTORY_TYPE) {
+            case STANDARD -> new StandardTrackFactory();
+            case REFLECTION -> null;
+        };
+    }
 
     protected TrackFactory() {
     }
@@ -17,17 +39,5 @@ public abstract class TrackFactory {
     }
 
     public abstract Track loadTrack(File dataSource);
-
-    public static TrackFactory newFactory() {
-        String factoryTypeName = MuPlayerConfigReader.getInstance()
-                .getProperty(MuPlayerConfigKeys.TRACK_FACTORY_TYPE);
-        TrackFactoryType factoryType = TrackFactoryType.valueOf(factoryTypeName);
-
-        return switch (factoryType) {
-            case STANDARD -> new StandardTrackFactory();
-            case REFLECTION -> null;
-        };
-
-    }
 
 }

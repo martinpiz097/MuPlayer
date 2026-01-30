@@ -77,41 +77,62 @@ Control the player through messages without direct interaction with the player o
 
 ```java
 import cl.estencia.labs.muplayer.core.bus.message.Events;
-import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
-import cl.estencia.labs.muplayer.core.bus.message.Events;
-import cl.estencia.labs.ebot.bus.MessageBus;
 
 // Start playback
 player.sendEvent(Events.start());
 
 // Playback controls
-player.sendEvent(Events.play());
-player.sendEvent(Events.pause());
-player.sendEvent(Events.resume());
-player.sendEvent(Events.stop());
+        player.
+
+sendEvent(Events.play());
+        player.
+
+sendEvent(Events.pause());
+        player.
+
+sendEvent(Events.resume());
+        player.
+
+sendEvent(Events.stop());
 
 // Navigation
-player.sendEvent(Events.playNext());
-player.sendEvent(Events.playPrev());
-player.sendEvent(Events.playIndex(5));
+        player.
+
+sendEvent(Events.playNext());
+        player.
+
+sendEvent(Events.playPrev());
+        player.
+
+sendEvent(Events.playIndex(5));
 
 // Volume control
-player.sendEvent(Events.setVolume(75.0f));
-player.sendEvent(Events.mute());
-player.sendEvent(Events.unmute());
+        player.
+
+sendEvent(Events.setVolume(75.0f));
+        player.
+
+sendEvent(Events.mute());
+        player.
+
+sendEvent(Events.unmute());
 
 // Shutdown player
-player.sendEvent(Events.shutdown());
+        player.
+
+sendEvent(Events.shutdown());
 ```
 
 ### Listening to player events
-```java
-import cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic;
 
-player.addResponseListener(playerInfo -> {
-    Track currentTrack = playerInfo.getCurrentTrack();
-    infoLine("Now playing: " + currentTrack.getTitle());
-});
+```java
+
+
+player.addResponseListener(playerInfo ->{
+Track currentTrack = playerInfo.getCurrentTrack();
+
+infoLine("Now playing: "+currentTrack.getTitle());
+        });
 ```
 
 ### Console player

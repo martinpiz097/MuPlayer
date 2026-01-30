@@ -10,6 +10,7 @@ import cl.estencia.labs.muplayer.audio.model.TrackStatusData;
 import cl.estencia.labs.muplayer.audio.track.data.TrackFileMetadata;
 import cl.estencia.labs.muplayer.audio.track.data.HeaderData;
 import cl.estencia.labs.muplayer.audio.track.state.*;
+import cl.estencia.labs.muplayer.core.exception.FormatNotSupportedException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +50,7 @@ public abstract class Track extends Thread
     public Track(File dataSource, AudioDecoder audioDecoder) {
         this.dataSource = dataSource;
         this.audioDecoder = audioDecoder;
-        this.speaker = new Speaker(audioDecoder.getDecodedAudioStream());
+        this.speaker = new Speaker(audioDecoder.getDecodedFormat());
         this.headerData = initHeaderData();
         this.trackStatusData = new TrackStatusData();
         this.metadata = loadTrackInfo(dataSource);
@@ -66,7 +67,7 @@ public abstract class Track extends Thread
     }
 
     public void resetStream() throws IOException, LineUnavailableException, UnsupportedAudioFileException {
-        audioDecoder.reDecode();
+        audioDecoder.redecodeAudio();
         speaker.reopen(audioDecoder.getDecodedFormat());
     }
 

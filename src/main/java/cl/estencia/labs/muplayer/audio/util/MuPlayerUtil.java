@@ -8,7 +8,7 @@ import cl.estencia.labs.muplayer.audio.model.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.factory.TrackFactory;
 import cl.estencia.labs.muplayer.core.bus.message.Events;
-import cl.estencia.labs.muplayer.core.bus.util.MessageBusUtil;
+import cl.estencia.labs.muplayer.core.bus.util.PlayerBusUtil;
 import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.core.util.FilterUtil;
 import lombok.Getter;
@@ -36,11 +36,11 @@ public class MuPlayerUtil {
 
     public MuPlayerUtil(MusicPlayer player, PlayerStatusData playerStatusData) {
         this.player = player;
-        this.listTracks = player.getTracks();
-        this.listFolders = player.getListFolders();
+        this.listTracks = player != null ? player.getTracks() : null;
+        this.listFolders = player != null ? player.getListFolders() : null;
         this.playerStatusData = playerStatusData;
         this.trackFactory = TrackFactory.newFactory();
-        this.messageBus = MessageBusUtil.getMessageBus();
+        this.messageBus = PlayerBusUtil.getPlayerBus();
     }
 
     public boolean isCurrentTrackActive() {
@@ -79,6 +79,14 @@ public class MuPlayerUtil {
                 player.getTracks(),
                 player.getListFolders(),
                 playerStatusData));
+    }
+
+    public void sendLoadingInfoEvent(int tracksCount) {
+        if (messageBus == null || messageBus.getState() == Thread.State.TERMINATED) {
+            return;
+        }
+
+        player.sendEvent(Events.loading(tracksCount));
     }
 
     public int getFolderIndex(Track current) {
@@ -123,7 +131,7 @@ public class MuPlayerUtil {
     }
 
     public Track getTrackBySeekOption(SeekOption seekOption) {
-        int indexFromOption = AudioFileUtil.getIndexFromOption(seekOption, playerStatusData, player.getSongsCount());
+        int indexFromOption = AudioFileUtil.getIndexFromOption(seekOption, playerStatusData, player.getTracksCount());
 
         return listTracks.get(indexFromOption);
     }

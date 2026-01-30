@@ -14,10 +14,10 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 @Getter
-@Setter
 @Slf4j
 public abstract class AudioDecoder {
     protected final File source;
@@ -25,32 +25,36 @@ public abstract class AudioDecoder {
 
     protected volatile AudioInputStream decodedAudioStream;
 
-    public AudioDecoder(String path) {
-        this(new File(path), new AudioDecodingUtil());
+    public AudioDecoder(String path) throws UnsupportedAudioFileException, IOException {
+        this(new File(path));
     }
 
-    public AudioDecoder(File file) {
-        this(file, new AudioDecodingUtil());
-    }
-
-    public AudioDecoder(String path, AudioDecodingUtil audioDecodingUtil) {
-        this(new File(path), audioDecodingUtil);
-    }
-
-    public AudioDecoder(File file, AudioDecodingUtil audioDecodingUtil) {
+    public AudioDecoder(File file) throws UnsupportedAudioFileException, IOException {
         this.source = file;
-        this.audioDecodingUtil = audioDecodingUtil;
-        this.decodedAudioStream = buildDecodedAudioStream();
+        this.audioDecodingUtil = new AudioDecodingUtil();
+        this.decodedAudioStream = decodeAudio();
     }
 
-    public synchronized AudioFormat getDecodedFormat() {
-        return decodedAudioStream.getFormat();
-    }
+    protected abstract AudioFormat convertToPcmFormat(AudioFormat baseFormat);
 
-    public abstract AudioFormat convertToPcmFormat(AudioFormat baseFormat);
+    protected AudioInputStream decodeAudio() throws UnsupportedAudioFileException, IOException {
+        AudioInputStream sourceStream = AudioSystem.getAudioInputStream(source);
+        if (sourceStream == null) {
+            return null;
+        }
+
+        AudioFormat baseFormat = sourceStream.getFormat();
+        AudioFormat pcmFormat = convertToPcmFormat(baseFormat);
+
+        return audioDecodingUtil.decodeToPcm(sourceStream, pcmFormat);
+    }
 
     public boolean tryCloseCurrentStream(AudioInputStream audioInputStream) {
         try {
+            if (audioInputStream == null) {
+                return false;
+            }
+
             audioInputStream.close();
             return true;
         } catch (IOException e) {
@@ -58,45 +62,29 @@ public abstract class AudioDecoder {
         }
     }
 
-    public synchronized void reDecode() {
-        setDecodedAudioStream(buildDecodedAudioStream());
-    }
+    public synchronized void redecodeAudio() throws UnsupportedAudioFileException, IOException {
+        AudioInputStream decodedAudioStream = decodeAudio();
 
-    public AudioInputStream buildDecodedAudioStream() {
-        try {
-            AudioInputStream sourceStream = AudioSystem.getAudioInputStream(source);
-            if (sourceStream == null) {
-                return null;
-            }
-
-            AudioFormat baseFormat = sourceStream.getFormat();
-            AudioFormat pcmFormat = convertToPcmFormat(baseFormat);
-
-            return audioDecodingUtil.decodeToPcm(sourceStream, pcmFormat);
-        } catch (UnsupportedAudioFileException | IOException e) {
-            log.error("Error on decode audio file " + source.getPath()
-                    + ": " + e.getMessage());
-            return null;
-        }
+        tryCloseCurrentStream(this.decodedAudioStream);
+        this.decodedAudioStream = decodedAudioStream;
     }
 
     public synchronized AudioInputStream getDecodedAudioStream() {
         return decodedAudioStream;
     }
 
-    public synchronized void setDecodedAudioStream(AudioInputStream decodedAudioStream) {
-        tryCloseCurrentStream(this.decodedAudioStream);
-        this.decodedAudioStream = decodedAudioStream;
+    public synchronized AudioFormat getDecodedFormat() {
+        return decodedAudioStream != null ? decodedAudioStream.getFormat() : null;
     }
 
-    public static AudioDecoder getDecoder(File audioFile, SupportedAudioExtension audioFileExtension) {
+    public static AudioDecoder getDecoder(File audioFile, SupportedAudioExtension audioFileExtension) throws UnsupportedAudioFileException, IOException {
         return switch (audioFileExtension) {
             case flac -> new FlacAudioDecoder(audioFile);
             default -> new DefaultAudioDecoder(audioFile);
         };
     }
 
-    public static AudioDecoder getDecoder(File audioFile) {
+    public static AudioDecoder getDecoder(File audioFile) throws UnsupportedAudioFileException, IOException {
         SupportedAudioExtension extension = AudioFileUtil.getAudioFileExtension(audioFile);
         return getDecoder(audioFile, extension);
     }

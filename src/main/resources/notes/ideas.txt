@@ -28,3 +28,10 @@ automontando el dispositivo si es que no lo esta
 - Combinaciones de teclas con ALT
 - Agregar numero de cancion a header
 - Cargar listas de reproduccion desde archivos m3u
+
+- Se podria realizar la comunicacion con el reproductor enteramente por mensajes, en donde
+el PlayerCommandInterpreter tenga su MessageBus, el cual pueda ser usado para que el
+reproductor publique un mensaje con el mismo topico como respuesta, aunque esto tambien provocaria que el
+reproductor sepa de la existencia de otro componente, lo que crea una dependencia, quizas ahi la mejor opcion
+es personalizar un objeto, puede ser mejorando el PlayerInfo, que contenga informacion extra, como el topico
+en cuestion, mensaje a mostrar, etc.

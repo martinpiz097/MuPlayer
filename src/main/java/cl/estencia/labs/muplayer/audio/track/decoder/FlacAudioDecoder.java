@@ -10,11 +10,11 @@ import java.io.IOException;
 
 public class FlacAudioDecoder extends AudioDecoder {
 
-    public FlacAudioDecoder(String path) {
+    public FlacAudioDecoder(String path) throws UnsupportedAudioFileException, IOException {
         super(path);
     }
 
-    public FlacAudioDecoder(File file) {
+    public FlacAudioDecoder(File file) throws UnsupportedAudioFileException, IOException {
         super(file);
     }
 

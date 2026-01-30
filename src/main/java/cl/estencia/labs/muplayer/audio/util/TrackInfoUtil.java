@@ -21,7 +21,7 @@ public class TrackInfoUtil {
             return Map.of();
         }
 
-        Map<FieldKey, String> mapTags = CollectionUtil.newFastMap();
+        Map<FieldKey, String> mapTags = CollectionUtil.newMap();
         FieldKey[] fieldKeys = FieldKey.values();
         int fieldKeysCount = fieldKeys.length;
         FieldKey fieldKey;

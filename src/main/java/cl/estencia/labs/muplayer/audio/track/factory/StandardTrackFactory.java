@@ -12,7 +12,9 @@ import cl.estencia.labs.muplayer.core.exception.AudioFileInvalidException;
 import cl.estencia.labs.muplayer.core.exception.FormatNotSupportedException;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
+import java.io.IOException;
 
 import static cl.estencia.labs.muplayer.audio.util.AudioFileUtil.getAudioExtensionFromFormat;
 
@@ -54,6 +56,13 @@ public class StandardTrackFactory extends TrackFactory {
                     + " when loading audio track " + dataSource);
         } catch (FormatNotSupportedException e) {
             log.error(e.getMessage() + " when loading audio track " + dataSource);
+        } catch (IOException e) {
+            log.error("I/O error on decode audio file " + dataSource
+                    + ": " + e.getMessage());
+        } catch (UnsupportedAudioFileException e) {
+            log.error("Error of type " + e.getClass().getSimpleName()
+                    + " and message " + e.getMessage()
+                    + " on decode audio file " + dataSource);
         }
 
         return null;

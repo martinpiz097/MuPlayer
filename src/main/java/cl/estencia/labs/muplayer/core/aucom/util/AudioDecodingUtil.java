@@ -37,7 +37,7 @@ public class AudioDecodingUtil {
         }
     }
 
-    public AudioFileFormat getAudioFileFormat(Object source) throws UnsupportedAudioFileException, IOException {
+    public AudioFileFormat getAudioFileFormat(Object source) throws IOException, UnsupportedAudioFileException {
         if (source == null) {
             return null;
         }

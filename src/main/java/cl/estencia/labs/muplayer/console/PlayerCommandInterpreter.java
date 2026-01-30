@@ -8,6 +8,7 @@ import cl.estencia.labs.muplayer.audio.track.data.Cover;
 import cl.estencia.labs.muplayer.console.common.enums.OutputLevel;
 import cl.estencia.labs.muplayer.console.model.table.Alignment;
 import cl.estencia.labs.muplayer.core.bus.message.Events;
+import cl.estencia.labs.muplayer.core.bus.model.LoadingPlayerInfo;
 import cl.estencia.labs.muplayer.core.bus.model.PlayerInfo;
 import cl.estencia.labs.muplayer.core.bus.model.SkipData;
 import cl.estencia.labs.muplayer.config.reader.ConsoleCodesReader;
@@ -27,25 +28,23 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
-import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.LockSupport;
 
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleChars.CART_RETURN;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SANDGLASS;
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.CLEAN;
+import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.DEFAULT;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputLevel.*;
 import static cl.estencia.labs.muplayer.console.util.PlayerInterpreterUtil.*;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.PREV;
 import static cl.estencia.labs.muplayer.console.util.SystemCommandExecutor.clearConsole;
-import static cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic.SHUTDOWN;
-import static cl.estencia.labs.muplayer.core.bus.message.MuPlayerTopic.START;
+import static cl.estencia.labs.muplayer.core.bus.message.PlayerEventTopics.*;
 import static cl.estencia.labs.muplayer.core.cache.CacheManager.GLOBAL_CACHE;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.*;
-import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.printLine;
+import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.print;
 
 @Slf4j
 public class PlayerCommandInterpreter implements CommandInterpreter {
@@ -87,9 +86,9 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     player.sendEvent(Events.reload());
                 } else {
                     player.removeAllResponseListeners();
-                    player.addResponseListener(muPlayerResponse -> {
+                    player.addResponseListener(playerInfoResp -> {
                         synchronized (playerInfo) {
-                            playerInfo.set(muPlayerResponse);
+                            playerInfo.set(playerInfoResp);
                             GLOBAL_CACHE.saveValue(
                                     PLAYER_CURRENT_DATA, playerInfo.get());
                         }
@@ -103,12 +102,14 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                         System.exit(0);
                     });
 
-                    player.addListener(START, message -> {
-                        while (!player.isOn()) {
-                            printLine(String.valueOf(CART_RETURN) + SANDGLASS
-                                    + " Loading " + player.getTracks().size() + " tracks ...");
-                            LockSupport.parkNanos(Duration.ofMillis(1).toNanos());
+                    player.addListener(LOADING, message -> {
+                        LoadingPlayerInfo loadingPlayerInfo = message.getData(LoadingPlayerInfo.class);
+                        if (loadingPlayerInfo == null) {
+                            return;
                         }
+
+                        print(String.valueOf(CART_RETURN) + SANDGLASS
+                                + " Loading " + loadingPlayerInfo.tracksCount() + " tracks...");
                     });
 
                     player.sendEvent(Events.start());
@@ -119,7 +120,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                 if (player.isAlive()) {
                     if (cmd.hasOptions()) {
                         Number playIndex = cmd.getOptionAsNumber(0);
-                        if (playIndex != null && playIndex.intValue() > 0 && playIndex.intValue() <= player.getSongsCount()) {
+                        if (playIndex != null && playIndex.intValue() > 0 && playIndex.intValue() <= player.getTracksCount()) {
                             player.sendEvent(Events.playIndex(playIndex.intValue() - 1));
                         }
                     } else {
@@ -284,7 +285,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
             }
             case c -> {
                 if (player.isAlive()) {
-                    consoleOutput.append(player.getSongsCount(), info);
+                    consoleOutput.append(player.getTracksCount(), info);
                 }
             }
             case d -> {

@@ -10,6 +10,7 @@ import lombok.Getter;
 import java.io.File;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 public class TracksDirectory {
@@ -28,7 +29,7 @@ public class TracksDirectory {
     // tendre una doble validacion porque esto lo revisa el trackFactory
     // pero se hace para entregar una lista mas limpia
     public void scanDirectory() {
-        if (!hasTracks()) {
+        if (hasTracks()) {
             tracks.clear();
         }
 
@@ -43,7 +44,7 @@ public class TracksDirectory {
         for (int i = 0; i < filesCount; i++) {
             track = trackFactory.loadTrack(files[i]);
             if (track == null) {
-                return;
+                continue;
             }
 
             tracks.add(track);
@@ -60,6 +61,10 @@ public class TracksDirectory {
         return !tracks.isEmpty();
     }
 
+    public int getTracksCount() {
+        return tracks.size();
+    }
+
     public String getName() {
         return folder.getName();
     }
@@ -68,9 +73,6 @@ public class TracksDirectory {
         return folder.getPath();
     }
 
-    public int getTracksCount() {
-        return tracks.size();
-    }
 
     @Override
     public String toString() {
