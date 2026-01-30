@@ -8,3 +8,5 @@ config.properties
 
 src/main/java/cl/estencia/labs/muplayer/testing
 *.jar
+
+sub-repo/
