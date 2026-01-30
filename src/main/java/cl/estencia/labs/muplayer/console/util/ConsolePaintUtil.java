@@ -2,12 +2,9 @@ package cl.estencia.labs.muplayer.console.util;
 
 import cl.estencia.labs.muplayer.audio.player.MusicPlayer;
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.config.model.MuPlayerConfigKeys;
-import cl.estencia.labs.muplayer.config.reader.MuPlayerConfigReader;
 import cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode;
 import cl.estencia.labs.muplayer.console.model.ConsoleHeader;
 import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
-import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import lombok.extern.slf4j.Slf4j;
 
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleChars.M;
@@ -16,11 +13,9 @@ import static cl.estencia.labs.muplayer.console.common.constants.ConsoleEscapeSe
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleEscapeSequences.SETUP_FG_RGB_TRUE_COLOR;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.*;
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode.cls;
-import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode.pl;
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.CLEAN;
 import static cl.estencia.labs.muplayer.console.util.ConsolePaintUtil.GradientStyle.LIGHTEN;
-import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.*;
-import static cl.estencia.labs.muplayer.core.cache.CacheManager.GLOBAL_CACHE;
+import static cl.estencia.labs.muplayer.core.cache.CacheManager.CACHE;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.RUNNER;
 import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.info;
 import static cl.estencia.labs.muplayer.core.util.StringUtils.reduceString;
@@ -200,7 +195,7 @@ public class ConsolePaintUtil {
     }
 
     public static void printConsoleHeader(MusicPlayer player, ConsoleOutputMode consoleOutputMode) {
-        ConsoleRunner consoleRunner = GLOBAL_CACHE.loadValue(RUNNER,
+        ConsoleRunner consoleRunner = CACHE.get(RUNNER,
                 ConsoleRunner.class);
 
         printConsoleHeader(player, consoleOutputMode, consoleRunner);

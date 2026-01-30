@@ -1,11 +1,11 @@
-package cl.estencia.labs.muplayer.console.unix;
+package cl.estencia.labs.muplayer.console.unixconsole;
 
 import cl.estencia.labs.muplayer.core.aucom.util.ProcessManager;
 import cl.estencia.labs.muplayer.console.common.enums.InterceptorMode;
-import cl.estencia.labs.muplayer.console.unix.event.AltKeyCombinationEvent;
-import cl.estencia.labs.muplayer.console.unix.event.KeyInputEvent;
-import cl.estencia.labs.muplayer.console.unix.event.LineInputEvent;
-import cl.estencia.labs.muplayer.console.unix.listener.*;
+import cl.estencia.labs.muplayer.console.unixconsole.event.AltKeyCombinationEvent;
+import cl.estencia.labs.muplayer.console.unixconsole.event.KeyInputEvent;
+import cl.estencia.labs.muplayer.console.unixconsole.event.LineInputEvent;
+import cl.estencia.labs.muplayer.console.unixconsole.listener.*;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.*;
-import static cl.estencia.labs.muplayer.console.unix.InputMode.COMMANDS;
+import static cl.estencia.labs.muplayer.console.unixconsole.InputMode.COMMANDS;
 import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.cartReturn;
 import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.info;
 import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.print;

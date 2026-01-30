@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.console.unix;
+package cl.estencia.labs.muplayer.console.unixconsole;
 
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 

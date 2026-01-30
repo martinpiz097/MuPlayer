@@ -1,12 +1,10 @@
-package cl.estencia.labs.muplayer.console.unix.event;
+package cl.estencia.labs.muplayer.console.unixconsole.event;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import static cl.estencia.labs.muplayer.core.aucom.common.IOConstants.EOF;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK;
-import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
 
 @Getter
 @Setter

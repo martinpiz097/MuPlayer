@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.console.unix.event;
+package cl.estencia.labs.muplayer.console.unixconsole.event;
 
 import cl.estencia.labs.muplayer.core.util.IOUtil;
 import lombok.Getter;

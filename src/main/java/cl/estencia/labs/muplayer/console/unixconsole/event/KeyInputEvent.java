@@ -1,9 +1,8 @@
-package cl.estencia.labs.muplayer.console.unix.event;
+package cl.estencia.labs.muplayer.console.unixconsole.event;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.util.Arrays;
 

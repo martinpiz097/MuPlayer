@@ -18,7 +18,7 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
-import static cl.estencia.labs.muplayer.core.cache.CacheManager.GLOBAL_CACHE;
+import static cl.estencia.labs.muplayer.core.cache.CacheManager.CACHE;
 
 @Slf4j
 public class Main {
@@ -64,7 +64,7 @@ public class Main {
             }
             if (consoleRunner != null) {
                 TaskRunner.execute(consoleRunner, consoleRunner.getClass().getSimpleName());
-                GLOBAL_CACHE.saveValue(CacheVar.RUNNER, consoleRunner);
+                CACHE.set(CacheVar.RUNNER, consoleRunner);
             }
         } catch (Exception e) {
             e.printStackTrace();

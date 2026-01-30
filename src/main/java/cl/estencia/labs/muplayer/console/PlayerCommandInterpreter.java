@@ -35,14 +35,13 @@ import static cl.estencia.labs.muplayer.console.common.constants.ConsoleChars.CA
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SANDGLASS;
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.CLEAN;
-import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.DEFAULT;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputLevel.*;
 import static cl.estencia.labs.muplayer.console.util.PlayerInterpreterUtil.*;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.PREV;
 import static cl.estencia.labs.muplayer.console.util.SystemCommandExecutor.clearConsole;
 import static cl.estencia.labs.muplayer.core.bus.message.PlayerEventTopics.*;
-import static cl.estencia.labs.muplayer.core.cache.CacheManager.GLOBAL_CACHE;
+import static cl.estencia.labs.muplayer.core.cache.CacheManager.CACHE;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.*;
 import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.print;
 
@@ -85,19 +84,20 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                 if (player.isAlive()) {
                     player.sendEvent(Events.reload());
                 } else {
+                    // TODO: ojo con este remove cuando inicialice mpris antes del command interpreter,
+                    // puede que me pitee los listener de mpris
                     player.removeAllResponseListeners();
                     player.addResponseListener(playerInfoResp -> {
                         synchronized (playerInfo) {
                             playerInfo.set(playerInfoResp);
-                            GLOBAL_CACHE.saveValue(
-                                    PLAYER_CURRENT_DATA, playerInfo.get());
+                            CACHE.set(PLAYER_CURRENT_DATA, playerInfo.get());
                         }
 
                         printConsoleInfo(player, CLEAN, true);
                     });
 
                     player.addListener(SHUTDOWN, message -> {
-                        GLOBAL_CACHE.clear();
+                        CACHE.clear();
 
                         System.exit(0);
                     });
@@ -446,12 +446,12 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
             case chm -> {
                 if (cmd.hasOptions()) {
                     final String firstOpt = cmd.getOptionAt(0);
-                    final ConsoleRunner consoleRunner = GLOBAL_CACHE.loadValue(RUNNER);
+                    final ConsoleRunner consoleRunner = CACHE.get(RUNNER);
                     if (firstOpt.equalsIgnoreCase(RunnerMode.LOCAL.name())) {
                         if (consoleRunner instanceof DaemonRunner) {
                             final LocalRunner localRunner = new LocalRunner(player);
                             TaskRunner.execute(localRunner, localRunner.getClass().getSimpleName());
-                            GLOBAL_CACHE.saveValue(RUNNER, localRunner);
+                            CACHE.set(RUNNER, localRunner);
                             ((DaemonRunner) consoleRunner).shutdown();
                             consoleOutput.append("MuPlayer changed from DAEMON to LOCAL mode!", info);
                         } else {
@@ -461,7 +461,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                         if (consoleRunner instanceof LocalRunner) {
                             final DaemonRunner daemonRunner = new DaemonRunner(player);
                             TaskRunner.execute(daemonRunner, daemonRunner.getClass().getSimpleName());
-                            GLOBAL_CACHE.saveValue(RUNNER, daemonRunner);
+                            CACHE.set(RUNNER, daemonRunner);
                             ((LocalRunner) consoleRunner).shutdown();
                             consoleOutput.append("MuPlayer changed from LOCAL to DAEMON mode!", info);
                         } else {

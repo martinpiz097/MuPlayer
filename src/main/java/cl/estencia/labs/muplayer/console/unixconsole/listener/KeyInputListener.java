@@ -1,6 +1,6 @@
-package cl.estencia.labs.muplayer.console.unix.listener;
+package cl.estencia.labs.muplayer.console.unixconsole.listener;
 
-import cl.estencia.labs.muplayer.console.unix.event.KeyInputEvent;
+import cl.estencia.labs.muplayer.console.unixconsole.event.KeyInputEvent;
 
 import static cl.estencia.labs.muplayer.core.util.IOUtil.createCharArrayFromInts;
 

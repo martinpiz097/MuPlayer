@@ -14,7 +14,7 @@ import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
 import cl.estencia.labs.muplayer.console.model.table.*;
 import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
 import cl.estencia.labs.muplayer.console.runner.LocalRunner;
-import cl.estencia.labs.muplayer.console.unix.NativeConsole;
+import cl.estencia.labs.muplayer.console.unixconsole.NativeConsole;
 import cl.estencia.labs.muplayer.core.bus.message.Events;
 import cl.estencia.labs.muplayer.core.bus.model.PlayerInfo;
 import cl.estencia.labs.muplayer.core.bus.util.PlayerBusUtil;
@@ -42,7 +42,7 @@ import static cl.estencia.labs.muplayer.console.util.ConsolePaintUtil.printConso
 import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.getColorFromLevel;
 import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.getStdout;
 import static cl.estencia.labs.muplayer.console.util.SystemCommandExecutor.getClearConsoleOutput;
-import static cl.estencia.labs.muplayer.core.cache.CacheManager.GLOBAL_CACHE;
+import static cl.estencia.labs.muplayer.core.cache.CacheManager.CACHE;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.NATIVE_CONSOLE;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.RUNNER;
 import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.infoLine;
@@ -422,8 +422,8 @@ public class PlayerInterpreterUtil {
     }
 
     public static void printConsoleLine() {
-        ConsoleRunner consoleRunner = GLOBAL_CACHE.loadValue(RUNNER, ConsoleRunner.class);
-        NativeConsole nativeConsole = GLOBAL_CACHE.loadValue(NATIVE_CONSOLE, NativeConsole.class);
+        ConsoleRunner consoleRunner = CACHE.get(RUNNER, ConsoleRunner.class);
+        NativeConsole nativeConsole = CACHE.get(NATIVE_CONSOLE, NativeConsole.class);
 
         if (consoleRunner instanceof LocalRunner && (nativeConsole != null && nativeConsole.hasLine())) {
             info(nativeConsole.getLine());

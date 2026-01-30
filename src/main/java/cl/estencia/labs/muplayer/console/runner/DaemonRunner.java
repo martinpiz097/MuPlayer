@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 
-import static cl.estencia.labs.muplayer.core.cache.CacheManager.GLOBAL_CACHE;
+import static cl.estencia.labs.muplayer.core.cache.CacheManager.CACHE;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.PLAYER;
 import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.infoLine;
 
@@ -42,7 +42,7 @@ public class DaemonRunner extends ConsoleRunner {
     @Override
     public void run() {
         validateRootFolder();
-        GLOBAL_CACHE.saveValue(PLAYER, player);
+        CACHE.set(PLAYER, player);
 
         infoLine("MuPlayer daemon mode started.");
         interpreter.setOn(true);
@@ -67,7 +67,7 @@ public class DaemonRunner extends ConsoleRunner {
         infoLine("Daemon server closed!");
         try {
             networkServer.shutdownServer();
-            final ConsoleRunner runner = GLOBAL_CACHE.loadValue(CacheVar.RUNNER);
+            final ConsoleRunner runner = CACHE.get(CacheVar.RUNNER);
             if (runner == null || runner instanceof DaemonRunner)
                 System.exit(0);
         } catch (IOException e) {

@@ -47,7 +47,7 @@ import static cl.estencia.labs.muplayer.core.aucom.util.AudioDecodingUtil.DEFAUL
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.PREV;
 import static cl.estencia.labs.muplayer.core.bus.message.PlayerEventTopics.*;
-import static cl.estencia.labs.muplayer.core.cache.CacheManager.GLOBAL_CACHE;
+import static cl.estencia.labs.muplayer.core.cache.CacheManager.CACHE;
 import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.printLine;
 
 @Slf4j
@@ -754,7 +754,7 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
 
     @Override
     public void run() {
-        GLOBAL_CACHE.saveValue(CacheVar.PLAYER, this);
+        CACHE.set(CacheVar.PLAYER, this);
 
         loadTracks(rootFolder);
         playNext();

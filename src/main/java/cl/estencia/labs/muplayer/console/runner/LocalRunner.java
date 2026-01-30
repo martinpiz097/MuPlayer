@@ -7,13 +7,13 @@ import cl.estencia.labs.muplayer.config.Resources;
 import cl.estencia.labs.muplayer.console.common.constants.KeyCodes;
 import cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode;
 import cl.estencia.labs.muplayer.console.model.ConsoleImage;
-import cl.estencia.labs.muplayer.console.unix.NativeConsole;
-import cl.estencia.labs.muplayer.console.unix.event.AltKeyCombinationEvent;
-import cl.estencia.labs.muplayer.console.unix.event.KeyInputEvent;
-import cl.estencia.labs.muplayer.console.unix.listener.AltKeyCombinationListener;
-import cl.estencia.labs.muplayer.console.unix.listener.KeyInputListener;
-import cl.estencia.labs.muplayer.console.unix.listener.KeyInterceptor;
-import cl.estencia.labs.muplayer.console.unix.listener.LineInputListener;
+import cl.estencia.labs.muplayer.console.unixconsole.NativeConsole;
+import cl.estencia.labs.muplayer.console.unixconsole.event.AltKeyCombinationEvent;
+import cl.estencia.labs.muplayer.console.unixconsole.event.KeyInputEvent;
+import cl.estencia.labs.muplayer.console.unixconsole.listener.AltKeyCombinationListener;
+import cl.estencia.labs.muplayer.console.unixconsole.listener.KeyInputListener;
+import cl.estencia.labs.muplayer.console.unixconsole.listener.KeyInterceptor;
+import cl.estencia.labs.muplayer.console.unixconsole.listener.LineInputListener;
 import cl.estencia.labs.muplayer.console.util.SystemCommandExecutor;
 import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import cl.estencia.labs.muplayer.core.system.SysInfo;
@@ -29,12 +29,12 @@ import static cl.estencia.labs.muplayer.config.Resources.BANNER_PATH;
 import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.*;
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode.cls;
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.DEFAULT;
-import static cl.estencia.labs.muplayer.console.unix.InputMode.SINGLE_SHORCUTS;
+import static cl.estencia.labs.muplayer.console.unixconsole.InputMode.SINGLE_SHORCUTS;
 import static cl.estencia.labs.muplayer.console.util.ConsolePaintUtil.GradientStyle.LIGHTEN;
 import static cl.estencia.labs.muplayer.console.util.ConsolePaintUtil.paintMuPlayerStyle;
 import static cl.estencia.labs.muplayer.console.util.ConsolePaintUtil.printConsoleHeader;
 import static cl.estencia.labs.muplayer.console.util.PlayerInterpreterUtil.printConsoleInfo;
-import static cl.estencia.labs.muplayer.core.cache.CacheManager.GLOBAL_CACHE;
+import static cl.estencia.labs.muplayer.core.cache.CacheManager.CACHE;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.*;
 import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.printLine;
 
@@ -237,7 +237,7 @@ public class LocalRunner extends ConsoleRunner {
                 if (player.isAlive() && interpreter.isOn()) {
                     sendCommand(ConsoleOrderCode.sh);
                 } else {
-                    GLOBAL_CACHE.clear();
+                    CACHE.clear();
                     System.exit(0);
                 }
             }
@@ -360,8 +360,8 @@ public class LocalRunner extends ConsoleRunner {
         validateRootFolder();
         setupNativeConsole();
 
-        GLOBAL_CACHE.saveValue(RUNNER, this);
-        GLOBAL_CACHE.saveValue(NATIVE_CONSOLE, nativeConsole);
+        CACHE.set(RUNNER, this);
+        CACHE.set(NATIVE_CONSOLE, nativeConsole);
 
         printBannerLogo();
         printAppVersion();
@@ -372,7 +372,7 @@ public class LocalRunner extends ConsoleRunner {
             interruptor.checkSignal();
         }
 
-        final ConsoleRunner runner = GLOBAL_CACHE.loadValue(CacheVar.RUNNER);
+        final ConsoleRunner runner = CACHE.get(CacheVar.RUNNER);
         if (runner == null || runner instanceof LocalRunner) {
             nativeConsole.shutdown();
             System.exit(0);

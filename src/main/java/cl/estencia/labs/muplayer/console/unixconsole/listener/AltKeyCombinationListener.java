@@ -1,7 +1,6 @@
-package cl.estencia.labs.muplayer.console.unix.listener;
+package cl.estencia.labs.muplayer.console.unixconsole.listener;
 
-import cl.estencia.labs.muplayer.console.unix.event.AltKeyCombinationEvent;
-import cl.estencia.labs.muplayer.core.exception.MuPlayerException;
+import cl.estencia.labs.muplayer.console.unixconsole.event.AltKeyCombinationEvent;
 import cl.estencia.labs.muplayer.core.exception.MuPlayerRuntimeException;
 
 import java.util.Arrays;
