@@ -2,10 +2,10 @@ package cl.estencia.labs.muplayer.core.cache;
 
 public enum CacheVar {
     PLAYER,
-    SOURCE_DATA,
-    RUNNER,
     PLAYER_BUS,
+    PLAYER_INFO,
+    RUNNER,
     NATIVE_CONSOLE,
-    PLAYER_CURRENT_DATA,
+    SOURCE_DATA,
     TRACK_PROGRESS_LISTENER
 }

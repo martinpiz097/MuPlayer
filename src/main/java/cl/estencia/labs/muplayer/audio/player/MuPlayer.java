@@ -26,7 +26,9 @@ import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import cl.estencia.labs.muplayer.core.thread.ThreadUtil;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import cl.estencia.labs.muplayer.core.util.FilterUtil;
+import cl.estencia.labs.muplayer.unix.dbus.mpris.Mpris;
 import lombok.extern.slf4j.Slf4j;
+import org.freedesktop.dbus.exceptions.DBusException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -65,6 +67,8 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
     private final Interruptor interruptor;
     private final MessageBus messageBus;
 
+    private final Mpris mpris;
+
     public MuPlayer() throws FileNotFoundException {
         this((File) null);
     }
@@ -82,6 +86,11 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
 
         setName(getClass().getSimpleName() + threadId());
         configureListeners();
+        try {
+            mpris = new Mpris();
+        } catch (DBusException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public MuPlayer(String folderPath) throws FileNotFoundException {
@@ -118,21 +127,16 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
                 LockSupport.parkNanos(Duration.ofNanos(1).toNanos());
             }
 
-            Set<File> foldersSet = CollectionUtil.newSet();
             tasks.parallelStream()
                     .map(ThreadUtil::getTaskValueOrNull)
                     .filter(directory -> directory != null && directory.hasTracks())
                     .sorted(Comparator.comparing(TracksDirectory::getPath))
                     .forEachOrdered(tracksDirectory -> {
                         listTracks.addAll(tracksDirectory.getTracks());
-                        foldersSet.add(tracksDirectory.getFolder());
+                        listFolders.add(tracksDirectory.getFolder());
 
                         muPlayerUtil.sendLoadingInfoEvent(listTracks.size());
                     });
-
-            synchronized (listFolders) {
-                listFolders.addAll(foldersSet);
-            }
 
             tracksLoadExecutor.shutdown();
         } catch (IOException e) {
@@ -755,10 +759,12 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
     @Override
     public void run() {
         CACHE.set(CacheVar.PLAYER, this);
+        mpris.start();
 
         loadTracks(rootFolder);
         playNext();
 
+        // TODO: aplicar logica de reinicios y apagado de mpris
         playerStatusData.setOn(true);
         while (playerStatusData.isOn() && !isInterrupted()) {
             interruptor.checkSignal();

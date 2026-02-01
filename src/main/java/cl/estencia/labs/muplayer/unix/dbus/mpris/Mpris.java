@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static cl.estencia.labs.muplayer.core.cache.CacheManager.CACHE;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.*;
+import static cl.estencia.labs.muplayer.core.util.CollectionUtil.newMap;
 import static cl.estencia.labs.muplayer.core.util.NumberUtil.microSecsToSeconds;
 import static cl.estencia.labs.muplayer.core.util.NumberUtil.secondsToMicroSecs;
 import static cl.estencia.labs.muplayer.unix.dbus.mpris.common.MprisConstants.*;
@@ -37,18 +38,20 @@ public class Mpris extends Thread
     private final MessageBus playerBus;
     private final AtomicReference<PlayerInfo> playerInfoRef;
     private final AtomicReference<String> trackIdRef;
+    private final AtomicReference<Map<String, Variant<?>>> metadataRef;
     private final Interruptor interruptor;
-
     private volatile PlaybackStatus playbackStatus;
-
+    private volatile LoopStatus loopStatus;
 
     public Mpris() throws DBusException {
         this.connection = new MprisConnection(BUS_NAME);
         this.playerBus = CACHE.get(PLAYER_BUS);
         this.playerInfoRef = new AtomicReference<>(null);
         this.trackIdRef = new AtomicReference<>(UNKNOWN_TRACK_ID);
+        this.metadataRef = new AtomicReference<>(newMap());
         this.interruptor = Interruptor.manual(this);
         this.playbackStatus = PlaybackStatus.Stopped;
+        this.loopStatus = LoopStatus.None;
     }
 
     private void configureBusListeners() {
@@ -61,12 +64,40 @@ public class Mpris extends Thread
             synchronized (playerInfoRef) {
                 playerInfoRef.set(playerInfoResp);
                 trackIdRef.set(buildTrackId(playerInfoRef.get().getCurrentTrack()));
-                CACHE.set(PLAYER_CURRENT_DATA, playerInfoRef.get());
+                buildCurrentTrackMetadata();
             }
 
-            emitPropertiesChanged(Map.of("Metadata", new Variant<>(buildMetadata(), "a{sv}")));
+            emitPropertiesChanged(Map.of(
+                    "Metadata", new Variant<>(metadataRef.get(), "a{sv}")));
             setPlaybackStatus(PlaybackStatus.Playing);
         });
+    }
+
+    private void buildCurrentTrackMetadata() {
+        Track current = getCurrentTrack();
+        if (current == null) {
+            return;
+        }
+
+        synchronized (metadataRef) {
+            Map<String, Variant<?>> metadata = metadataRef.get();
+            if (!metadata.isEmpty()) {
+                metadata.clear();
+            }
+
+            addValueNullSafe(metadata, "mpris:trackid", trackIdRef.get());
+            addValueNullSafe(metadata, "mpris:length", secondsToMicroSecs(current.getDuration()));
+            addValueNullSafe(metadata, "xesam:title", current.getTitle());
+            addValueNullSafe(metadata, "xesam:album", current.getAlbum());
+            addValueNullSafe(metadata, "xesam:artist", current.getArtist());
+            addValueNullSafe(metadata, "xesam:audioBPM", current.getPropertyAsInt(BPM));
+            addValueNullSafe(metadata, "xesam:contentCreated", current.getYear());
+            addValueNullSafe(metadata, "xesam:discNumber", current.getPropertyAsInt(DISC_NO));
+            addValueNullSafe(metadata, "xesam:genre", current.getGenre());
+            addValueNullSafe(metadata, "xesam:url", "file://" + current.getDataSource().getPath());
+            addValueNullSafe(metadata, "xesam:artUrl", CoverUtil.createTempUri(current.getCover()));
+//            addValueNullSafe(metadata, "xesam:asText", "the track lyrics");
+        }
     }
 
     private String buildTrackId(Track track) {
@@ -74,7 +105,7 @@ public class Mpris extends Thread
             return UNKNOWN_TRACK_ID;
         }
 
-        return "/com/muplayer/track" + track.getDataSource().getPath();
+        return TRACK_ID_HEADER + track.getDataSource().getPath();
     }
 
     private Track getCurrentTrack() {
@@ -194,16 +225,12 @@ public class Mpris extends Thread
         log.debug("[MPRIS] OpenUri: " + uri);
     }
 
-    // ============================================================
-    // Métodos internos para emitir señales (minúscula)
-    // ============================================================
-
-    private void emitPropertiesChanged(Map<String, Variant<?>> changed) {
+    private void emitPropertiesChanged(Map<String, Variant<?>> propertiesChanged) {
         try {
             connection.getDbus().sendMessage(new PropertiesChanged(
                     DBUS_OBJECT_PATH,
                     DBUS_PLAYER_INTERFACE,
-                    changed,
+                    propertiesChanged,
                     List.of()
             ));
         } catch (DBusException e) {
@@ -218,10 +245,6 @@ public class Mpris extends Thread
             log.error("Error emitiendo Seeked: " + e.getMessage());
         }
     }
-
-    // ============================================================
-    // Setters públicos (minúscula) - emiten señales
-    // ============================================================
 
     public void setPlaybackStatus(PlaybackStatus status) {
         if (this.playbackStatus.equals(status)) {
@@ -265,7 +288,7 @@ public class Mpris extends Thread
     @Override
     public Map<String, Variant<?>> GetAll(String iface) {
         return switch (iface) {
-            case "org.mpris.MediaPlayer2" -> getAllMediaPlayer2Properties();
+            case DBUS_MEDIA_PLAYER2_INTERFACE -> getAllMediaPlayer2Properties();
             case DBUS_PLAYER_INTERFACE -> getAllPlayerProperties();
             default -> Map.of();
         };
@@ -282,30 +305,6 @@ public class Mpris extends Thread
         }
     }
 
-    // ============================================================
-    // Métodos auxiliares privados (minúscula)
-    // ============================================================
-
-    private Object getMediaPlayer2Property(String name) {
-        return switch (name) {
-            case "CanQuit" -> true;
-            case "CanRaise" -> false;
-            case "HasTrackList" -> false;
-            case "Identity" -> "Muplayer";
-            case "DesktopEntry" -> "muplayer";
-            case "SupportedUriSchemes" -> List.of("file");
-            case "SupportedMimeTypes" -> List.of("audio/mpeg", "audio/flac", "audio/ogg", "audio/wav");
-            default -> null;
-        };
-    }
-
-    private Object getPlayerProperty(String name) {
-        Map<String, Variant<?>> playerProperties = getAllPlayerProperties();
-        Variant<?> variant = playerProperties.get(name);
-
-        return variant != null ? variant.getValue() : null;
-    }
-
     // funcion necesaria porque un valor dentro de un objeto Variant no puede ser null
     private void addValueNullSafe(Map<String, Variant<?>> metadata,
                                   String key, Object value) {
@@ -319,31 +318,11 @@ public class Mpris extends Thread
 
     // cuando hay un error con los metadatos, ya sea por temas de tipo de dato
     // o key desconocida, no se enviara nada a mpris
-    private Map<String, Variant<?>> buildMetadata() {
-        Track current = getCurrentTrack();
-        if (current == null) {
-            return Map.of();
-        }
-
-        Map<String, Variant<?>> metadata = new HashMap<>();
-        addValueNullSafe(metadata, "mpris:trackid", trackIdRef.get());
-        addValueNullSafe(metadata, "mpris:length", current.getDuration());
-        addValueNullSafe(metadata, "xesam:title", current.getTitle());
-        addValueNullSafe(metadata, "xesam:album", current.getAlbum());
-        addValueNullSafe(metadata, "xesam:artist", current.getArtist());
-        addValueNullSafe(metadata, "xesam:audioBPM", current.getPropertyAsInt(BPM));
-        addValueNullSafe(metadata, "xesam:contentCreated", current.getYear());
-        addValueNullSafe(metadata, "xesam:discNumber", current.getPropertyAsInt(DISC_NO));
-        addValueNullSafe(metadata, "xesam:genre", current.getGenre());
-        addValueNullSafe(metadata, "xesam:url", "file://" + current.getDataSource().getPath());
-        addValueNullSafe(metadata, "xesam:artUrl", CoverUtil.createTempUri(current.getCover()));
-
-        return metadata;
-    }
-
     private Map<String, Variant<?>> getAllMediaPlayer2Properties() {
         Map<String, Variant<?>> props = new HashMap<>();
         props.put("CanQuit", new Variant<>(true));
+        props.put("Fullscreen", new Variant<>(false));
+        props.put("CanSetFullscreen", new Variant<>(false));
         props.put("CanRaise", new Variant<>(false));
         props.put("HasTrackList", new Variant<>(false));
         props.put("Identity", new Variant<>("MuPlayer"));
@@ -353,24 +332,34 @@ public class Mpris extends Thread
         return props;
     }
 
+    private Object getMediaPlayer2Property(String name) {
+        Map<String, Variant<?>> playerProperties = getAllMediaPlayer2Properties();
+        Variant<?> variant = playerProperties.get(name);
+
+        return variant != null ? variant.getValue() : null;
+    }
+
     private Map<String, Variant<?>> getAllPlayerProperties() {
         Track currentTrack = getCurrentTrack();
         PlayerStatusData playerStatusData = getStatusData();
+        float rate = 1.0f;
+        float volume = playerStatusData != null
+                ? playerStatusData.getVolume()
+                : 100;
+        int position = currentTrack != null
+                ? secondsToMicroSecs(currentTrack.getProgress())
+                : 0;
 
         Map<String, Variant<?>> props = new HashMap<>();
-        props.put("PlaybackStatus", new Variant<>(playbackStatus));
-        props.put("LoopStatus", new Variant<>(LoopStatus.None.name()));
-        props.put("Rate", new Variant<>(1.0));
-        props.put("MaximumRate", new Variant<>(1.0));
-        props.put("MinimumRate", new Variant<>(1.0));
+        props.put("PlaybackStatus", new Variant<>(playbackStatus.name()));
+        props.put("LoopStatus", new Variant<>(loopStatus.name()));
+        props.put("Rate", new Variant<>(rate));
+        props.put("MaximumRate", new Variant<>(rate));
+        props.put("MinimumRate", new Variant<>(rate));
         props.put("Shuffle", new Variant<>(false));
-        props.put("Volume", new Variant<>(playerStatusData != null
-                ? playerStatusData.getVolume()
-                : 100));
-        props.put("Position", new Variant<>(currentTrack != null
-                ? secondsToMicroSecs(currentTrack.getProgress())
-                : 0));
-        props.put("Metadata", new Variant<>(buildMetadata(), "a{sv}"));
+        props.put("Volume", new Variant<>(volume));
+        props.put("Position", new Variant<>(position));
+        props.put("Metadata", new Variant<>(metadataRef.get(), "a{sv}"));
         props.put("CanGoNext", new Variant<>(true));
         props.put("CanGoPrevious", new Variant<>(true));
         props.put("CanPlay", new Variant<>(true));
@@ -379,6 +368,13 @@ public class Mpris extends Thread
         props.put("CanControl", new Variant<>(true));
 
         return props;
+    }
+
+    private Object getPlayerProperty(String name) {
+        Map<String, Variant<?>> playerProperties = getAllPlayerProperties();
+        Variant<?> variant = playerProperties.get(name);
+
+        return variant != null ? variant.getValue() : null;
     }
 
     public void shutdown() {

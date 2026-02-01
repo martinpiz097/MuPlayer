@@ -42,4 +42,10 @@ public interface MediaPlayer2 extends DBusInterface {
         @DBusMemberName("OpenUri")
         void openUri(String uri);
     }
+
+    @DBusInterfaceName("org.mpris.MediaPlayer2.TrackList")
+    interface TrackList {
+
+    }
+
 }

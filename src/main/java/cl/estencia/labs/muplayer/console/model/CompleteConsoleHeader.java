@@ -11,14 +11,14 @@ import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.
 import static cl.estencia.labs.muplayer.console.util.ConsolePaintUtil.*;
 import static cl.estencia.labs.muplayer.console.util.ConsolePaintUtil.paintBatteryStatus;
 import static cl.estencia.labs.muplayer.core.cache.CacheManager.CACHE;
-import static cl.estencia.labs.muplayer.core.cache.CacheVar.PLAYER_CURRENT_DATA;
+import static cl.estencia.labs.muplayer.core.cache.CacheVar.PLAYER_INFO;
 
 public class CompleteConsoleHeader extends ConsoleHeader {
     @Override
     public String draw(MusicPlayer player) {
         StringBuilder sbHeader = new StringBuilder();
         PlayerInfo playerInfo = CACHE.get(
-                PLAYER_CURRENT_DATA, PlayerInfo.class);
+                PLAYER_INFO, PlayerInfo.class);
         Track currentTrack = playerInfo != null
                 ? playerInfo.getCurrentTrack()
                 : player.getCurrentTrack().get();

@@ -8,6 +8,7 @@ import cl.estencia.labs.muplayer.audio.model.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.factory.TrackFactory;
 import cl.estencia.labs.muplayer.core.bus.message.Events;
+import cl.estencia.labs.muplayer.core.bus.model.PlayerInfo;
 import cl.estencia.labs.muplayer.core.bus.util.PlayerBusUtil;
 import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.core.util.FilterUtil;
@@ -23,6 +24,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 
 import static cl.estencia.labs.muplayer.audio.util.AudioFileUtil.isSupportedAudioFile;
+import static cl.estencia.labs.muplayer.core.cache.CacheManager.CACHE;
+import static cl.estencia.labs.muplayer.core.cache.CacheVar.PLAYER_INFO;
 import static cl.estencia.labs.muplayer.core.thread.ThreadUtil.generateTrackThreadName;
 
 @Slf4j
@@ -70,15 +73,22 @@ public class MuPlayerUtil {
         }
     }
 
+    public PlayerInfo getUpdatedPlayerInfo() {
+        return new PlayerInfo(player.getCurrentTrack().get(),
+                player.getTracks(),
+                player.getListFolders(),
+                playerStatusData);
+    }
+
     public void sendPlayerInfoEvent() {
         if (messageBus == null || messageBus.getState() == Thread.State.TERMINATED) {
             return;
         }
 
-        player.sendEvent(Events.playerInfo(player.getCurrentTrack(),
-                player.getTracks(),
-                player.getListFolders(),
-                playerStatusData));
+        PlayerInfo playerInfo = getUpdatedPlayerInfo();
+
+        CACHE.set(PLAYER_INFO, playerInfo);
+        player.sendEvent(Events.playerInfo(playerInfo));
     }
 
     public void sendLoadingInfoEvent(int tracksCount) {

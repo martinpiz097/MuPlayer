@@ -8,9 +8,11 @@ o el modo por defecto
     a usar para interceptors y key listeners, similar al json de los console-player-codes
 - Inicio con pf o pl con index directo en reemplazo de start
 - Refactorizar console table
-- Refactorizar orange logger
-- Parametro para iniciar automaticamente el reproductir al ejecutar el jar
-- Agregar nombre del formato y carpeta actual al header
+- Parametro para iniciar automaticamente el reproducir al ejecutar el jar
+- Header:
+    Agregar nombre del formato
+    Agregar numero de cancion
+- Agregar nombre del formato al header
 - Agregar nombre del formato en info de cancion
 - Opcion de ejecutar muplayer reproduciendo solo un archivo en especifico o una lista de canciones sueltas
 - Integrar el control remoto (cliente TCP) dentro del muplayer para abrirlo en modo control remoto
@@ -23,10 +25,7 @@ o el modo por defecto
 - Cuando inicie poder indicarle mediante comandos que pendrive cargar y asi leer musica desde ahi
 automontando el dispositivo si es que no lo esta
 
-- Usar los comandos de historial solo en el modo comando, en el modo shorcut usarlos para volumen
 - Transformar Track en runnable
-- Combinaciones de teclas con ALT
-- Agregar numero de cancion a header
 - Cargar listas de reproduccion desde archivos m3u
 
 - Se podria realizar la comunicacion con el reproductor enteramente por mensajes, en donde
@@ -35,3 +34,6 @@ reproductor publique un mensaje con el mismo topico como respuesta, aunque esto 
 reproductor sepa de la existencia de otro componente, lo que crea una dependencia, quizas ahi la mejor opcion
 es personalizar un objeto, puede ser mejorando el PlayerInfo, que contenga informacion extra, como el topico
 en cuestion, mensaje a mostrar, etc.
+
+- Modo cliente para controlar por socket un muplayer de una raspberry y puentear la info hacia mpris
+y viceversa.

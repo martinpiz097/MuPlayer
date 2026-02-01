@@ -3,6 +3,7 @@ package cl.estencia.labs.muplayer.core.util;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.*;
 
 public class NumberUtil {
+
     public static Number parseStringNumber(String strNumber) {
         if (strNumber == null || strNumber.isBlank()) {
             return null;
@@ -30,4 +31,13 @@ public class NumberUtil {
             return null;
         }
     }
+
+    public static int secondsToMicroSecs(Number seconds) {
+        return Math.round(seconds.floatValue() * Math.powExact(10, 6));
+    }
+
+    public static int microSecsToSeconds(Number microSeconds) {
+        return Math.round(microSeconds.floatValue() / Math.powExact(10, 6));
+    }
+
 }

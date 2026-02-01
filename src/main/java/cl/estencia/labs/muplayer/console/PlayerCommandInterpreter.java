@@ -35,6 +35,7 @@ import static cl.estencia.labs.muplayer.console.common.constants.ConsoleChars.CA
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SANDGLASS;
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.CLEAN;
+import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.DEFAULT;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputLevel.*;
 import static cl.estencia.labs.muplayer.console.util.PlayerInterpreterUtil.*;
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
@@ -90,7 +91,6 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     player.addResponseListener(playerInfoResp -> {
                         synchronized (playerInfo) {
                             playerInfo.set(playerInfoResp);
-                            CACHE.set(PLAYER_CURRENT_DATA, playerInfo.get());
                         }
 
                         printConsoleInfo(player, CLEAN, true);

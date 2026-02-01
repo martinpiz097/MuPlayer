@@ -1,0 +1,4 @@
+- Refactorizar orange logger
+- Agregar carpeta actual al header
+- Usar los comandos de historial solo en el modo comando, en el modo shorcut usarlos para volumen
+- Combinaciones de teclas con ALT

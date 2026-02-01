@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class MusicPlayer extends EventPlayer implements AudioElement, SystemVolumeController {
+    protected MusicPlayer() {}
+
     public abstract boolean isOn();
     public abstract boolean hasSounds();
     public abstract boolean isValidRootFolder();
