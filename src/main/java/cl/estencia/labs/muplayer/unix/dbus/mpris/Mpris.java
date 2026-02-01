@@ -112,6 +112,10 @@ public class Mpris extends Thread
     @Override
     public void quit() {
         log.debug("[MPRIS] Quit");
+        playerBus.publish(Events.shutdown());
+        CACHE.clear();
+        connection.close();
+
         System.exit(0);
     }
 

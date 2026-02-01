@@ -21,6 +21,10 @@ public class MprisConnection {
         dbus.exportObject(dBusInterface);
     }
 
+    public void close() {
+        dbus.disconnect();
+    }
+
     @Override
     public String toString() {
         return "MprisConnection[" +
