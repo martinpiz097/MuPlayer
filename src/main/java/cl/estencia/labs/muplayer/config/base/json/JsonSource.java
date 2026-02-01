@@ -1,13 +1,12 @@
 package cl.estencia.labs.muplayer.config.base.json;
 
-import cl.estencia.labs.muplayer.core.cache.CacheManager;
 import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import static cl.estencia.labs.muplayer.core.cache.CacheManager.GLOBAL_CACHE;
+import static cl.estencia.labs.muplayer.core.cache.CacheManager.CACHE;
 
 @Slf4j
 public abstract class JsonSource<T, O> {
@@ -36,7 +35,7 @@ public abstract class JsonSource<T, O> {
     }
 
     protected O getCacheData() {
-        return GLOBAL_CACHE.loadValue(CacheVar.SOURCE_DATA);
+        return CACHE.get(CacheVar.SOURCE_DATA);
     }
 
     public abstract boolean validate();

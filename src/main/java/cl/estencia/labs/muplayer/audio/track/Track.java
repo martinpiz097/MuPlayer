@@ -10,7 +10,6 @@ import cl.estencia.labs.muplayer.audio.model.TrackStatusData;
 import cl.estencia.labs.muplayer.audio.track.data.TrackFileMetadata;
 import cl.estencia.labs.muplayer.audio.track.data.HeaderData;
 import cl.estencia.labs.muplayer.audio.track.state.*;
-import cl.estencia.labs.muplayer.core.exception.FormatNotSupportedException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +25,8 @@ import static cl.estencia.labs.muplayer.core.aucom.common.AudioConstants.DEFAULT
 import static cl.estencia.labs.muplayer.audio.util.AudioDriverUtil.getSecondsPosition;
 import static cl.estencia.labs.muplayer.audio.util.AudioDriverUtil.isTrackStreamsOpened;
 import static cl.estencia.labs.muplayer.audio.util.TrackInfoUtil.loadTrackInfo;
+import static java.lang.Thread.State.TIMED_WAITING;
+import static java.lang.Thread.State.WAITING;
 
 @EqualsAndHashCode(callSuper = true)
 @Slf4j
@@ -77,13 +78,18 @@ public abstract class Track extends Thread
         return frameLen > 0 ? (int) (frameLen / 1024) : BUFFSIZE;
     }*/
 
+    protected boolean isWaiting() {
+        State threadState = getState();
+        return threadState == WAITING || threadState == TIMED_WAITING;
+    }
+
     public TrackStateName getStateName() {
         return trackState.getName();
     }
 
     @Override
     public long getDuration() {
-        return Math.round(metadata.getDuration());
+        return Math.round(metadata.duration());
     }
 
     @Override
@@ -136,36 +142,50 @@ public abstract class Track extends Thread
         return trackStatusData.isMute();
     }
 
+    // funciona como play, start y resumeTrack
     @Override
     public void play() {
+        if (isPlaying()) {
+            return;
+        }
+
         if (isAlive()) {
             trackState = new PlayingState(this);
+            if (isWaiting()) {
+                synchronized (this) {
+                    notify();
+                }
+            }
+        } else {
+            start();
         }
     }
 
     @Override
     public void pause() {
-        if (isPlaying()) {
-            trackState = new PausedState(this);
+        if (!isPlaying()) {
+            return;
         }
+
+        trackState = new PausedState(this);
     }
 
     @Override
     public void resumeTrack() {
-        if (isAlive() && (isPaused() || isStopped())) {
-            // al colocar play antes de notify, se evita salida del while en PlayingState
-            play();
-            synchronized (this) {
-                notify();
-            }
+        if (!isAlive() || isPlaying() || !(isPaused() || isStopped())) {
+            return;
         }
+
+        play();
     }
 
     @Override
     public synchronized void stopTrack() {
-        if (isAlive() && (isPlaying() || isPaused())) {
-            trackState = new StoppedState(this);
+        if (!isAlive() || !isPlaying() || !isPaused()) {
+            return;
         }
+
+        trackState = new StoppedState(this);
     }
 
     @Override
@@ -279,13 +299,42 @@ public abstract class Track extends Thread
     }
 
     @Override
-    public String getProperty(String key) {
+    public String getProperty(FieldKey key) {
         return metadata.getTag(key);
     }
 
     @Override
-    public String getProperty(FieldKey key) {
-        return metadata.getTag(key);
+    public Integer getPropertyAsInt(FieldKey key) {
+        try {
+            String property = getProperty(key);
+            if (property == null) {
+                return null;
+            }
+
+            return Integer.parseInt(property.trim());
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public Double getPropertyAsDouble(FieldKey key) {
+        try {
+            String property = getProperty(key);
+            if (property == null) {
+                return null;
+            }
+
+            return Double.parseDouble(property.trim());
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public String getPropertyNotNull(FieldKey key) {
+        String property = getProperty(key);
+        return property != null ? property : "Unknown";
     }
 
     @Override
@@ -314,7 +363,7 @@ public abstract class Track extends Thread
 
     @Override
     public Cover getCover() {
-        return metadata.getCover();
+        return metadata.cover();
     }
 
     @Override
@@ -329,7 +378,7 @@ public abstract class Track extends Thread
 
     @Override
     public long getBitrate() {
-        return metadata.getBitRate();
+        return metadata.bitRate();
     }
 
     @Override
