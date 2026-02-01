@@ -23,7 +23,7 @@ public class NumberUtil {
         }
 
         try {
-            strNumber = strNumber.trim();
+            strNumber = strNumber.trim().replace(" ", "");
             return strNumber.startsWith(PLUS)
                     ? Double.parseDouble(strNumber.replace(PLUS, EMPTY))
                     : Double.parseDouble(strNumber.replace(MINUS, EMPTY)) * -1;
@@ -38,6 +38,22 @@ public class NumberUtil {
 
     public static int microSecsToSeconds(Number microSeconds) {
         return Math.round(microSeconds.floatValue() / Math.powExact(10, 6));
+    }
+
+    public static int normalizeValue(int value, int min, int max) {
+        return Math.max(Math.min(value, max), min);
+    }
+
+    public static int normalizePercentValue(int value) {
+        return normalizeValue(value, 0, 100);
+    }
+
+    public static float normalizeValue(float value, float min, float max) {
+        return Math.max(Math.min(value, max), min);
+    }
+
+    public static float normalizePercentValue(float value) {
+        return normalizeValue(value, 0, 100);
     }
 
 }

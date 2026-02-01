@@ -47,6 +47,8 @@ import static cl.estencia.labs.muplayer.core.cache.CacheVar.NATIVE_CONSOLE;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.RUNNER;
 import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.infoLine;
 import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.info;
+import static cl.estencia.labs.muplayer.core.util.NumberUtil.normalizePercentValue;
+import static cl.estencia.labs.muplayer.core.util.NumberUtil.normalizeValue;
 
 @Slf4j
 public class PlayerInterpreterUtil {
@@ -452,32 +454,47 @@ public class PlayerInterpreterUtil {
     }
 
     public static void changePlayerVolume(MusicPlayer player, Command cmd, boolean isSystemVolume) {
+        if (!player.isAlive() || !cmd.hasOptions()) {
+            return;
+        }
+
         float volume;
-        if (player.isAlive() && cmd.hasOptions()) {
-            String firstOption = cmd.getOptionAt(0);
-            Number volumeChange = NumberUtil.parseVolumeChange(firstOption);
+        String firstOption = cmd.getOptionAt(0);
+        Number volumeChange = NumberUtil.parseVolumeChange(firstOption);
+        if (isSystemVolume) {
             if (volumeChange != null) {
-                volume = Math.max(
-                        Math.min(player.getSystemVolume() + volumeChange.floatValue(), 100),
-                        0);
+                volume = normalizePercentValue(player.getSystemVolume() + volumeChange.floatValue());
             } else {
                 Number volumeParam = NumberUtil.parseStringNumber(firstOption);
                 if (volumeParam == null) {
                     return;
                 }
 
-                volume = volumeParam.floatValue();
+                volume = normalizePercentValue(volumeParam.floatValue());
             }
 
             if (volume == -1) {
                 return;
             }
 
-            if (isSystemVolume) {
-                player.setSystemVolume(volume);
+            player.setSystemVolume(volume);
+        } else {
+            if (volumeChange != null) {
+                volume = normalizePercentValue(player.getVolume() + volumeChange.floatValue());
             } else {
-                player.setVolume(volume);
+                Number volumeParam = NumberUtil.parseStringNumber(firstOption);
+                if (volumeParam == null) {
+                    return;
+                }
+
+                volume = normalizePercentValue(volumeParam.floatValue());
             }
+
+            if (volume == -1) {
+                return;
+            }
+
+            player.setVolume(volume);
         }
     }
 
