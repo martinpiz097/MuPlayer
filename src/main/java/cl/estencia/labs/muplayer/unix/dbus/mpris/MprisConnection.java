@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.io.mpris;
+package cl.estencia.labs.muplayer.unix.dbus.mpris;
 
 import lombok.Getter;
 import org.freedesktop.dbus.connections.impl.DBusConnection;

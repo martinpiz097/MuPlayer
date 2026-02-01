@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.io.mpris.interfaces;
+package cl.estencia.labs.muplayer.unix.dbus.mpris.interfaces;
 
 import org.freedesktop.dbus.annotations.DBusInterfaceName;
 import org.freedesktop.dbus.exceptions.DBusException;

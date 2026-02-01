@@ -1,4 +1,4 @@
-package cl.estencia.labs.muplayer.io.mpris;
+package cl.estencia.labs.muplayer.unix.dbus.mpris;
 
 import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.ebot.utils.threads.Interruptor;
@@ -9,9 +9,9 @@ import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.util.CoverUtil;
 import cl.estencia.labs.muplayer.core.bus.message.Events;
 import cl.estencia.labs.muplayer.core.bus.model.PlayerInfo;
-import cl.estencia.labs.muplayer.io.mpris.common.PlaybackStatus;
-import cl.estencia.labs.muplayer.io.mpris.interfaces.MediaPlayer2;
-import cl.estencia.labs.muplayer.io.mpris.interfaces.Seeked;
+import cl.estencia.labs.muplayer.unix.dbus.mpris.common.PlaybackStatus;
+import cl.estencia.labs.muplayer.unix.dbus.mpris.interfaces.MediaPlayer2;
+import cl.estencia.labs.muplayer.unix.dbus.mpris.interfaces.Seeked;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.freedesktop.dbus.exceptions.DBusException;
