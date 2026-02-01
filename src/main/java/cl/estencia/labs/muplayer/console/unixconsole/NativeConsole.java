@@ -67,8 +67,8 @@ public class NativeConsole extends Console {
             return;
         }
 
-        int cartReturnColumns = sbInput.length();
-        sbInput.delete(0, sbInput.length());
+//        int cartReturnColumns = sbInput.length();
+        deleteAllConsoleChars();
         sbInput.append(command);
 
 //        info((cartReturn(cartReturnColumns) + command);
@@ -120,6 +120,30 @@ public class NativeConsole extends Console {
                 interceptor.onInputEvent(new KeyInputEvent(key, sequence)));
     }
 
+    private void deleteConsoleChar(int index) {
+        if (sbInput.isEmpty() || (index < 0 || index >= sbInput.length())) {
+            return;
+        }
+
+        sbInput.deleteCharAt(index);
+    }
+
+    private void deleteLastConsoleChar() {
+        deleteConsoleChar(sbInput.length() - 1);
+    }
+
+    private void deleteConsoleCharsRange(int start, int end) {
+        if (sbInput.isEmpty() || (end <= start || start < 0 || end > sbInput.length())) {
+            return;
+        }
+
+        sbInput.delete(start, end);
+    }
+
+    private void deleteAllConsoleChars() {
+        deleteConsoleCharsRange(0, sbInput.length());
+    }
+
     // los combination listener solo se usaran con los ALT (de momento)
     private void handleShorcut(int key, byte[] sequence) {
         final boolean isAltCombination = sequence.length == 2;
@@ -134,7 +158,7 @@ public class NativeConsole extends Console {
         if (key == LINE_FEED) {
             String line = sbInput.toString();
             consoleHistory.addCommand(line);
-            sbInput.delete(0, sbInput.length());
+            deleteAllConsoleChars();
 
             Thread.ofVirtual().start(() -> sendInputEvent(
                     new LineInputEvent(line)));
@@ -199,9 +223,9 @@ public class NativeConsole extends Console {
                 }
 
                 int cartReturnCount = sbInput.length();
-                sbInput.deleteCharAt(sbInput.length() - 1);
-                consoleHistory.updateCurrentCommand(sbInput.toString());
+                deleteLastConsoleChar();
 
+                consoleHistory.updateCurrentCommand(sbInput.toString());
                 info(cartReturn(cartReturnCount) + sbInput);
             }
         });
