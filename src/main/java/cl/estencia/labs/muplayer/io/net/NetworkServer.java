@@ -13,6 +13,8 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.List;
 
+import static cl.estencia.labs.muplayer.config.reader.ResourceReaders.MUPLAYER_CONFIG_READER;
+
 @Getter
 @Setter
 public class NetworkServer {
@@ -26,7 +28,7 @@ public class NetworkServer {
     }
 
     private int getServerSetupPort() {
-        String portProperty = MuPlayerConfigReader.getInstance().getProperty(
+        String portProperty = MUPLAYER_CONFIG_READER.getProperty(
                 MuPlayerConfigKeys.DAEMON_SERVER_PORT);
         return portProperty != null ? Integer.parseInt(portProperty) : 0;
     }

@@ -55,5 +55,5 @@ public abstract class MusicPlayer extends EventPlayer implements AudioElement, S
     public abstract List<File> getListFolders();
     public abstract List<Artist> getArtists();
     public abstract List<Album> getAlbums();
-
+    public abstract long getTotalDuration();
 }

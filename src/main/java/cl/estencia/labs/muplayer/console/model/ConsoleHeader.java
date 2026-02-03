@@ -5,12 +5,10 @@ import cl.estencia.labs.muplayer.config.model.MuPlayerConfigKeys;
 import cl.estencia.labs.muplayer.config.reader.MuPlayerConfigReader;
 import cl.estencia.labs.muplayer.console.common.enums.ConsoleHeaderMode;
 
-public abstract class ConsoleHeader {
-    protected final MuPlayerConfigReader muPlayerConfigReader;
+import static cl.estencia.labs.muplayer.config.reader.ResourceReaders.MUPLAYER_CONFIG_READER;
 
-    protected ConsoleHeader() {
-        muPlayerConfigReader = MuPlayerConfigReader.getInstance();
-    }
+public abstract class ConsoleHeader {
+    protected ConsoleHeader() {}
 
     public abstract String draw(MusicPlayer player);
 
@@ -26,7 +24,7 @@ public abstract class ConsoleHeader {
     }
 
     public static ConsoleHeader createHeader() {
-        String headerModeName = MuPlayerConfigReader.getInstance().getProperty(MuPlayerConfigKeys.CONSOLE_HEADER_MODE);
+        String headerModeName = MUPLAYER_CONFIG_READER.getProperty(MuPlayerConfigKeys.CONSOLE_HEADER_MODE);
         ConsoleHeaderMode headerMode = ConsoleHeaderMode.valueOf(headerModeName);
         return createHeader(headerMode);
     }

@@ -156,10 +156,16 @@ public enum AudioFileExtension {
         }
     }
 
-    public static List<String> getMimeTypes() {
-        return Arrays.stream(AudioFileExtension.values())
-                .map(AudioFileExtension::getMimeType)
-                .toList();
+    public static String[] getMimeTypes() {
+        AudioFileExtension[] audioExtensions = AudioFileExtension.values();
+        int extensionCount = audioExtensions.length;
+        String[] mimeTypes = new String[extensionCount];
+
+        for (int i = 0; i < extensionCount; i++) {
+            mimeTypes[i] = audioExtensions[i].getMimeType();
+        }
+
+        return mimeTypes;
     }
 
 }

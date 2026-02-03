@@ -37,3 +37,4 @@ en cuestion, mensaje a mostrar, etc.
 
 - Modo cliente para controlar por socket un muplayer de una raspberry y puentear la info hacia mpris
 y viceversa.
+- Enviar ordenes a mpris a traves de una cola, para ejecutarlas verdaderamente en otro hilo

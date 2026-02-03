@@ -7,11 +7,13 @@ import cl.estencia.labs.muplayer.console.common.enums.TrackFactoryType;
 
 import java.io.File;
 
+import static cl.estencia.labs.muplayer.config.reader.ResourceReaders.MUPLAYER_CONFIG_READER;
+
 public abstract class TrackFactory {
     private static final TrackFactoryType FACTORY_TYPE = readFactoryType();
 
     private static TrackFactoryType readFactoryType() {
-        String factoryTypeName = MuPlayerConfigReader.getInstance()
+        String factoryTypeName = MUPLAYER_CONFIG_READER
                 .getProperty(MuPlayerConfigKeys.TRACK_FACTORY_TYPE);
         if (factoryTypeName == null || factoryTypeName.isBlank()) {
             return null;

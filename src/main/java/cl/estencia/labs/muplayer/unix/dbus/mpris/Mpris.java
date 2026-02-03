@@ -12,17 +12,18 @@ import cl.estencia.labs.muplayer.core.bus.model.PlayerInfo;
 import cl.estencia.labs.muplayer.unix.dbus.mpris.common.LoopStatus;
 import cl.estencia.labs.muplayer.unix.dbus.mpris.common.PlaybackStatus;
 import cl.estencia.labs.muplayer.unix.dbus.mpris.interfaces.MediaPlayer2;
-import cl.estencia.labs.muplayer.unix.dbus.mpris.interfaces.Seeked;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.interfaces.Properties;
 import org.freedesktop.dbus.types.Variant;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static cl.estencia.labs.muplayer.audio.common.constants.PlayerConstants.PLAYER_BUS;
+import static cl.estencia.labs.muplayer.core.bus.message.PlayerEventTopics.SHUTDOWN;
 import static cl.estencia.labs.muplayer.core.cache.CacheManager.CACHE;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.*;
 import static cl.estencia.labs.muplayer.core.util.CollectionUtil.newMap;
@@ -35,23 +36,27 @@ import static org.jaudiotagger.tag.FieldKey.*;
 public class Mpris extends Thread
         implements MediaPlayer2, MediaPlayer2.Player, Properties {
     private final MprisConnection connection;
-    private final MessageBus playerBus;
+    @Getter private final MprisPublisher publisher;
     private final AtomicReference<PlayerInfo> playerInfoRef;
     private final AtomicReference<String> trackIdRef;
     private final AtomicReference<Map<String, Variant<?>>> metadataRef;
+    private final AtomicReference<PlaybackStatus> playbackStatusRef;
+    private final AtomicReference<LoopStatus> loopStatusRef;
+
     private final Interruptor interruptor;
-    private volatile PlaybackStatus playbackStatus;
-    private volatile LoopStatus loopStatus;
 
     public Mpris() throws DBusException {
         this.connection = new MprisConnection(BUS_NAME);
-        this.playerBus = CACHE.get(PLAYER_BUS);
+        this.publisher = new MprisPublisher(connection);
         this.playerInfoRef = new AtomicReference<>(null);
         this.trackIdRef = new AtomicReference<>(UNKNOWN_TRACK_ID);
         this.metadataRef = new AtomicReference<>(newMap());
+        this.playbackStatusRef = new AtomicReference<>(PlaybackStatus.Stopped);
+        this.loopStatusRef = new AtomicReference<>(LoopStatus.None);
+
         this.interruptor = Interruptor.manual(this);
-        this.playbackStatus = PlaybackStatus.Stopped;
-        this.loopStatus = LoopStatus.None;
+
+        setName("mpris");
     }
 
     private void configureBusListeners() {
@@ -67,9 +72,13 @@ public class Mpris extends Thread
                 buildCurrentTrackMetadata();
             }
 
-            emitPropertiesChanged(Map.of(
-                    "Metadata", new Variant<>(metadataRef.get(), "a{sv}")));
+            publisher.sendPropertiesChangedEvent("Metadata", metadataRef.get(), "a{sv}");
             setPlaybackStatus(PlaybackStatus.Playing);
+        });
+
+        eventPlayer.addListener(SHUTDOWN, message -> {
+            CACHE.clear();
+            System.exit(0);
         });
     }
 
@@ -85,7 +94,7 @@ public class Mpris extends Thread
                 metadata.clear();
             }
 
-            addValueNullSafe(metadata, "mpris:trackid", trackIdRef.get());
+            addValueNullSafe(metadata, "mpris:trackid", trackIdRef.get(), "o");
             addValueNullSafe(metadata, "mpris:length", secondsToMicroSecs(current.getDuration()));
             addValueNullSafe(metadata, "xesam:title", current.getTitle());
             addValueNullSafe(metadata, "xesam:album", current.getAlbum());
@@ -105,7 +114,7 @@ public class Mpris extends Thread
             return UNKNOWN_TRACK_ID;
         }
 
-        return TRACK_ID_HEADER + track.getDataSource().getPath();
+        return TRACK_ID_HEADER + track.getTrackId();
     }
 
     private Track getCurrentTrack() {
@@ -126,139 +135,99 @@ public class Mpris extends Thread
         return playerInfo.getPlayerStatusData();
     }
 
-    @Override
-    public String getObjectPath() {
-        return DBUS_OBJECT_PATH;
-    }
-
-    @Override
-    public void raise() {
-        log.debug("[MPRIS] Raise");
-    }
-
-    @Override
-    public void quit() {
-        log.debug("[MPRIS] Quit");
-        playerBus.publish(Events.shutdown());
-        CACHE.clear();
-        connection.close();
-
-        System.exit(0);
-    }
-
-    @Override
-    public void play() {
-        log.debug("[MPRIS] Play");
-        playerBus.publish(Events.play());
-        setPlaybackStatus(PlaybackStatus.Playing);
-    }
-
-    @Override
-    public void pause() {
-        log.debug("[MPRIS] Pause");
-        playerBus.publish(Events.pause());
-        setPlaybackStatus(PlaybackStatus.Paused);
-    }
-
-    @Override
-    public void playPause() {
-        if (PlaybackStatus.Playing.equals(playbackStatus)) {
-            pause();
-        } else {
-            play();
+    // funcion necesaria porque un valor dentro de un objeto Variant no puede ser null
+    private void addValueNullSafe(Map<String, Variant<?>> metadata,
+                                  String key, Object value) {
+        String valueStr = value != null ? value.toString().trim() : null;
+        if (valueStr == null || valueStr.isEmpty()) {
+            return;
         }
+
+        metadata.put(key, new Variant<>(value));
     }
 
-    @Override
-    public void Stop() {
-        log.debug("[MPRIS] Stop");
-        setPlaybackStatus(PlaybackStatus.Stopped);
+    private void addValueNullSafe(Map<String, Variant<?>> metadata,
+                                  String key, Object value, String sig) {
+        String valueStr = value != null ? value.toString().trim() : null;
+        if (valueStr == null || valueStr.isEmpty()) {
+            return;
+        }
+
+        metadata.put(key, new Variant<>(value, sig));
     }
 
-    @Override
-    public void next() {
-        log.debug("[MPRIS] Next");
-        playerBus.publish(Events.playNext());
+    // cuando hay un error con los metadatos, ya sea por temas de tipo de dato
+    // o key desconocida, no se enviara nada a mpris
+    private Map<String, Variant<?>> getAllMediaPlayer2Properties() {
+        Map<String, Variant<?>> props = new HashMap<>();
+        props.put("CanQuit", new Variant<>(true));
+        props.put("Fullscreen", new Variant<>(false));
+        props.put("CanSetFullscreen", new Variant<>(false));
+        props.put("CanRaise", new Variant<>(false));
+        props.put("HasTrackList", new Variant<>(false));
+        props.put("Identity", new Variant<>("MuPlayer"));
+        props.put("DesktopEntry", new Variant<>("muplayer"));
+        props.put("SupportedUriSchemes", new Variant<>(new String[] {"file"}));
+        props.put("SupportedMimeTypes", new Variant<>(SupportedAudioExtension.getMimeTypes()));
+        return props;
     }
 
-    @Override
-    public void previous() {
-        log.debug("[MPRIS] Previous");
-        playerBus.publish(Events.playPrev());
+    private Object getMediaPlayer2Property(String name) {
+        Map<String, Variant<?>> playerProperties = getAllMediaPlayer2Properties();
+        Variant<?> variant = playerProperties.get(name);
+
+        return variant != null ? variant.getValue() : null;
     }
 
-    @Override
-    public void seek(long offset) {
+    private Map<String, Variant<?>> getAllPlayerProperties() {
         Track currentTrack = getCurrentTrack();
-        if (currentTrack == null) {
-            return;
-        }
+        PlayerStatusData playerStatusData = getStatusData();
+        float rate = 1.0f;
+        float volume = playerStatusData != null
+                ? playerStatusData.getVolume()
+                : 100;
+        long position = currentTrack != null
+                ? secondsToMicroSecs(currentTrack.getProgress())
+                : 0;
 
-        final int offsetInSeconds = microSecsToSeconds(offset);
-        currentTrack.seek(offsetInSeconds);
+        Map<String, Variant<?>> props = new HashMap<>();
+        props.put("PlaybackStatus", new Variant<>(playbackStatusRef.get().name()));
+        props.put("LoopStatus", new Variant<>(loopStatusRef.get().name()));
+        props.put("Rate", new Variant<>(rate));
+        props.put("MaximumRate", new Variant<>(rate));
+        props.put("MinimumRate", new Variant<>(rate));
+        props.put("Shuffle", new Variant<>(false));
+        props.put("Volume", new Variant<>(volume));
+        props.put("Position", new Variant<>(position));
+        props.put("Metadata", new Variant<>(metadataRef.get(), "a{sv}"));
+        props.put("CanGoNext", new Variant<>(true));
+        props.put("CanGoPrevious", new Variant<>(true));
+        props.put("CanPlay", new Variant<>(true));
+        props.put("CanPause", new Variant<>(true));
+        props.put("CanSeek", new Variant<>(true));
+        props.put("CanControl", new Variant<>(true));
 
-        // por si llega a cambiar
-        currentTrack = getCurrentTrack();
-        if (currentTrack == null) {
-            return;
-        }
-
-        int progressInMicros = secondsToMicroSecs(currentTrack.getProgress());
-        log.debug("[MPRIS] Seek to: " + progressInMicros + "μs");
-        emitSeeked(progressInMicros);
+        return props;
     }
 
-    @Override
-    public void setPosition(String incomingTrackId, long position) {
-        log.debug("[MPRIS] SetPosition: " + position + "μs");
-        Track currentTrack = getCurrentTrack();
-        if (currentTrack == null) {
-            return;
-        }
+    private Object getPlayerProperty(String name) {
+        Map<String, Variant<?>> playerProperties = getAllPlayerProperties();
+        Variant<?> variant = playerProperties.get(name);
 
-        final int positionInSeconds = Math.round( (((float) position) / Math.powExact(10, 6)));
-        currentTrack.gotoSecond(positionInSeconds);
-    }
-
-    @Override
-    public void openUri(String uri) {
-        log.debug("[MPRIS] OpenUri: " + uri);
-    }
-
-    private void emitPropertiesChanged(Map<String, Variant<?>> propertiesChanged) {
-        try {
-            connection.getDbus().sendMessage(new PropertiesChanged(
-                    DBUS_OBJECT_PATH,
-                    DBUS_PLAYER_INTERFACE,
-                    propertiesChanged,
-                    List.of()
-            ));
-        } catch (DBusException e) {
-            log.error("Error emitiendo PropertiesChanged: " + e.getMessage());
-        }
-    }
-
-    private void emitSeeked(long newPosition) {
-        try {
-            connection.getDbus().sendMessage(new Seeked(DBUS_OBJECT_PATH, newPosition));
-        } catch (DBusException e) {
-            log.error("Error emitiendo Seeked: " + e.getMessage());
-        }
+        return variant != null ? variant.getValue() : null;
     }
 
     public void setPlaybackStatus(PlaybackStatus status) {
-        if (this.playbackStatus.equals(status)) {
+        if (playbackStatusRef.get().equals(status)) {
             return;
         }
 
-        this.playbackStatus = status;
-        emitPropertiesChanged(Map.of("PlaybackStatus", new Variant<>(status)));
+        playbackStatusRef.set(status);
+        publisher.sendPropertiesChangedEvent("PlaybackStatus", status);
     }
 
     public void setVolume(double vol) {
-        float newVolume = Math.min(100, (float) Math.max(0d, vol));
-        playerBus.publish(Events.setVolume(newVolume));
-        emitPropertiesChanged(Map.of("Volume", new Variant<>(newVolume)));
+        PLAYER_BUS.publish(Events.setVolume((float) vol));
     }
 
     public void setShuffle(boolean shuffle) {
@@ -273,6 +242,90 @@ public class Mpris extends Thread
 //            this.loopStatus = status;
 //            emitPropertiesChanged(Map.of("LoopStatus", new Variant<>(status)));
 //        }
+    }
+
+    public void shutdown() {
+        publisher.shutdown();
+        connection.close();
+
+        interrupt();
+        interruptor.switchOn();
+    }
+
+    @Override
+    public String getObjectPath() {
+        return DBUS_OBJECT_PATH;
+    }
+
+    @Override
+    public void raise() {
+        log.debug("[MPRIS] Raise");
+    }
+
+    @Override
+    public void quit() {
+        log.debug("[MPRIS] Quit");
+        PLAYER_BUS.publish(Events.shutdown());
+    }
+
+    @Override
+    public void play() {
+        log.debug("[MPRIS] Play");
+        PLAYER_BUS.publish(Events.play());
+    }
+
+    @Override
+    public void pause() {
+        log.debug("[MPRIS] Pause");
+        PLAYER_BUS.publish(Events.pause());
+    }
+
+    @Override
+    public void playPause() {
+        if (PlaybackStatus.Playing.equals(playbackStatusRef.get())) {
+            pause();
+        } else {
+            play();
+        }
+    }
+
+    @Override
+    public void Stop() {
+        log.debug("[MPRIS] Stop");
+        PLAYER_BUS.publish(Events.stop());
+    }
+
+    @Override
+    public void next() {
+        log.debug("[MPRIS] Next");
+        PLAYER_BUS.publish(Events.playNext());
+    }
+
+    @Override
+    public void previous() {
+        log.debug("[MPRIS] Previous");
+        PLAYER_BUS.publish(Events.playPrev());
+    }
+
+    @Override
+    public void seek(long offset) {
+        final long offsetInSeconds = microSecsToSeconds(offset);
+        PLAYER_BUS.publish(Events.seekSeconds((int) offsetInSeconds));
+
+        log.debug("[MPRIS] Seek to: " + offsetInSeconds + "μs");
+    }
+
+    @Override
+    public void setPosition(String incomingTrackId, long position) {
+        log.debug("[MPRIS] SetPosition: " + position + "μs");
+
+        final long positionInSeconds = microSecsToSeconds(position);
+        PLAYER_BUS.publish(Events.gotoSeconds((int) positionInSeconds));
+    }
+
+    @Override
+    public void openUri(String uri) {
+        log.debug("[MPRIS] OpenUri: " + uri);
     }
 
     @Override
@@ -305,89 +358,16 @@ public class Mpris extends Thread
         }
     }
 
-    // funcion necesaria porque un valor dentro de un objeto Variant no puede ser null
-    private void addValueNullSafe(Map<String, Variant<?>> metadata,
-                                  String key, Object value) {
-        String valueStr = value != null ? value.toString().trim() : null;
-        if (valueStr == null || valueStr.isEmpty()) {
-            return;
-        }
-
-        metadata.put(key, new Variant<>(value));
-    }
-
-    // cuando hay un error con los metadatos, ya sea por temas de tipo de dato
-    // o key desconocida, no se enviara nada a mpris
-    private Map<String, Variant<?>> getAllMediaPlayer2Properties() {
-        Map<String, Variant<?>> props = new HashMap<>();
-        props.put("CanQuit", new Variant<>(true));
-        props.put("Fullscreen", new Variant<>(false));
-        props.put("CanSetFullscreen", new Variant<>(false));
-        props.put("CanRaise", new Variant<>(false));
-        props.put("HasTrackList", new Variant<>(false));
-        props.put("Identity", new Variant<>("MuPlayer"));
-        props.put("DesktopEntry", new Variant<>("muplayer"));
-        props.put("SupportedUriSchemes", new Variant<>(List.of("file")));
-        props.put("SupportedMimeTypes", new Variant<>(SupportedAudioExtension.getMimeTypes()));
-        return props;
-    }
-
-    private Object getMediaPlayer2Property(String name) {
-        Map<String, Variant<?>> playerProperties = getAllMediaPlayer2Properties();
-        Variant<?> variant = playerProperties.get(name);
-
-        return variant != null ? variant.getValue() : null;
-    }
-
-    private Map<String, Variant<?>> getAllPlayerProperties() {
-        Track currentTrack = getCurrentTrack();
-        PlayerStatusData playerStatusData = getStatusData();
-        float rate = 1.0f;
-        float volume = playerStatusData != null
-                ? playerStatusData.getVolume()
-                : 100;
-        int position = currentTrack != null
-                ? secondsToMicroSecs(currentTrack.getProgress())
-                : 0;
-
-        Map<String, Variant<?>> props = new HashMap<>();
-        props.put("PlaybackStatus", new Variant<>(playbackStatus.name()));
-        props.put("LoopStatus", new Variant<>(loopStatus.name()));
-        props.put("Rate", new Variant<>(rate));
-        props.put("MaximumRate", new Variant<>(rate));
-        props.put("MinimumRate", new Variant<>(rate));
-        props.put("Shuffle", new Variant<>(false));
-        props.put("Volume", new Variant<>(volume));
-        props.put("Position", new Variant<>(position));
-        props.put("Metadata", new Variant<>(metadataRef.get(), "a{sv}"));
-        props.put("CanGoNext", new Variant<>(true));
-        props.put("CanGoPrevious", new Variant<>(true));
-        props.put("CanPlay", new Variant<>(true));
-        props.put("CanPause", new Variant<>(true));
-        props.put("CanSeek", new Variant<>(true));
-        props.put("CanControl", new Variant<>(true));
-
-        return props;
-    }
-
-    private Object getPlayerProperty(String name) {
-        Map<String, Variant<?>> playerProperties = getAllPlayerProperties();
-        Variant<?> variant = playerProperties.get(name);
-
-        return variant != null ? variant.getValue() : null;
-    }
-
-    public void shutdown() {
-        interrupt();
-        interruptor.switchOn();
-    }
-
     @Override
     public void run() {
         try {
             log.trace("Mpris server started!");
             configureBusListeners();
             connection.start(this);
+            publisher.start();
+
+            // TODO ojo con los errores que pueden provocar que el hilo termine con
+            // acciones pendientes en la cola
             while (!Thread.currentThread().isInterrupted()) {
                 interruptor.checkSignal();
             }

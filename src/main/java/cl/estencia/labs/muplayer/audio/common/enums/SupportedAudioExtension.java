@@ -1,7 +1,10 @@
 package cl.estencia.labs.muplayer.audio.common.enums;
 
+import cl.estencia.labs.muplayer.core.util.CollectionUtil;
+
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 // luego cargar desde un archivo
 public enum SupportedAudioExtension {
@@ -61,10 +64,16 @@ public enum SupportedAudioExtension {
         }
     }
 
-    public static List<String> getMimeTypes() {
-        return Arrays.stream(SupportedAudioExtension.values())
-                .map(SupportedAudioExtension::getMimeType)
-                .toList();
+    public static String[] getMimeTypes() {
+        SupportedAudioExtension[] audioExtensions = SupportedAudioExtension.values();
+        int extensionCount = audioExtensions.length;
+        String[] mimeTypes = new String[extensionCount];
+
+        for (int i = 0; i < extensionCount; i++) {
+            mimeTypes[i] = audioExtensions[i].getMimeType();
+        }
+
+        return mimeTypes;
     }
 
 }

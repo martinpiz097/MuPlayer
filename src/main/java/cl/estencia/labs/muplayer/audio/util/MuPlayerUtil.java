@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 
+import static cl.estencia.labs.muplayer.audio.common.constants.PlayerConstants.PLAYER_BUS;
 import static cl.estencia.labs.muplayer.audio.util.AudioFileUtil.isSupportedAudioFile;
 import static cl.estencia.labs.muplayer.core.cache.CacheManager.CACHE;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.PLAYER_INFO;
@@ -35,7 +36,6 @@ public class MuPlayerUtil {
     private final List<File> listFolders;
     private final PlayerStatusData playerStatusData;
     @Getter private final TrackFactory trackFactory;
-    private final MessageBus messageBus;
 
     public MuPlayerUtil(MusicPlayer player, PlayerStatusData playerStatusData) {
         this.player = player;
@@ -43,7 +43,6 @@ public class MuPlayerUtil {
         this.listFolders = player != null ? player.getListFolders() : null;
         this.playerStatusData = playerStatusData;
         this.trackFactory = TrackFactory.newFactory();
-        this.messageBus = PlayerBusUtil.getPlayerBus();
     }
 
     public boolean isCurrentTrackActive() {
@@ -81,7 +80,9 @@ public class MuPlayerUtil {
     }
 
     public void sendPlayerInfoEvent() {
-        if (messageBus == null || messageBus.getState() == Thread.State.TERMINATED) {
+        // si mantengo siempre activo el playerBus hasta que el muplayer se apague,
+        // este if no seria necesario
+        if (PLAYER_BUS.getState() == Thread.State.TERMINATED) {
             return;
         }
 
@@ -92,7 +93,9 @@ public class MuPlayerUtil {
     }
 
     public void sendLoadingInfoEvent(int tracksCount) {
-        if (messageBus == null || messageBus.getState() == Thread.State.TERMINATED) {
+        // si mantengo siempre activo el playerBus hasta que el muplayer se apague,
+        // este if no seria necesario
+        if (PLAYER_BUS.getState() == Thread.State.TERMINATED) {
             return;
         }
 
@@ -175,7 +178,7 @@ public class MuPlayerUtil {
         }
     }
 
-    public void playNewTrack(int index) {
+    public void playTrackFromIndex(int index) {
         synchronized (player.getCurrentTrack()) {
             reloadCurrentTrack();
             playerStatusData.setCurrentTrackIndex(index);

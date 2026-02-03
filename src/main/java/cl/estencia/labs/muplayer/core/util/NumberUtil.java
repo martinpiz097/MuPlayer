@@ -32,11 +32,11 @@ public class NumberUtil {
         }
     }
 
-    public static int secondsToMicroSecs(Number seconds) {
+    public static long secondsToMicroSecs(Number seconds) {
         return Math.round(seconds.floatValue() * Math.powExact(10, 6));
     }
 
-    public static int microSecsToSeconds(Number microSeconds) {
+    public static long microSecsToSeconds(Number microSeconds) {
         return Math.round(microSeconds.floatValue() / Math.powExact(10, 6));
     }
 

@@ -18,6 +18,8 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
+import static cl.estencia.labs.muplayer.audio.common.constants.PlayerConstants.PLAYER_BUS;
+import static cl.estencia.labs.muplayer.config.reader.ResourceReaders.*;
 import static cl.estencia.labs.muplayer.core.cache.CacheManager.CACHE;
 
 @Slf4j
@@ -28,8 +30,6 @@ public class Main {
         SLF4JBridgeHandler.install();
 
         setJvmAppName();
-        MessagesInfoReader messagesInfoReader = MessagesInfoReader.getInstance();
-
         try {
             loadLogConfig();
 
@@ -41,7 +41,7 @@ public class Main {
                     case 1:
                         String firstArg = args[0].trim();
                         if (firstArg.startsWith("-")) {
-                            throw new NullPointerException(messagesInfoReader.getProperty(MessagesInfoKeys.PROPERTY_NOT_FOUND_MSG));
+                            throw new NullPointerException(MESSAGES_INFO_READER.getProperty(MessagesInfoKeys.PROPERTY_NOT_FOUND_MSG));
                         } else {
                             consoleRunner = new LocalRunner(firstArg);
                         }
@@ -70,19 +70,18 @@ public class Main {
             e.printStackTrace();
             log.error("Error on MuPlayer class", e);
 
-            PlayerBusUtil.shutdownPlayerBus();
+            PLAYER_BUS.unsubscribeAll();
+            PLAYER_BUS.shutdown();
         }
     }
 
     private static void setJvmAppName() {
-        MuPlayerConfigReader muPlayerInfo = MuPlayerConfigReader.getInstance();
-        System.setProperty("jvm.name", "MuPlayer v" + muPlayerInfo.getProperty(
+        System.setProperty("jvm.name", "MuPlayer v" + MUPLAYER_CONFIG_READER.getProperty(
                 MuPlayerConfigKeys.MU_PLAYER_VERSION));
     }
 
     private static void loadLogConfig() {
-        final LogConfigReader logConfigReader = LogConfigReader.getInstance();
-        final String levelName = logConfigReader.getProperty(LogConfigKeys.JAVA_LOG_LEVEL);
+        final String levelName = LOG_CONFIG_READER.getProperty(LogConfigKeys.JAVA_LOG_LEVEL);
         final Level logLevel = Level.parse(levelName);
         final LogManager logManager = LogManager.getLogManager();
 

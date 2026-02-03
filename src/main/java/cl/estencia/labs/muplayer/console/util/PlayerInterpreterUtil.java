@@ -1,13 +1,11 @@
 package cl.estencia.labs.muplayer.console.util;
 
 import cl.estencia.labs.muplayer.core.aucom.util.ProcessManager;
-import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.ebot.bus.exception.BusException;
 import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.audio.player.MusicPlayer;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.config.model.ConsoleCodesData;
-import cl.estencia.labs.muplayer.config.reader.ConsoleCodesReader;
 import cl.estencia.labs.muplayer.console.command.Command;
 import cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
@@ -17,7 +15,6 @@ import cl.estencia.labs.muplayer.console.runner.LocalRunner;
 import cl.estencia.labs.muplayer.console.unixconsole.NativeConsole;
 import cl.estencia.labs.muplayer.core.bus.message.Events;
 import cl.estencia.labs.muplayer.core.bus.model.PlayerInfo;
-import cl.estencia.labs.muplayer.core.bus.util.PlayerBusUtil;
 import cl.estencia.labs.muplayer.core.util.NumberUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,6 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
+import static cl.estencia.labs.muplayer.config.reader.ResourceReaders.CONSOLE_CODES_READER;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE_CHAR;
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.CLEAN;
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.DEFAULT;
@@ -47,8 +45,6 @@ import static cl.estencia.labs.muplayer.core.cache.CacheVar.NATIVE_CONSOLE;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.RUNNER;
 import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.infoLine;
 import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.info;
-import static cl.estencia.labs.muplayer.core.util.NumberUtil.normalizePercentValue;
-import static cl.estencia.labs.muplayer.core.util.NumberUtil.normalizeValue;
 
 @Slf4j
 public class PlayerInterpreterUtil {
@@ -290,9 +286,8 @@ public class PlayerInterpreterUtil {
         final String keyValueSeparator = ":\n\t";
         final String helpElementSeparator = "\n\n";
         final String orderSelementsSeparator = ",";
-        final ConsoleCodesReader consoleCodesReader = ConsoleCodesReader.getInstance();
 
-        var consoleCodesDataMap = consoleCodesReader.getJsonSource().getData();
+        var consoleCodesDataMap = CONSOLE_CODES_READER.getJsonSource().getData();
         String helpInfoData;
         if (cmd.hasOptions()) {
             List<String> optionsAsList = cmd.getOptionsAsList();
@@ -327,7 +322,6 @@ public class PlayerInterpreterUtil {
             return;
         }
 
-        final MessageBus messageBus = PlayerBusUtil.getPlayerBus();
         if (cmd.hasOptions()) {
             Number skipCount = cmd.getOptionAsNumber(0);
             if (skipCount == null) {
@@ -463,14 +457,14 @@ public class PlayerInterpreterUtil {
         Number volumeChange = NumberUtil.parseVolumeChange(firstOption);
         if (isSystemVolume) {
             if (volumeChange != null) {
-                volume = normalizePercentValue(player.getSystemVolume() + volumeChange.floatValue());
+                volume = player.getSystemVolume() + volumeChange.floatValue();
             } else {
                 Number volumeParam = NumberUtil.parseStringNumber(firstOption);
                 if (volumeParam == null) {
                     return;
                 }
 
-                volume = normalizePercentValue(volumeParam.floatValue());
+                volume = volumeParam.floatValue();
             }
 
             if (volume == -1) {
@@ -480,14 +474,14 @@ public class PlayerInterpreterUtil {
             player.setSystemVolume(volume);
         } else {
             if (volumeChange != null) {
-                volume = normalizePercentValue(player.getVolume() + volumeChange.floatValue());
+                volume = player.getVolume() + volumeChange.floatValue();
             } else {
                 Number volumeParam = NumberUtil.parseStringNumber(firstOption);
                 if (volumeParam == null) {
                     return;
                 }
 
-                volume = normalizePercentValue(volumeParam.floatValue());
+                volume = volumeParam.floatValue();
             }
 
             if (volume == -1) {

@@ -5,6 +5,7 @@ import cl.estencia.labs.muplayer.audio.model.Artist;
 import cl.estencia.labs.muplayer.audio.player.MusicPlayer;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.data.Cover;
+import cl.estencia.labs.muplayer.config.reader.ResourceReaders;
 import cl.estencia.labs.muplayer.console.common.enums.OutputLevel;
 import cl.estencia.labs.muplayer.console.model.table.Alignment;
 import cl.estencia.labs.muplayer.core.bus.message.Events;
@@ -31,6 +32,7 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static cl.estencia.labs.muplayer.config.reader.ResourceReaders.CONSOLE_CODES_READER;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleChars.CART_RETURN;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SANDGLASS;
@@ -54,12 +56,9 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
     @Setter
     private volatile boolean on;
 
-    private final ConsoleCodesReader consoleCodesReader;
     private final AtomicReference<PlayerInfo> playerInfo;
-
     public PlayerCommandInterpreter(MusicPlayer player) {
         this.player = player;
-        this.consoleCodesReader = ConsoleCodesReader.getInstance();
         this.playerInfo = new AtomicReference<>();
     }
 
@@ -70,7 +69,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
     @Override
     public ConsoleOutput execute(Command cmd) throws Exception {
         final String cmdOrder = cmd.getOrder();
-        final ConsoleOrderCode consoleOrderCode = consoleCodesReader.getConsoleOrderCodeByCmdOrder(cmdOrder);
+        final ConsoleOrderCode consoleOrderCode = CONSOLE_CODES_READER.getConsoleOrderCodeByCmdOrder(cmdOrder);
         final ConsoleOutput consoleOutput = new ConsoleOutput(cmd);
         // imprimir output de este objeto no mas
 
@@ -93,12 +92,11 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                             playerInfo.set(playerInfoResp);
                         }
 
-                        printConsoleInfo(player, CLEAN, true);
+                        printConsoleInfo(player, DEFAULT, true);
                     });
 
                     player.addListener(SHUTDOWN, message -> {
                         CACHE.clear();
-
                         System.exit(0);
                     });
 

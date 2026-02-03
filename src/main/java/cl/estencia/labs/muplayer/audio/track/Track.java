@@ -1,6 +1,7 @@
 package cl.estencia.labs.muplayer.audio.track;
 
 import cl.estencia.labs.muplayer.audio.track.data.Cover;
+import cl.estencia.labs.muplayer.audio.track.data.TrackId;
 import cl.estencia.labs.muplayer.core.aucom.device.output.Speaker;
 import cl.estencia.labs.muplayer.core.aucom.io.AudioDecoder;
 import cl.estencia.labs.muplayer.core.aucom.util.AudioSystemManager;
@@ -10,6 +11,7 @@ import cl.estencia.labs.muplayer.audio.model.TrackStatusData;
 import cl.estencia.labs.muplayer.audio.track.data.TrackFileMetadata;
 import cl.estencia.labs.muplayer.audio.track.data.HeaderData;
 import cl.estencia.labs.muplayer.audio.track.state.*;
+import cl.estencia.labs.muplayer.core.util.NumberUtil;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +34,7 @@ import static java.lang.Thread.State.WAITING;
 @Slf4j
 public abstract class Track extends Thread
         implements Runnable, AudioElement, TrackData {
+    @Getter protected final TrackId trackId;
     @Getter protected final File dataSource;
     @Getter protected final AudioDecoder audioDecoder;
     @Getter protected final Speaker speaker;
@@ -49,6 +52,7 @@ public abstract class Track extends Thread
     }
 
     public Track(File dataSource, AudioDecoder audioDecoder) {
+        this.trackId = new TrackId(dataSource);
         this.dataSource = dataSource;
         this.audioDecoder = audioDecoder;
         this.speaker = new Speaker(audioDecoder.getDecodedFormat());
@@ -259,12 +263,13 @@ public abstract class Track extends Thread
     // -80 to 5.5
     @Override
     public void setVolume(float volume) {
-        trackStatusData.setVolume(volume);
+        float normalizedVolume = NumberUtil.normalizePercentValue(volume);
+        trackStatusData.setVolume(normalizedVolume);
         if (!isTrackStreamsOpened(speaker, audioDecoder.getDecodedAudioStream())) {
             return;
         }
 
-        speaker.setVolume(volume);
+        speaker.setVolume(normalizedVolume);
         audioSystemManager.setMuteValue(speaker.getDriver(), trackStatusData.isMute());
     }
 

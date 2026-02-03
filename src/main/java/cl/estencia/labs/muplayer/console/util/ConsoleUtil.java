@@ -1,6 +1,5 @@
 package cl.estencia.labs.muplayer.console.util;
 
-import cl.estencia.labs.muplayer.config.reader.MuPlayerConfigReader;
 import cl.estencia.labs.muplayer.console.common.enums.OutputLevel;
 
 import java.io.FileDescriptor;
@@ -13,8 +12,6 @@ import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.*;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputLevel.info;
 
 public class ConsoleUtil {
-    private static final MuPlayerConfigReader MU_PLAYER_CONFIG_READER = MuPlayerConfigReader.getInstance();
-
     public static boolean isValidColor(String color) {
         return color != null
                 && !color.isBlank()

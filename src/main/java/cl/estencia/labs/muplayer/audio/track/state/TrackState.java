@@ -15,7 +15,6 @@ public abstract class TrackState {
     protected final TrackStatusData trackStatusData;
     protected final Speaker speaker;
     protected final AudioInputStream decodedAudioStream;
-    protected final MessageBus messageBus;
 
     public TrackState(TrackStateName name, Track track) {
         this.name = name;
@@ -23,7 +22,6 @@ public abstract class TrackState {
         this.trackStatusData = track.getTrackStatusData();
         this.speaker = track.getSpeaker();
         this.decodedAudioStream = track.getAudioDecoder().getDecodedAudioStream();
-        this.messageBus = PlayerBusUtil.getPlayerBus();
     }
 
     public abstract void handle();

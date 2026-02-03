@@ -2,12 +2,15 @@ package cl.estencia.labs.muplayer.core.util;
 
 import cl.estencia.labs.muplayer.config.model.LogConfigKeys;
 import cl.estencia.labs.muplayer.config.reader.LogConfigReader;
+import cl.estencia.labs.muplayer.config.reader.ResourceReaders;
 import lombok.extern.slf4j.Slf4j;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+
+import static cl.estencia.labs.muplayer.config.reader.ResourceReaders.LOG_CONFIG_READER;
 
 @Slf4j
 public class TimeTester {
@@ -52,8 +55,7 @@ public class TimeTester {
     }
 
     public void logTimeDifference(String msg) {
-        LogConfigReader logConfigReader = LogConfigReader.getInstance();
-        String logLevel = logConfigReader.getProperty(LogConfigKeys.JAVA_LOG_LEVEL);
+        String logLevel = LOG_CONFIG_READER.getProperty(LogConfigKeys.JAVA_LOG_LEVEL);
 
         if (!logLevel.equals(Level.OFF.getName())) {
             log.info(msg + ": " + getTimeDifference());
