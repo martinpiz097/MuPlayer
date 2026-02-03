@@ -1,8 +1,5 @@
 package cl.estencia.labs.muplayer.core.aucom.util;
 
-import cl.estencia.labs.muplayer.core.aucom.util.ProcessManager;
-import cl.estencia.labs.muplayer.core.aucom.util.VolumeConverter;
-
 import javax.sound.sampled.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;

@@ -1,6 +1,5 @@
 package cl.estencia.labs.muplayer.unix.dbus.mpris;
 
-import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.ebot.utils.threads.Interruptor;
 import cl.estencia.labs.muplayer.audio.common.enums.SupportedAudioExtension;
 import cl.estencia.labs.muplayer.audio.model.PlayerStatusData;
@@ -25,12 +24,13 @@ import java.util.concurrent.atomic.AtomicReference;
 import static cl.estencia.labs.muplayer.audio.common.constants.PlayerConstants.PLAYER_BUS;
 import static cl.estencia.labs.muplayer.core.bus.message.PlayerEventTopics.SHUTDOWN;
 import static cl.estencia.labs.muplayer.core.cache.CacheManager.CACHE;
-import static cl.estencia.labs.muplayer.core.cache.CacheVar.*;
+import static cl.estencia.labs.muplayer.core.cache.CacheVar.PLAYER;
 import static cl.estencia.labs.muplayer.core.util.CollectionUtil.newMap;
 import static cl.estencia.labs.muplayer.core.util.NumberUtil.microSecsToSeconds;
 import static cl.estencia.labs.muplayer.core.util.NumberUtil.secondsToMicroSecs;
 import static cl.estencia.labs.muplayer.unix.dbus.mpris.common.MprisConstants.*;
-import static org.jaudiotagger.tag.FieldKey.*;
+import static org.jaudiotagger.tag.FieldKey.BPM;
+import static org.jaudiotagger.tag.FieldKey.DISC_NO;
 
 @Slf4j
 public class Mpris extends Thread

@@ -1,6 +1,5 @@
 package cl.estencia.labs.muplayer.unix.dbus.mpris;
 
-import cl.estencia.labs.ebot.bus.MessageBus;
 import cl.estencia.labs.ebot.utils.collection.CollectionUtil;
 import cl.estencia.labs.ebot.utils.threads.Interruptor;
 import cl.estencia.labs.muplayer.core.bus.model.PlayerInfo;
@@ -20,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static cl.estencia.labs.muplayer.core.cache.CacheManager.CACHE;
 import static cl.estencia.labs.muplayer.core.util.CollectionUtil.newMap;
 import static cl.estencia.labs.muplayer.unix.dbus.mpris.common.MprisConstants.*;
 

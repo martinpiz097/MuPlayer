@@ -1,15 +1,12 @@
 package cl.estencia.labs.muplayer.audio.track.format;
 
-import cl.estencia.labs.muplayer.core.aucom.io.AudioDecoder;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.data.HeaderData;
-import cl.estencia.labs.muplayer.audio.track.decoder.DefaultAudioDecoder;
+import cl.estencia.labs.muplayer.core.aucom.io.AudioDecoder;
 import lombok.extern.slf4j.Slf4j;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.mp3.MP3AudioHeader;
 
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
 

@@ -2,7 +2,6 @@ package cl.estencia.labs.muplayer.audio.track.factory;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.config.model.MuPlayerConfigKeys;
-import cl.estencia.labs.muplayer.config.reader.MuPlayerConfigReader;
 import cl.estencia.labs.muplayer.console.common.enums.TrackFactoryType;
 
 import java.io.File;

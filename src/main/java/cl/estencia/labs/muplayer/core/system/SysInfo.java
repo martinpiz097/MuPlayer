@@ -1,7 +1,6 @@
 package cl.estencia.labs.muplayer.core.system;
 
 import cl.estencia.labs.muplayer.config.model.MuPlayerConfigKeys;
-import cl.estencia.labs.muplayer.config.reader.MuPlayerConfigReader;
 
 import static cl.estencia.labs.muplayer.config.reader.ResourceReaders.MUPLAYER_CONFIG_READER;
 

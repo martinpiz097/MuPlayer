@@ -2,7 +2,6 @@ package cl.estencia.labs.muplayer.console.runner;
 
 import cl.estencia.labs.muplayer.audio.player.MuPlayer;
 import cl.estencia.labs.muplayer.audio.player.MusicPlayer;
-import cl.estencia.labs.muplayer.config.reader.MuPlayerConfigReader;
 import cl.estencia.labs.muplayer.console.PlayerCommandInterpreter;
 import cl.estencia.labs.muplayer.console.command.Command;
 import cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode;
@@ -15,7 +14,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.*;
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE_CHAR;
 import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.infoLine;
 
 @Slf4j

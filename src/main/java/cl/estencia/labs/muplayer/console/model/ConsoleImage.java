@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static cl.estencia.labs.muplayer.console.util.ConsoleImageUtil.*;
+import static cl.estencia.labs.muplayer.console.util.ConsoleImageUtil.toConsoleHalfBlocks2;
 
 public class ConsoleImage {
     private final BufferedImage originalBufferedImage;

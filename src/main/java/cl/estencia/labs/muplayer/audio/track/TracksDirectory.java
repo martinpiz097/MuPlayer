@@ -2,15 +2,12 @@ package cl.estencia.labs.muplayer.audio.track;
 
 import cl.estencia.labs.muplayer.audio.track.factory.TrackFactory;
 import cl.estencia.labs.muplayer.audio.util.AudioFileUtil;
-import cl.estencia.labs.muplayer.core.exception.AudioFileInvalidException;
-import cl.estencia.labs.muplayer.core.exception.FormatNotSupportedException;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import lombok.Getter;
 
 import java.io.File;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 @Getter
 public class TracksDirectory {

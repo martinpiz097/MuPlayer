@@ -6,10 +6,7 @@ import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.core.bus.model.PlayerInfo;
 
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.*;
-import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.ARROW;
-import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE_CHAR;
 import static cl.estencia.labs.muplayer.console.util.ConsolePaintUtil.*;
-import static cl.estencia.labs.muplayer.console.util.ConsolePaintUtil.paintBatteryStatus;
 import static cl.estencia.labs.muplayer.core.cache.CacheManager.CACHE;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.PLAYER_INFO;
 

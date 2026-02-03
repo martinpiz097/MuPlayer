@@ -1,7 +1,5 @@
 package cl.estencia.labs.muplayer.core.aucom.device;
 
-import cl.estencia.labs.muplayer.core.aucom.device.VirtualOutput;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.sampled.*;

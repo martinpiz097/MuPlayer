@@ -7,7 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 import static cl.estencia.labs.muplayer.console.command.ConsoleColor.*;
-import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.*;
+import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
 import static cl.estencia.labs.muplayer.console.common.constants.KeyCodes.*;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputLevel.info;
 

@@ -1,16 +1,18 @@
 package cl.estencia.labs.muplayer.console.unixconsole;
 
-import cl.estencia.labs.muplayer.core.aucom.util.ProcessManager;
 import cl.estencia.labs.muplayer.console.common.enums.InterceptorMode;
 import cl.estencia.labs.muplayer.console.unixconsole.event.AltKeyCombinationEvent;
 import cl.estencia.labs.muplayer.console.unixconsole.event.KeyInputEvent;
 import cl.estencia.labs.muplayer.console.unixconsole.event.LineInputEvent;
 import cl.estencia.labs.muplayer.console.unixconsole.listener.*;
+import cl.estencia.labs.muplayer.core.aucom.util.ProcessManager;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
-import java.io.*;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 

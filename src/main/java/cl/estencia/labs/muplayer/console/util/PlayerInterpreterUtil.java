@@ -1,6 +1,5 @@
 package cl.estencia.labs.muplayer.console.util;
 
-import cl.estencia.labs.muplayer.core.aucom.util.ProcessManager;
 import cl.estencia.labs.ebot.bus.exception.BusException;
 import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.audio.player.MusicPlayer;
@@ -13,6 +12,7 @@ import cl.estencia.labs.muplayer.console.model.table.*;
 import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
 import cl.estencia.labs.muplayer.console.runner.LocalRunner;
 import cl.estencia.labs.muplayer.console.unixconsole.NativeConsole;
+import cl.estencia.labs.muplayer.core.aucom.util.ProcessManager;
 import cl.estencia.labs.muplayer.core.bus.message.Events;
 import cl.estencia.labs.muplayer.core.bus.model.PlayerInfo;
 import cl.estencia.labs.muplayer.core.util.NumberUtil;
@@ -35,7 +35,9 @@ import static cl.estencia.labs.muplayer.config.reader.ResourceReaders.CONSOLE_CO
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE_CHAR;
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.CLEAN;
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.DEFAULT;
-import static cl.estencia.labs.muplayer.console.common.enums.OutputLevel.*;
+import static cl.estencia.labs.muplayer.console.common.enums.OutputLevel.error;
+import static cl.estencia.labs.muplayer.console.common.enums.OutputLevel.info;
+import static cl.estencia.labs.muplayer.console.common.enums.OutputLevel.warn;
 import static cl.estencia.labs.muplayer.console.util.ConsolePaintUtil.printConsoleHeader;
 import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.getColorFromLevel;
 import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.getStdout;
@@ -43,8 +45,8 @@ import static cl.estencia.labs.muplayer.console.util.SystemCommandExecutor.getCl
 import static cl.estencia.labs.muplayer.core.cache.CacheManager.CACHE;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.NATIVE_CONSOLE;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.RUNNER;
-import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.infoLine;
 import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.info;
+import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.infoLine;
 
 @Slf4j
 public class PlayerInterpreterUtil {

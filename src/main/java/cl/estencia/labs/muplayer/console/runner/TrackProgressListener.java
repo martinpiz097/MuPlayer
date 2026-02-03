@@ -1,7 +1,5 @@
 package cl.estencia.labs.muplayer.console.runner;
 
-import cl.estencia.labs.muplayer.core.cache.CacheManager;
-
 import java.time.Duration;
 import java.util.concurrent.locks.LockSupport;
 

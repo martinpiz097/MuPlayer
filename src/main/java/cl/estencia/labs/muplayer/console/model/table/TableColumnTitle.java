@@ -8,7 +8,6 @@ import lombok.Getter;
 import java.util.List;
 
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.*;
-import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputLevel.info;
 
 @Getter

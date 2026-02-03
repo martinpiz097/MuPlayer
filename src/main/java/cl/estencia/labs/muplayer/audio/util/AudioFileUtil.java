@@ -1,8 +1,8 @@
 package cl.estencia.labs.muplayer.audio.util;
 
-import cl.estencia.labs.muplayer.audio.model.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.audio.common.enums.SupportedAudioExtension;
+import cl.estencia.labs.muplayer.audio.model.PlayerStatusData;
 
 import java.io.File;
 import java.nio.file.Path;

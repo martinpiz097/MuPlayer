@@ -1,14 +1,10 @@
 package cl.estencia.labs.muplayer.core.aucom.device.output;
 
-import cl.estencia.labs.muplayer.core.aucom.device.output.AudioOutputDevice;
-
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.SourceDataLine;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 
-import static cl.estencia.labs.muplayer.core.aucom.common.IOConstants.*;
+import static cl.estencia.labs.muplayer.core.aucom.common.IOConstants.OFFSET;
 
 public abstract class StreamableAudioOutputDevice extends AudioOutputDevice<SourceDataLine> {
 

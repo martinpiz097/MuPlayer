@@ -1,7 +1,5 @@
 package cl.estencia.labs.muplayer.audio.track.data;
 
-import lombok.AllArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jaudiotagger.tag.FieldKey;
 

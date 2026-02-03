@@ -6,7 +6,6 @@ import cl.estencia.labs.muplayer.audio.track.decoder.FlacAudioDecoder;
 import cl.estencia.labs.muplayer.audio.util.AudioFileUtil;
 import cl.estencia.labs.muplayer.core.aucom.util.AudioDecodingUtil;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.sampled.AudioFormat;
@@ -14,7 +13,6 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 @Getter

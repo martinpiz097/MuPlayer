@@ -1,8 +1,6 @@
 package cl.estencia.labs.muplayer.core.util;
 
 import cl.estencia.labs.muplayer.config.model.LogConfigKeys;
-import cl.estencia.labs.muplayer.config.reader.LogConfigReader;
-import cl.estencia.labs.muplayer.config.reader.ResourceReaders;
 import lombok.extern.slf4j.Slf4j;
 
 import java.text.DecimalFormat;

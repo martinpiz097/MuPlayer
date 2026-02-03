@@ -1,7 +1,6 @@
 package cl.estencia.labs.muplayer.io.net;
 
 import cl.estencia.labs.muplayer.config.model.MuPlayerConfigKeys;
-import cl.estencia.labs.muplayer.config.reader.MuPlayerConfigReader;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import lombok.Getter;
 import lombok.Setter;

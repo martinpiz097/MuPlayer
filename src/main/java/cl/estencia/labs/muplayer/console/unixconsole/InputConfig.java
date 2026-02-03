@@ -2,8 +2,8 @@ package cl.estencia.labs.muplayer.console.unixconsole;
 
 import lombok.Getter;
 
-import static cl.estencia.labs.muplayer.console.unixconsole.InputMode.SINGLE_SHORCUTS;
 import static cl.estencia.labs.muplayer.console.unixconsole.InputMode.COMMANDS;
+import static cl.estencia.labs.muplayer.console.unixconsole.InputMode.SINGLE_SHORCUTS;
 
 @Getter
 public class InputConfig {

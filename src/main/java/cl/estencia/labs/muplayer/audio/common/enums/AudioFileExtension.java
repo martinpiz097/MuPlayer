@@ -1,8 +1,5 @@
 package cl.estencia.labs.muplayer.audio.common.enums;
 
-import java.util.Arrays;
-import java.util.List;
-
 public enum AudioFileExtension {
     aac("audio/aac"),
     aac_plus("audio/aac"),

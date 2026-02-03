@@ -2,7 +2,9 @@ package cl.estencia.labs.muplayer.core.aucom.device;
 
 import lombok.extern.slf4j.Slf4j;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineUnavailableException;
 
 import static cl.estencia.labs.muplayer.core.aucom.common.AudioQuality.DEFAULT_QUALITY;
 

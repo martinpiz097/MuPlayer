@@ -35,7 +35,8 @@ import static cl.estencia.labs.muplayer.console.util.ConsolePaintUtil.paintMuPla
 import static cl.estencia.labs.muplayer.console.util.ConsolePaintUtil.printConsoleHeader;
 import static cl.estencia.labs.muplayer.console.util.PlayerInterpreterUtil.printConsoleInfo;
 import static cl.estencia.labs.muplayer.core.cache.CacheManager.CACHE;
-import static cl.estencia.labs.muplayer.core.cache.CacheVar.*;
+import static cl.estencia.labs.muplayer.core.cache.CacheVar.NATIVE_CONSOLE;
+import static cl.estencia.labs.muplayer.core.cache.CacheVar.RUNNER;
 import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.printLine;
 
 @Slf4j

@@ -1,8 +1,9 @@
 package cl.estencia.labs.muplayer.core.aucom.device.output;
 
-import cl.estencia.labs.muplayer.core.aucom.device.output.StreamableAudioOutputDevice;
-
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.SourceDataLine;
 
 /**
  *

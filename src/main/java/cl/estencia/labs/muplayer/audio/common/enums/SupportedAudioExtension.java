@@ -1,11 +1,5 @@
 package cl.estencia.labs.muplayer.audio.common.enums;
 
-import cl.estencia.labs.muplayer.core.util.CollectionUtil;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 // luego cargar desde un archivo
 public enum SupportedAudioExtension {
     aifc("audio/x-aifc"),

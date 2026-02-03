@@ -1,37 +1,37 @@
 package cl.estencia.labs.muplayer.console;
 
+import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.audio.model.Album;
 import cl.estencia.labs.muplayer.audio.model.Artist;
 import cl.estencia.labs.muplayer.audio.player.MusicPlayer;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.data.Cover;
-import cl.estencia.labs.muplayer.config.reader.ResourceReaders;
-import cl.estencia.labs.muplayer.console.common.enums.OutputLevel;
-import cl.estencia.labs.muplayer.console.model.table.Alignment;
-import cl.estencia.labs.muplayer.core.bus.message.Events;
-import cl.estencia.labs.muplayer.core.bus.model.LoadingPlayerInfo;
-import cl.estencia.labs.muplayer.core.bus.model.PlayerInfo;
-import cl.estencia.labs.muplayer.core.bus.model.SkipData;
-import cl.estencia.labs.muplayer.config.reader.ConsoleCodesReader;
 import cl.estencia.labs.muplayer.console.command.Command;
 import cl.estencia.labs.muplayer.console.command.CommandInterpreter;
 import cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode;
+import cl.estencia.labs.muplayer.console.common.enums.OutputLevel;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
+import cl.estencia.labs.muplayer.console.model.table.Alignment;
 import cl.estencia.labs.muplayer.console.runner.ConsoleRunner;
 import cl.estencia.labs.muplayer.console.runner.DaemonRunner;
 import cl.estencia.labs.muplayer.console.runner.LocalRunner;
 import cl.estencia.labs.muplayer.console.runner.RunnerMode;
-import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
+import cl.estencia.labs.muplayer.core.bus.message.Events;
+import cl.estencia.labs.muplayer.core.bus.model.LoadingPlayerInfo;
+import cl.estencia.labs.muplayer.core.bus.model.PlayerInfo;
+import cl.estencia.labs.muplayer.core.bus.model.SkipData;
 import cl.estencia.labs.muplayer.core.thread.TaskRunner;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
+import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.PREV;
 import static cl.estencia.labs.muplayer.config.reader.ResourceReaders.CONSOLE_CODES_READER;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleChars.CART_RETURN;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
@@ -40,12 +40,11 @@ import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.C
 import static cl.estencia.labs.muplayer.console.common.enums.ConsoleOutputMode.DEFAULT;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputLevel.*;
 import static cl.estencia.labs.muplayer.console.util.PlayerInterpreterUtil.*;
-import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.NEXT;
-import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.PREV;
 import static cl.estencia.labs.muplayer.console.util.SystemCommandExecutor.clearConsole;
-import static cl.estencia.labs.muplayer.core.bus.message.PlayerEventTopics.*;
+import static cl.estencia.labs.muplayer.core.bus.message.PlayerEventTopics.LOADING;
+import static cl.estencia.labs.muplayer.core.bus.message.PlayerEventTopics.SHUTDOWN;
 import static cl.estencia.labs.muplayer.core.cache.CacheManager.CACHE;
-import static cl.estencia.labs.muplayer.core.cache.CacheVar.*;
+import static cl.estencia.labs.muplayer.core.cache.CacheVar.RUNNER;
 import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.print;
 
 @Slf4j

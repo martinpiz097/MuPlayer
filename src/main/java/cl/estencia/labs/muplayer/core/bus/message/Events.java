@@ -3,12 +3,12 @@ package cl.estencia.labs.muplayer.core.bus.message;
 import cl.estencia.labs.ebot.bus.model.message.Message;
 import cl.estencia.labs.ebot.bus.model.message.MessageType;
 import cl.estencia.labs.ebot.bus.model.message.SerializationType;
+import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
 import cl.estencia.labs.muplayer.audio.model.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.core.bus.model.LoadingPlayerInfo;
 import cl.estencia.labs.muplayer.core.bus.model.PlayerInfo;
 import cl.estencia.labs.muplayer.core.bus.model.SkipData;
-import cl.estencia.labs.muplayer.audio.common.enums.SeekOption;
 
 import java.io.File;
 import java.util.List;

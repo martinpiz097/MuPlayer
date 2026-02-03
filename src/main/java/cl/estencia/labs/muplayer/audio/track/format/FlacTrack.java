@@ -1,14 +1,11 @@
 package cl.estencia.labs.muplayer.audio.track.format;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.audio.track.decoder.FlacAudioDecoder;
 import cl.estencia.labs.muplayer.core.aucom.io.AudioDecoder;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
 

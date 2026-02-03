@@ -3,8 +3,6 @@ package cl.estencia.labs.muplayer.audio.track.state;
 import cl.estencia.labs.muplayer.audio.track.Track;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
-
 import static cl.estencia.labs.muplayer.core.aucom.common.IOConstants.DEFAULT_BUFF_SIZE;
 import static cl.estencia.labs.muplayer.core.aucom.common.IOConstants.EOF;
 

@@ -2,12 +2,14 @@ package cl.estencia.labs.muplayer.core.log;
 
 import cl.estencia.labs.muplayer.console.common.enums.OutputLevel;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.LINE_BREAK_CHAR;
 import static cl.estencia.labs.muplayer.console.common.enums.OutputLevel.*;
-import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.*;
+import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.coloredString;
+import static cl.estencia.labs.muplayer.console.util.ConsoleUtil.getStdout;
 
 public class ConsolePrinter {
     private final OutputStream stdOut;

@@ -1,16 +1,16 @@
 package cl.estencia.labs.muplayer.audio.track;
 
-import cl.estencia.labs.muplayer.audio.track.data.Cover;
-import cl.estencia.labs.muplayer.audio.track.data.TrackId;
-import cl.estencia.labs.muplayer.core.aucom.device.output.Speaker;
-import cl.estencia.labs.muplayer.core.aucom.io.AudioDecoder;
-import cl.estencia.labs.muplayer.core.aucom.util.AudioSystemManager;
 import cl.estencia.labs.muplayer.audio.interfaces.AudioElement;
 import cl.estencia.labs.muplayer.audio.interfaces.TrackData;
 import cl.estencia.labs.muplayer.audio.model.TrackStatusData;
-import cl.estencia.labs.muplayer.audio.track.data.TrackFileMetadata;
+import cl.estencia.labs.muplayer.audio.track.data.Cover;
 import cl.estencia.labs.muplayer.audio.track.data.HeaderData;
+import cl.estencia.labs.muplayer.audio.track.data.TrackFileMetadata;
+import cl.estencia.labs.muplayer.audio.track.data.TrackId;
 import cl.estencia.labs.muplayer.audio.track.state.*;
+import cl.estencia.labs.muplayer.core.aucom.device.output.Speaker;
+import cl.estencia.labs.muplayer.core.aucom.io.AudioDecoder;
+import cl.estencia.labs.muplayer.core.aucom.util.AudioSystemManager;
 import cl.estencia.labs.muplayer.core.util.NumberUtil;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -22,11 +22,11 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
 
-import static cl.estencia.labs.muplayer.core.aucom.common.AudioConstants.DEFAULT_MAX_VOL;
-import static cl.estencia.labs.muplayer.core.aucom.common.AudioConstants.DEFAULT_MIN_VOL;
 import static cl.estencia.labs.muplayer.audio.util.AudioDriverUtil.getSecondsPosition;
 import static cl.estencia.labs.muplayer.audio.util.AudioDriverUtil.isTrackStreamsOpened;
 import static cl.estencia.labs.muplayer.audio.util.TrackInfoUtil.loadTrackInfo;
+import static cl.estencia.labs.muplayer.core.aucom.common.AudioConstants.DEFAULT_MAX_VOL;
+import static cl.estencia.labs.muplayer.core.aucom.common.AudioConstants.DEFAULT_MIN_VOL;
 import static java.lang.Thread.State.TIMED_WAITING;
 import static java.lang.Thread.State.WAITING;
 

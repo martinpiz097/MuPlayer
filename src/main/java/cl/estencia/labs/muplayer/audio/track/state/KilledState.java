@@ -1,7 +1,6 @@
 package cl.estencia.labs.muplayer.audio.track.state;
 
 import cl.estencia.labs.muplayer.audio.track.Track;
-import cl.estencia.labs.muplayer.audio.util.AudioDriverUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import static cl.estencia.labs.muplayer.audio.util.AudioDriverUtil.closeStream;
