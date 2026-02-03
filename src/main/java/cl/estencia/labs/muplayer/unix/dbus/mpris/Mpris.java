@@ -1,6 +1,5 @@
 package cl.estencia.labs.muplayer.unix.dbus.mpris;
 
-import cl.estencia.labs.ebot.utils.threads.Interruptor;
 import cl.estencia.labs.muplayer.audio.common.enums.SupportedAudioExtension;
 import cl.estencia.labs.muplayer.audio.model.PlayerStatusData;
 import cl.estencia.labs.muplayer.audio.player.EventPlayer;
@@ -33,8 +32,7 @@ import static org.jaudiotagger.tag.FieldKey.BPM;
 import static org.jaudiotagger.tag.FieldKey.DISC_NO;
 
 @Slf4j
-public class Mpris extends Thread
-        implements MediaPlayer2, MediaPlayer2.Player, Properties {
+public class Mpris implements MediaPlayer2, MediaPlayer2.Player, Properties {
     private final MprisConnection connection;
     @Getter private final MprisPublisher publisher;
     private final AtomicReference<PlayerInfo> playerInfoRef;
@@ -43,7 +41,7 @@ public class Mpris extends Thread
     private final AtomicReference<PlaybackStatus> playbackStatusRef;
     private final AtomicReference<LoopStatus> loopStatusRef;
 
-    private final Interruptor interruptor;
+//    private final Interruptor interruptor;
 
     public Mpris() throws DBusException {
         this.connection = new MprisConnection(BUS_NAME);
@@ -53,13 +51,12 @@ public class Mpris extends Thread
         this.metadataRef = new AtomicReference<>(newMap());
         this.playbackStatusRef = new AtomicReference<>(PlaybackStatus.Stopped);
         this.loopStatusRef = new AtomicReference<>(LoopStatus.None);
+//        this.interruptor = Interruptor.manual(this);
 
-        this.interruptor = Interruptor.manual(this);
-
-        setName("mpris");
+//        setName("mpris");
     }
 
-    private void configureBusListeners() {
+    private void configureListeners() {
         EventPlayer eventPlayer = CACHE.get(PLAYER, EventPlayer.class);
         if (eventPlayer == null) {
             return;
@@ -247,9 +244,8 @@ public class Mpris extends Thread
     public void shutdown() {
         publisher.shutdown();
         connection.close();
-
-        interrupt();
-        interruptor.switchOn();
+//        interrupt();
+//        interruptor.switchOn();
     }
 
     @Override
@@ -358,20 +354,13 @@ public class Mpris extends Thread
         }
     }
 
-    @Override
-    public void run() {
+    public void start() {
         try {
             log.trace("Mpris server started!");
-            configureBusListeners();
             connection.start(this);
             publisher.start();
 
-            // TODO ojo con los errores que pueden provocar que el hilo termine con
-            // acciones pendientes en la cola
-            while (!Thread.currentThread().isInterrupted()) {
-                interruptor.checkSignal();
-            }
-
+            configureListeners();
         } catch (DBusException e) {
             log.error("Error of type " + e.getClass().getSimpleName()
                     + " and message " + e.getMessage()

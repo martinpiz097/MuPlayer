@@ -91,6 +91,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                             playerInfo.set(playerInfoResp);
                         }
 
+//                        printConsoleInfo(player, CLEAN, true);
                         printConsoleInfo(player, DEFAULT, true);
                     });
 

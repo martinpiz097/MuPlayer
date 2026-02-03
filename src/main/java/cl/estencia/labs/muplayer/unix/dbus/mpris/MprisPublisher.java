@@ -51,8 +51,7 @@ public class MprisPublisher extends Thread {
     public void sendSeekedSignal(long position) {
         enqueueAction(() -> {
             try {
-                DBusConnection dbus = connection.getDbus();
-                dbus.sendMessage(new MediaPlayer2.Player.Seeked(DBUS_OBJECT_PATH, position));
+                sendDbusMessage(new MediaPlayer2.Player.Seeked(DBUS_OBJECT_PATH, position));
             } catch (DBusException e) {
                 log.error("Error emitiendo Seeked: " + e.getMessage());
             }
@@ -62,8 +61,7 @@ public class MprisPublisher extends Thread {
     public void sendPropertiesChangedEvent(Map<String, Variant<?>> propertiesChanged) {
         enqueueAction(() -> {
             try {
-                DBusConnection dbus = connection.getDbus();
-                dbus.sendMessage(new Properties.PropertiesChanged(
+                sendDbusMessage(new Properties.PropertiesChanged(
                         DBUS_OBJECT_PATH,
                         DBUS_PLAYER_INTERFACE,
                         propertiesChanged,
@@ -90,9 +88,30 @@ public class MprisPublisher extends Thread {
         interruptor.switchOn();
     }
 
+    private void sendDbusMessage(org.freedesktop.dbus.messages.Message message) {
+        try {
+            DBusConnection dbus = connection.getDbus();
+            if (!dbus.isConnected()) {
+                return;
+            }
+
+            dbus.sendMessage(message);
+        } catch (Exception e) {
+            log.error("Error sending dbus message: " + e.getMessage());
+        }
+    }
+
     private void enqueueAction(MprisPublishAction action) {
         publishActionsQueue.add(action);
         interruptor.assignNecessaryPermits(publishActionsQueue.size());
+    }
+
+    private void executeAction(MprisPublishAction publishAction) {
+        if (publishAction == null) {
+            return;
+        }
+
+        Thread.ofVirtual().start(publishAction::execute);
     }
 
     @Override
@@ -104,7 +123,7 @@ public class MprisPublisher extends Thread {
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 if (!publishActionsQueue.isEmpty()) {
-                    publishActionsQueue.pollFirst().execute();
+                    executeAction(publishActionsQueue.pollFirst());
                 }
 
                 interruptor.checkSignal();
