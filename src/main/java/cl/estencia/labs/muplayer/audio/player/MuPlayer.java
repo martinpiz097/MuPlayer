@@ -14,6 +14,7 @@ import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.track.TracksDirectory;
 import cl.estencia.labs.muplayer.audio.track.state.TrackStateName;
 import cl.estencia.labs.muplayer.audio.util.AudioFileUtil;
+import cl.estencia.labs.muplayer.audio.util.MprisUtil;
 import cl.estencia.labs.muplayer.audio.util.MuPlayerUtil;
 import cl.estencia.labs.muplayer.core.aucom.util.AudioSystemManager;
 import cl.estencia.labs.muplayer.core.bus.listener.PlayerResponseListener;
@@ -53,7 +54,7 @@ import static cl.estencia.labs.muplayer.audio.common.enums.SeekOption.PREV;
 import static cl.estencia.labs.muplayer.core.aucom.util.AudioDecodingUtil.DEFAULT_VOLUME;
 import static cl.estencia.labs.muplayer.core.bus.message.PlayerEventTopics.*;
 import static cl.estencia.labs.muplayer.core.cache.CacheManager.CACHE;
-import static cl.estencia.labs.muplayer.core.util.NumberUtil.secondsToMicroSecs;
+import static cl.estencia.labs.muplayer.unix.dbus.mpris.common.MprisConstants.BUS_NAME;
 
 @Slf4j
 public class MuPlayer extends MusicPlayer implements SystemVolumeController {
@@ -63,39 +64,41 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
     private final List<Track> listTracks;
     private final List<File> listFolders;
 
+    private final Mpris mpris;
+
     private final PlayerStatusData playerStatusData;
     private final MuPlayerUtil muPlayerUtil;
+    private final MprisUtil mprisUtil;
     private final AudioSystemManager audioSystemManager;
 
     private final Interruptor interruptor;
 
-    private final Mpris mpris;
-
-    public MuPlayer() throws FileNotFoundException {
+    public MuPlayer() throws FileNotFoundException, DBusException {
         this((File) null);
     }
 
-    public MuPlayer(File rootFolder) throws FileNotFoundException {
+    public MuPlayer(String folderPath) throws FileNotFoundException, DBusException {
+        this(new File(folderPath));
+    }
+
+    public MuPlayer(File rootFolder) throws FileNotFoundException, DBusException {
+        this(rootFolder, new Mpris(BUS_NAME));
+    }
+
+    public MuPlayer(File rootFolder, Mpris mpris) {
         this.rootFolder = rootFolder;
         this.currentTrack = new AtomicReference<>();
         this.listTracks = CollectionUtil.newBigList();
         this.listFolders = CollectionUtil.newList();
+        this.mpris = mpris;
         this.playerStatusData = new PlayerStatusData();
         this.muPlayerUtil = new MuPlayerUtil(this, playerStatusData);
+        this.mprisUtil = new MprisUtil(mpris);
         this.audioSystemManager = new AudioSystemManager();
         this.interruptor = Interruptor.manual(this);
 
         setName(getClass().getSimpleName() + threadId());
         configureListeners();
-        try {
-            mpris = new Mpris();
-        } catch (DBusException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public MuPlayer(String folderPath) throws FileNotFoundException {
-        this(new File(folderPath));
     }
 
     private void loadTracks(File folderToLoad) {
@@ -525,7 +528,7 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
             start();
         } else if (currentTrack.get() != null) {
             currentTrack.get().play();
-            mpris.setPlaybackStatus(PlaybackStatus.Playing);
+            mprisUtil.setPlaybackStatus(PlaybackStatus.Playing);
         }
     }
 
@@ -607,7 +610,7 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
     public synchronized void pause() {
         if (currentTrack.get() != null) {
             currentTrack.get().pause();
-            mpris.setPlaybackStatus(PlaybackStatus.Paused);
+            mprisUtil.setPlaybackStatus(PlaybackStatus.Paused);
         }
 
     }
@@ -616,7 +619,7 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
     public synchronized void resumeTrack() {
         if (currentTrack.get() != null) {
             currentTrack.get().resumeTrack();
-            mpris.setPlaybackStatus(PlaybackStatus.Playing);
+            mprisUtil.setPlaybackStatus(PlaybackStatus.Playing);
         }
     }
 
@@ -624,7 +627,7 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
     public synchronized void stopTrack() {
         if (currentTrack.get() != null) {
             currentTrack.get().stopTrack();
-            mpris.setPlaybackStatus(PlaybackStatus.Stopped);
+            mprisUtil.setPlaybackStatus(PlaybackStatus.Stopped);
         }
     }
 
@@ -653,7 +656,7 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
 
         try {
             current.seek(seconds);
-            mpris.getPublisher().sendSeekedSignal(secondsToMicroSecs(current.getProgress()));
+            mprisUtil.sendSeekedSignal(current.getProgress());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -667,7 +670,7 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
         }
 
         current.gotoSecond(second);
-        mpris.getPublisher().sendSeekedSignal(secondsToMicroSecs(current.getProgress()));
+        mprisUtil.sendSeekedSignal(current.getProgress());
     }
 
     @Override
@@ -687,7 +690,7 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
         }
 
         current.setVolume(normalizedVolume);
-        mpris.getPublisher().sendPropertiesChangedEvent("Volume", normalizedVolume);
+        mprisUtil.sendPropertiesChangedEvent("Volume", normalizedVolume);
     }
 
     @Override
@@ -699,7 +702,7 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
         }
 
         current.mute();
-        mpris.getPublisher().sendPropertiesChangedEvent("Volume", 0f);
+        mprisUtil.sendPropertiesChangedEvent("Volume", 0f);
     }
 
     @Override
@@ -716,7 +719,7 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
         }
 
         current.unMute();
-        mpris.getPublisher().sendPropertiesChangedEvent("Volume", current.getVolume());
+        mprisUtil.sendPropertiesChangedEvent("Volume", current.getVolume());
     }
 
     @Override
@@ -745,7 +748,9 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
     public synchronized void shutdown() {
         playerStatusData.setOn(false);
         PLAYER_BUS.unsubscribeAll();
-        mpris.shutdown();
+        if (mprisUtil.isMprisActive()) {
+            mpris.shutdown();
+        }
 
         this.interrupt();
         interruptor.switchOn();
@@ -782,7 +787,9 @@ public class MuPlayer extends MusicPlayer implements SystemVolumeController {
     @Override
     public void run() {
         CACHE.set(CacheVar.PLAYER, this);
-        mpris.start();
+        if (mpris != null) {
+            mpris.start();
+        }
 
         loadTracks(rootFolder);
         playNext();
