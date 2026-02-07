@@ -7,8 +7,10 @@ import cl.estencia.labs.muplayer.console.command.Command;
 import cl.estencia.labs.muplayer.console.common.enums.ConsoleOrderCode;
 import cl.estencia.labs.muplayer.console.model.ConsoleOutput;
 import cl.estencia.labs.muplayer.core.system.SysInfo;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.freedesktop.dbus.exceptions.DBusException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,8 +19,9 @@ import java.util.Scanner;
 import static cl.estencia.labs.muplayer.console.common.constants.ConsoleSymbols.SPACE_CHAR;
 import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.infoLine;
 
-@Slf4j
-public abstract class ConsoleRunner implements Runnable {
+// TODO cambiar esto en las demas clases abstractas
+@Slf4j(access = AccessLevel.PROTECTED)
+public abstract class ConsoleRunner extends Thread {
     @Getter
     protected final MusicPlayer player;
     protected final PlayerCommandInterpreter interpreter;
@@ -26,15 +29,15 @@ public abstract class ConsoleRunner implements Runnable {
 
     protected static final String APP_NAME = "MuPlayer";
 
-    public ConsoleRunner() throws FileNotFoundException {
+    public ConsoleRunner() throws FileNotFoundException, DBusException {
         this((File) null);
     }
 
-    public ConsoleRunner(String folder) throws FileNotFoundException {
+    public ConsoleRunner(String folder) throws FileNotFoundException, DBusException {
         this(new File(folder));
     }
 
-    public ConsoleRunner(File rootFolder) throws FileNotFoundException {
+    public ConsoleRunner(File rootFolder) throws FileNotFoundException, DBusException {
         this(new MuPlayer(rootFolder));
     }
 
@@ -42,6 +45,8 @@ public abstract class ConsoleRunner implements Runnable {
         this.player = player;
         this.interpreter = new PlayerCommandInterpreter(player);
         this.scanner = new Scanner(System.in);
+
+        setName(getClass().getSimpleName());
     }
 
     protected String getFullAppName() {
@@ -91,5 +96,9 @@ public abstract class ConsoleRunner implements Runnable {
             log.error(e.getMessage(), e);
         }
     }
+
+    protected abstract boolean canRun();
+
+    public abstract void shutdown();
 
 }

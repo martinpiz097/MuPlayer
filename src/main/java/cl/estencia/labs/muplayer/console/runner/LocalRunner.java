@@ -19,6 +19,7 @@ import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import cl.estencia.labs.muplayer.core.system.SysInfo;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.freedesktop.dbus.exceptions.DBusException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -39,21 +40,20 @@ import static cl.estencia.labs.muplayer.core.cache.CacheVar.NATIVE_CONSOLE;
 import static cl.estencia.labs.muplayer.core.cache.CacheVar.RUNNER;
 import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.printLine;
 
-@Slf4j
 public class LocalRunner extends ConsoleRunner {
     protected final Scanner scanner;
     protected final NativeConsole nativeConsole;
     protected final Interruptor interruptor;
 
-    public LocalRunner() throws FileNotFoundException {
+    public LocalRunner() throws FileNotFoundException, DBusException {
         this(new MuPlayer());
     }
 
-    public LocalRunner(String folder) throws FileNotFoundException {
+    public LocalRunner(String folder) throws FileNotFoundException, DBusException {
         this(new File(folder));
     }
 
-    public LocalRunner(File rootFolder) throws FileNotFoundException {
+    public LocalRunner(File rootFolder) throws FileNotFoundException, DBusException {
         this(new MuPlayer(rootFolder));
     }
 
@@ -62,6 +62,18 @@ public class LocalRunner extends ConsoleRunner {
         scanner = new Scanner(System.in);
         nativeConsole = new NativeConsole(EXT_F5, ESC, SINGLE_SHORCUTS);
         interruptor = Interruptor.manual();
+    }
+
+    @Override
+    protected boolean canRun() {
+        return !Thread.currentThread().isInterrupted() && interpreter.isOn();
+    }
+
+    @Override
+    public void shutdown() {
+        interpreter.setOn(false);
+        interruptor.switchOn();
+        interrupt();
     }
 
     private void loadKeyInterceptors() {
@@ -351,10 +363,6 @@ public class LocalRunner extends ConsoleRunner {
         printLine(paintMuPlayerStyle(msg, LIGHTEN));
     }
 
-    public void shutdown() {
-        interpreter.setOn(false);
-    }
-
     @Override
     public void run() {
         interruptor.setOwner(Thread.currentThread());
@@ -369,7 +377,7 @@ public class LocalRunner extends ConsoleRunner {
         interpreter.setOn(true);
 
         printConsoleHeader(player, DEFAULT);
-        while (interpreter.isOn()) {
+        while (canRun()) {
             interruptor.checkSignal();
         }
 

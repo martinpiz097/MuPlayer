@@ -5,6 +5,7 @@ import cl.estencia.labs.muplayer.audio.player.MusicPlayer;
 import cl.estencia.labs.muplayer.core.cache.CacheVar;
 import cl.estencia.labs.muplayer.io.net.NetworkServer;
 import cl.estencia.labs.muplayer.io.net.TCPClient;
+import org.freedesktop.dbus.exceptions.DBusException;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,15 +18,15 @@ import static cl.estencia.labs.muplayer.core.log.ConsolePrinter.infoLine;
 public class DaemonRunner extends ConsoleRunner {
     private final NetworkServer networkServer;
 
-    public DaemonRunner() throws IOException {
+    public DaemonRunner() throws IOException, DBusException {
         this((File) null);
     }
 
-    public DaemonRunner(String folder) throws IOException {
+    public DaemonRunner(String folder) throws IOException, DBusException {
         this(new File(folder));
     }
 
-    public DaemonRunner(File rootFolder) throws IOException {
+    public DaemonRunner(File rootFolder) throws IOException, DBusException {
         this(new MuPlayer(rootFolder));
     }
 
@@ -34,9 +35,22 @@ public class DaemonRunner extends ConsoleRunner {
         this.networkServer = new NetworkServer();
     }
 
-    public void shutdown() throws IOException {
+    @Override
+    protected boolean canRun() {
+        return !Thread.currentThread().isInterrupted()
+                && interpreter.isOn() && networkServer.isAlive();
+    }
+
+    @Override
+    public void shutdown() {
         interpreter.setOn(false);
-        networkServer.shutdownServer();
+        try {
+            networkServer.shutdownServer();
+        } catch (IOException e) {
+            log.error("Error on shutdown daemon server: " + e.getMessage());
+        }
+
+        interrupt();
     }
 
     @Override
@@ -49,7 +63,7 @@ public class DaemonRunner extends ConsoleRunner {
 
         Socket reqSocket;
         infoLine("Waiting clients...");
-        while (interpreter.isOn() && networkServer.isAlive()) {
+        while (canRun()) {
             try {
                 reqSocket = networkServer.getRequestSocket();
                 if (reqSocket != null) {

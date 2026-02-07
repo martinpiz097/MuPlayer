@@ -23,6 +23,7 @@ public class OGGTrack extends Track {
         final float frameRate = audioFormat.getFrameRate();
         final int frameSize = audioFormat.getFrameSize();
         final double framesToSeek = frameRate * seconds.doubleValue();
+
         return framesToSeek * frameSize;
     }
 
@@ -30,11 +31,6 @@ public class OGGTrack extends Track {
     protected double convertBytesToSeconds(Number bytes) {
         final AudioFormat audioFormat = speaker.getAudioFormat();
         return bytes.doubleValue() / audioFormat.getFrameSize() / audioFormat.getFrameRate();
-    }
-
-    @Override
-    protected HeaderData initHeaderData() {
-        return new HeaderData(0L, 0d);
     }
 
 }

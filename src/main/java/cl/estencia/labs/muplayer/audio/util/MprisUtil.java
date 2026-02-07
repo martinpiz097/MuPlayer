@@ -2,7 +2,8 @@ package cl.estencia.labs.muplayer.audio.util;
 
 import cl.estencia.labs.muplayer.unix.dbus.mpris.Mpris;
 import cl.estencia.labs.muplayer.unix.dbus.mpris.MprisPublisher;
-import cl.estencia.labs.muplayer.unix.dbus.mpris.common.PlaybackStatus;
+import cl.estencia.labs.muplayer.unix.dbus.mpris.common.MprisPropertyName;
+import cl.estencia.labs.muplayer.unix.dbus.mpris.common.PlaybackStatusEnum;
 
 import static cl.estencia.labs.muplayer.core.util.NumberUtil.secondsToMicroSecs;
 
@@ -25,12 +26,12 @@ public class MprisUtil {
         return isMprisConnected() && mpris.getPublisher().isAlive();
     }
 
-    public void setPlaybackStatus(PlaybackStatus playbackStatus) {
+    public void setPlaybackStatus(PlaybackStatusEnum playbackStatusEnum) {
         if (!isMprisConnected()) {
             return;
         }
 
-        mpris.setPlaybackStatus(playbackStatus);
+        mpris.setPlaybackStatus(playbackStatusEnum);
     }
 
     public void sendSeekedSignal(double seconds) {
@@ -41,7 +42,7 @@ public class MprisUtil {
         mprisPublisher.sendSeekedSignal(secondsToMicroSecs(seconds));
     }
 
-    public void sendPropertiesChangedEvent(String name, Object value) {
+    public void sendPropertiesChangedEvent(MprisPropertyName name, Object value) {
         if (!isMprisConnected()) {
             return;
         }

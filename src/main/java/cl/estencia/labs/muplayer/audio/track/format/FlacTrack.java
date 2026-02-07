@@ -26,6 +26,7 @@ public class FlacTrack extends Track {
         final float frameRate = audioFormat.getFrameRate();
         final int frameSize = audioFormat.getFrameSize();
         final double framesToSeek = frameRate * seconds.doubleValue();
+
         return framesToSeek * frameSize;
     }
 
