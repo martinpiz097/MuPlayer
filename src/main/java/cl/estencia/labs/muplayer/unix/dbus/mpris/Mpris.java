@@ -43,8 +43,6 @@ public class Mpris implements MediaPlayer2, MediaPlayer2.Player, Properties {
     private final AtomicReference<PlaybackStatusEnum> playbackStatusRef;
     private final AtomicReference<LoopStatus> loopStatusRef;
 
-//    private final Interruptor interruptor;
-
     public Mpris(String busName) {
         this.connection = new MprisConnection(BUS_NAME_HEADER + busName, this);
         this.publisher = new MprisPublisher(connection);

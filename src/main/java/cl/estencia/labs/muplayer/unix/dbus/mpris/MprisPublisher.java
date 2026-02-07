@@ -4,12 +4,12 @@ import cl.estencia.labs.ebot.utils.collection.CollectionUtil;
 import cl.estencia.labs.ebot.utils.threads.Interruptor;
 import cl.estencia.labs.muplayer.core.bus.model.PlayerInfo;
 import cl.estencia.labs.muplayer.unix.dbus.mpris.common.LoopStatus;
-import cl.estencia.labs.muplayer.unix.dbus.mpris.common.PlaybackStatus;
+import cl.estencia.labs.muplayer.unix.dbus.mpris.common.MprisPropertyName;
+import cl.estencia.labs.muplayer.unix.dbus.mpris.common.PlaybackStatusEnum;
 import cl.estencia.labs.muplayer.unix.dbus.mpris.interfaces.MediaPlayer2;
 import cl.estencia.labs.muplayer.unix.dbus.mpris.queue.MprisPublishAction;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.freedesktop.dbus.connections.impl.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.interfaces.Properties;
 import org.freedesktop.dbus.types.Variant;
@@ -29,7 +29,7 @@ public class MprisPublisher extends Thread {
     private final AtomicReference<PlayerInfo> playerInfoRef;
     private final AtomicReference<String> trackIdRef;
     private final AtomicReference<Map<String, Variant<?>>> metadataRef;
-    private final AtomicReference<PlaybackStatus> playbackStatusRef;
+    private final AtomicReference<PlaybackStatusEnum> playbackStatusRef;
     private final AtomicReference<LoopStatus> loopStatusRef;
 
     private final Deque<MprisPublishAction> publishActionsQueue;
@@ -40,7 +40,7 @@ public class MprisPublisher extends Thread {
         this.playerInfoRef = new AtomicReference<>(null);
         this.trackIdRef = new AtomicReference<>(UNKNOWN_TRACK_ID);
         this.metadataRef = new AtomicReference<>(newMap());
-        this.playbackStatusRef = new AtomicReference<>(PlaybackStatus.Stopped);
+        this.playbackStatusRef = new AtomicReference<>(PlaybackStatusEnum.Stopped);
         this.loopStatusRef = new AtomicReference<>(LoopStatus.None);
 
         this.publishActionsQueue = CollectionUtil.newThreadSafeQueue();
@@ -51,7 +51,8 @@ public class MprisPublisher extends Thread {
     public void sendSeekedSignal(long position) {
         enqueueAction(() -> {
             try {
-                sendDbusMessage(new MediaPlayer2.Player.Seeked(DBUS_OBJECT_PATH, position));
+                connection.sendDbusMessage(
+                        new MediaPlayer2.Player.Seeked(DBUS_OBJECT_PATH, position));
             } catch (DBusException e) {
                 log.error("Error emitiendo Seeked: " + e.getMessage());
             }
@@ -61,7 +62,8 @@ public class MprisPublisher extends Thread {
     public void sendPropertiesChangedEvent(Map<String, Variant<?>> propertiesChanged) {
         enqueueAction(() -> {
             try {
-                sendDbusMessage(new Properties.PropertiesChanged(
+                connection.sendDbusMessage(
+                        new Properties.PropertiesChanged(
                         DBUS_OBJECT_PATH,
                         DBUS_PLAYER_INTERFACE,
                         propertiesChanged,
@@ -73,12 +75,12 @@ public class MprisPublisher extends Thread {
         });
     }
 
-    public void sendPropertiesChangedEvent(String name, Object value) {
-        sendPropertiesChangedEvent(Map.of(name, new Variant<>(value)));
+    public void sendPropertiesChangedEvent(MprisPropertyName name, Object value) {
+        sendPropertiesChangedEvent(Map.of(name.name(), new Variant<>(value)));
     }
 
-    public void sendPropertiesChangedEvent(String name, Object value, String sig) {
-        sendPropertiesChangedEvent(Map.of(name, new Variant<>(value, sig)));
+    public void sendPropertiesChangedEvent(MprisPropertyName name, Object value, String sig) {
+        sendPropertiesChangedEvent(Map.of(name.name(), new Variant<>(value, sig)));
     }
 
     public void shutdown() {
@@ -88,22 +90,13 @@ public class MprisPublisher extends Thread {
         interruptor.switchOn();
     }
 
-    private void sendDbusMessage(org.freedesktop.dbus.messages.Message message) {
-        try {
-            DBusConnection dbus = connection.getDbus();
-            if (!dbus.isConnected()) {
-                return;
-            }
+    private void enqueueAction(MprisPublishAction publishAction) {
+        log.trace("["+publishAction.hashCode()+"] Enqueued mpris publish action");
+        publishActionsQueue.add(publishAction);
 
-            dbus.sendMessage(message);
-        } catch (Exception e) {
-            log.error("Error sending dbus message: " + e.getMessage());
-        }
-    }
-
-    private void enqueueAction(MprisPublishAction action) {
-        publishActionsQueue.add(action);
-        interruptor.assignNecessaryPermits(publishActionsQueue.size());
+        int permits = publishActionsQueue.size();
+        interruptor.assignNecessaryPermits(permits);
+//        log.trace("Assigned " + permits + " permits to interruptor!");
     }
 
     private void executeAction(MprisPublishAction publishAction) {
@@ -111,21 +104,26 @@ public class MprisPublisher extends Thread {
             return;
         }
 
-        Thread.ofVirtual().start(publishAction::execute);
+        log.trace("["+publishAction.hashCode()+"] Executing mpris publish action...");
+        publishAction.execute();
+        log.trace("["+publishAction.hashCode()+"] Mpris publish action executed!");
     }
 
     @Override
     public void run() {
         log.trace("Mpris publisher started!");
 
-        // TODO ojo con los errores que pueden provocar que el hilo termine con
-        // acciones pendientes en la cola
+        // TODO
+        //  ojo con los errores que pueden provocar que el hilo termine con
+        //  acciones pendientes en la cola
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 if (!publishActionsQueue.isEmpty()) {
                     executeAction(publishActionsQueue.pollFirst());
                 }
 
+                log.trace("mpris publisher connection status " + (getConnection().isConnected()
+                    ? "CONNECTED": "NOT_CONNECTED"));
                 interruptor.checkSignal();
             } catch (Exception e) {
                 log.warn(e.getMessage());
