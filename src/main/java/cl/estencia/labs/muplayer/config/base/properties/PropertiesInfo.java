@@ -36,14 +36,12 @@ public abstract class PropertiesInfo<T> {
     }
 
     public Map<Object, Object> getProperties() {
-        Map<Object, Object> mapProperties = new TreeMap<>();
-        mapProperties.putAll(properties);
-
-        return mapProperties;
+        return new TreeMap<>(properties);
     }
 
     public void setProperty(String key, String value) throws Exception {
         properties.setProperty(key, value);
         propertiesSource.saveData(properties);
     }
+
 }

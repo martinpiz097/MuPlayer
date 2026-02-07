@@ -33,7 +33,7 @@ public interface MediaPlayer2 extends DBusInterface {
         void previous();
 
         @DBusMemberName("Stop")
-        void Stop();
+        void stop();
 
         @DBusMemberName("Seek")
         void seek(long offset);

@@ -15,18 +15,6 @@ public class CacheManager {
         this.mapCache = new ConcurrentHashMap<>();
     }
 
-    public <V> V set(CacheVar cacheVar, V value) {
-        return set(cacheVar.name(), value);
-    }
-
-    public <V> V set(String cacheVarName, V value) {
-        synchronized (mapCache) {
-            mapCache.put(cacheVarName, value);
-        }
-
-        return value;
-    }
-
     public <V> V get(CacheVar cacheVar) {
         return cacheVar != null ? get(cacheVar.name()) : null;
     }
@@ -37,6 +25,7 @@ public class CacheManager {
         }
 
         try {
+            log.trace("cache_manager::get => " + cacheVarName);
             return (V) mapCache.get(cacheVarName);
         } catch (ClassCastException e) {
             log.error(e.getClass().getSimpleName() +
@@ -55,7 +44,10 @@ public class CacheManager {
         }
 
         try {
-            return valueClass.cast(mapCache.get(cacheVarName));
+            Object value = mapCache.get(cacheVarName);
+            log.trace("cache_manager::get => " + cacheVarName + "=" + value);
+
+            return valueClass.cast(value);
         } catch (ClassCastException e) {
             log.error(e.getClass().getSimpleName() +
                     " type error when trying to obtain a cache object: " + e.getMessage());
@@ -63,17 +55,32 @@ public class CacheManager {
         }
     }
 
+    public <V> V set(CacheVar cacheVar, V value) {
+        return set(cacheVar.name(), value);
+    }
+
+    public <V> V set(String cacheVarName, V value) {
+        log.trace("cache_manager::set => " + cacheVarName + "=" + value);
+        synchronized (mapCache) {
+            mapCache.put(cacheVarName, value);
+        }
+
+        return value;
+    }
+
     public void remove(CacheVar cacheVar) {
         remove(cacheVar.name());
     }
 
     public void remove(String cacheVarName) {
+        log.trace("cache_manager::remove => " + cacheVarName);
         synchronized (mapCache) {
             mapCache.remove(cacheVarName);
         }
     }
 
     public void clear() {
+        log.trace("cache_manager::clear");
         synchronized (mapCache) {
             mapCache.clear();
         }

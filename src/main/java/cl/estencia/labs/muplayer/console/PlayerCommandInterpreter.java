@@ -20,7 +20,6 @@ import cl.estencia.labs.muplayer.core.bus.message.Events;
 import cl.estencia.labs.muplayer.core.bus.model.LoadingPlayerInfo;
 import cl.estencia.labs.muplayer.core.bus.model.PlayerInfo;
 import cl.estencia.labs.muplayer.core.bus.model.SkipData;
-import cl.estencia.labs.muplayer.core.thread.TaskRunner;
 import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -448,7 +447,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     if (firstOpt.equalsIgnoreCase(RunnerMode.LOCAL.name())) {
                         if (consoleRunner instanceof DaemonRunner) {
                             final LocalRunner localRunner = new LocalRunner(player);
-                            TaskRunner.execute(localRunner, localRunner.getClass().getSimpleName());
+                            localRunner.start();
                             CACHE.set(RUNNER, localRunner);
                             ((DaemonRunner) consoleRunner).shutdown();
                             consoleOutput.append("MuPlayer changed from DAEMON to LOCAL mode!", info);
@@ -458,7 +457,7 @@ public class PlayerCommandInterpreter implements CommandInterpreter {
                     } else if (firstOpt.equalsIgnoreCase(RunnerMode.DAEMON.name())) {
                         if (consoleRunner instanceof LocalRunner) {
                             final DaemonRunner daemonRunner = new DaemonRunner(player);
-                            TaskRunner.execute(daemonRunner, daemonRunner.getClass().getSimpleName());
+                            daemonRunner.start();
                             CACHE.set(RUNNER, daemonRunner);
                             ((LocalRunner) consoleRunner).shutdown();
                             consoleOutput.append("MuPlayer changed from LOCAL to DAEMON mode!", info);
