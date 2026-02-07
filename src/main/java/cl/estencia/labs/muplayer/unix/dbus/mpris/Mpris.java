@@ -7,12 +7,12 @@ import cl.estencia.labs.muplayer.audio.track.Track;
 import cl.estencia.labs.muplayer.audio.util.CoverUtil;
 import cl.estencia.labs.muplayer.core.bus.message.Events;
 import cl.estencia.labs.muplayer.core.bus.model.PlayerInfo;
+import cl.estencia.labs.muplayer.core.util.CollectionUtil;
 import cl.estencia.labs.muplayer.unix.dbus.mpris.common.LoopStatus;
-import cl.estencia.labs.muplayer.unix.dbus.mpris.common.PlaybackStatus;
+import cl.estencia.labs.muplayer.unix.dbus.mpris.common.PlaybackStatusEnum;
 import cl.estencia.labs.muplayer.unix.dbus.mpris.interfaces.MediaPlayer2;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.interfaces.Properties;
 import org.freedesktop.dbus.types.Variant;
 
@@ -28,49 +28,51 @@ import static cl.estencia.labs.muplayer.core.util.CollectionUtil.newMap;
 import static cl.estencia.labs.muplayer.core.util.NumberUtil.microSecsToSeconds;
 import static cl.estencia.labs.muplayer.core.util.NumberUtil.secondsToMicroSecs;
 import static cl.estencia.labs.muplayer.unix.dbus.mpris.common.MprisConstants.*;
+import static cl.estencia.labs.muplayer.unix.dbus.mpris.common.MprisPropertyName.Metadata;
+import static cl.estencia.labs.muplayer.unix.dbus.mpris.common.MprisPropertyName.PlaybackStatus;
 import static org.jaudiotagger.tag.FieldKey.BPM;
 import static org.jaudiotagger.tag.FieldKey.DISC_NO;
 
 @Slf4j
 public class Mpris implements MediaPlayer2, MediaPlayer2.Player, Properties {
-    private final MprisConnection connection;
+    @Getter private final MprisConnection connection;
     @Getter private final MprisPublisher publisher;
     private final AtomicReference<PlayerInfo> playerInfoRef;
     private final AtomicReference<String> trackIdRef;
     private final AtomicReference<Map<String, Variant<?>>> metadataRef;
-    private final AtomicReference<PlaybackStatus> playbackStatusRef;
+    private final AtomicReference<PlaybackStatusEnum> playbackStatusRef;
     private final AtomicReference<LoopStatus> loopStatusRef;
 
 //    private final Interruptor interruptor;
 
-    public Mpris() throws DBusException {
-        this.connection = new MprisConnection(BUS_NAME);
+    public Mpris(String busName) {
+        this.connection = new MprisConnection(BUS_NAME_HEADER + busName, this);
         this.publisher = new MprisPublisher(connection);
         this.playerInfoRef = new AtomicReference<>(null);
         this.trackIdRef = new AtomicReference<>(UNKNOWN_TRACK_ID);
         this.metadataRef = new AtomicReference<>(newMap());
-        this.playbackStatusRef = new AtomicReference<>(PlaybackStatus.Stopped);
+        this.playbackStatusRef = new AtomicReference<>(PlaybackStatusEnum.Stopped);
         this.loopStatusRef = new AtomicReference<>(LoopStatus.None);
-//        this.interruptor = Interruptor.manual(this);
-
-//        setName("mpris");
     }
 
     private void configureListeners() {
         EventPlayer eventPlayer = CACHE.get(PLAYER, EventPlayer.class);
         if (eventPlayer == null) {
+            log.warn("No player available in cache, mpris listeners not created!");
             return;
         }
 
         eventPlayer.addResponseListener(playerInfoResp -> {
+            log.debug("track changed! sending changes to mpris...");
             synchronized (playerInfoRef) {
                 playerInfoRef.set(playerInfoResp);
                 trackIdRef.set(buildTrackId(playerInfoRef.get().getCurrentTrack()));
-                buildCurrentTrackMetadata();
+                setMetadata(buildCurrentTrackMetadata());
             }
 
-            publisher.sendPropertiesChangedEvent("Metadata", metadataRef.get(), "a{sv}");
-            setPlaybackStatus(PlaybackStatus.Playing);
+            sendMetadataChanges();
+            setPlaybackStatus(PlaybackStatusEnum.Playing);
+            log.debug("track changed! changes sent to mpris!");
         });
 
         eventPlayer.addListener(SHUTDOWN, message -> {
@@ -79,31 +81,29 @@ public class Mpris implements MediaPlayer2, MediaPlayer2.Player, Properties {
         });
     }
 
-    private void buildCurrentTrackMetadata() {
+    // TODO transformar metadata en un objeto que gestione internamente el Map
+    private Map<String, Variant<?>> buildCurrentTrackMetadata() {
         Track current = getCurrentTrack();
         if (current == null) {
-            return;
+            return Map.of();
         }
 
-        synchronized (metadataRef) {
-            Map<String, Variant<?>> metadata = metadataRef.get();
-            if (!metadata.isEmpty()) {
-                metadata.clear();
-            }
+        Map<String, Variant<?>> metadata = CollectionUtil.newMap();
 
-            addValueNullSafe(metadata, "mpris:trackid", trackIdRef.get(), "o");
-            addValueNullSafe(metadata, "mpris:length", secondsToMicroSecs(current.getDuration()));
-            addValueNullSafe(metadata, "xesam:title", current.getTitle());
-            addValueNullSafe(metadata, "xesam:album", current.getAlbum());
-            addValueNullSafe(metadata, "xesam:artist", current.getArtist());
-            addValueNullSafe(metadata, "xesam:audioBPM", current.getPropertyAsInt(BPM));
-            addValueNullSafe(metadata, "xesam:contentCreated", current.getYear());
-            addValueNullSafe(metadata, "xesam:discNumber", current.getPropertyAsInt(DISC_NO));
-            addValueNullSafe(metadata, "xesam:genre", current.getGenre());
-            addValueNullSafe(metadata, "xesam:url", "file://" + current.getDataSource().getPath());
-            addValueNullSafe(metadata, "xesam:artUrl", CoverUtil.createTempUri(current.getCover()));
+        addValueNullSafe(metadata, "mpris:trackid", trackIdRef.get());
+        addValueNullSafe(metadata, "mpris:length", secondsToMicroSecs(current.getDuration()));
+        addValueNullSafe(metadata, "xesam:title", current.getTitle());
+        addValueNullSafe(metadata, "xesam:album", current.getAlbum());
+        addValueNullSafe(metadata, "xesam:artist", current.getArtist());
+        addValueNullSafe(metadata, "xesam:audioBPM", current.getPropertyAsInt(BPM));
+        addValueNullSafe(metadata, "xesam:contentCreated", current.getYear());
+        addValueNullSafe(metadata, "xesam:discNumber", current.getPropertyAsInt(DISC_NO));
+        addValueNullSafe(metadata, "xesam:genre", current.getGenre());
+        addValueNullSafe(metadata, "xesam:url", "file://" + current.getDataSource().getPath());
+        addValueNullSafe(metadata, "xesam:artUrl", CoverUtil.createTempUri(current.getCover()));
 //            addValueNullSafe(metadata, "xesam:asText", "the track lyrics");
-        }
+
+        return metadata;
     }
 
     private String buildTrackId(Track track) {
@@ -179,8 +179,8 @@ public class Mpris implements MediaPlayer2, MediaPlayer2.Player, Properties {
     private Map<String, Variant<?>> getAllPlayerProperties() {
         Track currentTrack = getCurrentTrack();
         PlayerStatusData playerStatusData = getStatusData();
-        float rate = 1.0f;
-        float volume = playerStatusData != null
+        double rate = 1.0f;
+        double volume = playerStatusData != null
                 ? playerStatusData.getVolume()
                 : 100;
         long position = currentTrack != null
@@ -214,13 +214,40 @@ public class Mpris implements MediaPlayer2, MediaPlayer2.Player, Properties {
         return variant != null ? variant.getValue() : null;
     }
 
-    public void setPlaybackStatus(PlaybackStatus status) {
+    public void setPlaybackStatus(PlaybackStatusEnum status) {
         if (playbackStatusRef.get().equals(status)) {
             return;
         }
 
         playbackStatusRef.set(status);
-        publisher.sendPropertiesChangedEvent("PlaybackStatus", status);
+        publisher.sendPropertiesChangedEvent(PlaybackStatus, status.name());
+    }
+
+    public void sendMetadataChanges() {
+        Map<String, Variant<?>> metadata = metadataRef.get();
+        if (metadata == null) {
+            metadata = Map.of();
+        }
+
+        log.debug("Updating metadata...");
+        publisher.sendPropertiesChangedEvent(Metadata, metadata, "a{sv}");
+        log.debug("Metadata updated successfully!");
+    }
+
+    public void setMetadata(Map<String, Variant<?>> metadata) {
+        metadataRef.set(metadata);
+    }
+
+    public Map<String, Variant<?>> getMetadata() {
+        return metadataRef.get();
+    }
+
+    public PlaybackStatusEnum getPlaybackStatus() {
+        return playbackStatusRef.get();
+    }
+
+    public LoopStatus getLoopStatus() {
+        return loopStatusRef.get();
     }
 
     public void setVolume(double vol) {
@@ -278,7 +305,7 @@ public class Mpris implements MediaPlayer2, MediaPlayer2.Player, Properties {
 
     @Override
     public void playPause() {
-        if (PlaybackStatus.Playing.equals(playbackStatusRef.get())) {
+        if (PlaybackStatusEnum.Playing.equals(playbackStatusRef.get())) {
             pause();
         } else {
             play();
@@ -286,7 +313,7 @@ public class Mpris implements MediaPlayer2, MediaPlayer2.Player, Properties {
     }
 
     @Override
-    public void Stop() {
+    public void stop() {
         log.debug("[MPRIS] Stop");
         PLAYER_BUS.publish(Events.stop());
     }
@@ -356,12 +383,10 @@ public class Mpris implements MediaPlayer2, MediaPlayer2.Player, Properties {
 
     public void start() {
         try {
-            log.trace("Mpris server started!");
-            connection.start(this);
-            publisher.start();
-
             configureListeners();
-        } catch (DBusException e) {
+            connection.open();
+            publisher.start();
+        } catch (Exception e) {
             log.error("Error of type " + e.getClass().getSimpleName()
                     + " and message " + e.getMessage()
                     + " when trying to start Mpris server");
