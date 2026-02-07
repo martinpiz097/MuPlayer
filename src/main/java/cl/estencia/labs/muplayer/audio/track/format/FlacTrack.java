@@ -35,21 +35,4 @@ public class FlacTrack extends Track {
         return bytes.doubleValue() / audioFormat.getFrameSize() / audioFormat.getFrameRate();
     }
 
-    @Override
-    public synchronized void seek(double seconds) {
-       if (seconds != 0) {
-           trackStatusData.setSecsSeeked(trackStatusData.getSecsSeeked()+seconds);
-           final int bytesToSeek = (int) Math.round(convertSecondsToBytes(seconds));
-
-           AudioInputStream decodedStream = audioDecoder.getDecodedAudioStream();
-           if (decodedStream != null) {
-               try {
-                   decodedStream.read(new byte[bytesToSeek]);
-               } catch (IOException e) {
-                   log.error(e.getMessage(), e);
-               }
-           }
-       }
-    }
-
 }

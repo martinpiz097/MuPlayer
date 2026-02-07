@@ -209,15 +209,12 @@ public abstract class Track extends Thread
     // en este caso pasan a ser seconds
     @Override
     public synchronized void seek(double seconds) {
-        if (seconds == 0) {
+        if (seconds == 0 || !isActive()) {
             return;
         }
-
-        if (getProgress() + seconds > getDuration()) {
+        if (getProgress() + seconds >= getDuration()) {
             finish();
-        }
-
-        if (seconds > 0) {
+        } else if (seconds > 0) {
             final long bytesToSeek = Math.round(convertSecondsToBytes(seconds));
             final long skip;
             try {
